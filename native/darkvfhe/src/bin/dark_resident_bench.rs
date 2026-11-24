@@ -12,7 +12,9 @@ use darkvfhe::cert::{
     commit_persistent_grid_pcs, ct2_handle, ct3_handle, prove_hoisted_succinct_bundle,
     verify_hoisted_succinct_bundle, HoistedSuccinctBundle,
 };
-use darkvfhe::dark_gdn::{cleartext_gdn_step_mod_t, DarkGdnResident, ThreeCustodianCluster};
+use darkvfhe::dark_gdn::{
+    cleartext_gdn_step_mod_t, DarkGdnInitSpec, DarkGdnResident, ThreeCustodianCluster,
+};
 use darkvfhe::digits::LiftMode;
 use darkvfhe::logup_gkr::LogUpConfig;
 use darkvfhe::rns_hoist::HoistedEngine;
@@ -39,8 +41,8 @@ fn gen_cts_parallel(
         .map(|idx| {
             let mut key = OwnKey::new(engine.rns_q.clone(), seed_base + idx as u64);
             let mut m = vec![0u64; params.n];
-            for j in 0..64 {
-                m[j] = ((idx * 11 + j * 5 + 3) as u64) % 17;
+            for (j, slot) in m.iter_mut().take(64).enumerate() {
+                *slot = ((idx * 11 + j * 5 + 3) as u64) % 17;
             }
             key.encrypt_exact(&m)
         })
@@ -126,14 +128,7 @@ fn main() {
             let decoded = HoistedSuccinctBundle::from_bytes(&proof_bytes, &params)
                 .expect("deserialize succinct bundle");
             verify_hoisted_succinct_bundle(
-                &params,
-                &ha,
-                &hb,
-                &hout,
-                None,
-                &b_vec,
-                &out_cts,
-                &decoded,
+                &params, &ha, &hb, &hout, None, &b_vec, &out_cts, &decoded,
             )
             .expect("standalone verify succinct bundle");
             let vfy_ms = t_vfy.elapsed().as_secs_f64() * 1e3;
@@ -174,7 +169,8 @@ fn main() {
     println!("\n### 2. 3-Custodian Threshold-BFV + SPDZ Encrypted `Qwen3.8` `Gated DeltaNet` + `Dark-vPIR` Resident (`N = 8192`)");
     {
         let t_setup = Instant::now();
-        let mut cluster = ThreeCustodianCluster::setup(params.clone(), engine.clone(), [0x5Au8; 32]);
+        let mut cluster =
+            ThreeCustodianCluster::setup(params.clone(), engine.clone(), [0x5Au8; 32]);
         let setup_ms = t_setup.elapsed().as_secs_f64() * 1e3;
         println!(
             "  - 3-of-3 Threshold-BFV + SPDZ Ceremony (`0` party holds `sk`, smudge bound E = 2^{:.1}): {:.2} ms",
@@ -196,29 +192,71 @@ fn main() {
             })
             .collect();
         let mut cleartext_state: Vec<Vec<u64>> = (0..d_k)
-            .map(|i| (0..d_v).map(|j| ((i * 3 + j * 5 + 2) as u64) % 19).collect())
+            .map(|i| {
+                (0..d_v)
+                    .map(|j| ((i * 3 + j * 5 + 2) as u64) % 19)
+                    .collect()
+            })
             .collect();
 
         let w_q: Vec<Vec<u64>> = (0..d_k)
-            .map(|r| (0..d_k).map(|c| if r == c { 2 } else if (r + c) % 17 == 0 { 1 } else { 0 }).collect())
+            .map(|r| {
+                (0..d_k)
+                    .map(|c| {
+                        if r == c {
+                            2
+                        } else if (r + c) % 17 == 0 {
+                            1
+                        } else {
+                            0
+                        }
+                    })
+                    .collect()
+            })
             .collect();
         let w_k: Vec<Vec<u64>> = (0..d_k)
-            .map(|r| (0..d_k).map(|c| if r == c { 3 } else if (r + 2 * c) % 19 == 0 { 1 } else { 0 }).collect())
+            .map(|r| {
+                (0..d_k)
+                    .map(|c| {
+                        if r == c {
+                            3
+                        } else if (r + 2 * c) % 19 == 0 {
+                            1
+                        } else {
+                            0
+                        }
+                    })
+                    .collect()
+            })
             .collect();
         let w_v: Vec<Vec<u64>> = (0..d_v)
-            .map(|r| (0..d_k).map(|c| if r == c { 5 } else if (2 * r + c) % 23 == 0 { 1 } else { 0 }).collect())
+            .map(|r| {
+                (0..d_k)
+                    .map(|c| {
+                        if r == c {
+                            5
+                        } else if (2 * r + c) % 23 == 0 {
+                            1
+                        } else {
+                            0
+                        }
+                    })
+                    .collect()
+            })
             .collect();
 
         let t_init = Instant::now();
         let mut resident = DarkGdnResident::initialize(
             &mut cluster,
-            &embed_table,
-            &cleartext_state,
-            w_q.clone(),
-            w_k.clone(),
-            w_v.clone(),
-            LiftMode::ExactGarner15,
-            LogUpConfig::MonolithicC4,
+            DarkGdnInitSpec {
+                embed_table: &embed_table,
+                state_0: &cleartext_state,
+                w_q: w_q.clone(),
+                w_k: w_k.clone(),
+                w_v: w_v.clone(),
+                mode: LiftMode::ExactGarner15,
+                logup_cfg: LogUpConfig::MonolithicC4,
+            },
         )
         .expect("initialize DarkGdnResident");
         println!(
@@ -238,9 +276,7 @@ fn main() {
         ];
 
         let matvec_mod_t = |w: &[Vec<u64>], x: &[u64]| -> Vec<u64> {
-            w.iter()
-                .map(|row| fp_t.dot(row, x))
-                .collect()
+            w.iter().map(|row| fp_t.dot(row, x)).collect()
         };
 
         for (turn_idx, &(tok_id, alpha_t, beta_t)) in turns.iter().enumerate() {

@@ -46,8 +46,13 @@ pub mod transcript;
 pub mod vectors;
 
 pub use canon::Json;
-pub use proof::{prove, prove_with, simulate_legacy, verify, verify_opts, Cheat, PkCt, ProveOpts, SkCt, Vals, Witness};
-pub use statement::{batch_proof_bits, folds_for, proof_bytes, shape, BigPoly, KeyRegistry, Kind, Shape, Statement};
+pub use proof::{
+    prove, prove_with, simulate_legacy, verify, verify_opts, Cheat, PkCt, ProveOpts, SkCt, Vals,
+    Witness,
+};
+pub use statement::{
+    batch_proof_bits, folds_for, proof_bytes, shape, BigPoly, KeyRegistry, Kind, Shape, Statement,
+};
 
 /// The ledger profile: T = 309 opened columns, 2^-128.25, folds_for(309) = 3.
 pub const T_LEDGER: usize = 309;

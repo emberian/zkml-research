@@ -15,12 +15,12 @@
 //!      using per-custodian OS `/dev/urandom` CSPRNG (`DealerRelinSecret` zeroized on `Drop`).
 //! 2. **Persist-Before-Share `C8` `OpeningAuthorization` + `WhirPcs61` (`DVFHEWH1`) Compute Gate**:
 //!    - Refuses any partial decryption unless presented with BOTH:
-//!      (a) a `t`-quorum hybrid-PQ-signed `OpeningAuthorization` binding `(dkg_digest, epoch != 0,
-//!          sequence, policy_digest, ct_commitment, compute_proof_digest, refresh_cadence)` where
-//!          `tvd_40b_strict_mode` deterministically enforces `R_refresh == 1`, fsync-persisted to a
-//!          hash-chained append-only disk audit log *before* secret-share access (refusing `epoch == 0`,
-//!          `stale_epoch`, torn logs, and `double_open` across process restarts), AND
-//!      (b) a valid `WhirPcs61` (`DVFHEWH1`) compute proof (`verify_hoisted_whir_bytes`)!
+//!      - (a) a `t`-quorum hybrid-PQ-signed `OpeningAuthorization` binding `(dkg_digest, epoch != 0,
+//!        sequence, policy_digest, ct_commitment, compute_proof_digest, refresh_cadence)` where
+//!        `tvd_40b_strict_mode` deterministically enforces `R_refresh == 1`, fsync-persisted to a
+//!        hash-chained append-only disk audit log *before* secret-share access (refusing `epoch == 0`,
+//!        `stale_epoch`, torn logs, and `double_open` across process restarts), AND
+//!      - (b) a valid `WhirPcs61` (`DVFHEWH1`) compute proof (`verify_hoisted_whir_bytes`)!
 //! 3. **`GMask61`-Blinded Partial Decryption Proof (`WhirBlindPdProof`, Retiring `PdSuccinctProof` Leak)**:
 //!    - Proves `d_{i,k}(X) == lambda_{i,S,k} * c'_{1,k}(X) * s_{i,k}(X) + e_{smudge,i}(X) (mod X^N + 1, q_k)`
 //!      for all `k in 0..3`, `|e_{smudge,i}|_inf <= E`, `ExactGarner15` zero-slack `[0, Q)` canonicality,
@@ -73,26 +73,58 @@ pub const BDLOP_AGG_SPAN: u64 = 257; // [-128, 128] shifted by +128 lies in [0, 
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ThresholdCustodyError {
-    InvalidThreshold { threshold: usize, n_parties: usize },
-    InvalidParty { party: usize, n_parties: usize },
+    InvalidThreshold {
+        threshold: usize,
+        n_parties: usize,
+    },
+    InvalidParty {
+        party: usize,
+        n_parties: usize,
+    },
     EnrollmentMismatch(&'static str),
     HybridSignatureInvalid(&'static str),
     ConfidentialEnvelopeRefused(&'static str),
     CrpCeremonyMismatch(&'static str),
-    VssRowCommitmentMismatch { dealer: usize, recipient: usize },
-    VssLinearImageMismatch { dealer: usize, recipient: usize },
-    VssBdlopOpeningMismatch { dealer: usize, recipient: usize },
-    VssInconsistentRows { dealer: usize, left: usize, right: usize },
+    VssRowCommitmentMismatch {
+        dealer: usize,
+        recipient: usize,
+    },
+    VssLinearImageMismatch {
+        dealer: usize,
+        recipient: usize,
+    },
+    VssBdlopOpeningMismatch {
+        dealer: usize,
+        recipient: usize,
+    },
+    VssInconsistentRows {
+        dealer: usize,
+        left: usize,
+        right: usize,
+    },
     RelinCeremonyRefused(&'static str),
     ZeroEpochRejected,
-    StaleEpoch { got: u64, high_water: u64 },
-    ConflictingSameEpochDigest { epoch: u64 },
-    StrictRefreshCadenceViolation { got: u32, turns_since_refresh: u32 },
+    StaleEpoch {
+        got: u64,
+        high_water: u64,
+    },
+    ConflictingSameEpochDigest {
+        epoch: u64,
+    },
+    StrictRefreshCadenceViolation {
+        got: u32,
+        turns_since_refresh: u32,
+    },
     PolicyDigestMismatch,
     DkgTranscriptMismatch,
-    PartyNotSelected { party: usize },
+    PartyNotSelected {
+        party: usize,
+    },
     NonCanonicalQuorumRoster,
-    QuorumSignaturesInsufficient { have: usize, need: usize },
+    QuorumSignaturesInsufficient {
+        have: usize,
+        need: usize,
+    },
     DoubleOpen,
     AuditLogPoisoned,
     AuditLogIo(String),
@@ -499,7 +531,7 @@ impl HybridPqCustodianIdentity {
             }
         }
         let pq_signer = PqLamportSigner::open(pq_height, Some(pq_seed), pq_state_path)
-            .map_err(|e| ThresholdCustodyError::AuditLogIo(e))?;
+            .map_err(ThresholdCustodyError::AuditLogIo)?;
 
         let c = ed25519_consts();
         let mut dh_raw = os_csprng_seed32();
@@ -589,8 +621,8 @@ impl EnrolledThresholdRoster {
         let mut dh_seen = BTreeSet::new();
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_THRESHOLD_ROSTER_V1|");
-        h.update(&(n_parties as u32).to_le_bytes());
-        h.update(&(threshold as u32).to_le_bytes());
+        h.update((n_parties as u32).to_le_bytes());
+        h.update((threshold as u32).to_le_bytes());
         for (idx, e) in enrollments.iter().enumerate() {
             if e.party_id != idx {
                 return Err(ThresholdCustodyError::EnrollmentMismatch(
@@ -605,7 +637,7 @@ impl EnrolledThresholdRoster {
                     "duplicate public key in roster",
                 ));
             }
-            h.update(&e.to_wire_bytes());
+            h.update(e.to_wire_bytes());
         }
         Ok(h.finalize().into())
     }
@@ -645,8 +677,8 @@ impl EnrolledThresholdRoster {
         let c = ed25519_consts();
         let rec_pk = ExtPoint::decompress_strict(&self.enrollments[recipient].transport_dh_pk, c)
             .ok_or(ThresholdCustodyError::ConfidentialEnvelopeRefused(
-                "invalid recipient transport DH key",
-            ))?;
+            "invalid recipient transport DH key",
+        ))?;
 
         let mut eph_raw = os_csprng_seed32();
         eph_raw[0] &= 248;
@@ -845,9 +877,9 @@ fn derive_envelope_keys(
     h.update(b"DARKVFHE_ENV_KDF_V1|");
     h.update(roster_digest);
     h.update(session_domain);
-    h.update(&(sender as u32).to_le_bytes());
-    h.update(&(recipient as u32).to_le_bytes());
-    h.update(&seq.to_le_bytes());
+    h.update((sender as u32).to_le_bytes());
+    h.update((recipient as u32).to_le_bytes());
+    h.update(seq.to_le_bytes());
     h.update(eph_pk);
     h.update(ss_eph);
     h.update(ss_stat);
@@ -869,7 +901,7 @@ fn xor_sha256_keystream(key: &[u8; 32], input: &[u8]) -> Vec<u8> {
                 let mut h = Sha256::new();
                 h.update(b"DARKVFHE_STREAM|");
                 h.update(key);
-                h.update(&ctr.to_le_bytes());
+                h.update(ctr.to_le_bytes());
                 let ks: [u8; 32] = h.finalize().into();
                 for i in 0..d_ch.len() {
                     d_ch[i] = s_ch[i] ^ ks[i];
@@ -892,11 +924,11 @@ fn compute_envelope_mac(
     h.update(b"DARKVFHE_ENV_MAC_V1|");
     h.update(mac_key);
     h.update(session_domain);
-    h.update(&(sender as u32).to_le_bytes());
-    h.update(&(recipient as u32).to_le_bytes());
-    h.update(&seq.to_le_bytes());
+    h.update((sender as u32).to_le_bytes());
+    h.update((recipient as u32).to_le_bytes());
+    h.update(seq.to_le_bytes());
     h.update(eph_pk);
-    h.update(&(ciphertext.len() as u64).to_le_bytes());
+    h.update((ciphertext.len() as u64).to_le_bytes());
     h.update(ciphertext);
     h.finalize().into()
 }
@@ -932,9 +964,9 @@ impl CustodianCrpCoin {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_CRP_COMMIT_V1|");
         h.update(roster_digest);
-        h.update(&(self.party_id as u32).to_le_bytes());
-        h.update(&self.coin);
-        h.update(&self.salt);
+        h.update((self.party_id as u32).to_le_bytes());
+        h.update(self.coin);
+        h.update(self.salt);
         h.finalize().into()
     }
 
@@ -959,7 +991,7 @@ pub fn finalize_unbiased_crp_seed(
     }
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_CRP_FINAL_SEED_V1|");
-    h.update(&roster.roster_digest);
+    h.update(roster.roster_digest);
     for i in 0..roster.n_parties {
         if reveals[i].party_id != i {
             return Err(ThresholdCustodyError::CrpCeremonyMismatch(
@@ -968,17 +1000,17 @@ pub fn finalize_unbiased_crp_seed(
         }
         let mut ch = Sha256::new();
         ch.update(b"DARKVFHE_CRP_COMMIT_V1|");
-        ch.update(&roster.roster_digest);
-        ch.update(&(i as u32).to_le_bytes());
-        ch.update(&reveals[i].coin);
-        ch.update(&reveals[i].salt);
+        ch.update(roster.roster_digest);
+        ch.update((i as u32).to_le_bytes());
+        ch.update(reveals[i].coin);
+        ch.update(reveals[i].salt);
         let got: [u8; 32] = ch.finalize().into();
         if got != commitments[i] {
             return Err(ThresholdCustodyError::CrpCeremonyMismatch(
                 "CRP reveal does not match commitment",
             ));
         }
-        h.update(&reveals[i].coin);
+        h.update(reveals[i].coin);
     }
     Ok(h.finalize().into())
 }
@@ -1099,9 +1131,9 @@ impl DealerRelinSecret {
 pub struct DealerVssPublicBroadcast {
     pub dealer: usize,
     pub session_domain: [u8; 32],
-    pub b_share_coeff: Vec<u64>,                // 3 * N (`-(a_pk * s_d + e_{pk,d}) mod Qp`)
-    pub row_salted_digests: Vec<[u8; 32]>,      // length n_parties
-    pub linear_images: Vec<Vec<u64>>,           // t * t entries `(u * t + v)`, each `3 * N`
+    pub b_share_coeff: Vec<u64>, // 3 * N (`-(a_pk * s_d + e_{pk,d}) mod Qp`)
+    pub row_salted_digests: Vec<[u8; 32]>, // length n_parties
+    pub linear_images: Vec<Vec<u64>>, // t * t entries `(u * t + v)`, each `3 * N`
     pub bdlop_row_commits: Vec<BdlopCommitment>, // length n_parties: homomorphic commits to `S_d(r+1, 0)`
     pub digest: [u8; 32],
 }
@@ -1150,8 +1182,8 @@ impl VerifiedThresholdDkgTranscript {
         let mut th = Sha256::new();
         th.update(b"DARKVFHE_VERIFIED_DKG_TRANSCRIPT_V2|");
         th.update(session_domain);
-        th.update(&(n_parties as u32).to_le_bytes());
-        th.update(&(threshold as u32).to_le_bytes());
+        th.update((n_parties as u32).to_le_bytes());
+        th.update((threshold as u32).to_le_bytes());
         th.update(crp_seed);
         th.update(bcast_list_digest);
         for &v in a_pk_coeff
@@ -1161,11 +1193,11 @@ impl VerifiedThresholdDkgTranscript {
             .chain(bdlop_crs.a2_coeff.iter())
             .chain(bdlop_crs.b1_coeff.iter())
         {
-            th.update(&v.to_le_bytes());
+            th.update(v.to_le_bytes());
         }
         for com in party_bdlop_anchors {
             for &v in com.t0_coeff.iter().chain(com.t1_coeff.iter()) {
-                th.update(&v.to_le_bytes());
+                th.update(v.to_le_bytes());
             }
         }
         th.finalize().into()
@@ -1231,6 +1263,13 @@ pub struct DistributedThresholdDkg {
 pub const SEQ_VSS_DEALING: u64 = 1;
 pub const SEQ_VSS_CROSS_EVAL: u64 = 2;
 
+pub type DealerVssOutput = (
+    DealerVssPublicBroadcast,
+    VerifiedDealerRow,
+    Vec<(usize, Vec<u8>)>,
+    DealerRelinSecret,
+);
+
 impl DistributedThresholdDkg {
     pub fn new(
         params: Arc<HoistedParams>,
@@ -1241,18 +1280,18 @@ impl DistributedThresholdDkg {
         let rns_q = Arc::new(Rns::new(params.n, &params.qp, params.t));
         let mut hd = Sha256::new();
         hd.update(b"DARKVFHE_DIST_DKG_DOMAIN_V1|");
-        hd.update(&roster.roster_digest);
-        hd.update(&crp_seed);
-        hd.update(&(params.n as u64).to_le_bytes());
+        hd.update(roster.roster_digest);
+        hd.update(crp_seed);
+        hd.update((params.n as u64).to_le_bytes());
         for &q in &params.qp {
-            hd.update(&q.to_le_bytes());
+            hd.update(q.to_le_bytes());
         }
-        hd.update(&params.t.to_le_bytes());
+        hd.update(params.t.to_le_bytes());
         let session_domain: [u8; 32] = hd.finalize().into();
 
         let mut ha = Sha256::new();
         ha.update(b"DARKVFHE_APK_CRS_V1|");
-        ha.update(&session_domain);
+        ha.update(session_domain);
         let mut apk_rng = PcsRng::from_seed(ha.finalize().into());
         let a_pk_coeff = sample_uniform_rns_qp(&rns_q, &mut apk_rng);
         let mut a_pk_ntt = a_pk_coeff.clone();
@@ -1276,12 +1315,7 @@ impl DistributedThresholdDkg {
     pub fn deal_from_os(
         &self,
         dealer_id: &mut HybridPqCustodianIdentity,
-    ) -> Result<(
-        DealerVssPublicBroadcast,
-        VerifiedDealerRow,
-        Vec<(usize, Vec<u8>)>,
-        DealerRelinSecret,
-    )> {
+    ) -> Result<DealerVssOutput> {
         self.deal_internal(dealer_id, None, None)
     }
 
@@ -1291,12 +1325,7 @@ impl DistributedThresholdDkg {
         dealer_id: &mut HybridPqCustodianIdentity,
         corrupt_row_victim: Option<usize>,
         equivocate_victim: Option<usize>,
-    ) -> Result<(
-        DealerVssPublicBroadcast,
-        VerifiedDealerRow,
-        Vec<(usize, Vec<u8>)>,
-        DealerRelinSecret,
-    )> {
+    ) -> Result<DealerVssOutput> {
         self.deal_internal(dealer_id, corrupt_row_victim, equivocate_victim)
     }
 
@@ -1305,12 +1334,7 @@ impl DistributedThresholdDkg {
         dealer_id: &mut HybridPqCustodianIdentity,
         corrupt_row_victim: Option<usize>,
         equivocate_victim: Option<usize>,
-    ) -> Result<(
-        DealerVssPublicBroadcast,
-        VerifiedDealerRow,
-        Vec<(usize, Vec<u8>)>,
-        DealerRelinSecret,
-    )> {
+    ) -> Result<DealerVssOutput> {
         let dealer = dealer_id.party_id;
         let n_p = self.roster.n_parties;
         let t = self.roster.threshold;
@@ -1383,11 +1407,8 @@ impl DistributedThresholdDkg {
                     for u in 0..t {
                         for j in 0..n {
                             let idx = k * n + j;
-                            s_row[v][idx] = addmod(
-                                s_row[v][idx],
-                                mulmod(sigma[u][v][idx], x_pow, qk),
-                                qk,
-                            );
+                            s_row[v][idx] =
+                                addmod(s_row[v][idx], mulmod(sigma[u][v][idx], x_pow, qk), qk);
                             e_row[v][idx] =
                                 addmod(e_row[v][idx], mulmod(eps[u][v][idx], x_pow, qk), qk);
                         }
@@ -1422,7 +1443,8 @@ impl DistributedThresholdDkg {
                 e1: sample_small_err_poly(n, &mut os_rng, 8),
             };
             let bdlop_com = self.bdlop_crs.commit(rns, &s_row[0], &bdlop_open);
-            let row_dig = compute_vss_row_digest(&self.session_domain, dealer, rec, &salt, &s_row, &e_row);
+            let row_dig =
+                compute_vss_row_digest(&self.session_domain, dealer, rec, &salt, &s_row, &e_row);
             row_salted_digests.push(row_dig);
             bdlop_row_commits.push(bdlop_com);
             raw_rows.push((rec, salt, s_row, e_row, bdlop_open));
@@ -1530,7 +1552,8 @@ impl DistributedThresholdDkg {
         )?;
         let (salt, s_row, e_row, bdlop_open) = decode_private_vss_row(&plain, t, n, &rns.qs)?;
 
-        let row_dig = compute_vss_row_digest(&self.session_domain, dealer, rec, &salt, &s_row, &e_row);
+        let row_dig =
+            compute_vss_row_digest(&self.session_domain, dealer, rec, &salt, &s_row, &e_row);
         if row_dig != broadcast.row_salted_digests[rec] {
             return Err(ThresholdCustodyError::VssRowCommitmentMismatch {
                 dealer,
@@ -1574,10 +1597,10 @@ impl DistributedThresholdDkg {
                     let idx = k * n + j;
                     let lhs = submod(0, addmod(prod[idx], e_row[v][idx], qk), qk);
                     let mut rhs = 0u64;
-                    for u in 0..t {
+                    for (u, &xp) in x_pows.iter().enumerate() {
                         rhs = addmod(
                             rhs,
-                            mulmod(broadcast.linear_images[u * t + v][idx], x_pows[u], qk),
+                            mulmod(broadcast.linear_images[u * t + v][idx], xp, qk),
                             qk,
                         );
                     }
@@ -1601,18 +1624,22 @@ impl DistributedThresholdDkg {
         })
     }
 
-    fn compute_ordered_bcasts_digest(&self, accepted_rows: &[VerifiedDealerRow], me: usize) -> Result<[u8; 32]> {
+    fn compute_ordered_bcasts_digest(
+        &self,
+        accepted_rows: &[VerifiedDealerRow],
+        me: usize,
+    ) -> Result<[u8; 32]> {
         if accepted_rows.len() != self.roster.n_parties {
             return Err(ThresholdCustodyError::DkgTranscriptMismatch);
         }
         let mut bh = Sha256::new();
         bh.update(b"DARKVFHE_ORDERED_BCASTS_V1|");
-        bh.update(&self.session_domain);
+        bh.update(self.session_domain);
         for (d, row) in accepted_rows.iter().enumerate() {
             if row.dealer != d || row.recipient != me {
                 return Err(ThresholdCustodyError::DkgTranscriptMismatch);
             }
-            bh.update(&row.broadcast.digest);
+            bh.update(row.broadcast.digest);
         }
         Ok(bh.finalize().into())
     }
@@ -1681,7 +1708,7 @@ impl DistributedThresholdDkg {
             return Err(ThresholdCustodyError::DkgTranscriptMismatch);
         }
         let y_pt = (peer + 1) as u64;
-        for d in 0..n_p {
+        for (d, row) in accepted_rows.iter().enumerate() {
             let mut got_s = Vec::with_capacity(3 * n);
             let mut got_e = Vec::with_capacity(3 * n);
             for _ in 0..(3 * n) {
@@ -1696,8 +1723,8 @@ impl DistributedThresholdDkg {
                         .map_err(|_| ThresholdCustodyError::DkgTranscriptMismatch)?,
                 );
             }
-            let want_s = eval_poly_vec_rns(&accepted_rows[d].s_row, y_pt, n, &self.rns_q.qs);
-            let want_e = eval_poly_vec_rns(&accepted_rows[d].e_row, y_pt, n, &self.rns_q.qs);
+            let want_s = eval_poly_vec_rns(&row.s_row, y_pt, n, &self.rns_q.qs);
+            let want_e = eval_poly_vec_rns(&row.e_row, y_pt, n, &self.rns_q.qs);
             if got_s != want_s || got_e != want_e {
                 return Err(ThresholdCustodyError::VssInconsistentRows {
                     dealer: d,
@@ -1783,15 +1810,12 @@ impl DistributedThresholdDkg {
                 agg_e0[j] += row.bdlop_open.e0[j];
                 agg_e1[j] += row.bdlop_open.e1[j];
             }
-            for p_idx in 0..n_p {
-                rns.add_assign(
-                    &mut party_bdlop_anchors[p_idx].t0_coeff,
-                    &row.broadcast.bdlop_row_commits[p_idx].t0_coeff,
-                );
-                rns.add_assign(
-                    &mut party_bdlop_anchors[p_idx].t1_coeff,
-                    &row.broadcast.bdlop_row_commits[p_idx].t1_coeff,
-                );
+            for (anchor, row_com) in party_bdlop_anchors
+                .iter_mut()
+                .zip(&row.broadcast.bdlop_row_commits)
+            {
+                rns.add_assign(&mut anchor.t0_coeff, &row_com.t0_coeff);
+                rns.add_assign(&mut anchor.t1_coeff, &row_com.t1_coeff);
             }
         }
 
@@ -1849,8 +1873,7 @@ impl DistributedThresholdDkg {
             .min((1u128 << 111) - 1);
         let two_e_bits = 128 - (2 * smudge_bound).leading_zeros();
         let smudge_top_bits = two_e_bits.saturating_sub(100).max(1);
-        let noise_summary =
-            derive_homomorphic_state_noise_budget(&self.params, smudge_bound, 2, 4);
+        let noise_summary = derive_homomorphic_state_noise_budget(&self.params, smudge_bound, 2, 4);
 
         let audit_log = PersistentCustodyAuditLog::open_or_create(audit_log_path, me, &dkg_digest)?;
         let mut signer_min_pq_leaves = vec![0u64; n_p];
@@ -1935,7 +1958,10 @@ impl Drop for DistributedRelinDealer {
     }
 }
 
-fn derive_relin_crp_rns4(params: &HoistedParams, session_domain: &[u8; 32]) -> (Arc<Rns>, [Vec<u64>; 4]) {
+fn derive_relin_crp_rns4(
+    params: &HoistedParams,
+    session_domain: &[u8; 32],
+) -> (Arc<Rns>, [Vec<u64>; 4]) {
     let qs4 = [params.qp[0], params.qp[1], params.qp[2], params.bp[0]];
     let rns4 = Arc::new(Rns::new(params.n, &qs4, params.t));
     let mut h = Sha256::new();
@@ -2057,7 +2083,7 @@ impl DistributedRelinDealer {
         self.rns4.fwd(&mut s_ntt);
 
         let mut h2_ntt = std::array::from_fn(|_| vec![0u64; 4 * n]);
-        for m in 0..4 {
+        for (m, h2_slot) in h2_ntt.iter_mut().enumerate() {
             let u_minus_s: Vec<i64> = (0..n).map(|j| self.u_m[m][j] - self.s_d[j]).collect();
             let mut ums_ntt = self.rns4.from_signed(&u_minus_s);
             self.rns4.fwd(&mut ums_ntt);
@@ -2067,15 +2093,14 @@ impl DistributedRelinDealer {
             self.rns4.inv(&mut acc);
 
             let e2 = sample_small_err_poly(n, &mut rng, 1i64 << 36);
-            for k in 0..4 {
-                let qk = qs4[k];
-                for j in 0..n {
+            for (k, &qk) in qs4.iter().enumerate() {
+                for (j, &e2j) in e2.iter().enumerate() {
                     let idx = k * n + j;
-                    acc[idx] = addmod(acc[idx], from_i64(e2[j], qk), qk);
+                    acc[idx] = addmod(acc[idx], from_i64(e2j, qk), qk);
                 }
             }
             self.rns4.fwd(&mut acc);
-            h2_ntt[m] = acc;
+            *h2_slot = acc;
         }
 
         let pre = relin_r2_sig_preimage(&self.session_domain, &r1_agg.digest, self.dealer, &h2_ntt);
@@ -2182,16 +2207,20 @@ pub fn assemble_distributed_relin_key(
                 "invalid, duplicate, or mismatched-R1 Round-2 share",
             ));
         }
-        let pre =
-            relin_r2_sig_preimage(&r1_agg.session_domain, &r1_agg.digest, sh.dealer, &sh.h2_ntt);
+        let pre = relin_r2_sig_preimage(
+            &r1_agg.session_domain,
+            &r1_agg.digest,
+            sh.dealer,
+            &sh.h2_ntt,
+        );
         sh.sig.verify(&roster.enrollments[sh.dealer], 0, &pre)?;
-        for m in 0..4 {
-            if sh.h2_ntt[m].len() != 4 * n {
+        for (rlk0_m, h2_m) in rlk0_ntt.iter_mut().zip(&sh.h2_ntt) {
+            if h2_m.len() != 4 * n {
                 return Err(ThresholdCustodyError::RelinCeremonyRefused(
                     "Round-2 share dimension mismatch",
                 ));
             }
-            rns4.add_assign(&mut rlk0_ntt[m], &sh.h2_ntt[m]);
+            rns4.add_assign(rlk0_m, h2_m);
         }
     }
     Ok(RelinearizationKey {
@@ -2231,14 +2260,14 @@ pub fn compute_ct_opening_commitment(
     h.update(designated_ct_handle);
     match ct_mask_handle {
         Some(mh) => {
-            h.update(&[1u8]);
+            h.update([1u8]);
             h.update(mh);
         }
-        None => h.update(&[0u8]),
+        None => h.update([0u8]),
     }
-    h.update(&(selected_parties.len() as u32).to_le_bytes());
+    h.update((selected_parties.len() as u32).to_le_bytes());
     for &p in selected_parties {
-        h.update(&(p as u32).to_le_bytes());
+        h.update((p as u32).to_le_bytes());
     }
     h.finalize().into()
 }
@@ -2253,8 +2282,8 @@ impl OpeningAuthorization {
         out.extend_from_slice(&self.policy_digest);
         out.extend_from_slice(&self.ct_commitment);
         out.extend_from_slice(&self.compute_proof_digest);
-        out.extend_from_slice(&(self.refresh_cadence as u32).to_le_bytes());
-        out.extend_from_slice(&(self.turns_since_refresh as u32).to_le_bytes());
+        out.extend_from_slice(&self.refresh_cadence.to_le_bytes());
+        out.extend_from_slice(&self.turns_since_refresh.to_le_bytes());
         out.extend_from_slice(&(self.selected_parties.len() as u32).to_le_bytes());
         for &p in &self.selected_parties {
             out.extend_from_slice(&(p as u32).to_le_bytes());
@@ -2321,7 +2350,7 @@ impl PersistentCustodyAuditLog {
             let genesis_hash: [u8; 32] = {
                 let mut h = Sha256::new();
                 h.update(AUDIT_LOG_MAGIC);
-                h.update(&(party_id as u32).to_le_bytes());
+                h.update((party_id as u32).to_le_bytes());
                 h.update(dkg_digest);
                 h.finalize().into()
             };
@@ -2331,7 +2360,6 @@ impl PersistentCustodyAuditLog {
             }
             let mut f = OpenOptions::new()
                 .read(true)
-                .write(true)
                 .append(true)
                 .create_new(true)
                 .open(path)
@@ -2374,7 +2402,7 @@ impl PersistentCustodyAuditLog {
         let genesis_hash: [u8; 32] = {
             let mut h = Sha256::new();
             h.update(AUDIT_LOG_MAGIC);
-            h.update(&(party_id as u32).to_le_bytes());
+            h.update((party_id as u32).to_le_bytes());
             h.update(dkg_digest);
             h.finalize().into()
         };
@@ -2431,7 +2459,7 @@ impl PersistentCustodyAuditLog {
 
             let mut ch = Sha256::new();
             ch.update(b"DARKVFHE_AUDIT_CHAIN_V1|");
-            ch.update(&head);
+            ch.update(head);
             ch.update(&rec[0..148]);
             let want_chain: [u8; 32] = ch.finalize().into();
             if want_chain != stored_chain || epoch == 0 {
@@ -2519,8 +2547,8 @@ impl PersistentCustodyAuditLog {
 
         let mut ch = Sha256::new();
         ch.update(b"DARKVFHE_AUDIT_CHAIN_V1|");
-        ch.update(&self.head_chain_hash);
-        ch.update(&payload);
+        ch.update(self.head_chain_hash);
+        ch.update(payload);
         let next_chain: [u8; 32] = ch.finalize().into();
 
         let mut rec = [0u8; AUDIT_RECORD_BYTES];
@@ -2534,7 +2562,8 @@ impl PersistentCustodyAuditLog {
 
         self.head_chain_hash = next_chain;
         self.high_water_epoch = Some(auth.epoch);
-        self.epoch_digests.insert((auth.epoch, auth.sequence), stmt_dig);
+        self.epoch_digests
+            .insert((auth.epoch, auth.sequence), stmt_dig);
         self.opened_ct_commitments.insert(auth.ct_commitment);
         self.opened_raw_ct_handles.insert(*raw_ct_handle);
         self.opened_raw_ct_handles.insert(*eff_ct_handle);
@@ -2613,7 +2642,7 @@ impl RingModQkInstance {
         let half_p0 = p0 / 2;
 
         let mut r_signed = vec![vec![0i128; n]; 3];
-        for b in 0..3 {
+        for (b, r_b) in r_signed.iter_mut().enumerate() {
             let mut sum_neg = vec![0u64; n];
             let mut sum_cyc = vec![0u64; n];
             for (c_poly, w_slot) in &self.ring_prod_terms {
@@ -2646,17 +2675,17 @@ impl RingModQkInstance {
                 } else {
                     sum_neg[j] as i128
                 };
-                r_signed[b][j] = r_val;
+                r_b[j] = r_val;
                 let r_sh = (r_val + R_SHIFT_56) as u64;
                 debug_assert!(r_sh < (1u64 << 57));
-                flat[(off_r + 0) * n + j] = r_sh & ((1u64 << 20) - 1);
+                flat[off_r * n + j] = r_sh & ((1u64 << 20) - 1);
                 flat[(off_r + 1) * n + j] = (r_sh >> 20) & ((1u64 << 20) - 1);
                 flat[(off_r + 2) * n + j] = r_sh >> 40;
 
                 if j + 1 < n {
                     let k_val = fp0.mul(fp0.sub(sum_cyc[j], sum_neg[j]), inv2);
                     debug_assert!(k_val < (1u64 << 56));
-                    flat[(off_k + 0) * n + j] = k_val & ((1u64 << 20) - 1);
+                    flat[off_k * n + j] = k_val & ((1u64 << 20) - 1);
                     flat[(off_k + 1) * n + j] = (k_val >> 20) & ((1u64 << 20) - 1);
                     flat[(off_k + 2) * n + j] = k_val >> 40;
                 }
@@ -2686,7 +2715,9 @@ impl RingModQkInstance {
             }
             w_int -= self.y_pos[j] as i128;
             if w_int.rem_euclid(qk_i) != 0 {
-                return Err("RingModQkInstance: honest witness failed exact mod-q_k divisibility".into());
+                return Err(
+                    "RingModQkInstance: honest witness failed exact mod-q_k divisibility".into(),
+                );
             }
             let q_quot = w_int / qk_i;
             let q_sh = (q_quot + Q_SHIFT_53) as u64;
@@ -2704,7 +2735,7 @@ impl RingModQkInstance {
 
             let b_pub = extract_6x20((self.y_pos[j] as u128) + b_shift_const);
             let r0 = [
-                flat[(self.base_slot + 0) * n + j],
+                flat[self.base_slot * n + j],
                 flat[(self.base_slot + 1) * n + j],
                 flat[(self.base_slot + 2) * n + j],
             ];
@@ -2731,12 +2762,12 @@ impl RingModQkInstance {
             }
 
             let mut r_dig = [0i128; 6];
-            for m in 0..6 {
-                r_dig[m] = b_pub[m] as i128;
-                for a in 0..4 {
-                    for b_idx in 0..3 {
+            for (m, &bp_m) in b_pub.iter().enumerate() {
+                r_dig[m] = bp_m as i128;
+                for (a, &qa) in qk_limbs.iter().enumerate() {
+                    for (b_idx, &qb) in qs.iter().enumerate() {
                         if a + b_idx == m {
-                            r_dig[m] += (qk_limbs[a] as i128) * (qs[b_idx] as i128);
+                            r_dig[m] += (qa as i128) * (qb as i128);
                         }
                     }
                 }
@@ -2824,13 +2855,16 @@ impl RingModQkInstance {
     fn append_claims_at_point(
         &self,
         fp0: &FastPrime61,
-        n: usize,
-        r_pt: u64,
-        vf_full_idx: usize,
-        vf_deg_n1_idx: usize,
-        r_pows: &[u64],
+        ctx: &RingModPointCtx<'_>,
         claims: &mut Vec<SlotLinearClaim>,
     ) {
+        let RingModPointCtx {
+            n,
+            r_pt,
+            vf_full_idx,
+            vf_deg_n1_idx,
+            r_pows,
+        } = *ctx;
         let ones_r = fp0.ones_eval(n, r_pt);
         let rn_plus_1 = fp0.add(fp0.pow(r_pt, n as u64), 1);
         let t20 = 1u64 << 20;
@@ -2853,12 +2887,12 @@ impl RingModQkInstance {
                 let e = full_map.entry(*w_slot).or_insert(0);
                 *e = fp0.add(*e, cb_ev);
             }
-            full_map.insert(off_r + 0, fp0.neg(1));
+            full_map.insert(off_r, fp0.neg(1));
             full_map.insert(off_r + 1, fp0.neg(t20));
             full_map.insert(off_r + 2, fp0.neg(t40));
 
             let k_terms = vec![
-                (off_k + 0, fp0.neg(rn_plus_1)),
+                (off_k, fp0.neg(rn_plus_1)),
                 (off_k + 1, fp0.neg(fp0.mul(t20, rn_plus_1))),
                 (off_k + 2, fp0.neg(fp0.mul(t40, rn_plus_1))),
             ];
@@ -2881,11 +2915,11 @@ impl RingModQkInstance {
         let a_const = extract_6x20((self.qk as u128) << 53);
         let b_shift_const: u128 = (1u128 << 56) + (1u128 << 77) + (1u128 << 98);
         let mut b_pub_evals = [0u64; 6];
-        for j in 0..n {
+        for (j, &rp_j) in r_pows.iter().enumerate().take(n) {
             let bp = extract_6x20((self.y_pos[j] as u128) + b_shift_const);
-            for m in 0..6 {
-                if bp[m] != 0 {
-                    b_pub_evals[m] = fp0.add(b_pub_evals[m], fp0.mul(bp[m], r_pows[j]));
+            for (b_eval, &bp_m) in b_pub_evals.iter_mut().zip(&bp) {
+                if bp_m != 0 {
+                    *b_eval = fp0.add(*b_eval, fp0.mul(bp_m, rp_j));
                 }
             }
         }
@@ -2901,7 +2935,7 @@ impl RingModQkInstance {
                 *e = fp0.add(*e, w);
             };
             match m {
-                0 => add_w(self.base_slot + 0, 1),
+                0 => add_w(self.base_slot, 1),
                 1 => {
                     add_w(self.base_slot + 1, 1);
                     add_w(self.base_slot + 3, 2);
@@ -2925,10 +2959,10 @@ impl RingModQkInstance {
                     add_w(z_slot, cu % fp0.p);
                 }
             }
-            for a in 0..4 {
+            for (a, &qa) in qk_limbs.iter().enumerate() {
                 for b_idx in 0..3 {
-                    if a + b_idx == m && qk_limbs[a] != 0 {
-                        add_w(off_q + b_idx, fp0.neg(qk_limbs[a]));
+                    if a + b_idx == m && qa != 0 {
+                        add_w(off_q + b_idx, fp0.neg(qa));
                     }
                 }
             }
@@ -3063,7 +3097,10 @@ impl ThresholdCustodianParty {
         let t_need = self.roster.threshold;
         if auth.selected_parties.len() != t_need
             || auth.selected_parties.windows(2).any(|w| w[0] >= w[1])
-            || auth.selected_parties.iter().any(|&p| p >= self.roster.n_parties)
+            || auth
+                .selected_parties
+                .iter()
+                .any(|&p| p >= self.roster.n_parties)
         {
             return Err(ThresholdCustodyError::NonCanonicalQuorumRoster);
         }
@@ -3298,14 +3335,38 @@ fn build_blind_pd_gadgets_and_descs(
         let base = 5 * k_idx;
         let delta = gspec.deltas[k_idx];
         let (d0, d1, d2, d3, v0) = (base, base + 1, base + 2, base + 3, base + 4);
-        descs.push(AffineLookup61 { const_offset: 0, terms: vec![(d0, 1)] });
-        descs.push(AffineLookup61 { const_offset: 0, terms: vec![(d1, 1)] });
-        descs.push(AffineLookup61 { const_offset: 1u64 << 19, terms: vec![(d1, 1)] });
-        descs.push(AffineLookup61 { const_offset: 0, terms: vec![(d2, 1)] });
-        descs.push(AffineLookup61 { const_offset: 3 * (1u64 << 18), terms: vec![(d2, 1)] });
-        descs.push(AffineLookup61 { const_offset: 0, terms: vec![(d3, 1)] });
-        descs.push(AffineLookup61 { const_offset: (1u64 << 20) - 16, terms: vec![(d3, 1)] });
-        descs.push(AffineLookup61 { const_offset: 0, terms: vec![(v0, 1)] });
+        descs.push(AffineLookup61 {
+            const_offset: 0,
+            terms: vec![(d0, 1)],
+        });
+        descs.push(AffineLookup61 {
+            const_offset: 0,
+            terms: vec![(d1, 1)],
+        });
+        descs.push(AffineLookup61 {
+            const_offset: 1u64 << 19,
+            terms: vec![(d1, 1)],
+        });
+        descs.push(AffineLookup61 {
+            const_offset: 0,
+            terms: vec![(d2, 1)],
+        });
+        descs.push(AffineLookup61 {
+            const_offset: 3 * (1u64 << 18),
+            terms: vec![(d2, 1)],
+        });
+        descs.push(AffineLookup61 {
+            const_offset: 0,
+            terms: vec![(d3, 1)],
+        });
+        descs.push(AffineLookup61 {
+            const_offset: (1u64 << 20) - 16,
+            terms: vec![(d3, 1)],
+        });
+        descs.push(AffineLookup61 {
+            const_offset: 0,
+            terms: vec![(v0, 1)],
+        });
 
         // Boolean carry `c_k = (d_0 + delta - v_0) * 2^{-20} mod p_0 in {0, 1}`:
         let c_const = fp0.mul(delta, inv2_20);
@@ -3335,7 +3396,10 @@ fn build_blind_pd_gadgets_and_descs(
 
     // 2. Short BDLOP aggregate opening bounds `R_1 + 128, E_0 + 128, E_1 + 128 in [0, 256]` (`slots 15..18`):
     for sl in 15..18 {
-        descs.push(AffineLookup61 { const_offset: 0, terms: vec![(sl, 1)] });
+        descs.push(AffineLookup61 {
+            const_offset: 0,
+            terms: vec![(sl, 1)],
+        });
         descs.push(AffineLookup61 {
             const_offset: (1u64 << 20) - BDLOP_AGG_SPAN,
             terms: vec![(sl, 1)],
@@ -3470,7 +3534,7 @@ fn build_blind_pd_gadgets_and_descs(
             ring_prod_terms: vec![(b1_k, 15)],
             local_20b_terms: vec![
                 (0, 1, 17),
-                (0, 1, s_base + 0),
+                (0, 1, s_base),
                 (1, 1, s_base + 1),
                 (1, 1u64 << 19, s_base + 2),
                 (2, 1u64 << 17, s_base + 3),
@@ -3597,7 +3661,7 @@ fn prove_blind_r_pd_whir61_inner(
             let d2 = (ri >> 39) & ((1u64 << 18) - 1);
             let d3 = ri >> 57;
             let v0 = (d0 + delta) & ((1u64 << 20) - 1);
-            flat[(base + 0) * n + j] = d0;
+            flat[base * n + j] = d0;
             flat[(base + 1) * n + j] = d1;
             flat[(base + 2) * n + j] = d2;
             flat[(base + 3) * n + j] = d3;
@@ -3704,7 +3768,8 @@ fn prove_blind_r_pd_whir61_inner(
         &partial_rns,
         &pd_whir.root,
     );
-    let r_pts: [u64; 3] = std::array::from_fn(|idx| derive_blind_pd_point(&fs_ctx, fp0.p, idx as u64));
+    let r_pts: [u64; 3] =
+        std::array::from_fn(|idx| derive_blind_pd_point(&fs_ctx, fp0.p, idx as u64));
 
     let chunk_log2 = (log_n + 6).max(18);
     let logup_proof = prove_logup_gkr_with_mults(
@@ -3717,12 +3782,7 @@ fn prove_blind_r_pd_whir61_inner(
 
     // Compute `BlindedRPdEvals` at `r_pts[0]` (`TVD == 0` via `off_mask .. off_mask + 4`!):
     let r0_pows = build_pows(&fp0, r_pts[0], n);
-    let s_limb_w = [
-        1u64,
-        1u64 << 20,
-        1u64 << 39,
-        1u64 << 57,
-    ];
+    let s_limb_w = [1u64, 1u64 << 20, 1u64 << 39, 1u64 << 57];
     let mut masked_s_evals = [0u64; 3];
     for k_idx in 0..3 {
         let base = 5 * k_idx;
@@ -3754,7 +3814,7 @@ fn prove_blind_r_pd_whir61_inner(
         params,
         party_id,
         selected_parties,
-        &ct_eff,
+        ct_eff,
         &partial_rns,
         smudge_bound,
         &gadgets,
@@ -3878,7 +3938,8 @@ pub fn verify_blind_r_pd_whir61(
         &prf.partial_rns,
         &prf.pd_whir_root,
     );
-    let r_pts: [u64; 3] = std::array::from_fn(|idx| derive_blind_pd_point(&fs_ctx, fp0.p, idx as u64));
+    let r_pts: [u64; 3] =
+        std::array::from_fn(|idx| derive_blind_pd_point(&fs_ctx, fp0.p, idx as u64));
 
     let (gadgets, descs, off_mask, off_mult) = build_blind_pd_gadgets_and_descs(
         params,
@@ -3893,7 +3954,11 @@ pub fn verify_blind_r_pd_whir61(
 
     // Pin exact canonical `LogUpConfig`, chunk count, per-chunk `active_len` (`% n == 0`), and `depth` BEFORE GKR!
     let expected_chunk_log2 = (log_n + 6).max(18);
-    if prf.logup_proof.config != (LogUpConfig::BatchedC3 { chunk_log2: expected_chunk_log2 }) {
+    if prf.logup_proof.config
+        != (LogUpConfig::BatchedC3 {
+            chunk_log2: expected_chunk_log2,
+        })
+    {
         return Err(ThresholdCustodyError::InvalidBlindPdProof(
             "non-canonical LogUpConfig in WhirBlindPdProof".into(),
         ));
@@ -4102,6 +4167,16 @@ impl WhirBlindPdProof {
     }
 }
 
+type BlindedClaimsBundle = (Vec<Vec<u64>>, Vec<SlotLinearClaim>, [u8; 32]);
+
+struct RingModPointCtx<'a> {
+    n: usize,
+    r_pt: u64,
+    vf_full_idx: usize,
+    vf_deg_n1_idx: usize,
+    r_pows: &'a [u64],
+}
+
 #[allow(clippy::too_many_arguments)]
 fn build_blind_pd_whir_claims(
     params: &HoistedParams,
@@ -4118,7 +4193,7 @@ fn build_blind_pd_whir_claims(
     r_pts: &[u64; 3],
     blinded_evals: &BlindedRPdEvals,
     logup_proof: &LogUpGkrProof,
-) -> std::result::Result<(Vec<Vec<u64>>, Vec<SlotLinearClaim>, [u8; 32]), String> {
+) -> std::result::Result<BlindedClaimsBundle, String> {
     let n = params.n;
     let log_n = n.trailing_zeros() as usize;
     let fp0 = params.fp[0];
@@ -4141,8 +4216,8 @@ fn build_blind_pd_whir_claims(
             for k_idx in 0..3 {
                 let base = 5 * k_idx;
                 let mut terms = Vec::with_capacity(5);
-                for m in 0..4 {
-                    terms.push((base + m, s_limb_w[m]));
+                for (m, &w) in s_limb_w.iter().enumerate() {
+                    terms.push((base + m, w));
                 }
                 terms.push((off_mask + k_idx, 1));
                 claims.push(SlotLinearClaim::single_vec(
@@ -4152,8 +4227,9 @@ fn build_blind_pd_whir_claims(
                 ));
             }
             // 2. Open `e_{sh,i}(r_0) + mu_e(r_0) == masked_e_eval`:
-            let mut e_terms: Vec<(usize, u64)> =
-                (0..6).map(|m| (18 + m, fp0.pow(2, (20 * m) as u64))).collect();
+            let mut e_terms: Vec<(usize, u64)> = (0..6)
+                .map(|m| (18 + m, fp0.pow(2, (20 * m) as u64)))
+                .collect();
             e_terms.push((off_mask + 3, 1));
             claims.push(SlotLinearClaim::single_vec(
                 vf_full,
@@ -4186,7 +4262,7 @@ fn build_blind_pd_whir_claims(
             for b in 0..3 {
                 let off_k = gadgets[0].base_slot + 9 + b * 3;
                 let wb = fp0.mul(1u64 << (21 * b), rn_plus_1);
-                k0_terms.push((off_k + 0, fp0.neg(wb)));
+                k0_terms.push((off_k, fp0.neg(wb)));
                 k0_terms.push((off_k + 1, fp0.neg(fp0.mul(1u64 << 20, wb))));
                 k0_terms.push((off_k + 2, fp0.neg(fp0.mul(1u64 << 40, wb))));
             }
@@ -4194,7 +4270,7 @@ fn build_blind_pd_whir_claims(
                 terms: vec![
                     (
                         vf_full,
-                        vec![(off_mask + 0, fp0.neg(a0_ev)), (off_mask + 3, fp0.neg(1))],
+                        vec![(off_mask, fp0.neg(a0_ev)), (off_mask + 3, fp0.neg(1))],
                     ),
                     (vf_n1, k0_terms),
                 ],
@@ -4203,7 +4279,17 @@ fn build_blind_pd_whir_claims(
         }
 
         for g in gadgets {
-            g.append_claims_at_point(&fp0, n, r_pts[pt_idx], vf_full, vf_n1, &r_pows, &mut claims);
+            g.append_claims_at_point(
+                &fp0,
+                &RingModPointCtx {
+                    n,
+                    r_pt: r_pts[pt_idx],
+                    vf_full_idx: vf_full,
+                    vf_deg_n1_idx: vf_n1,
+                    r_pows: &r_pows,
+                },
+                &mut claims,
+            );
         }
 
         // Exact Verifier-Side `e_sh + e_rev == 2 * smudge_bound` 3x40-bit Pair-Carry Claims (`< 2^41 << p_0 / 2`):
@@ -4221,7 +4307,14 @@ fn build_blind_pd_whir_claims(
         ));
         claims.push(SlotLinearClaim::single_vec(
             vf_full,
-            vec![(20, 1), (21, t20), (26, 1), (27, t20), (30, 1), (31, neg_t40)],
+            vec![
+                (20, 1),
+                (21, t20),
+                (26, 1),
+                (27, t20),
+                (30, 1),
+                (31, neg_t40),
+            ],
             fp0.mul(two_e_p1, ones_r),
         ));
         claims.push(SlotLinearClaim::single_vec(
@@ -4272,7 +4365,9 @@ fn build_blind_pd_whir_claims(
     } else {
         vec![1u64]
     };
-    let tab_terms: Vec<(usize, u64)> = (0..mult_slots).map(|s| (off_mult + s, eq_tab_hi[s])).collect();
+    let tab_terms: Vec<(usize, u64)> = (0..mult_slots)
+        .map(|s| (off_mult + s, eq_tab_hi[s]))
+        .collect();
     claims.push(SlotLinearClaim::single_vec(
         v_tab_idx,
         tab_terms,
@@ -4283,9 +4378,9 @@ fn build_blind_pd_whir_claims(
     oh.update(b"DARKVFHE_BLIND_PD_OPEN_CTX_V1|");
     oh.update(fs_ctx);
     for &s in &blinded_evals.masked_s_evals {
-        oh.update(&s.to_le_bytes());
+        oh.update(s.to_le_bytes());
     }
-    oh.update(&blinded_evals.masked_e_eval.to_le_bytes());
+    oh.update(blinded_evals.masked_e_eval.to_le_bytes());
     Ok((v_fams, claims, oh.finalize().into()))
 }
 
@@ -4308,7 +4403,11 @@ fn validate_pd_whir_shape(
     }
     let r_total = (1usize << mr) + WHIR_EXTRA_EXT3_MASK_ROWS;
     let w0 = 2usize << mc;
-    let k0 = if r_total >= 45 && w0 >= 2048 { 0usize } else { 1usize };
+    let k0 = if r_total >= 45 && w0 >= 2048 {
+        0usize
+    } else {
+        1usize
+    };
     let n_leaves_0 = (blow * w0) >> k0;
     if t_queries.saturating_mul(1usize << k0) > (1usize << mc) || t_queries > n_leaves_0 {
         return Err("Blind-PD WHIR t_queries exceeds Stage-0 column hiding capacity".into());
@@ -4475,8 +4574,7 @@ fn sample_uniform_rns4(rns4: &Rns, rng: &mut PcsRng) -> Vec<u64> {
 
 fn eval_poly_vec_rns(coeffs_by_deg: &[Vec<u64>], y_pt: u64, n: usize, qs: &[u64]) -> Vec<u64> {
     let mut out = vec![0u64; 3 * n];
-    for k in 0..3 {
-        let qk = qs[k];
+    for (k, &qk) in qs.iter().enumerate().take(3) {
         let mut y_pow = 1u64;
         for deg_poly in coeffs_by_deg {
             for j in 0..n {
@@ -4500,12 +4598,12 @@ fn compute_vss_row_digest(
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_VSS_ROW_V1|");
     h.update(domain);
-    h.update(&(dealer as u32).to_le_bytes());
-    h.update(&(recipient as u32).to_le_bytes());
+    h.update((dealer as u32).to_le_bytes());
+    h.update((recipient as u32).to_le_bytes());
     h.update(salt);
     for r in s_row.iter().chain(e_row.iter()) {
         for &v in r {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
     }
     h.finalize().into()
@@ -4522,21 +4620,21 @@ fn compute_dealer_broadcast_digest(
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_DEALER_BCAST_V1|");
     h.update(domain);
-    h.update(&(dealer as u32).to_le_bytes());
+    h.update((dealer as u32).to_le_bytes());
     for &v in b_share {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     for d in row_digs {
         h.update(d);
     }
     for img in lin_imgs {
         for &v in img {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
     }
     for com in bdlops {
         for &v in com.t0_coeff.iter().chain(com.t1_coeff.iter()) {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
     }
     h.finalize().into()
@@ -4563,12 +4661,14 @@ fn encode_private_vss_row(
     out
 }
 
+type DecodedPrivateVssRow = ([u8; 32], Vec<Vec<u64>>, Vec<Vec<u64>>, BdlopShortOpening);
+
 fn decode_private_vss_row(
     bytes: &[u8],
     t: usize,
     n: usize,
     qs: &[u64],
-) -> Result<([u8; 32], Vec<Vec<u64>>, Vec<Vec<u64>>, BdlopShortOpening)> {
+) -> Result<DecodedPrivateVssRow> {
     let mut cur = ByteReader::new(bytes);
     let salt: [u8; 32] = cur
         .take(32)
@@ -4579,8 +4679,7 @@ fn decode_private_vss_row(
         let mut set = Vec::with_capacity(t);
         for _ in 0..t {
             let mut poly = Vec::with_capacity(3 * n);
-            for k in 0..3 {
-                let qk = qs[k];
+            for &qk in qs.iter().take(3) {
                 for _ in 0..n {
                     let v = cur.read_u64().map_err(|_| {
                         ThresholdCustodyError::ConfidentialEnvelopeRefused("row coeff")
@@ -4602,9 +4701,9 @@ fn decode_private_vss_row(
     let mut read_short = || -> Result<Vec<i64>> {
         let mut v = Vec::with_capacity(n);
         for _ in 0..n {
-            let b = cur.take(2).map_err(|_| {
-                ThresholdCustodyError::ConfidentialEnvelopeRefused("bdlop short")
-            })?;
+            let b = cur
+                .take(2)
+                .map_err(|_| ThresholdCustodyError::ConfidentialEnvelopeRefused("bdlop short"))?;
             v.push(i16::from_le_bytes([b[0], b[1]]) as i64);
         }
         Ok(v)
@@ -4629,10 +4728,10 @@ fn relin_r1_sig_preimage(
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_RELIN_R1_V1|");
     h.update(domain);
-    h.update(&(dealer as u32).to_le_bytes());
+    h.update((dealer as u32).to_le_bytes());
     for m in 0..4 {
         for &v in h0[m].iter().chain(h1[m].iter()) {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
     }
     h.finalize().to_vec()
@@ -4644,7 +4743,7 @@ fn compute_r1_agg_digest(domain: &[u8; 32], h0: &[Vec<u64>; 4], h1: &[Vec<u64>; 
     h.update(domain);
     for m in 0..4 {
         for &v in h0[m].iter().chain(h1[m].iter()) {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
     }
     h.finalize().into()
@@ -4660,10 +4759,10 @@ fn relin_r2_sig_preimage(
     h.update(b"DARKVFHE_RELIN_R2_V1|");
     h.update(domain);
     h.update(r1_dig);
-    h.update(&(dealer as u32).to_le_bytes());
-    for m in 0..4 {
-        for &v in &h2[m] {
-            h.update(&v.to_le_bytes());
+    h.update((dealer as u32).to_le_bytes());
+    for h2_m in h2 {
+        for &v in h2_m {
+            h.update(v.to_le_bytes());
         }
     }
     h.finalize().to_vec()
@@ -4706,24 +4805,24 @@ fn compute_blind_pd_fs_ctx(
 ) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_BLIND_R_PD_FS_V2|");
-    h.update(&(party_id as u32).to_le_bytes());
-    h.update(&(selected.len() as u32).to_le_bytes());
+    h.update((party_id as u32).to_le_bytes());
+    h.update((selected.len() as u32).to_le_bytes());
     for &p in selected {
-        h.update(&(p as u32).to_le_bytes());
+        h.update((p as u32).to_le_bytes());
     }
     h.update(auth_stmt_dig);
-    h.update(&dkg_tr.digest);
-    h.update(&smudge_bound.to_le_bytes());
-    h.update(&smudge_top_bits.to_le_bytes());
+    h.update(dkg_tr.digest);
+    h.update(smudge_bound.to_le_bytes());
+    h.update(smudge_top_bits.to_le_bytes());
     let anchor = &dkg_tr.party_bdlop_anchors[party_id];
     for &v in anchor.t0_coeff.iter().chain(anchor.t1_coeff.iter()) {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     h.update(ct_com);
     h.update(ct_eff_h);
     h.update(pd_root);
     for &v in partial_rns {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     h.finalize().into()
 }
@@ -4732,8 +4831,8 @@ fn derive_blind_pd_point(ctx: &[u8; 32], p: u64, idx: u64) -> u64 {
     let mut h = Sha256::new();
     h.update(b"BLIND_PD_PT_V1|");
     h.update(ctx);
-    h.update(&p.to_le_bytes());
-    h.update(&idx.to_le_bytes());
+    h.update(p.to_le_bytes());
+    h.update(idx.to_le_bytes());
     let d: [u8; 32] = h.finalize().into();
     let u = u128::from_le_bytes(d[0..16].try_into().unwrap());
     (u % (p as u128)) as u64
@@ -4748,23 +4847,23 @@ fn extract_logup_points_61(
     let mut st: [u8; 32] = {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_D1B_GKR|LOGUP_RANGE20");
-        h.update(&fp.p.to_le_bytes());
+        h.update(fp.p.to_le_bytes());
         h.update(ctx);
         h.finalize().into()
     };
     let absorb_u64s = |s: &mut [u8; 32], vals: &[u64]| {
         let mut h = Sha256::new();
-        h.update(&*s);
+        h.update(*s);
         for &v in vals {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         *s = h.finalize().into();
     };
     let squeeze = |s: &mut [u8; 32], tag: u64| -> u64 {
         let mut h = Sha256::new();
-        h.update(&*s);
+        h.update(*s);
         h.update(b"CHAL");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         *s = out;
         fp.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -4774,59 +4873,60 @@ fn extract_logup_points_61(
         h.update(s);
         h.update(b"SUB|");
         h.update(label.as_bytes());
-        h.update(&idx.to_le_bytes());
+        h.update(idx.to_le_bytes());
         h.finalize().into()
     };
 
     absorb_u64s(&mut st, &[proof.total_lookups as u64, c as u64]);
     {
         let mut h = Sha256::new();
-        h.update(&st);
-        h.update(&proof.mult_commitment);
+        h.update(st);
+        h.update(proof.mult_commitment);
         st = h.finalize().into();
     }
     for ell in 0..c {
         let _ = squeeze(&mut st, ell as u64);
     }
 
-    let replay_one = |mut s: [u8; 32], tp: &FractionTreeProof| -> std::result::Result<Vec<u64>, String> {
-        for r in &tp.roots {
-            absorb_u64s(&mut s, r);
-        }
-        if tp.depth == 0 {
-            return Ok(Vec::new());
-        }
-        if tp.layers.len() != tp.depth.saturating_sub(1) {
-            return Err("LogUp tree layers.len() != depth - 1".into());
-        }
-        for v in &tp.layer1_vals {
-            absorb_u64s(&mut s, v);
-        }
-        let mut z_pt = vec![squeeze(&mut s, 1)];
-        for (idx, layer) in tp.layers.iter().enumerate() {
-            let k = idx + 1;
-            for ell in 0..c {
-                let _ = squeeze(&mut s, 100 + ell as u64);
+    let replay_one =
+        |mut s: [u8; 32], tp: &FractionTreeProof| -> std::result::Result<Vec<u64>, String> {
+            for r in &tp.roots {
+                absorb_u64s(&mut s, r);
             }
-            for ell in 0..c {
-                let _ = squeeze(&mut s, 200 + ell as u64);
+            if tp.depth == 0 {
+                return Ok(Vec::new());
             }
-            let mut r_vars = Vec::with_capacity(k);
-            for (round, poly) in layer.sumcheck_rounds.iter().enumerate() {
-                absorb_u64s(&mut s, poly);
-                r_vars.push(squeeze(&mut s, 1000 + round as u64));
+            if tp.layers.len() != tp.depth.saturating_sub(1) {
+                return Err("LogUp tree layers.len() != depth - 1".into());
             }
-            for ce in &layer.child_evals {
-                absorb_u64s(&mut s, ce);
+            for v in &tp.layer1_vals {
+                absorb_u64s(&mut s, v);
             }
-            let r_child = squeeze(&mut s, 2000 + k as u64);
-            let mut zn = vec![r_child];
-            zn.extend_from_slice(&r_vars);
-            z_pt = zn;
-        }
-        absorb_u64s(&mut s, &[tp.leaf_payload_eval]);
-        Ok(z_pt)
-    };
+            let mut z_pt = vec![squeeze(&mut s, 1)];
+            for (idx, layer) in tp.layers.iter().enumerate() {
+                let k = idx + 1;
+                for ell in 0..c {
+                    let _ = squeeze(&mut s, 100 + ell as u64);
+                }
+                for ell in 0..c {
+                    let _ = squeeze(&mut s, 200 + ell as u64);
+                }
+                let mut r_vars = Vec::with_capacity(k);
+                for (round, poly) in layer.sumcheck_rounds.iter().enumerate() {
+                    absorb_u64s(&mut s, poly);
+                    r_vars.push(squeeze(&mut s, 1000 + round as u64));
+                }
+                for ce in &layer.child_evals {
+                    absorb_u64s(&mut s, ce);
+                }
+                let r_child = squeeze(&mut s, 2000 + k as u64);
+                let mut zn = vec![r_child];
+                zn.extend_from_slice(&r_vars);
+                z_pt = zn;
+            }
+            absorb_u64s(&mut s, &[tp.leaf_payload_eval]);
+            Ok(z_pt)
+        };
 
     let mut wit_zs = Vec::with_capacity(proof.witness_trees.len());
     for (i, w) in proof.witness_trees.iter().enumerate() {

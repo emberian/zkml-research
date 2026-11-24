@@ -43,7 +43,6 @@
 //! --release: after the last step, the release program and its proof over the head's weights (darkproof::run::
 //! release_custodian; policy darkproof::run::mnist_policy over the genesis cfg and MNIST, the first M test images),
 //! accepted by the ledger replica. Only C is opened. Files: DIR/release_P<I>.bin, DIR/release_P<I>.json.
-use darkhand::serve::OldParts;
 use darkhand::side::{self, Common};
 use darkproof::ledger::{Genesis, Ledger};
 use darkproof::step::StepParams;
@@ -173,29 +172,60 @@ fn rs_of(args: &[String]) -> bool {
 /// exit 5), never a refusal.
 fn xt_of(args: &[String]) -> bool {
     let xt = args.iter().any(|a| a == "--xt");
-    assert!(!xt || rs_of(args), "--xt needs --rs (the range rows hold for any mask)");
+    assert!(
+        !xt || rs_of(args),
+        "--xt needs --rs (the range rows hold for any mask)"
+    );
     xt
 }
 
 fn params_of(pg: &Program, rs: bool) -> StepParams {
-    StepParams { s1: pg.s1, k1: pg.k1, s2: pg.s2, k2: pg.k2, s3: pg.s3, k3: pg.k3, he: false, rc: true, lb: true, rs, pg: None, r3: pg.r3, t_lo: pg.t_lo, xt: false }.deployed()
+    StepParams {
+        s1: pg.s1,
+        k1: pg.k1,
+        s2: pg.s2,
+        k2: pg.k2,
+        s3: pg.s3,
+        k3: pg.k3,
+        he: false,
+        rc: true,
+        lb: true,
+        rs,
+        pg: None,
+        r3: pg.r3,
+        t_lo: pg.t_lo,
+        xt: false,
+    }
+    .deployed()
 }
 
 fn params_of_args(pg: &Program, args: &[String]) -> StepParams {
-    StepParams { xt: xt_of(args), ..params_of(pg, rs_of(args)) }
+    StepParams {
+        xt: xt_of(args),
+        ..params_of(pg, rs_of(args))
+    }
 }
 
 fn hex_roots(g: &Roots) -> String {
-    let enc: BTreeMap<&String, Vec<String>> = g.iter().map(|(k, v)| (k, v.iter().map(|h| pycompat::repr::hex(h)).collect())).collect();
+    let enc: BTreeMap<&String, Vec<String>> = g
+        .iter()
+        .map(|(k, v)| (k, v.iter().map(|h| pycompat::repr::hex(h)).collect()))
+        .collect();
     serde_json::to_string_pretty(&enc).unwrap()
 }
 
 fn addr_list(s: &str) -> Vec<SocketAddr> {
-    s.split(',').map(|a| a.parse().unwrap_or_else(|e| panic!("{a}: {e}"))).collect()
+    s.split(',')
+        .map(|a| a.parse().unwrap_or_else(|e| panic!("{a}: {e}")))
+        .collect()
 }
 
 fn timeout_of(args: &[String]) -> Duration {
-    Duration::from_secs(flag(args, "--timeout").map(|t| t.parse().unwrap()).unwrap_or(600))
+    Duration::from_secs(
+        flag(args, "--timeout")
+            .map(|t| t.parse().unwrap())
+            .unwrap_or(600),
+    )
 }
 
 /// args with flag `name`'s value replaced (or appended)
@@ -229,16 +259,22 @@ struct VaultSlot(std::sync::Mutex<Option<darkhand::vault::Vault>>);
 impl serve::Sealer for VaultSlot {
     fn seal_to(&self, path: &Path, plain: Vec<u8>) -> std::io::Result<()> {
         let g = self.0.lock().unwrap();
-        let v = g.as_ref().ok_or_else(|| std::io::Error::other("the file key was handed to the erasure"))?;
+        let v = g
+            .as_ref()
+            .ok_or_else(|| std::io::Error::other("the file key was handed to the erasure"))?;
         v.seal_to(path, &side::vault_role(path), plain)
     }
     fn open(&self, path: &Path) -> Result<Vec<u8>, String> {
         let g = self.0.lock().unwrap();
-        g.as_ref().ok_or("the file key was handed to the erasure")?.open_file(path, &side::vault_role(path))
+        g.as_ref()
+            .ok_or("the file key was handed to the erasure")?
+            .open_file(path, &side::vault_role(path))
     }
     fn open_role(&self, path: &Path, role: &str) -> Result<Vec<u8>, String> {
         let g = self.0.lock().unwrap();
-        g.as_ref().ok_or("the file key was handed to the erasure")?.open_file(path, role)
+        g.as_ref()
+            .ok_or("the file key was handed to the erasure")?
+            .open_file(path, role)
     }
 }
 
@@ -255,7 +291,8 @@ fn load_vault(args: &[String]) {
         std::process::exit(2);
     }
     let tls = PathBuf::from(flag(args, "--tls").expect("--tls"));
-    let name = std::fs::read_to_string(tls.join("vault.name")).unwrap_or_else(|e| panic!("{}: {e} (run vault-init)", tls.join("vault.name").display()));
+    let name = std::fs::read_to_string(tls.join("vault.name"))
+        .unwrap_or_else(|e| panic!("{}: {e} (run vault-init)", tls.join("vault.name").display()));
     let v = darkhand::vault::Vault::load(name.trim()).unwrap_or_else(|e| {
         eprintln!("{e}");
         std::process::exit(2)
@@ -277,7 +314,9 @@ fn vault_init(args: &[String]) -> Result<(), String> {
     let i: usize = args[2].parse().map_err(|_| "seat")?;
     let tls = PathBuf::from(&args[3]);
     let model = flag(args, "--model").unwrap_or_else(|| "dl-gen6".into());
-    let epoch: u64 = flag(args, "--epoch").map(|e| e.parse().unwrap()).unwrap_or(0);
+    let epoch: u64 = flag(args, "--epoch")
+        .map(|e| e.parse().unwrap())
+        .unwrap_or(0);
     let cert = std::fs::read(tls.join(format!("cert_{i}.der"))).map_err(|e| e.to_string())?;
     let name = darkhand::vault::key_name(&model, i, epoch, &darkstep::tls::cert_fingerprint(&cert));
     let key = tls.join(format!("tls_{i}.key"));
@@ -286,13 +325,19 @@ fn vault_init(args: &[String]) -> Result<(), String> {
         return Err(format!("{}: sealed already", key.display()));
     }
     let v = darkhand::vault::Vault::create(&name, true)?;
-    v.seal_to(&key, &side::vault_role(&key), plain).map_err(|e| e.to_string())?;
+    v.seal_to(&key, &side::vault_role(&key), plain)
+        .map_err(|e| e.to_string())?;
     std::fs::write(tls.join("vault.name"), &name).map_err(|e| e.to_string())?;
     // --with-next: the next epoch's key too (a self-handover's new role: the prep lane seals its tapes under it
     // before the handover), named in vault.name.next
     let mut next = Value::Null;
     if args.iter().any(|a| a == "--with-next") {
-        let n2 = darkhand::vault::key_name(&model, i, epoch + 1, &darkstep::tls::cert_fingerprint(&cert));
+        let n2 = darkhand::vault::key_name(
+            &model,
+            i,
+            epoch + 1,
+            &darkstep::tls::cert_fingerprint(&cert),
+        );
         drop(darkhand::vault::Vault::create(&n2, true)?);
         std::fs::write(tls.join("vault.name.next"), &n2).map_err(|e| e.to_string())?;
         next = json!(n2);
@@ -315,12 +360,22 @@ fn close_main(args: &[String]) -> Result<Value, String> {
     let lp = pr.ligero();
     let model = flag(args, "--model").unwrap_or_else(|| "dl-gen6".into());
     let mut lg = Ledger::open(&dir.join(format!("ledger_P{i}.jsonl")), &model, &pr, None)?;
-    let pend = lg.pending.clone().ok_or("the head is not pending: nothing to close")?;
+    let pend = lg
+        .pending
+        .clone()
+        .ok_or("the head is not pending: nothing to close")?;
     let carry = read_carry(&dir.join(format!("carry_P{i}.bin")), &pr)?;
     let ctx = darkproof::Ctx::new(&model, lg.epoch, lg.step);
     let tlsdir = PathBuf::from(flag(args, "--tls").ok_or("--tls")?);
     let (id, certs) = serve::identity(&tlsdir, i);
-    let net = serve::connect_mesh(i, &addrs, flag(args, "--listen"), &id, &certs, timeout_of(args))?;
+    let net = serve::connect_mesh(
+        i,
+        &addrs,
+        flag(args, "--listen"),
+        &id,
+        &certs,
+        timeout_of(args),
+    )?;
     let out = darkproof::run::close_custodian(&pr, &lp, &net, i, 3, &ctx, carry, &pend, pf.d)?;
     net.shutdown();
     lg.close(&lp, &out.blob)?;
@@ -328,7 +383,11 @@ fn close_main(args: &[String]) -> Result<Value, String> {
     std::fs::write(dir.join(format!("close_P{i}.bin")), &out.blob).map_err(|e| e.to_string())?;
     let rep = json!({"party": i, "head_step": ctx.step, "epoch": ctx.epoch, "close_seconds": out.secs, "close_bytes": out.blob.len(),
         "close_sha256": pycompat::repr::hex(&Sha256::digest(&out.blob)), "field_elements_sent": out.sent, "ledger_closed": true});
-    std::fs::write(dir.join(format!("close_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).map_err(|e| e.to_string())?;
+    std::fs::write(
+        dir.join(format!("close_P{i}.json")),
+        serde_json::to_string_pretty(&rep).unwrap(),
+    )
+    .map_err(|e| e.to_string())?;
     Ok(rep)
 }
 
@@ -341,7 +400,10 @@ fn keep_erased_copy(args: &[String], files: &[PathBuf]) {
         for f in files {
             // only sealed files: a copy of a plain secret (an --erase-extra MP-SPDZ key file) would outlive the erasure
             let mut head = [0u8; 8];
-            let sealed = std::fs::File::open(f).and_then(|mut h| std::io::Read::read_exact(&mut h, &mut head)).is_ok() && &head == serve::SEALED_MAGIC;
+            let sealed = std::fs::File::open(f)
+                .and_then(|mut h| std::io::Read::read_exact(&mut h, &mut head))
+                .is_ok()
+                && &head == serve::SEALED_MAGIC;
             if sealed {
                 let _ = std::fs::copy(f, d.join(f.file_name().unwrap()));
             }
@@ -350,11 +412,17 @@ fn keep_erased_copy(args: &[String], files: &[PathBuf]) {
 }
 
 /// The handover proof (public; the ledger keeps its sha256): DIR/handover_e<E>.bin, and in the archive if any.
-fn save_handover_proof(args: &[String], dir: &Path, epoch: i64, proof: &[u8]) -> Result<(), String> {
+fn save_handover_proof(
+    args: &[String],
+    dir: &Path,
+    epoch: i64,
+    proof: &[u8],
+) -> Result<(), String> {
     std::fs::write(dir.join(format!("handover_e{epoch}.bin")), proof).map_err(|e| e.to_string())?;
     if let Some(a) = flag(args, "--proof-archive") {
         std::fs::create_dir_all(&a).map_err(|e| e.to_string())?;
-        std::fs::write(Path::new(&a).join(format!("handover_e{epoch}.bin")), proof).map_err(|e| e.to_string())?;
+        std::fs::write(Path::new(&a).join(format!("handover_e{epoch}.bin")), proof)
+            .map_err(|e| e.to_string())?;
     }
     Ok(())
 }
@@ -377,7 +445,11 @@ fn after_self_handover(args: &[String], k: usize, end_step: usize) -> Vec<String
             a = with_flag(&a, to, &v);
         }
     }
-    a = with_flag(&a, "--chunk-first", &flag(args, "--chunk-first2").unwrap_or_else(|| k.to_string()));
+    a = with_flag(
+        &a,
+        "--chunk-first",
+        &flag(args, "--chunk-first2").unwrap_or_else(|| k.to_string()),
+    );
     if let Some(p) = a.iter().position(|x| x == "--self-handover-tape") {
         a.drain(p..p + 2);
     }
@@ -386,8 +458,19 @@ fn after_self_handover(args: &[String], k: usize, end_step: usize) -> Vec<String
 
 impl Chain {
     fn open_ledger(&mut self, roots: Roots) -> Result<(), String> {
-        let g = Genesis { d: self.d, program: self.prm, owner_pk: None, custodians: self.names.clone(), roots };
-        let mut lg = Ledger::open(&self.dir.join(format!("ledger_P{}.jsonl", self.me)), &self.model, &self.pr, Some(g))?;
+        let g = Genesis {
+            d: self.d,
+            program: self.prm,
+            owner_pk: None,
+            custodians: self.names.clone(),
+            roots,
+        };
+        let mut lg = Ledger::open(
+            &self.dir.join(format!("ledger_P{}.jsonl", self.me)),
+            &self.model,
+            &self.pr,
+            Some(g),
+        )?;
         if let Some(b) = &self.gcfg {
             lg.check_public_genesis(b)?;
         }
@@ -414,16 +497,29 @@ impl Chain {
         let t0 = Instant::now();
         // DEFER (cut E): the parent's pending claims from this replica's head, this party's carries from the carry
         let pend = self.ledger.as_ref().and_then(|l| l.pending.as_ref());
-        let sp = darkproof::run::prove_step_l(&self.pr, &self.lp, &self.tables, self.prm, &mut darkproof::run::TcpRef(net), &ctx, job.ps, self.carry.take(), pend)?;
+        let sp = darkproof::run::prove_step_l(
+            &self.pr,
+            &self.lp,
+            &self.tables,
+            self.prm,
+            &mut darkproof::run::TcpRef(net),
+            &ctx,
+            job.ps,
+            self.carry.take(),
+            pend,
+        )?;
         let prove_s = t0.elapsed().as_secs_f64();
         self.carry = Some(sp.child);
         // storage: each replica keeps only the latest bundle (the header and digest chain are in its ledger); the
         // full bundles go to one archive (--proof-archive DIR, set on one seat)
         let latest = self.dir.join(format!("proof_latest_P{i}.bin"));
-        std::fs::write(latest.with_extension("tmp"), &sp.blob).and_then(|_| std::fs::rename(latest.with_extension("tmp"), &latest)).map_err(|e| e.to_string())?;
+        std::fs::write(latest.with_extension("tmp"), &sp.blob)
+            .and_then(|_| std::fs::rename(latest.with_extension("tmp"), &latest))
+            .map_err(|e| e.to_string())?;
         if let Some(a) = &self.archive {
             std::fs::create_dir_all(a).map_err(|e| e.to_string())?;
-            std::fs::write(a.join(format!("proof_e{epoch}_s{step}.bin")), &sp.blob).map_err(|e| e.to_string())?;
+            std::fs::write(a.join(format!("proof_e{epoch}_s{step}.bin")), &sp.blob)
+                .map_err(|e| e.to_string())?;
         }
         use sha2::{Digest, Sha256};
         let digest = pycompat::repr::hex(&Sha256::digest(&sp.blob));
@@ -435,26 +531,43 @@ impl Chain {
         if self.ledger.is_none() {
             let g = self.genesis.clone().ok_or("no genesis roots")?;
             if i == 0 {
-                std::fs::write(self.dir.join("genesis_roots.json"), hex_roots(&g)).map_err(|e| e.to_string())?;
+                std::fs::write(self.dir.join("genesis_roots.json"), hex_roots(&g))
+                    .map_err(|e| e.to_string())?;
             }
             self.open_ledger(g)?;
         }
         // every custodian accepts the bundle into its own ledger replica (verified against the head's roots)
         let tv = Instant::now();
-        self.ledger.as_mut().unwrap().accept(&self.lp, &sp.blob, &self.tables)?;
+        self.ledger
+            .as_mut()
+            .unwrap()
+            .accept(&self.lp, &sp.blob, &self.tables)?;
         out["verify_seconds"] = json!(tv.elapsed().as_secs_f64());
         out["verified"] = json!(true);
         // the carried commitment (secret: share rows and salts) beside the checkpoint, so that --resume can prove on
         let tc = Instant::now();
-        write_carry(&self.dir.join(format!("carry_P{i}.bin")), self.carry.as_ref().unwrap()).map_err(|e| format!("carry checkpoint: {e}"))?;
+        write_carry(
+            &self.dir.join(format!("carry_P{i}.bin")),
+            self.carry.as_ref().unwrap(),
+        )
+        .map_err(|e| format!("carry checkpoint: {e}"))?;
         out["carry_checkpoint_seconds"] = json!(tc.elapsed().as_secs_f64());
         let (_, rss) = serve::proc_usage();
         out["peak_rss_kb_after_proof"] = json!(rss);
-        self.chain.push(json!({"step": step, "epoch": epoch, "proof_sha256": digest}));
+        self.chain
+            .push(json!({"step": step, "epoch": epoch, "proof_sha256": digest}));
         if i == 0 {
-            std::fs::write(self.dir.join("proof_chain.json"), serde_json::to_string_pretty(&self.chain).unwrap()).map_err(|e| e.to_string())?;
+            std::fs::write(
+                self.dir.join("proof_chain.json"),
+                serde_json::to_string_pretty(&self.chain).unwrap(),
+            )
+            .map_err(|e| e.to_string())?;
         }
-        std::fs::write(self.dir.join(format!("proof_{k}_P{i}.json")), serde_json::to_string_pretty(&out).unwrap()).map_err(|e| e.to_string())?;
+        std::fs::write(
+            self.dir.join(format!("proof_{k}_P{i}.json")),
+            serde_json::to_string_pretty(&out).unwrap(),
+        )
+        .map_err(|e| e.to_string())?;
         Ok(out)
     }
 }
@@ -483,7 +596,11 @@ impl Prove {
         let last = self.wait();
         if let Some(w) = self.worker.take() {
             drop(w.tx);
-            self.ch = Some(w.handle.join().map_err(|_| "the proof worker panicked".to_string())?);
+            self.ch = Some(
+                w.handle
+                    .join()
+                    .map_err(|_| "the proof worker panicked".to_string())?,
+            );
         }
         last
     }
@@ -491,7 +608,10 @@ impl Prove {
     fn start_worker(&mut self) -> Result<(), String> {
         let mut ch = self.ch.take().ok_or("no proof chain")?;
         let i = self.me;
-        let addrs = addr_list(&flag(&self.args, "--proof-mesh").ok_or("--pipeline-proofs needs --proof-mesh A0,A1,A2")?);
+        let addrs = addr_list(
+            &flag(&self.args, "--proof-mesh")
+                .ok_or("--pipeline-proofs needs --proof-mesh A0,A1,A2")?,
+        );
         let tlsdir = PathBuf::from(flag(&self.args, "--tls").unwrap());
         let (id, certs) = serve::identity(&tlsdir, i);
         let timeout = timeout_of(&self.args);
@@ -522,15 +642,39 @@ impl Prove {
                 ch
             })
             .map_err(|e| e.to_string())?;
-        self.worker = Some(Worker { tx, rx, handle, inflight: false });
+        self.worker = Some(Worker {
+            tx,
+            rx,
+            handle,
+            inflight: false,
+        });
         Ok(())
     }
 
-    fn common(&mut self, st_rns: std::sync::Arc<darkstep::rns::Rns>, d: usize, t: u64, new_set: &[String]) -> Result<Common, String> {
+    fn common(
+        &mut self,
+        st_rns: std::sync::Arc<darkstep::rns::Rns>,
+        d: usize,
+        t: u64,
+        new_set: &[String],
+    ) -> Result<Common, String> {
         let pr = self.pr.clone();
         let lp = pr.ligero();
-        let lg = self.c().ledger.as_ref().ok_or("a handover needs the ledger replica (--prove)")?;
-        Ok(Common { pr, lp, d, n_old: 3, n_new: 3, ctx: lg.handover_context(new_set), rns: st_rns, t })
+        let lg = self
+            .c()
+            .ledger
+            .as_ref()
+            .ok_or("a handover needs the ledger replica (--prove)")?;
+        Ok(Common {
+            pr,
+            lp,
+            d,
+            n_old: 3,
+            n_new: 3,
+            ctx: lg.handover_context(new_set),
+            rns: st_rns,
+            t,
+        })
     }
 
     /// Old seat of a rotation: the six-party mesh, the ledger to the new seats, darkhand's old side; then exit.
@@ -540,25 +684,38 @@ impl Prove {
         let tlsdir = PathBuf::from(flag(&args, "--tls").unwrap());
         let (id, certs) = serve::identity(&tlsdir, i);
         let tls6 = PathBuf::from(flag(&args, "--tls6").ok_or("--tls6 DIR6")?);
-        let certs6: Vec<Vec<u8>> = (0..6).map(|j| std::fs::read(tls6.join(format!("cert6_{j}.der")))).collect::<Result<_, _>>().map_err(|e| e.to_string())?;
+        let certs6: Vec<Vec<u8>> = (0..6)
+            .map(|j| std::fs::read(tls6.join(format!("cert6_{j}.der"))))
+            .collect::<Result<_, _>>()
+            .map_err(|e| e.to_string())?;
         if certs6[..3] != certs[..] {
             return Err("cert6_0..2 are not this committee's certificates".into());
         }
         let addrs6 = addr_list(&flag(&args, "--mesh6").ok_or("--mesh6")?);
-        let new_set: Vec<String> = certs6[3..].iter().map(|c| darkstep::tls::cert_fingerprint(c)).collect();
+        let new_set: Vec<String> = certs6[3..]
+            .iter()
+            .map(|c| darkstep::tls::cert_fingerprint(c))
+            .collect();
         let common = self.common(st.he.rns.clone(), d, t, &new_set)?;
-        let lbytes = std::fs::read(&self.c().ledger.as_ref().unwrap().path).map_err(|e| e.to_string())?;
+        let lbytes =
+            std::fs::read(&self.c().ledger.as_ref().unwrap().path).map_err(|e| e.to_string())?;
         // the post-erasure decryption attempt's ciphertext: one under this custodian's key, made while it holds it
         let mut st = st;
         let m = side::os_field(n, t);
         let ct = st.he.key.encrypt_exact(&m);
         let dg = side::digest(&st.he.key.decrypt(&ct, None));
         let pre_decrypts = dg == side::digest(&m);
-        let mut files = vec![dir.join(format!("ckpt_P{i}.bin")), dir.join(format!("carry_P{i}.bin")), tlsdir.join(format!("tls_{i}.key"))];
+        let mut files = vec![
+            dir.join(format!("ckpt_P{i}.bin")),
+            dir.join(format!("carry_P{i}.bin")),
+            tlsdir.join(format!("tls_{i}.key")),
+        ];
         // every tape and owner message of steps 0..=K still on disk (--wipe-spent removes them step by step)
         for f in ["--tapes", "--owner-msgs"] {
             if let Some(p) = flag(&args, f) {
-                let k0: usize = flag(&args, "--chunk-first").map(|x| x.parse().unwrap()).unwrap_or(0);
+                let k0: usize = flag(&args, "--chunk-first")
+                    .map(|x| x.parse().unwrap())
+                    .unwrap_or(0);
                 for k in k0..st.step {
                     let q = PathBuf::from(serve::step_path(&args, &p, k));
                     if q.exists() && !files.contains(&q) {
@@ -570,7 +727,11 @@ impl Prove {
         if let Some(p) = flag(&args, "--tape") {
             files.push(PathBuf::from(p));
         }
-        let mut carry = self.c().carry.take().ok_or("no carried commitment (the handover needs --prove)")?;
+        let mut carry = self
+            .c()
+            .carry
+            .take()
+            .ok_or("no carried commitment (the handover needs --prove)")?;
         // DEFER: the head's pending claims (public; the same at all six seats) and this party's carries of them
         let pend = self.c().ledger.as_ref().and_then(|l| l.pending.clone());
         let old_carries = darkproof::run::carry_in(&mut carry, pend.as_ref())?.map(|d| d.carries);
@@ -581,10 +742,20 @@ impl Prove {
         // the chunk dirs (a whole-chunk tape file beside the step files is caught too)
         for f in ["--tapes", "--owner-msgs"] {
             if let Some(p) = flag(&args, f) {
-                let k0: usize = flag(&args, "--chunk-first").map(|x| x.parse().unwrap()).unwrap_or(0);
+                let k0: usize = flag(&args, "--chunk-first")
+                    .map(|x| x.parse().unwrap())
+                    .unwrap_or(0);
                 for k in k0..st.step {
                     let q = PathBuf::from(serve::step_path(&args, &p, k));
-                    if let Some(c) = q.parent().and_then(|s| if s.file_name().is_some_and(|n| n.to_string_lossy().starts_with("step-")) { s.parent() } else { Some(s) }) {
+                    if let Some(c) = q.parent().and_then(|s| {
+                        if s.file_name()
+                            .is_some_and(|n| n.to_string_lossy().starts_with("step-"))
+                        {
+                            s.parent()
+                        } else {
+                            Some(s)
+                        }
+                    }) {
                         if !scan.iter().any(|x| x == c) {
                             scan.push(c.to_path_buf());
                         }
@@ -594,7 +765,6 @@ impl Prove {
         }
         // this seat's retired MAC key outside the tapes, e.g. its MP-SPDZ key files (--erase-extra FILE, repeatable),
         // and every MP-SPDZ secret of this seat in its runtime (--erase-runtime RT)
-        let mut files = files;
         for (n, x) in args.iter().enumerate() {
             if x == "--erase-extra" {
                 let f = PathBuf::from(&args[n + 1]);
@@ -620,7 +790,8 @@ impl Prove {
         // the epoch's file key goes with it (old_side destroys it: the sealed files then open under no key)
         keep_erased_copy(&args, &files);
         let setup = darkhand::serve::rotation_setup(st, carry, files, scan, Some((ct, dg)));
-        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match old_carries {
+        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match old_carries
+        {
             Some(c) => Box::new(darkhand::serve::with_old_carries(setup, c)),
             None => Box::new(setup),
         };
@@ -630,7 +801,8 @@ impl Prove {
             None => Box::new(setup),
         };
         let mut rep = side::old_side_e(&common, pend.as_ref(), setup, move || {
-            let net6 = serve::connect_mesh(i, &addrs6, listen6, &id, &certs6, timeout).expect("six-party mesh");
+            let net6 = serve::connect_mesh(i, &addrs6, listen6, &id, &certs6, timeout)
+                .expect("six-party mesh");
             for j in 3..6 {
                 net6.send(j, darkstep::net::CTRL, lbytes.clone());
             }
@@ -641,13 +813,20 @@ impl Prove {
     }
 
     /// Self-handover after a refused step k: see the module doc.
-    fn self_handover(&mut self, st: Box<CustodianState>, k: usize, dir: &Path) -> Result<(Box<CustodianState>, Value), String> {
+    fn self_handover(
+        &mut self,
+        st: Box<CustodianState>,
+        k: usize,
+        dir: &Path,
+    ) -> Result<(Box<CustodianState>, Value), String> {
         let args = self.args.clone();
         let mut st = st;
         let (i, d, t) = (st.i, st.pf.d, st.pf.t);
         let (w, ck_step) = reload_shares(&dir.join(format!("ckpt_P{i}.bin")))?;
         if ck_step != k {
-            return Err(format!("self-handover: the checkpoint is at step {ck_step}, the refused step is {k}"));
+            return Err(format!(
+                "self-handover: the checkpoint is at step {ck_step}, the refused step is {k}"
+            ));
         }
         st.w = Some(w);
         st.step = ck_step;
@@ -664,9 +843,19 @@ impl Prove {
         // the new role's identity, its certificate exchanged on the pinned mesh
         let id_new = darkstep::tls::generate(3 + i);
         let mut certs6 = certs.clone();
-        certs6.extend(st.pt.net.exchange_bytes(darkstep::net::CTRL, &id_new.cert_der));
+        certs6.extend(
+            st.pt
+                .net
+                .exchange_bytes(darkstep::net::CTRL, &id_new.cert_der),
+        );
         let addrs6 = addr_list(&flag(&args, "--recover-mesh6").ok_or("--recover-mesh6")?);
-        let names = self.c().ledger.as_ref().ok_or("the self-handover needs the ledger replica (--prove)")?.custodians.clone();
+        let names = self
+            .c()
+            .ledger
+            .as_ref()
+            .ok_or("the self-handover needs the ledger replica (--prove)")?
+            .custodians
+            .clone();
         let common = self.common(st.he.rns.clone(), d, t, &names)?;
         let epoch = self.c().ledger.as_ref().unwrap().epoch as i64;
         let new_tape = serve::read_tape(&flag(&args, "--self-handover-tape").unwrap());
@@ -679,7 +868,10 @@ impl Prove {
         // the HE side and the mesh reach the new role over darkhand's channel
         // what the old role erases: the refused step's tape and owner message (old key), and the state files under
         // the old key (rewritten under the new one right after); what its disk scan covers besides
-        let mut files: Vec<PathBuf> = vec![dir.join(format!("ckpt_P{i}.bin")), dir.join(format!("carry_P{i}.bin"))];
+        let mut files: Vec<PathBuf> = vec![
+            dir.join(format!("ckpt_P{i}.bin")),
+            dir.join(format!("carry_P{i}.bin")),
+        ];
         let mut scan: Vec<PathBuf> = vec![dir.to_path_buf()];
         for f in ["--tapes", "--owner-msgs"] {
             if let Some(p) = flag(&args, f) {
@@ -712,10 +904,15 @@ impl Prove {
         }
         // the seat keeps its TLS identity across a self-handover: its key file is resealed under the new epoch's file
         // key once the old one is destroyed
-        let tls_key = if serve::sealing() { Some(serve::read_secret(&tlsdir.join(format!("tls_{i}.key")))?) } else { None };
+        let tls_key = if serve::sealing() {
+            Some(serve::read_secret(&tlsdir.join(format!("tls_{i}.key")))?)
+        } else {
+            None
+        };
         keep_erased_copy(&args, &files);
         let (setup, prx) = darkhand::serve::self_setup(st, carry, files, scan);
-        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match old_carries {
+        let setup: Box<dyn FnOnce() -> Box<darkhand::side::OldCustodian> + Send> = match old_carries
+        {
             Some(c) => Box::new(darkhand::serve::with_old_carries(setup, c)),
             None => Box::new(setup),
         };
@@ -726,26 +923,78 @@ impl Prove {
             None => Box::new(setup),
         };
         let (orep, nc, he) = std::thread::scope(|s| {
-            let (c6o, c6n, a6o, a6n, ido) = (certs6.clone(), certs6.clone(), addrs6.clone(), addrs6.clone(), id);
+            let (c6o, c6n, a6o, a6n, ido) = (
+                certs6.clone(),
+                certs6.clone(),
+                addrs6.clone(),
+                addrs6.clone(),
+                id,
+            );
             let pend = &pend;
             let common = &common;
             let a = std::thread::Builder::new()
                 .stack_size(64 << 20)
-                .spawn_scoped(s, move || side::old_side_e(common, pend.as_ref(), setup, move || serve::connect_mesh(i, &a6o, None, &ido, &c6o, timeout).expect("six-party mesh (old role)")))
+                .spawn_scoped(s, move || {
+                    side::old_side_e(common, pend.as_ref(), setup, move || {
+                        serve::connect_mesh(i, &a6o, None, &ido, &c6o, timeout)
+                            .expect("six-party mesh (old role)")
+                    })
+                })
                 .unwrap();
             let b = std::thread::Builder::new()
                 .stack_size(64 << 20)
                 .spawn_scoped(s, move || -> Result<(Joined, darkstep::he::He), String> {
-                    let (he, net3) = prx.recv().map_err(|_| "the old role ended before handing over".to_string())?;
+                    let (he, net3) = prx
+                        .recv()
+                        .map_err(|_| "the old role ended before handing over".to_string())?;
                     let net6 = serve::connect_mesh(3 + i, &a6n, None, &id_new, &c6n, timeout)?;
                     // the kept key goes to the new role and comes back as nc.key
-                    let nc = side::new_side_e(common, pend.as_ref(), i, net3, net6, new_tape, epoch + 1, 0, Some(he.key))?;
-                    let side::NewCustodian { j, keys, key, party, w, carry, proof, new_roots, report, defer, .. } = nc;
-                    Ok((Joined { j, keys, party, w, carry, proof, new_roots, report, defer }, darkstep::he::He { key, ..he }))
+                    let nc = side::new_side_e(
+                        common,
+                        pend.as_ref(),
+                        i,
+                        net3,
+                        net6,
+                        new_tape,
+                        epoch + 1,
+                        0,
+                        Some(he.key),
+                    )?;
+                    let side::NewCustodian {
+                        j,
+                        keys,
+                        key,
+                        party,
+                        w,
+                        carry,
+                        proof,
+                        new_roots,
+                        report,
+                        defer,
+                        ..
+                    } = nc;
+                    Ok((
+                        Joined {
+                            j,
+                            keys,
+                            party,
+                            w,
+                            carry,
+                            proof,
+                            new_roots,
+                            report,
+                            defer,
+                        },
+                        darkstep::he::He { key, ..he },
+                    ))
                 })
                 .unwrap();
             let orep = a.join().map_err(|_| "old role panicked".to_string());
-            match b.join().map_err(|_| "new role panicked".to_string()).and_then(|r| r) {
+            match b
+                .join()
+                .map_err(|_| "new role panicked".to_string())
+                .and_then(|r| r)
+            {
                 Ok((nc, he)) => (orep, Ok(nc), Some(he)),
                 Err(e) => (orep, Err(e), None),
             }
@@ -753,20 +1002,30 @@ impl Prove {
         let orep = orep??;
         let nc = nc?;
         if nc.report["mac_check"] != "ok" {
-            return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
+            return Err(format!(
+                "the handover's MAC check under the new key failed: {}",
+                nc.report["mac_check"]
+            ));
         }
-        save_handover_proof(&args, dir, (epoch + 1) as i64, &nc.proof)?;
+        save_handover_proof(&args, dir, epoch + 1, &nc.proof)?;
         if had_vault {
             // the new epoch's file key (the old one is destroyed): the state under the new MAC key is sealed under it
-            let cert = std::fs::read(tlsdir.join(format!("cert_{i}.der"))).map_err(|e| e.to_string())?;
-            let name = darkhand::vault::key_name(&self.model, i, epoch as u64 + 1, &darkstep::tls::cert_fingerprint(&cert));
+            let cert =
+                std::fs::read(tlsdir.join(format!("cert_{i}.der"))).map_err(|e| e.to_string())?;
+            let name = darkhand::vault::key_name(
+                &self.model,
+                i,
+                epoch as u64 + 1,
+                &darkstep::tls::cert_fingerprint(&cert),
+            );
             // made at setup (vault-init --with-next) when the prep lane sealed the new key's tapes under it
             let v = match darkhand::vault::Vault::load(&name) {
                 Ok(v) => v,
                 Err(_) => darkhand::vault::Vault::create(&name, true)?,
             };
             *VAULT.get().unwrap().0.lock().unwrap() = Some(v);
-            serve::write_secret(&tlsdir.join(format!("tls_{i}.key")), tls_key.unwrap()).map_err(|e| format!("TLS key: {e}"))?;
+            serve::write_secret(&tlsdir.join(format!("tls_{i}.key")), tls_key.unwrap())
+                .map_err(|e| format!("TLS key: {e}"))?;
             std::fs::write(tlsdir.join("vault.name"), &name).map_err(|e| e.to_string())?;
         }
         if args.iter().any(|a| a == "--wipe-spent") {
@@ -774,54 +1033,99 @@ impl Prove {
                 serve::wipe_file(Path::new(&f)).map_err(|e| format!("{f}: {e}"))?;
             }
         }
-        self.c().ledger.as_mut().unwrap().rotate(&names, &nc.new_roots, &nc.proof)?;
+        self.c()
+            .ledger
+            .as_mut()
+            .unwrap()
+            .rotate(&names, &nc.new_roots, &nc.proof)?;
         let mut he = he.expect("the new role's HE side");
         // a test attack (--attack, the abort test's fault) fires in one epoch only
         he.attack = None;
-        let mut st2 = CustodianState::from_parts(i, pf, he, nc.party, darkhand::serve::shares_rows(&nc.w, d), k);
+        let mut st2 = CustodianState::from_parts(
+            i,
+            pf,
+            he,
+            nc.party,
+            darkhand::serve::shares_rows(&nc.w, d),
+            k,
+        );
         let a2 = after_self_handover(&args, k, self.end_step);
         if let Some(p) = flag(&a2, "--tapes") {
             st2.load_tape(serve::read_tape(&serve::step_path(&a2, &p, k)))?;
         }
         // the state under the new key, carry beside checkpoint (the old role erased both under the old key)
         let carry = joined_carry(nc.carry, nc.defer);
-        write_carry(&dir.join(format!("carry_P{i}.bin")), &carry).map_err(|e| format!("carry checkpoint: {e}"))?;
+        write_carry(&dir.join(format!("carry_P{i}.bin")), &carry)
+            .map_err(|e| format!("carry checkpoint: {e}"))?;
         self.c().carry = Some(carry);
         self.next = None;
-        st2.checkpoint(&dir.join(format!("ckpt_P{i}.bin"))).map_err(|e| e.to_string())?;
-        Ok((st2, json!({"old_role": orep, "new_role": nc.report, "epoch": epoch + 1, "redo_step": k})))
+        st2.checkpoint(&dir.join(format!("ckpt_P{i}.bin")))
+            .map_err(|e| e.to_string())?;
+        Ok((
+            st2,
+            json!({"old_role": orep, "new_role": nc.report, "epoch": epoch + 1, "redo_step": k}),
+        ))
     }
 
     fn release(&mut self, st: &mut CustodianState, dir: &Path) -> Result<Value, String> {
         let args = self.args.clone();
         let i = st.i;
-        let cfg = self.gcfg.clone().ok_or("--release needs --genesis-cfg (the policy's encoder)")?;
+        let cfg = self
+            .gcfg
+            .clone()
+            .ok_or("--release needs --genesis-cfg (the policy's encoder)")?;
         let cfg = &cfg;
         let data = PathBuf::from(flag(&args, "--release-data").ok_or("--release-data MNISTDIR")?);
         // M: --release-m, else the genesis cfg's release.M (the train lane's policy pin), else its eval_n
-        let pinned = serde_json::from_slice::<Value>(cfg).ok().and_then(|v| v["release"]["M"].as_u64().or(v["eval_n"].as_u64()));
-        let m: usize = flag(&args, "--release-m").map(|x| x.parse().unwrap()).or(pinned.map(|x| x as usize)).ok_or("release: no M (--release-m or the cfg's release.M)")?;
+        let pinned = serde_json::from_slice::<Value>(cfg)
+            .ok()
+            .and_then(|v| v["release"]["M"].as_u64().or(v["eval_n"].as_u64()));
+        let m: usize = flag(&args, "--release-m")
+            .map(|x| x.parse().unwrap())
+            .or(pinned.map(|x| x as usize))
+            .ok_or("release: no M (--release-m or the cfg's release.M)")?;
         let pol = darkproof::run::mnist_policy(cfg, &data, m)?;
         // the release's own tape (--release-tape): the steps' tape is freed (zeroed by the allocator) first; the tape is
         // claimed in the box's registry (a streamed sha256), its MPC part loaded, its proof section (the last 3 x nrt
         // entries, Beaver triples) streamed from the file by the prover
         let mut tape_file = None;
         if let Some(f) = flag(&args, "--release-tape") {
-            st.pt.tape = darkstep::tape::Tape { alpha_i: st.pt.tape.alpha_i, ..Default::default() };
+            st.pt.tape = darkstep::tape::Tape {
+                alpha_i: st.pt.tape.alpha_i,
+                ..Default::default()
+            };
             let d = st.pf.d;
             let nrt = darkproof::run::release_section(&self.lp, d, m, self.prm, &pol);
             let (pre, rt) = if dlvault::is_sealed(Path::new(&f)) {
                 // prep's sealed release tape (DLVAULT2, read block by block under this epoch's file key)
                 let p = Path::new(&f);
                 let sd = p.parent().ok_or("release tape path")?;
-                let j = sd.file_name().and_then(|n| n.to_str()).and_then(|n| n.strip_prefix("step-")).ok_or("the release tape is not in a chunk's step-<j> dir")?;
-                let c = sd.parent().and_then(|c| c.file_name()).and_then(|n| n.to_str()).ok_or("release tape chunk dir")?;
+                let j = sd
+                    .file_name()
+                    .and_then(|n| n.to_str())
+                    .and_then(|n| n.strip_prefix("step-"))
+                    .ok_or("the release tape is not in a chunk's step-<j> dir")?;
+                let c = sd
+                    .parent()
+                    .and_then(|c| c.file_name())
+                    .and_then(|n| n.to_str())
+                    .ok_or("release tape chunk dir")?;
                 let key = {
-                    let g = VAULT.get().ok_or("a sealed release tape needs --vault")?.0.lock().unwrap();
+                    let g = VAULT
+                        .get()
+                        .ok_or("a sealed release tape needs --vault")?
+                        .0
+                        .lock()
+                        .unwrap();
                     let v = g.as_ref().ok_or("the file key was handed to the erasure")?;
                     std::sync::Arc::new(dlvault::Key::new(&v.name, v.key_bytes()))
                 };
-                let (pre, rt) = darkproof::run::load_release_tape_sealed(p, nrt, key, &format!("tape|{c}|{j}"))?;
+                let (pre, rt) = darkproof::run::load_release_tape_sealed(
+                    p,
+                    nrt,
+                    key,
+                    &format!("tape|{c}|{j}"),
+                )?;
                 // claimed once opened (its MAC key share is inside the seal), before any entry is used
                 serve::claim_tape_file(&f, Some(pre.alpha_i))?;
                 *RELEASE_SPENT.lock().unwrap() = Some(f.clone());
@@ -838,20 +1142,50 @@ impl Prove {
             tape_file = Some(rt);
         }
         let model = self.model.clone();
-        let lg = self.c().ledger.as_ref().ok_or("--release needs the ledger replica (--prove)")?;
+        let lg = self
+            .c()
+            .ledger
+            .as_ref()
+            .ok_or("--release needs the ledger replica (--prove)")?;
         let ctx = darkproof::Ctx::new(&model, lg.epoch, lg.step);
         let roots = lg.parent.clone();
         let pend = lg.pending.clone();
-        let carry = self.c().carry.take().ok_or("no carried commitment of the head")?;
+        let carry = self
+            .c()
+            .carry
+            .take()
+            .ok_or("no carried commitment of the head")?;
         let (w1, w2) = st.w.as_ref().ok_or("no weights")?;
         let t0 = Instant::now();
-        let out = darkproof::run::release_custodian_src(&self.pr, &self.lp, self.prm, &mut st.pt, w1, w2, &pol, &ctx, carry, Some(&roots), pend.as_ref(), tape_file)?;
-        std::fs::write(dir.join(format!("release_P{i}.bin")), &out.blob).map_err(|e| e.to_string())?;
+        let out = darkproof::run::release_custodian_src(
+            &self.pr,
+            &self.lp,
+            self.prm,
+            &mut st.pt,
+            w1,
+            w2,
+            &pol,
+            &ctx,
+            carry,
+            Some(&roots),
+            pend.as_ref(),
+            tape_file,
+        )?;
+        std::fs::write(dir.join(format!("release_P{i}.bin")), &out.blob)
+            .map_err(|e| e.to_string())?;
         let lp = self.pr.ligero();
         // the replica checks the policy against the genesis's pinned cfg (recomputed from darktrain's encoder)
-        let (mm, c) = self.c().ledger.as_mut().unwrap().release_checked(&lp, &out.blob, &pol, cfg, &data)?;
+        let (mm, c) = self
+            .c()
+            .ledger
+            .as_mut()
+            .unwrap()
+            .release_checked(&lp, &out.blob, &pol, cfg, &data)?;
         if c != out.c {
-            return Err(format!("release: the ledger's C = {c}, the opened C = {}", out.c));
+            return Err(format!(
+                "release: the ledger's C = {c}, the opened C = {}",
+                out.c
+            ));
         }
         let (cpu, rss) = serve::proc_usage();
         use sha2::{Digest, Sha256};
@@ -860,14 +1194,24 @@ impl Prove {
             "prove_seconds": out.prove_secs, "verify_seconds": out.verify_secs, "proof_bytes": out.blob.len(),
             "proof_sha256": pycompat::repr::hex(&Sha256::digest(&out.blob)), "proof_field_elements_sent": out.sent,
             "triples": out.triples, "cpu_seconds": cpu, "peak_rss_kb": rss, "ledger_accepted": true});
-        std::fs::write(dir.join(format!("release_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).map_err(|e| e.to_string())?;
+        std::fs::write(
+            dir.join(format!("release_P{i}.json")),
+            serde_json::to_string_pretty(&rep).unwrap(),
+        )
+        .map_err(|e| e.to_string())?;
         println!("{rep}");
         Ok(rep)
     }
 }
 
 impl StepHook for Prove {
-    fn after_step(&mut self, st: &mut CustodianState, k: usize, rec: &ProofRecord, _dir: &Path) -> Result<Value, String> {
+    fn after_step(
+        &mut self,
+        st: &mut CustodianState,
+        k: usize,
+        rec: &ProofRecord,
+        _dir: &Path,
+    ) -> Result<Value, String> {
         if !self.on {
             return Ok(Value::Null);
         }
@@ -876,20 +1220,47 @@ impl StepHook for Prove {
             Some(x) => x,
             None => {
                 let c = self.c();
-                c.ledger.as_ref().map(|l| (l.step + 1, l.epoch)).unwrap_or((k as u64 + 1, 0))
+                c.ledger
+                    .as_ref()
+                    .map(|l| (l.step + 1, l.epoch))
+                    .unwrap_or((k as u64 + 1, 0))
             }
         };
         self.next = Some((step + 1, epoch));
         let carried = self.prm.carried(step);
         let own;
-        let tb = if self.prm.t_lo == -128 { &self.tables } else { own = darkproof::step::tables_for(self.prm.t_lo); &own };
+        let tb = if self.prm.t_lo == -128 {
+            &self.tables
+        } else {
+            own = darkproof::step::tables_for(self.prm.t_lo);
+            &own
+        };
         let count = darkproof::run::step_section(&self.lp, d, self.prm, carried, tb);
         let (w1n, w2n) = st.w.as_ref().ok_or("no weights")?;
-        let ps = darkproof::run::from_darkstep_n(i, d, rec, w1n, w2n, &st.pt.tape, Some(count), darkproof::rng::Det::off())?;
+        let ps = darkproof::run::from_darkstep_n(
+            i,
+            d,
+            rec,
+            w1n,
+            w2n,
+            &st.pt.tape,
+            Some(count),
+            darkproof::rng::Det::off(),
+        )?;
         st.pt.cur = rec.tape_cursor + 3 * count;
-        let job = Job { k, step, epoch, count, ps };
+        let job = Job {
+            k,
+            step,
+            epoch,
+            count,
+            ps,
+        };
         if !self.args.iter().any(|a| a == "--pipeline-proofs") {
-            return self.ch.as_mut().ok_or("no proof chain")?.prove(&st.pt.net, job);
+            return self
+                .ch
+                .as_mut()
+                .ok_or("no proof chain")?
+                .prove(&st.pt.net, job);
         }
         // pipelined: the previous step's proof must be done (one in flight), then this one starts beside step k + 1
         let tw = Instant::now();
@@ -899,22 +1270,36 @@ impl StepHook for Prove {
             self.start_worker()?;
         }
         let w = self.worker.as_mut().unwrap();
-        w.tx.send(job).map_err(|_| "the proof worker died".to_string())?;
+        w.tx.send(job)
+            .map_err(|_| "the proof worker died".to_string())?;
         w.inflight = true;
-        Ok(json!({"pipelined": true, "proof_of_previous_step": prev, "waited_for_previous_proof_seconds": wait_s}))
+        Ok(
+            json!({"pipelined": true, "proof_of_previous_step": prev, "waited_for_previous_proof_seconds": wait_s}),
+        )
     }
 
     fn stop_after(&mut self, k: usize) -> bool {
-        flag(&self.args, "--handover-at").map(|h| h.parse::<usize>().unwrap() == k).unwrap_or(false)
+        flag(&self.args, "--handover-at")
+            .map(|h| h.parse::<usize>().unwrap() == k)
+            .unwrap_or(false)
     }
 
-    fn finish(&mut self, st: Box<CustodianState>, end: &End, dir: &Path) -> Result<i32, Box<CustodianState>> {
+    fn finish(
+        &mut self,
+        st: Box<CustodianState>,
+        end: &End,
+        dir: &Path,
+    ) -> Result<i32, Box<CustodianState>> {
         let i = st.i;
         // pipelined proofs: the last step's proof finishes (on its own mesh) before anything else, so that the
         // carry, the ledger replica and the checkpoint agree at every exit, a pause included
         if let Err(e) = self.drain() {
             eprintln!("the last proof failed: {e}");
-            std::fs::write(dir.join(format!("proof_error_P{i}.json")), serde_json::to_string_pretty(&json!({"party": i, "error": e})).unwrap()).unwrap();
+            std::fs::write(
+                dir.join(format!("proof_error_P{i}.json")),
+                serde_json::to_string_pretty(&json!({"party": i, "error": e})).unwrap(),
+            )
+            .unwrap();
             st.pt.net.shutdown();
             return Ok(1);
         }
@@ -936,7 +1321,9 @@ impl Prove {
     fn run_deferred(&mut self, code: i32) -> i32 {
         let mut code = code;
         while code == DEFERRED {
-            let Some((st, end, dir)) = self.deferred.take() else { return 1 };
+            let Some((st, end, dir)) = self.deferred.take() else {
+                return 1;
+            };
             side::scrub_stack_all();
             code = self.finish_deferred(st, &end, &dir);
         }
@@ -951,22 +1338,43 @@ impl Prove {
                 Ok(rep) => (0, rep),
                 Err(e) => (1, json!({"party": i, "error": e})),
             };
-            std::fs::write(dir.join(format!("handover_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
-            println!("{}", json!({"party": i, "handover": if code == 0 { "done" } else { "failed" }}));
+            std::fs::write(
+                dir.join(format!("handover_P{i}.json")),
+                serde_json::to_string_pretty(&rep).unwrap(),
+            )
+            .unwrap();
+            println!(
+                "{}",
+                json!({"party": i, "handover": if code == 0 { "done" } else { "failed" }})
+            );
             return code;
         }
-        if let (Some((k, _)), true) = (&end.refused, flag(&self.args, "--self-handover-tape").is_some()) {
+        if let (Some((k, _)), true) = (
+            &end.refused,
+            flag(&self.args, "--self-handover-tape").is_some(),
+        ) {
             let k = *k;
             return match self.self_handover(st, k, dir) {
                 Ok((st2, rep)) => {
-                    std::fs::write(dir.join(format!("self_handover_P{i}.json")), serde_json::to_string_pretty(&rep).unwrap()).unwrap();
-                    println!("{}", json!({"party": i, "self_handover": "done", "redo_step": k}));
+                    std::fs::write(
+                        dir.join(format!("self_handover_P{i}.json")),
+                        serde_json::to_string_pretty(&rep).unwrap(),
+                    )
+                    .unwrap();
+                    println!(
+                        "{}",
+                        json!({"party": i, "self_handover": "done", "redo_step": k})
+                    );
                     let a = after_self_handover(&self.args, k, self.end_step);
                     self.args = a.clone();
                     serve::serve_state(&a, self, st2, Instant::now(), 0.0, 0.0)
                 }
                 Err(e) => {
-                    std::fs::write(dir.join(format!("self_handover_P{i}.json")), serde_json::to_string_pretty(&json!({"party": i, "error": e})).unwrap()).unwrap();
+                    std::fs::write(
+                        dir.join(format!("self_handover_P{i}.json")),
+                        serde_json::to_string_pretty(&json!({"party": i, "error": e})).unwrap(),
+                    )
+                    .unwrap();
                     eprintln!("self-handover: {e}");
                     1
                 }
@@ -978,7 +1386,12 @@ impl Prove {
 }
 
 impl Prove {
-    fn finish_release(&mut self, st: Box<CustodianState>, end: &End, dir: &Path) -> Result<i32, Box<CustodianState>> {
+    fn finish_release(
+        &mut self,
+        st: Box<CustodianState>,
+        end: &End,
+        dir: &Path,
+    ) -> Result<i32, Box<CustodianState>> {
         let i = st.i;
         if end.code == 0 && self.args.iter().any(|a| a == "--release") {
             let mut st = st;
@@ -989,7 +1402,9 @@ impl Prove {
             let mut wiped = Value::Null;
             if self.args.iter().any(|a| a == "--wipe-spent") {
                 if let Some(f) = RELEASE_SPENT.lock().unwrap().take() {
-                    let w = serve::wipe_file(Path::new(&f)).map(|_| "ok".to_string()).unwrap_or_else(|e| e.to_string());
+                    let w = serve::wipe_file(Path::new(&f))
+                        .map(|_| "ok".to_string())
+                        .unwrap_or_else(|e| e.to_string());
                     wiped = json!([[f, w]]);
                 }
             }
@@ -997,7 +1412,10 @@ impl Prove {
             return Ok(match r {
                 Ok(_) => {
                     if !wiped.is_null() {
-                        if let Some(mut v) = std::fs::read(&rp).ok().and_then(|b| serde_json::from_slice::<Value>(&b).ok()) {
+                        if let Some(mut v) = std::fs::read(&rp)
+                            .ok()
+                            .and_then(|b| serde_json::from_slice::<Value>(&b).ok())
+                        {
                             v["wiped"] = wiped;
                             std::fs::write(&rp, serde_json::to_string_pretty(&v).unwrap()).unwrap();
                         }
@@ -1006,7 +1424,14 @@ impl Prove {
                 }
                 Err(e) => {
                     eprintln!("release: {e}");
-                    std::fs::write(&rp, serde_json::to_string_pretty(&json!({"party": i, "error": e, "wiped": wiped})).unwrap()).unwrap();
+                    std::fs::write(
+                        &rp,
+                        serde_json::to_string_pretty(
+                            &json!({"party": i, "error": e, "wiped": wiped}),
+                        )
+                        .unwrap(),
+                    )
+                    .unwrap();
                     1
                 }
             });
@@ -1030,16 +1455,25 @@ fn runtime_secrets(args: &[String], i: usize) -> Vec<PathBuf> {
         let mut dirs = vec![rt.join("Player-Data"), rt.join("Persistence")];
         if let Ok(rd) = std::fs::read_dir(rt.join("Player-Data")) {
             for e in rd.flatten() {
-                if std::fs::metadata(e.path()).map(|m| m.is_dir()).unwrap_or(false) {
+                if std::fs::metadata(e.path())
+                    .map(|m| m.is_dir())
+                    .unwrap_or(false)
+                {
                     dirs.push(e.path());
                 }
             }
         }
         for d in dirs {
-            let Ok(rd) = std::fs::read_dir(&d) else { continue };
+            let Ok(rd) = std::fs::read_dir(&d) else {
+                continue;
+            };
             for e in rd.flatten() {
                 let name = e.file_name().to_string_lossy().into_owned();
-                if std::fs::metadata(e.path()).map(|m| m.is_file()).unwrap_or(false) && darkprep::mpspdz::is_party_secret(&name, Some(i)) {
+                if std::fs::metadata(e.path())
+                    .map(|m| m.is_file())
+                    .unwrap_or(false)
+                    && darkprep::mpspdz::is_party_secret(&name, Some(i))
+                {
                     out.push(e.path());
                 }
             }
@@ -1056,13 +1490,18 @@ static RELEASE_SPENT: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(N
 /// with a public seed). Otherwise darkstep's --genesis-public FILE, or an owner-input genesis.
 fn genesis_of(args: &[String]) -> Option<(Vec<i64>, Vec<i64>)> {
     if let Some(f) = flag(args, "--genesis-cfg") {
-        let c: darktrain::Cfg = serde_json::from_str(&std::fs::read_to_string(&f).expect("genesis cfg")).expect("cfg json");
+        let c: darktrain::Cfg =
+            serde_json::from_str(&std::fs::read_to_string(&f).expect("genesis cfg"))
+                .expect("cfg json");
         c.validate().expect("cfg");
         return Some(darktrain::init(&c));
     }
     flag(args, "--genesis-public").map(|f| {
         let b = std::fs::read(&f).unwrap();
-        let v: Vec<i64> = b.chunks_exact(8).map(|c| i64::from_le_bytes(c.try_into().unwrap())).collect();
+        let v: Vec<i64> = b
+            .chunks_exact(8)
+            .map(|c| i64::from_le_bytes(c.try_into().unwrap()))
+            .collect();
         let h = v.len() / 2;
         (v[..h].to_vec(), v[h..].to_vec())
     })
@@ -1093,13 +1532,21 @@ fn prove_hook(args: &[String], i: usize, join: bool) -> Prove {
         }
     }
     let tlsdir = PathBuf::from(flag(args, "--tls").expect("--tls"));
-    let names = serve::identity(&tlsdir, i).1.iter().map(|c| darkstep::tls::cert_fingerprint(c)).collect();
+    let names = serve::identity(&tlsdir, i)
+        .1
+        .iter()
+        .map(|c| darkstep::tls::cert_fingerprint(c))
+        .collect();
     let steps: usize = flag(args, "--steps").expect("--steps").parse().unwrap();
     let dir = PathBuf::from(&args[7]);
     let start = if args.iter().any(|a| a == "--resume") {
-        serve::read_checkpoint(&dir.join(format!("ckpt_P{i}.bin"))).map(|c| c.step).unwrap_or(0)
+        serve::read_checkpoint(&dir.join(format!("ckpt_P{i}.bin")))
+            .map(|c| c.step)
+            .unwrap_or(0)
     } else if join {
-        flag(args, "--after-step").map(|k| k.parse::<usize>().unwrap() + 1).unwrap_or(0)
+        flag(args, "--after-step")
+            .map(|k| k.parse::<usize>().unwrap() + 1)
+            .unwrap_or(0)
     } else {
         0
     };
@@ -1108,7 +1555,13 @@ fn prove_hook(args: &[String], i: usize, join: bool) -> Prove {
     if resume && args.iter().any(|a| a == "--prove") {
         let cp = dir.join(format!("carry_P{i}.bin"));
         carry = Some(read_carry(&cp, &pr).unwrap_or_else(|e| panic!("--resume --prove: {e}")));
-        let mut lg = Ledger::open(&dir.join(format!("ledger_P{i}.jsonl")), &flag(args, "--model").unwrap_or_else(|| "dl-gen6".into()), &pr, None).expect("ledger replica");
+        let mut lg = Ledger::open(
+            &dir.join(format!("ledger_P{i}.jsonl")),
+            &flag(args, "--model").unwrap_or_else(|| "dl-gen6".into()),
+            &pr,
+            None,
+        )
+        .expect("ledger replica");
         if let Some(b) = &gcfg {
             lg.check_public_genesis(b).expect("public genesis");
         }
@@ -1138,7 +1591,8 @@ fn prove_hook(args: &[String], i: usize, join: bool) -> Prove {
     if ch.ledger.is_none() && ch.gcfg.is_some() && !join && args.iter().any(|a| a == "--prove") {
         if let Some(g) = ch.genesis.clone() {
             if i == 0 {
-                std::fs::write(dir.join("genesis_roots.json"), hex_roots(&g)).expect("genesis roots");
+                std::fs::write(dir.join("genesis_roots.json"), hex_roots(&g))
+                    .expect("genesis roots");
             }
             ch.open_ledger(g).expect("ledger replica");
         }
@@ -1172,12 +1626,18 @@ fn join_main(args: &[String]) -> i32 {
     std::fs::create_dir_all(&dir).unwrap();
     let mut hook = prove_hook(args, j, true);
     let mut run = || -> Result<Box<CustodianState>, String> {
-        let after: usize = flag(args, "--after-step").ok_or("--after-step K (the old committee's last step)")?.parse().unwrap();
+        let after: usize = flag(args, "--after-step")
+            .ok_or("--after-step K (the old committee's last step)")?
+            .parse()
+            .unwrap();
         let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
         let tlsdir = PathBuf::from(flag(args, "--tls").ok_or("--tls")?);
         let (id, certs) = serve::identity(&tlsdir, j);
         let tls6 = PathBuf::from(flag(args, "--tls6").ok_or("--tls6 DIR6")?);
-        let certs6: Vec<Vec<u8>> = (0..6).map(|x| std::fs::read(tls6.join(format!("cert6_{x}.der")))).collect::<Result<_, _>>().map_err(|e| e.to_string())?;
+        let certs6: Vec<Vec<u8>> = (0..6)
+            .map(|x| std::fs::read(tls6.join(format!("cert6_{x}.der"))))
+            .collect::<Result<_, _>>()
+            .map_err(|e| e.to_string())?;
         if certs6[3..] != certs[..] {
             return Err("cert6_3..5 are not this committee's certificates".into());
         }
@@ -1185,7 +1645,14 @@ fn join_main(args: &[String]) -> i32 {
         let timeout = timeout_of(args);
         let tape = serve::read_tape(&flag(args, "--handover-tape").ok_or("--handover-tape FILE")?);
         let net3 = serve::connect_mesh(j, &addrs, flag(args, "--listen"), &id, &certs, timeout)?;
-        let net6 = serve::connect_mesh(3 + j, &addrs6, flag(args, "--listen6"), &id, &certs6, timeout)?;
+        let net6 = serve::connect_mesh(
+            3 + j,
+            &addrs6,
+            flag(args, "--listen6"),
+            &id,
+            &certs6,
+            timeout,
+        )?;
         // the ledger replica from the old committee: public, sent by all three, which must agree
         let copies: Vec<Vec<u8>> = (0..3).map(|o| net6.recv(o, darkstep::net::CTRL)).collect();
         if copies.iter().any(|c| c != &copies[0]) {
@@ -1196,17 +1663,39 @@ fn join_main(args: &[String]) -> i32 {
         if lstep as usize != after + 1 {
             return Err(format!("the ledger's head is step {lstep}, the handover is after serve step {after} (ledger step {})", after + 1));
         }
-        let new_set: Vec<String> = certs.iter().map(|c| darkstep::tls::cert_fingerprint(c)).collect();
+        let new_set: Vec<String> = certs
+            .iter()
+            .map(|c| darkstep::tls::cert_fingerprint(c))
+            .collect();
         let rns = std::sync::Arc::new(darkstep::rns::Rns::new(pf.n, &pf.qs, pf.t));
         let common = hook.common(rns, d, pf.t, &new_set)?;
         let epoch = lepoch as i64;
         let th = std::thread::Builder::new().stack_size(64 << 20);
         // DEFER: the received replica's pending claims (the old seats discharge them through the handover)
         let pend = hook.c().ledger.as_ref().and_then(|l| l.pending.clone());
-        let nc = std::thread::scope(|s| th.spawn_scoped(s, || side::new_side_e(&common, pend.as_ref(), j, net3, net6, tape, epoch + 1, 0, None)).unwrap().join())
-            .map_err(|_| "new side panicked".to_string())??;
+        let nc = std::thread::scope(|s| {
+            th.spawn_scoped(s, || {
+                side::new_side_e(
+                    &common,
+                    pend.as_ref(),
+                    j,
+                    net3,
+                    net6,
+                    tape,
+                    epoch + 1,
+                    0,
+                    None,
+                )
+            })
+            .unwrap()
+            .join()
+        })
+        .map_err(|_| "new side panicked".to_string())??;
         if nc.report["mac_check"] != "ok" {
-            return Err(format!("the handover's MAC check under the new key failed: {}", nc.report["mac_check"]));
+            return Err(format!(
+                "the handover's MAC check under the new key failed: {}",
+                nc.report["mac_check"]
+            ));
         }
         save_handover_proof(&hook.args, &dir, epoch + 1, &nc.proof)?;
         // the handover tape is spent (its authenticated randoms now mask the reshared weights' MACs)
@@ -1215,24 +1704,56 @@ fn join_main(args: &[String]) -> i32 {
                 serve::wipe_file(Path::new(&f)).map_err(|e| format!("{f}: {e}"))?;
             }
         }
-        hook.c().ledger.as_mut().unwrap().rotate(&new_set, &nc.new_roots, &nc.proof)?;
+        hook.c()
+            .ledger
+            .as_mut()
+            .unwrap()
+            .rotate(&new_set, &nc.new_roots, &nc.proof)?;
         let (hs, cer) = nc.keys.ok_or("a rotation makes a fresh key")?;
-        let regs: Vec<_> = (0..3).map(|x| cer.registry(x).expect("registered key")).collect();
-        let ceremony_s = nc.report.get("ceremony_seconds").and_then(|v| v.as_f64()).unwrap_or(0.0);
-        let he = darkstep::node::he_from_ceremony(&pf, nc.key, regs, hs.s.clone(), hs.e.clone(), ceremony_s);
-        let mut st = CustodianState::from_parts(j, pf.clone(), he, nc.party, darkhand::serve::shares_rows(&nc.w, d), after + 1);
+        let regs: Vec<_> = (0..3)
+            .map(|x| cer.registry(x).expect("registered key"))
+            .collect();
+        let ceremony_s = nc
+            .report
+            .get("ceremony_seconds")
+            .and_then(|v| v.as_f64())
+            .unwrap_or(0.0);
+        let he = darkstep::node::he_from_ceremony(
+            &pf,
+            nc.key,
+            regs,
+            hs.s.clone(),
+            hs.e.clone(),
+            ceremony_s,
+        );
+        let mut st = CustodianState::from_parts(
+            j,
+            pf.clone(),
+            he,
+            nc.party,
+            darkhand::serve::shares_rows(&nc.w, d),
+            after + 1,
+        );
         if let Some(p) = flag(args, "--tapes") {
             st.load_tape(serve::read_tape(&serve::step_path(args, &p, after + 1)))?;
         }
         // the carried commitment of the reshared weights beside the checkpoint: a pause before this seat's first step
         // resumes from both (serve --resume)
         let carry = joined_carry(nc.carry, nc.defer);
-        write_carry(&dir.join(format!("carry_P{j}.bin")), &carry).map_err(|e| format!("carry checkpoint: {e}"))?;
+        write_carry(&dir.join(format!("carry_P{j}.bin")), &carry)
+            .map_err(|e| format!("carry checkpoint: {e}"))?;
         hook.c().carry = Some(carry);
         hook.next = None;
-        st.checkpoint(&dir.join(format!("ckpt_P{j}.bin"))).map_err(|e| e.to_string())?;
-        std::fs::write(dir.join(format!("join_P{j}.json")), serde_json::to_string_pretty(&json!({"party": j, "epoch": epoch + 1, "report": nc.report})).unwrap())
+        st.checkpoint(&dir.join(format!("ckpt_P{j}.bin")))
             .map_err(|e| e.to_string())?;
+        std::fs::write(
+            dir.join(format!("join_P{j}.json")),
+            serde_json::to_string_pretty(
+                &json!({"party": j, "epoch": epoch + 1, "report": nc.report}),
+            )
+            .unwrap(),
+        )
+        .map_err(|e| e.to_string())?;
         Ok(st)
     };
     let t0 = Instant::now();
@@ -1244,7 +1765,11 @@ fn join_main(args: &[String]) -> i32 {
         }
         Err(e) => {
             eprintln!("join: {e}");
-            std::fs::write(dir.join(format!("join_P{j}.json")), serde_json::to_string_pretty(&json!({"party": j, "error": e})).unwrap()).unwrap();
+            std::fs::write(
+                dir.join(format!("join_P{j}.json")),
+                serde_json::to_string_pretty(&json!({"party": j, "error": e})).unwrap(),
+            )
+            .unwrap();
             1
         }
     }
@@ -1259,7 +1784,8 @@ fn join_main(args: &[String]) -> i32 {
 /// plus "data" and "seed_order").
 #[cfg(feature = "test-harness")]
 fn test_deal(args: &[String]) {
-    let c: darktrain::Cfg = serde_json::from_str(&std::fs::read_to_string(&args[2]).expect("cfg")).expect("cfg json");
+    let c: darktrain::Cfg =
+        serde_json::from_str(&std::fs::read_to_string(&args[2]).expect("cfg")).expect("cfg json");
     c.validate().unwrap();
     let steps: usize = args[3].parse().unwrap();
     let i: usize = args[4].parse().unwrap();
@@ -1279,7 +1805,12 @@ fn test_deal(args: &[String]) {
     }
     let tables = darkproof::step::tables();
     let own;
-    let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
+    let tb = if prm.t_lo == -128 {
+        &tables
+    } else {
+        own = darkproof::step::tables_for(prm.t_lo);
+        &own
+    };
     let mn = darktrain::data::load(Path::new(&c.data)).unwrap();
     let c = c.with_means(&mn);
     let ord = darktrain::order(c.seed_order, mn.train.n);
@@ -1292,35 +1823,71 @@ fn test_deal(args: &[String]) {
     for k in 0..steps {
         let ex = ord[k % mn.train.n];
         let (x, y) = darktrain::encode(&c, mn.train.image(ex), mn.train.lab[ex]);
-        let xm: Vec<u64> = x.iter().chain(y.iter()).map(|&v| darkstep::arith::from_i64(v, pf.t)).collect();
+        let xm: Vec<u64> = x
+            .iter()
+            .chain(y.iter())
+            .map(|&v| darkstep::arith::from_i64(v, pf.t))
+            .collect();
         let cs = darkstep::tape::deal_one_step(&mut dl, &mut owner, d, &xm, &program);
-        darkstep::tape::deal_proof_section(&mut dl, darkproof::run::step_section(&lp, d, prm, prm.carried(k as u64 + 1), tb));
+        darkstep::tape::deal_proof_section(
+            &mut dl,
+            darkproof::run::step_section(&lp, d, prm, prm.carried(k as u64 + 1), tb),
+        );
         if args.iter().any(|a| a == "--public") {
-            std::fs::write(dir.join(format!("public_step{k}.bin")), darkstep::net::u64s_to_bytes(&cs)).unwrap();
+            std::fs::write(
+                dir.join(format!("public_step{k}.bin")),
+                darkstep::net::u64s_to_bytes(&cs),
+            )
+            .unwrap();
         }
     }
     let mut rel = json!(null);
     let steps_len = dl.tapes[i].len();
     if args.iter().any(|a| a == "--release") {
-        let gm = serde_json::from_slice::<Value>(&gbytes).unwrap()["release"]["M"].as_u64().expect("the genesis cfg's release.M") as usize;
+        let gm = serde_json::from_slice::<Value>(&gbytes).unwrap()["release"]["M"]
+            .as_u64()
+            .expect("the genesis cfg's release.M") as usize;
         let pol = darkproof::run::mnist_policy(&gbytes, Path::new(&c.data), gm).unwrap();
         let before = dl.tapes[i].len();
-        darkproof::run::deal_release(&mut dl, d, gm, pol.ncls, prm, pol.kc, &lp, &tables, &pol);
+        darkproof::run::deal_release(
+            &mut dl,
+            darkproof::run::ReleaseSpec {
+                d,
+                m: gm,
+                ncls: pol.ncls,
+                prm,
+                kc: pol.kc,
+            },
+            &lp,
+            &tables,
+            &pol,
+        );
         rel = json!({"M": gm, "entries": dl.tapes[i].len() - before, "proof_section": darkproof::run::release_section(&lp, d, gm, prm, &pol)});
     }
     let write = |t: &darkstep::tape::Tape, name: String| {
-        t.write_to(&mut std::io::BufWriter::new(std::fs::File::create(dir.join(name)).unwrap())).unwrap();
+        t.write_to(&mut std::io::BufWriter::new(
+            std::fs::File::create(dir.join(name)).unwrap(),
+        ))
+        .unwrap();
     };
     let t = &dl.tapes[i];
     if args.iter().any(|a| a == "--split-release") && t.len() > steps_len {
         // as in a deployment: the steps' tape and the release's (loaded only when the release starts)
-        let part = |r: std::ops::Range<usize>| darkstep::tape::Tape { alpha_i: t.alpha_i, tags: t.tags[r.clone()].to_vec(), sh: t.sh[r.clone()].to_vec(), mac: t.mac[r].to_vec() };
+        let part = |r: std::ops::Range<usize>| darkstep::tape::Tape {
+            alpha_i: t.alpha_i,
+            tags: t.tags[r.clone()].to_vec(),
+            sh: t.sh[r.clone()].to_vec(),
+            mac: t.mac[r].to_vec(),
+        };
         write(&part(0..steps_len), format!("tape_{i}.bin"));
         write(&part(steps_len..t.len()), format!("release_{i}.bin"));
     } else {
         write(t, format!("tape_{i}.bin"));
     }
-    println!("{}", json!({"party": i, "steps": steps, "tape_len": dl.tapes[i].len(), "steps_len": steps_len, "release": rel}));
+    println!(
+        "{}",
+        json!({"party": i, "steps": steps, "tape_len": dl.tapes[i].len(), "steps_len": steps_len, "release": rel})
+    );
 }
 
 /// The run's proof profile against its tapes, before step 0 (or the first step after a resume or a join): the first
@@ -1332,7 +1899,9 @@ fn check_profile(args: &[String], first: usize) -> Result<(), String> {
     if !args.iter().any(|a| a == "--prove") || flag(args, "--steps").as_deref() == Some("0") {
         return Ok(());
     }
-    let Some(pat) = flag(args, "--tapes") else { return Ok(()) };
+    let Some(pat) = flag(args, "--tapes") else {
+        return Ok(());
+    };
     let path = serve::step_path(args, &pat, first);
     let n = serve::tape_len(&path)?;
     let pf = darkstep::node::prof(&args[3..7]);
@@ -1340,10 +1909,15 @@ fn check_profile(args: &[String], first: usize) -> Result<(), String> {
     let pr = profile_of(args);
     let lp = pr.ligero();
     let pg = serve::program_of(args);
-    let prm = params_of_args(&pg, &args);
+    let prm = params_of_args(&pg, args);
     let tables = darkproof::step::tables();
     let own;
-    let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
+    let tb = if prm.t_lo == -128 {
+        &tables
+    } else {
+        own = darkproof::step::tables_for(prm.t_lo);
+        &own
+    };
     let (count, want) = step_entries(&lp, pf.d, &pg, prm, tb);
     if n != want {
         let name = flag(args, "--profile").unwrap_or_else(|| "ledger".into());
@@ -1353,10 +1927,30 @@ fn check_profile(args: &[String], first: usize) -> Result<(), String> {
 }
 
 /// A carried proved step's tape: (proof-section triples, total entries) for this program and profile.
-fn step_entries(lp: &darkproof::ligero::LigParams, d: usize, pg: &Program, prm: StepParams, tb: &(Vec<u64>, Vec<u64>)) -> (usize, usize) {
+fn step_entries(
+    lp: &darkproof::ligero::LigParams,
+    d: usize,
+    pg: &Program,
+    prm: StepParams,
+    tb: &(Vec<u64>, Vec<u64>),
+) -> (usize, usize) {
     let count = darkproof::run::step_section(lp, d, prm, true, tb);
     use darkprep::schedule::*;
-    let sp = StepParams { d, inputs: Inputs::Steady, trunc: [(pg.s1, pg.k1), (pg.s1, pg.k1), (pg.s2, pg.k2), (pg.s3, pg.k3)], proof_atoms: true, proof_triples: count, phase: Phase::Step, rs: prm.rs, xt: None };
+    let sp = StepParams {
+        d,
+        inputs: Inputs::Steady,
+        trunc: [
+            (pg.s1, pg.k1),
+            (pg.s1, pg.k1),
+            (pg.s2, pg.k2),
+            (pg.s3, pg.k3),
+        ],
+        proof_atoms: true,
+        proof_triples: count,
+        phase: Phase::Step,
+        rs: prm.rs,
+        xt: None,
+    };
     (count, tags(&sp).len())
 }
 
@@ -1386,7 +1980,12 @@ fn main() {
             let tables = darkproof::step::tables();
             let prm = params_of_args(&serve::program_of(&args), &args);
             let own;
-            let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
+            let tb = if prm.t_lo == -128 {
+                &tables
+            } else {
+                own = darkproof::step::tables_for(prm.t_lo);
+                &own
+            };
             let g = darkproof::run::step_section(&lp, pf.d, prm, false, tb);
             let c = darkproof::run::step_section(&lp, pf.d, prm, true, tb);
             println!("{g},{c}");
@@ -1400,7 +1999,12 @@ fn main() {
             let pg = serve::program_of(&args);
             let prm = params_of_args(&pg, &args);
             let own;
-            let tb = if prm.t_lo == -128 { &tables } else { own = darkproof::step::tables_for(prm.t_lo); &own };
+            let tb = if prm.t_lo == -128 {
+                &tables
+            } else {
+                own = darkproof::step::tables_for(prm.t_lo);
+                &own
+            };
             let (c, n) = step_entries(&lp, pf.d, &pg, prm, tb);
             println!("{}", json!({"proof_triples": c, "entries": n}));
         }
@@ -1427,7 +2031,9 @@ fn main() {
             require_consumed_log(&args);
             let i: usize = args[2].parse().unwrap();
             let first = if args.iter().any(|a| a == "--resume") {
-                serve::read_checkpoint(&PathBuf::from(&args[7]).join(format!("ckpt_P{i}.bin"))).map(|c| c.step).unwrap_or(0)
+                serve::read_checkpoint(&PathBuf::from(&args[7]).join(format!("ckpt_P{i}.bin")))
+                    .map(|c| c.step)
+                    .unwrap_or(0)
             } else {
                 0
             };
@@ -1443,7 +2049,9 @@ fn main() {
             serve::set_nat(&args);
             load_vault(&args);
             require_consumed_log(&args);
-            let after: usize = flag(&args, "--after-step").and_then(|k| k.parse().ok()).unwrap_or(0);
+            let after: usize = flag(&args, "--after-step")
+                .and_then(|k| k.parse().ok())
+                .unwrap_or(0);
             if let Err(e) = check_profile(&args, after + 1) {
                 eprintln!("{e}");
                 std::process::exit(2);
@@ -1451,7 +2059,9 @@ fn main() {
             std::process::exit(join_main(&args))
         }
         _ => {
-            eprintln!("usage: dl-custodian serve|join|proof-triples ... (see the source's module doc)");
+            eprintln!(
+                "usage: dl-custodian serve|join|proof-triples ... (see the source's module doc)"
+            );
             std::process::exit(2);
         }
     }

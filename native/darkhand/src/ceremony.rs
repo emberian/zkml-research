@@ -20,7 +20,15 @@ fn poly_parse(b: &[u8]) -> Result<BigPoly, String> {
 }
 
 /// Returns (my custodian with its secret key, the ceremony with every key registered).
-pub fn run(net: &Net, me: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize, epoch: i64) -> Result<(Custodian, Ceremony), String> {
+pub fn run(
+    net: &Net,
+    me: usize,
+    ring_n: usize,
+    primes: &[u64],
+    t: u64,
+    tcols: usize,
+    epoch: i64,
+) -> Result<(Custodian, Ceremony), String> {
     let mut cust = Custodian::new(me);
     let mut cer = Ceremony::new(epoch, net.n, ring_n, primes, t, tcols);
     let mine = cust.commitment(epoch);

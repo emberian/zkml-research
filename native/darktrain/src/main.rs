@@ -8,20 +8,31 @@ use darktrain::*;
 
 fn main() {
     let a: Vec<String> = std::env::args().collect();
-    let c: Cfg = serde_json::from_str(a.get(2).map(|s| s.as_str()).unwrap_or("{}")).expect("cfg json");
+    let c: Cfg =
+        serde_json::from_str(a.get(2).map(|s| s.as_str()).unwrap_or("{}")).expect("cfg json");
     c.validate().unwrap();
     let m = data::load(std::path::Path::new(&c.data)).unwrap();
     let c = c.with_means(&m);
     match a[1].as_str() {
         "run" => {
-            let (pts, _, _) = train(&c, &m, |p| println!("{}", serde_json::to_string(p).unwrap()));
+            let (pts, _, _) = train(&c, &m, |p| {
+                println!("{}", serde_json::to_string(p).unwrap())
+            });
             let last = pts.last().unwrap();
-            println!("{}", serde_json::json!({"summary": true, "cfg": c, "final_acc_o": last.eval.acc_o, "final_acc_z2": last.eval.acc_z2,
-                "violations_train": last.train_bounds.violations(), "violations_eval": last.eval.bounds.violations(), "secs": last.secs}));
+            println!(
+                "{}",
+                serde_json::json!({"summary": true, "cfg": c, "final_acc_o": last.eval.acc_o, "final_acc_z2": last.eval.acc_z2,
+                "violations_train": last.train_bounds.violations(), "violations_eval": last.eval.bounds.violations(), "secs": last.secs})
+            );
         }
         "float" => {
-            let out = train_float(&c, &m, |s, acc, t| println!("{}", serde_json::json!({"step": s, "acc": acc, "secs": t})));
-            println!("{}", serde_json::json!({"summary": true, "float": true, "cfg": c, "final_acc": out.last().unwrap().1}));
+            let out = train_float(&c, &m, |s, acc, t| {
+                println!("{}", serde_json::json!({"step": s, "acc": acc, "secs": t}))
+            });
+            println!(
+                "{}",
+                serde_json::json!({"summary": true, "float": true, "cfg": c, "final_acc": out.last().unwrap().1})
+            );
         }
         "feed" => {
             let (s0, n): (usize, usize) = (a[3].parse().unwrap(), a[4].parse().unwrap());
@@ -33,16 +44,22 @@ fn main() {
             }
         }
         "shadow" => {
-            let (steps, ne): (usize, usize) = (a[3].parse().unwrap(), a.get(4).map(|s| s.parse().unwrap()).unwrap_or(c.eval_n));
+            let (steps, ne): (usize, usize) = (
+                a[3].parse().unwrap(),
+                a.get(4).map(|s| s.parse().unwrap()).unwrap_or(c.eval_n),
+            );
             let mut c2 = c.clone();
             c2.steps = steps;
             c2.evals = vec![];
             c2.eval_n = ne;
             let (pts, w1, w2) = train(&c2, &m, |_| {});
             let ev = &pts.last().unwrap().eval;
-            println!("{}", serde_json::json!({"steps": steps, "n_eval": ne, "correct": (ev.acc_o * ne as f64).round() as u64,
+            println!(
+                "{}",
+                serde_json::json!({"steps": steps, "n_eval": ne, "correct": (ev.acc_o * ne as f64).round() as u64,
                 "acc": ev.acc_o, "violations": pts.last().unwrap().train_bounds.violations() + ev.bounds.violations(),
-                "weights_sha256": weights_digest(c.d, &w1, &w2)}));
+                "weights_sha256": weights_digest(c.d, &w1, &w2)})
+            );
         }
         x => panic!("unknown command {x}"),
     }

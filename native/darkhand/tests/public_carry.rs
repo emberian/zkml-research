@@ -11,7 +11,10 @@ fn public_genesis_is_recognised_and_a_secret_commitment_is_not() {
     let (coms, _) = darkproof::run::public_genesis(&pr, d, 0, &w, &w, 3);
     assert!(darkhand::side::carry_is_public(&coms["W1"], p));
     let (coms1, _) = darkproof::run::public_genesis(&pr, d, 1, &w, &w, 3);
-    assert!(darkhand::side::carry_is_public(&coms1["W2"], p), "party 1's zero commitment is public too");
+    assert!(
+        darkhand::side::carry_is_public(&coms1["W2"], p),
+        "party 1's zero commitment is public too"
+    );
     let share: Vec<u64> = w.iter().map(|&v| darkproof::field::from_i64(v)).collect();
     let secret = darkproof::pcs::PcsParty::commit(&pr, &share, "W1", 0, &darkproof::rng::Det(None));
     assert!(!darkhand::side::carry_is_public(&secret, p));

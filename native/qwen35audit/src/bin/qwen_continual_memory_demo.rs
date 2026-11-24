@@ -3,18 +3,19 @@
 //! (`H_v = 16, d_k = d_v = 128`, `248,320` vocab) and `Qwen3.8` (`H_v = 48 -> 64` head width).
 
 use qwen35audit::continual_memory::{
-    apply_continual_wy_episode, apply_rank_r_subspace_unlearning, build_gram_schmidt_subspace_basis,
-    canonical_three_episodes, evaluate_episode_recall, prove_continual_wy_update_zk,
-    prove_zk_unlearning_certificate, readout_snr_db_vs_counterfactual,
-    verify_continual_wy_update_zk, verify_zk_unlearning_certificate, ContinualEpisodeMmr,
-    FastWeightMemoryState, MemoryDomain, PreloadedQwen35Model, ProverVaultKey, QwenBpeTokenizer,
-    ZkUnlearningCertificate, CMEM_WY_SCALE, LIMB_RADIX, M_GS, S_BND_HALF, S_SCALE, TAU_ORTH,
-    TAU_SPAN, TAU_ZERO,
+    apply_continual_wy_episode, apply_rank_r_subspace_unlearning,
+    build_gram_schmidt_subspace_basis, canonical_three_episodes, evaluate_episode_recall,
+    prove_continual_wy_update_zk, prove_zk_unlearning_certificate,
+    readout_snr_db_vs_counterfactual, verify_continual_wy_update_zk,
+    verify_zk_unlearning_certificate, ContinualEpisodeMmr, FastWeightMemoryState, MemoryDomain,
+    PreloadedQwen35Model, ProverVaultKey, QwenBpeTokenizer, ZkUnlearningCertificate, CMEM_WY_SCALE,
+    LIMB_RADIX, M_GS, S_BND_HALF, S_SCALE, TAU_ORTH, TAU_SPAN, TAU_ZERO,
 };
 use qwen35audit::pcs_ext4::{PcsParams, PcsShape};
 use qwen35audit::safetensors_mmap::{
     MmapSafetensors, QWEN35_SAFETENSORS_FILE, QWEN35_TOKENIZER_FILE,
 };
+use std::ops::Add;
 use std::time::Instant;
 
 fn hex8(r: &[u8; 32]) -> String {
@@ -25,7 +26,9 @@ fn main() -> Result<(), String> {
     println!("==============================================================================================");
     println!("  qwen_continual_memory_demo — Verifiable Continual Fast-Weight Learning & Rank-r ZK Unlearning");
     println!("  Model: Qwen/Qwen3.5-0.8B-Base (24L, 248,320 vocab, H_v=16) + Qwen3.8 Head Width (H_v=48->64)");
-    println!("  Crypto: BabyBear Ext4 (X^4 - 11, 123.7b) + Salted SuccinctExt4Pcs + cSHAKE256 MMR (v3)");
+    println!(
+        "  Crypto: BabyBear Ext4 (X^4 - 11, 123.7b) + Salted SuccinctExt4Pcs + cSHAKE256 MMR (v3)"
+    );
     println!("==============================================================================================");
 
     let pcs_shape_16 = PcsShape::new(18, PcsParams::default_zk(4));
@@ -122,7 +125,8 @@ fn main() -> Result<(), String> {
     let scf_raw = apply_continual_wy_episode(&s1_raw, &ep_c_raw).s_post;
     let basis_b_raw = build_gram_schmidt_subspace_basis(&ep_b_raw);
     let unl_raw = apply_rank_r_subspace_unlearning(&s3_raw, &basis_b_raw)?;
-    let raw_b_res = evaluate_episode_recall(&model, &unl_raw.s_unlearned, &ep_b_raw, gain).mean_readout_l2
+    let raw_b_res = evaluate_episode_recall(&model, &unl_raw.s_unlearned, &ep_b_raw, gain)
+        .mean_readout_l2
         / evaluate_episode_recall(&model, &s3_raw, &ep_b_raw, gain).mean_readout_l2;
     let snr_c_raw = readout_snr_db_vs_counterfactual(&unl_raw.s_unlearned, &scf_raw, &ep_c_raw);
     println!(
@@ -130,7 +134,9 @@ fn main() -> Result<(), String> {
         raw_b_res, snr_c, snr_c_raw
     );
 
-    println!("\n--- [2] Succinct ZK Continual Adaptation & Unlearning Proofs (Qwen3.5 H_v = 16) ---");
+    println!(
+        "\n--- [2] Succinct ZK Continual Adaptation & Unlearning Proofs (Qwen3.5 H_v = 16) ---"
+    );
     let mut mmr = ContinualEpisodeMmr::new();
     let nonce_a = [0xA1u8; 32];
     let nonce_b = [0xB2u8; 32];
@@ -193,25 +199,66 @@ fn main() -> Result<(), String> {
     );
 
     let base_cert = ZkUnlearningCertificate::from_bytes(&cert_bytes)?;
-    let atk1 = verify_zk_unlearning_certificate(&s3_r, &s3_r, &forget_req_b, Some(&mmr_root3), 16, 6, &cert_bytes);
-    let atk2 = verify_zk_unlearning_certificate(&s3_r, &su_r, &forget_req_b, Some(&mmr_root3), 16, 1, &cert_bytes);
+    let atk1 = verify_zk_unlearning_certificate(
+        &s3_r,
+        &s3_r,
+        &forget_req_b,
+        Some(&mmr_root3),
+        16,
+        6,
+        &cert_bytes,
+    );
+    let atk2 = verify_zk_unlearning_certificate(
+        &s3_r,
+        &su_r,
+        &forget_req_b,
+        Some(&mmr_root3),
+        16,
+        1,
+        &cert_bytes,
+    );
     let mut c3 = base_cert.clone();
     c3.gram_shift_at_zg = c3.gram_shift_at_zg.add(qwen35audit::ext4::Ext4::ONE);
-    let atk3 = verify_zk_unlearning_certificate(&s3_r, &su_r, &forget_req_b, Some(&mmr_root3), 16, 6, &c3.to_bytes());
+    let atk3 = verify_zk_unlearning_certificate(
+        &s3_r,
+        &su_r,
+        &forget_req_b,
+        Some(&mmr_root3),
+        16,
+        6,
+        &c3.to_bytes(),
+    );
     let mut bad_root = su_r;
     bad_root[0] ^= 0xFF;
-    let atk4 = verify_zk_unlearning_certificate(&s3_r, &bad_root, &forget_req_b, Some(&mmr_root3), 16, 6, &cert_bytes);
+    let atk4 = verify_zk_unlearning_certificate(
+        &s3_r,
+        &bad_root,
+        &forget_req_b,
+        Some(&mmr_root3),
+        16,
+        6,
+        &cert_bytes,
+    );
     let mut ovf = unl_wit.clone();
     ovf.res_shift_lsb_hja[0] = 25;
     let atk5 = prove_zk_unlearning_certificate(&vault_key, &ovf, &nonce_b, None);
     let mut decoy_mmr = ContinualEpisodeMmr::new();
     let atk6 = prove_continual_wy_update_zk(&vault_key, &wit2, &basis_a, &nonce_b, &mut decoy_mmr);
-    assert!(atk1.is_err() && atk2.is_err() && atk3.is_err() && atk4.is_err() && atk5.is_err() && atk6.is_err());
+    assert!(
+        atk1.is_err()
+            && atk2.is_err()
+            && atk3.is_err()
+            && atk4.is_err()
+            && atk5.is_err()
+            && atk6.is_err()
+    );
     println!(
         "  [TEETH] 9/9 Adversarial Vectors Rejected: [1] No-op S'=S | [2] Partial rank-1 / h_v | [3] Corrupted U Gram / inactive | [4] Forged S_post_root | [5] Residual / S=122880 wraparound | [6] Decoy U != span(K) | [7] Forged L != KK^T | [8] MMR leaf_idx swap"
     );
 
-    println!("\n--- [3] Qwen3.8 Head-Width Scaling (H_v = 48 -> h_pad = 64, 1,048,576 Memory Cells) ---");
+    println!(
+        "\n--- [3] Qwen3.8 Head-Width Scaling (H_v = 48 -> h_pad = 64, 1,048,576 Memory Cells) ---"
+    );
     let s0_48 = FastWeightMemoryState::zero(48);
     let s1_48 = apply_continual_wy_episode(&s0_48, &ep_a48).s_post;
     let s2_48 = apply_continual_wy_episode(&s1_48, &ep_b48).s_post;

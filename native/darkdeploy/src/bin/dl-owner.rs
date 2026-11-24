@@ -14,12 +14,18 @@
 use std::net::TcpListener;
 
 fn flag(a: &[String], n: &str) -> Option<String> {
-    a.iter().position(|x| x == n).and_then(|k| a.get(k + 1).cloned())
+    a.iter()
+        .position(|x| x == n)
+        .and_then(|k| a.get(k + 1).cloned())
 }
 
 enum Values {
     Test(std::path::PathBuf),
-    Train { c: darktrain::Cfg, m: darktrain::data::Mnist, ord: Vec<usize> },
+    Train {
+        c: Box<darktrain::Cfg>,
+        m: Box<darktrain::data::Mnist>,
+        ord: Vec<usize>,
+    },
 }
 
 /// A custodian's owner message (darkprep's DLOMSG1: magic, u64 count, count x (a_i, b_i, c_i) u64 LE).
@@ -44,18 +50,25 @@ fn main() {
         key_der: std::fs::read(tls.join("tls_owner.key")).expect("owner key"),
         cert_der: std::fs::read(tls.join("cert_owner.der")).expect("owner cert"),
     };
-    let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tls.join(format!("cert_{j}.der"))).unwrap()).collect();
+    let certs: Vec<Vec<u8>> = (0..3)
+        .map(|j| std::fs::read(tls.join(format!("cert_{j}.der"))).unwrap())
+        .collect();
     let vals = if let Some(dir) = flag(&a, "--test-public") {
         Values::Test(dir.into())
     } else {
-        let cfg = std::fs::read_to_string(flag(&a, "--train").expect("--test-public or --train")).unwrap();
+        let cfg = std::fs::read_to_string(flag(&a, "--train").expect("--test-public or --train"))
+            .unwrap();
         let c: darktrain::Cfg = serde_json::from_str(&cfg).expect("cfg");
         c.validate().unwrap();
         assert_eq!(c.d, d);
         let m = darktrain::data::load(std::path::Path::new(&c.data)).unwrap();
         let c = c.with_means(&m);
         let ord = darktrain::order(c.seed_order, m.train.n);
-        Values::Train { c, m, ord }
+        Values::Train {
+            c: Box::new(c),
+            m: Box::new(m),
+            ord,
+        }
     };
     let public_genesis = a.iter().any(|x| x == "--public-genesis");
     let l = TcpListener::bind(flag(&a, "--listen").expect("--listen")).unwrap();
@@ -66,32 +79,55 @@ fn main() {
     for (n, x) in a.iter().enumerate() {
         if x == "--next-tls" {
             let dir = std::path::PathBuf::from(&a[n + 1]);
-            sessions.push((0..3).map(|j| std::fs::read(dir.join(format!("cert_{j}.der"))).unwrap()).collect());
+            sessions.push(
+                (0..3)
+                    .map(|j| std::fs::read(dir.join(format!("cert_{j}.der"))).unwrap())
+                    .collect(),
+            );
         }
     }
     let mut res = Ok(vec![]);
     for certs in &sessions {
-        res = darkstep::serve::owner_serve(l.try_clone().unwrap(), &id, certs, |k, msgs| match &vals {
-        Values::Test(dir) => std::fs::read(dir.join(format!("public_step{k}.bin"))).map(|b| darkstep::net::bytes_to_u64s(&b)).map_err(|e| e.to_string()),
-        Values::Train { c, m, ord } => {
-            let mut v: Vec<i64> = Vec::new();
-            if k == 0 && !public_genesis {
-                let (w1, w2) = darktrain::init(c);
-                v.extend(w1);
-                v.extend(w2);
-            }
-            let ex = ord[k % m.train.n];
-            let (x, y) = darktrain::encode(c, m.train.image(ex), m.train.lab[ex]);
-            v.extend(x);
-            v.extend(y);
-            let msgs: Vec<Vec<[u64; 3]>> = msgs.iter().map(|r| owner_message(r)).collect::<Result<_, _>>()?;
-            let rs = darkprep::owner::owner_masks(fp, &msgs)?;
-            if rs.len() != v.len() {
-                return Err(format!("step {k}: {} masks for {} inputs", rs.len(), v.len()));
-            }
-            Ok(v.iter().zip(&rs).map(|(&x, &r)| darkstep::arith::submod(darkstep::arith::from_i64(x, t), r, t)).collect())
-        }
-        });
+        res = darkstep::serve::owner_serve(
+            l.try_clone().unwrap(),
+            &id,
+            certs,
+            |k, msgs| match &vals {
+                Values::Test(dir) => std::fs::read(dir.join(format!("public_step{k}.bin")))
+                    .map(|b| darkstep::net::bytes_to_u64s(&b))
+                    .map_err(|e| e.to_string()),
+                Values::Train { c, m, ord } => {
+                    let mut v: Vec<i64> = Vec::new();
+                    if k == 0 && !public_genesis {
+                        let (w1, w2) = darktrain::init(c);
+                        v.extend(w1);
+                        v.extend(w2);
+                    }
+                    let ex = ord[k % m.train.n];
+                    let (x, y) = darktrain::encode(c, m.train.image(ex), m.train.lab[ex]);
+                    v.extend(x);
+                    v.extend(y);
+                    let msgs: Vec<Vec<[u64; 3]>> = msgs
+                        .iter()
+                        .map(|r| owner_message(r))
+                        .collect::<Result<_, _>>()?;
+                    let rs = darkprep::owner::owner_masks(fp, &msgs)?;
+                    if rs.len() != v.len() {
+                        return Err(format!(
+                            "step {k}: {} masks for {} inputs",
+                            rs.len(),
+                            v.len()
+                        ));
+                    }
+                    Ok(v.iter()
+                        .zip(&rs)
+                        .map(|(&x, &r)| {
+                            darkstep::arith::submod(darkstep::arith::from_i64(x, t), r, t)
+                        })
+                        .collect())
+                }
+            },
+        );
         if res.is_err() {
             break;
         }

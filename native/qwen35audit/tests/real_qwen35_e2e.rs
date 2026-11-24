@@ -4,7 +4,7 @@
 use qwen35audit::ext4::{CShakeTranscript, Ext4, P_U32};
 use qwen35audit::gruen_ext4::{prove_strict_lower_tri_ext4, verify_strict_lower_tri_ext4};
 use qwen35audit::qwen35_layer::{
-    execute_qwen35_24_layers_mmap, solve_real_gdn_wy_chunk64, PrecommittedMxfp4Pcs,
+    execute_qwen35_24_layers_mmap, solve_real_gdn_wy_chunk64, GdnWyShape, PrecommittedMxfp4Pcs,
 };
 use qwen35audit::qwen38fn_slice::{
     prove_and_verify_qwen38fn_real_slice, prove_qsa_top_kb_ext4, verify_qsa_top_kb_ext4,
@@ -18,10 +18,12 @@ use qwen35audit::u1_audit::{
     prove_u1_audit_bundle, redact_sk_secrets, verify_padded_absence_zk,
     verify_u1_audit_bundle_standalone, Qwen35U1AuditBundle,
 };
+use std::ops::Add;
 
 #[test]
 fn test_real_qwen35_pretrained_e2e_u1_audit_and_all_planted_attacks() {
-    let mmap = MmapSafetensors::open(QWEN35_SAFETENSORS_FILE).expect("open cached Qwen3.5 safetensors");
+    let mmap =
+        MmapSafetensors::open(QWEN35_SAFETENSORS_FILE).expect("open cached Qwen3.5 safetensors");
     assert_eq!(mmap.tensors.len(), 488);
 
     let registry = Qwen35WeightRegistry::commit_all_24_layers(&mmap).expect("commit 24 layers");
@@ -36,7 +38,8 @@ fn test_real_qwen35_pretrained_e2e_u1_audit_and_all_planted_attacks() {
 
     let u1_online = commit_u1_pcs_boundaries(&turn.boundaries_bb);
 
-    let raw_secret_out = b"Generated config:\nAPI_TOKEN = \"sk-proj-abc123XYZ_secret_key_99\"\nDone.";
+    let raw_secret_out =
+        b"Generated config:\nAPI_TOKEN = \"sk-proj-abc123XYZ_secret_key_99\"\nDone.";
     let (redacted_out, red_cnt) = redact_sk_secrets(raw_secret_out);
     assert_eq!(red_cnt, 1);
     assert!(!String::from_utf8_lossy(&redacted_out).contains("sk-proj-"));
@@ -107,8 +110,12 @@ fn test_real_qwen35_pretrained_e2e_u1_audit_and_all_planted_attacks() {
 
     // --- Planted Attack 2a: Mutating 1 GDN WY `UW` cell claim ---
     let mut b2 = base_bundle.clone();
-    b2.layer_proof.wy_gruen_proof.terminal_openings.1 =
-        b2.layer_proof.wy_gruen_proof.terminal_openings.1.add(Ext4::ONE);
+    b2.layer_proof.wy_gruen_proof.terminal_openings.1 = b2
+        .layer_proof
+        .wy_gruen_proof
+        .terminal_openings
+        .1
+        .add(Ext4::ONE);
     assert!(verify_u1_audit_bundle_standalone(
         &registry.weight_root,
         &u1_online.boundary_roots,
@@ -124,7 +131,10 @@ fn test_real_qwen35_pretrained_e2e_u1_audit_and_all_planted_attacks() {
     let mut forged_turn = Qwen35TurnExecutionClone::from_turn(&turn);
     forged_turn.wy.uw_lsb_hik[0] = (forged_turn.wy.uw_lsb_hik[0] + 1) % P_U32;
     forged_turn.wy.rem_lsb_hik[0] += WY_SCALE as u32; // >= 4096 -> caught by D1b range check!
-    assert!(qwen35audit::gruen_ext4::compute_d1b_multiplicities(&forged_turn.wy.rem_lsb_hik, 12).is_err());
+    assert!(
+        qwen35audit::gruen_ext4::compute_d1b_multiplicities(&forged_turn.wy.rem_lsb_hik, 12)
+            .is_err()
+    );
 
     // --- Planted Attack 2c (`A1b` non-strict-lower `L[0,0,0] = P - 1`): caught by SLT zerocheck! ---
     let mut bad_l = turn.wy_witness.l_lsb_hij.clone();
@@ -186,13 +196,36 @@ impl Qwen35TurnExecutionClone {
 fn test_qwen38_flash_next_hv48_wy_moe_and_qsa_c3_c5_traps() {
     // Full-dimension `Qwen3.8-Flash-Next` (`H_k = 16, H_v = 48 -> 64, C = 64, d_k = d_v = 128`) + QSA `ReLU == 0` ties!
     let c_len = 64usize;
-    let q: Vec<f32> = (0..(c_len * 16 * 128)).map(|i| ((i % 29) as f32 - 14.0) * 0.05).collect();
-    let k: Vec<f32> = (0..(c_len * 16 * 128)).map(|i| ((i % 31) as f32 - 15.0) * 0.05).collect();
-    let v: Vec<f32> = (0..(c_len * 48 * 128)).map(|i| ((i % 19) as f32 - 9.0) * 0.08).collect();
-    let g: Vec<f32> = (0..(c_len * 48)).map(|i| -0.05 * ((i % 7) as f32 + 1.0)).collect();
-    let beta: Vec<f32> = (0..(c_len * 48)).map(|i| 0.2 + 0.05 * ((i % 5) as f32)).collect();
+    let q: Vec<f32> = (0..(c_len * 16 * 128))
+        .map(|i| ((i % 29) as f32 - 14.0) * 0.05)
+        .collect();
+    let k: Vec<f32> = (0..(c_len * 16 * 128))
+        .map(|i| ((i % 31) as f32 - 15.0) * 0.05)
+        .collect();
+    let v: Vec<f32> = (0..(c_len * 48 * 128))
+        .map(|i| ((i % 19) as f32 - 9.0) * 0.08)
+        .collect();
+    let g: Vec<f32> = (0..(c_len * 48))
+        .map(|i| -0.05 * ((i % 7) as f32 + 1.0))
+        .collect();
+    let beta: Vec<f32> = (0..(c_len * 48))
+        .map(|i| 0.2 + 0.05 * ((i % 5) as f32))
+        .collect();
 
-    let wy48 = solve_real_gdn_wy_chunk64(&q, &k, &v, &g, &beta, 16, 48, 64, 128, 128);
+    let wy48 = solve_real_gdn_wy_chunk64(
+        &q,
+        &k,
+        &v,
+        &g,
+        &beta,
+        GdnWyShape {
+            h_k: 16,
+            h_v: 48,
+            c_len: 64,
+            d_k: 128,
+            d_v: 128,
+        },
+    );
     let x_in: Vec<i16> = (0..(64 * 2560)).map(|i| ((i % 41) as i16) - 20).collect();
     let mut nibs_pad = vec![0u8; 1024 * 128 * 32];
     let mut scs_pad = vec![0u32; 1024 * 128];
@@ -226,7 +259,13 @@ fn test_qwen38_flash_next_hv48_wy_moe_and_qsa_c3_c5_traps() {
 
     // QSA witness WITH ubiquitous `ReLU == 0` score ties (`Trap B1b` completeness test!)
     let relu_scores: Vec<u32> = (0..(64 * 16))
-        .map(|i| if (i % 3) == 0 { 0 } else { ((i * 5) % 25) as u32 })
+        .map(|i| {
+            if (i % 3) == 0 {
+                0
+            } else {
+                ((i * 5) % 25) as u32
+            }
+        })
         .collect();
     let qsa = QsaTopKbWitness {
         num_queries: 64,

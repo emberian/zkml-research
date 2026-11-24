@@ -44,7 +44,13 @@ fn ct_bytes(hdr: &[u64], ct: &Ct) -> Vec<u8> {
 fn ct_parse(b: &[u8], nh: usize, ln: usize) -> (Vec<u64>, Ct) {
     let v = bytes_to_u64s(b);
     assert_eq!(v.len(), nh + 2 * ln, "ciphertext frame length");
-    (v[..nh].to_vec(), Ct { c0: v[nh..nh + ln].to_vec(), c1: v[nh + ln..].to_vec() })
+    (
+        v[..nh].to_vec(),
+        Ct {
+            c0: v[nh..nh + ln].to_vec(),
+            c1: v[nh + ln..].to_vec(),
+        },
+    )
 }
 
 /// Decryption threads per recipient (std threads, not rayon: a rayon worker blocked on a socket could starve the
@@ -54,7 +60,15 @@ pub const DEC_THREADS: usize = 4;
 /// Receive `per_peer` returns from each of `peers`, decrypt each at `coefs`, and hand (header, plaintexts) to `sink`.
 /// Every peer has its own decryption threads, so a slow peer never holds up the drain of another (the returners'
 /// bounded queues would otherwise couple all three parties into a wait cycle).
-fn recv_decrypt<F: Fn(&[u64], &[u64]) + Sync>(net: &crate::net::Net, key: &OwnKey, peers: &[usize], per_peer: usize, nh: usize, coefs: &[usize], sink: F) {
+fn recv_decrypt<F: Fn(&[u64], &[u64]) + Sync>(
+    net: &crate::net::Net,
+    key: &OwnKey,
+    peers: &[usize],
+    per_peer: usize,
+    nh: usize,
+    coefs: &[usize],
+    sink: F,
+) {
     use std::sync::atomic::{AtomicUsize, Ordering};
     let ln = key.rns.l() * key.rns.n;
     let claimed: Vec<AtomicUsize> = peers.iter().map(|_| AtomicUsize::new(0)).collect();
@@ -102,7 +116,9 @@ impl He {
                 let w = crate::bfv::compress_return(&self.rns, ct, c.small.l(), coefs);
                 match c.round {
                     None => v.extend(w),
-                    Some((b0, b1)) => v.extend(crate::bfv::round_wire(&c.small, &w, coefs.len(), b0, b1)),
+                    Some((b0, b1)) => {
+                        v.extend(crate::bfv::round_wire(&c.small, &w, coefs.len(), b0, b1))
+                    }
                 }
                 u64s_to_bytes(&v)
             }
@@ -132,7 +148,15 @@ impl He {
     /// Send my ciphertexts to both other parties; receive theirs (index by party). Gated: my batch's ZKPoPK follows
     /// my ciphertexts on HE_CT, and I verify both senders' batches (and all three agree on the verdicts) before
     /// returning, so no ptxct ever touches an unverified ciphertext.
-    fn swap_cts(&mut self, pt: &Party, mut msgs: Vec<Vec<u64>>, kind: &str, call: u64, transpose: bool, slots: &[usize]) -> Result<Vec<Vec<Ct>>, String> {
+    fn swap_cts(
+        &mut self,
+        pt: &Party,
+        mut msgs: Vec<Vec<u64>>,
+        kind: &str,
+        call: u64,
+        transpose: bool,
+        slots: &[usize],
+    ) -> Result<Vec<Vec<Ct>>, String> {
         let me = pt.i;
         let mut forge = false;
         if let (Some(_), Some((ak, who))) = (&self.gate, &self.attack) {
@@ -143,7 +167,8 @@ impl He {
                 forge = true;
             }
         }
-        let enc: Vec<(Ct, Vec<i64>, Option<[u8; 32]>)> = msgs.iter().map(|m| self.key.encrypt_seeded(m)).collect();
+        let enc: Vec<(Ct, Vec<i64>, Option<[u8; 32]>)> =
+            msgs.iter().map(|m| self.key.encrypt_seeded(m)).collect();
         let ln = self.rns.l() * self.rns.n;
         // a seeded ciphertext travels as c0 and the 32-byte seed of a (half the bytes)
         let wires: Vec<Vec<u8>> = enc
@@ -165,9 +190,28 @@ impl He {
         drop(wires);
         let (cts, es): (Vec<Ct>, Vec<Vec<i64>>) = enc.into_iter().map(|(c, e, _)| (c, e)).unzip();
         if let Some(g) = self.gate.as_mut() {
-            let ws: Vec<dzkpopk::SkCt> = msgs.iter().zip(es).map(|(m, e)| dzkpopk::SkCt { e, r: crate::gate::witness_r(&self.rns, m, slots) }).collect();
+            let ws: Vec<dzkpopk::SkCt> = msgs
+                .iter()
+                .zip(es)
+                .map(|(m, e)| dzkpopk::SkCt {
+                    e,
+                    r: crate::gate::witness_r(&self.rns, m, slots),
+                })
+                .collect();
             let ctx = crate::gate::context(kind, call, transpose, me);
-            let proof = g.prove(&self.rns, me, &cts, ws, slots, ctx, &crate::gate::label(kind, call, transpose, me), forge)?;
+            let lbl = crate::gate::label(kind, call, transpose, me);
+            let proof = g.prove(
+                &self.rns,
+                crate::gate::ProveBatch {
+                    me,
+                    cts: &cts,
+                    ws,
+                    slots,
+                    ctx,
+                    lbl: &lbl,
+                    forge,
+                },
+            )?;
             for j in pt.net.others() {
                 pt.net.send(j, net::HE_CT, proof.clone());
             }
@@ -184,7 +228,10 @@ impl He {
                             let b = pt.net.recv(j, net::HE_CT);
                             if b.len() == ln * 8 + 32 {
                                 let sd: [u8; 32] = b[ln * 8..].try_into().unwrap();
-                                Ct { c0: bytes_to_u64s(&b[..ln * 8]), c1: crate::bfv::expand_a(&self.rns, &sd) }
+                                Ct {
+                                    c0: bytes_to_u64s(&b[..ln * 8]),
+                                    c1: crate::bfv::expand_a(&self.rns, &sd),
+                                }
                             } else {
                                 ct_parse(&b, 0, ln).1
                             }
@@ -201,7 +248,14 @@ impl He {
             // one batch at a time (memory); each verification is internally parallel
             let mut refusals: Vec<(usize, String)> = vec![];
             for j in pt.net.others() {
-                if let Err(e) = g.verify(&self.rns, j, &theirs[j], slots, crate::gate::context(kind, call, transpose, j), &proofs[j]) {
+                if let Err(e) = g.verify(
+                    &self.rns,
+                    j,
+                    &theirs[j],
+                    slots,
+                    crate::gate::context(kind, call, transpose, j),
+                    &proofs[j],
+                ) {
                     refusals.push((j, e));
                 }
             }
@@ -211,7 +265,13 @@ impl He {
     }
 
     /// [z] = [W][v] (or W^T v), he_matvec.HEMatvec.__call__.
-    pub fn matvec(&mut self, pt: &mut Party, w: &[Vec<Sh>], v: &[Sh], transpose: bool) -> Result<Vec<Sh>, String> {
+    pub fn matvec(
+        &mut self,
+        pt: &mut Party,
+        w: &[Vec<Sh>],
+        v: &[Sh],
+        transpose: bool,
+    ) -> Result<Vec<Sh>, String> {
         let p = pt.p;
         let d = v.len();
         let n_ring = self.rns.n;
@@ -219,7 +279,10 @@ impl He {
         let (nrb, ncb) = (d / dr, d / dc);
         self.mv_calls += 1;
         let calls = self.mv_calls;
-        let wsh: Vec<Vec<i64>> = w.iter().map(|r| r.iter().map(|x| pt.centered(x.s)).collect()).collect();
+        let wsh: Vec<Vec<i64>> = w
+            .iter()
+            .map(|r| r.iter().map(|x| pt.centered(x.s)).collect())
+            .collect();
         let vsh: Vec<i64> = v.iter().map(|x| pt.centered(x.s)).collect();
         let mut z: Vec<u64> = (0..d)
             .map(|r| {
@@ -254,7 +317,11 @@ impl He {
                 .collect()
         };
         let nsent = msgs.len() as u64;
-        let slots: Vec<usize> = if !transpose { (64 - dc..64).collect() } else { (0..dr).map(|k| 64 * k).collect() };
+        let slots: Vec<usize> = if !transpose {
+            (64 - dc..64).collect()
+        } else {
+            (0..dr).map(|k| 64 * k).collect()
+        };
         let theirs = self.swap_cts(pt, msgs, "mv", calls, transpose, &slots)?;
         self.he_send += 2 * nsent * 2 * n_ring as u64 * 3;
         self.cts_sent += 2 * nsent;
@@ -289,15 +356,23 @@ impl He {
                 add.into_inner().unwrap()
             });
             // returner: my plaintext blocks times each recipient's ciphertexts
-            let ctn: Vec<Vec<(Vec<u64>, Vec<u64>)>> =
-                theirs.iter().map(|v| v.par_iter().map(|ct| he.ntt_ct(ct)).collect()).collect();
+            let ctn: Vec<Vec<(Vec<u64>, Vec<u64>)>> = theirs
+                .iter()
+                .map(|v| v.par_iter().map(|ct| he.ntt_ct(ct)).collect())
+                .collect();
             let senders: Vec<_> = others.iter().map(|&j| (j, net_ref.sender(j))).collect();
             let sub: Vec<Vec<(usize, u64)>> = (0..nouts)
                 .into_par_iter()
                 .map(|o| {
-                    let blocks: Vec<(usize, usize)> =
-                        if !transpose { (0..ncb).map(|b| (o, b)).collect() } else { (0..nrb).map(|a| (a, o)).collect() };
-                    let mut accs: Vec<(Vec<u64>, Vec<u64>)> = others.iter().map(|_| (he.rns.zero(), he.rns.zero())).collect();
+                    let blocks: Vec<(usize, usize)> = if !transpose {
+                        (0..ncb).map(|b| (o, b)).collect()
+                    } else {
+                        (0..nrb).map(|a| (a, o)).collect()
+                    };
+                    let mut accs: Vec<(Vec<u64>, Vec<u64>)> = others
+                        .iter()
+                        .map(|_| (he.rns.zero(), he.rns.zero()))
+                        .collect();
                     for &(a, b) in &blocks {
                         let mut coeffs = Vec::with_capacity(dr * dc);
                         for r in 0..dr {
@@ -319,8 +394,15 @@ impl He {
                             "hm|{}|{}|{}|{}|{}|{}",
                             he.mv_seed, calls, transpose as u8, me, j, o
                         ));
-                        let (ct, m) = make_return(&he.rns, &he.pks[j], (&accs[jj].0, &accs[jj].1), &mut rg, he.f_bits);
-                        tx.send((net::HE_RET, he.return_bytes(&[o as u64], &ct, &mv_coefs))).expect("peer writer gone");
+                        let (ct, m) = make_return(
+                            &he.rns,
+                            &he.pks[j],
+                            (&accs[jj].0, &accs[jj].1),
+                            &mut rg,
+                            he.f_bits,
+                        );
+                        tx.send((net::HE_RET, he.return_bytes(&[o as u64], &ct, &mv_coefs)))
+                            .expect("peer writer gone");
                         for &(coef, out) in &idx_of(o) {
                             keep.push((out, m[coef]));
                         }
@@ -399,7 +481,11 @@ impl He {
         let calls = self.ou_calls;
         let tr0 = std::time::Instant::now();
         let trace = std::env::var("DS_TRACE").is_ok() && pt.i == 0;
-        let tl = |what: &str| if trace { eprintln!("[outer {calls}] {what} {:.3}", tr0.elapsed().as_secs_f64()) };
+        let tl = |what: &str| {
+            if trace {
+                eprintln!("[outer {calls}] {what} {:.3}", tr0.elapsed().as_secs_f64())
+            }
+        };
         let am: Vec<i64> = a.iter().map(|v| pt.centered(v.s)).collect();
         let amm: Vec<i64> = a.iter().map(|v| pt.centered(v.m)).collect();
         let xm: Vec<i64> = x.iter().map(|v| pt.centered(v.s)).collect();
@@ -407,12 +493,15 @@ impl He {
         let mut gm: Vec<u64> = vec![0; d1 * d2];
         {
             use rayon::prelude::*;
-            g.par_chunks_mut(d2).zip(gm.par_chunks_mut(d2)).enumerate().for_each(|(r, (gr, gmr))| {
-                for c in 0..d2 {
-                    gr[c] = from_i128(am[r] as i128 * xm[c] as i128, p);
-                    gmr[c] = from_i128(amm[r] as i128 * xm[c] as i128, p);
-                }
-            });
+            g.par_chunks_mut(d2)
+                .zip(gm.par_chunks_mut(d2))
+                .enumerate()
+                .for_each(|(r, (gr, gmr))| {
+                    for c in 0..d2 {
+                        gr[c] = from_i128(am[r] as i128 * xm[c] as i128, p);
+                        gmr[c] = from_i128(amm[r] as i128 * xm[c] as i128, p);
+                    }
+                });
         }
         let msgs: Vec<Vec<u64>> = (0..nb)
             .map(|b| {
@@ -435,13 +524,16 @@ impl He {
         let nret = nab * nb * 2;
         let he = &*self;
         let net_ref = &pt.net;
-        let coefs: Vec<usize> = (0..dr).flat_map(|r| (0..dc).map(move |c| 64 * r + c)).collect();
+        let coefs: Vec<usize> = (0..dr)
+            .flat_map(|r| (0..dc).map(move |c| 64 * r + c))
+            .collect();
         let gp = SyncPtr(g.as_mut_ptr());
         let gmp = SyncPtr(gm.as_mut_ptr());
         let (addv, addm) = std::thread::scope(|sc| {
             let recv = sc.spawn(|| {
-                let rows: Vec<std::sync::Mutex<(Vec<u64>, Vec<u64>)>> =
-                    (0..nab).map(|_| std::sync::Mutex::new((vec![0u64; dr * d2], vec![0u64; dr * d2]))).collect();
+                let rows: Vec<std::sync::Mutex<(Vec<u64>, Vec<u64>)>> = (0..nab)
+                    .map(|_| std::sync::Mutex::new((vec![0u64; dr * d2], vec![0u64; dr * d2])))
+                    .collect();
                 recv_decrypt(net_ref, &he.key, &others, nret, 3, &coefs, |h, dec| {
                     let (ab, b, kind) = (h[0] as usize, h[1] as usize, h[2]);
                     let mut blk = rows[ab].lock().unwrap();
@@ -462,20 +554,25 @@ impl He {
                 }
                 (addv, addm)
             });
-            let ctn: Vec<Vec<(Vec<u64>, Vec<u64>)>> =
-                theirs.iter().map(|v| v.par_iter().map(|ct| he.ntt_ct(ct)).collect()).collect();
+            let ctn: Vec<Vec<(Vec<u64>, Vec<u64>)>> = theirs
+                .iter()
+                .map(|v| v.par_iter().map(|ct| he.ntt_ct(ct)).collect())
+                .collect();
             // D_a and D'_a in NTT form, once per (row block, kind)
             let pns: Vec<Vec<u64>> = (0..nab * 2)
                 .into_par_iter()
                 .map(|z| {
                     let (ab, kind) = (z / 2, z % 2);
                     let src = if kind == 0 { &am } else { &amm };
-                    let coeffs: Vec<(usize, i64)> = (0..dr).map(|r| (64 * r, src[ab * dr + r])).collect();
+                    let coeffs: Vec<(usize, i64)> =
+                        (0..dr).map(|r| (64 * r, src[ab * dr + r])).collect();
                     he.poly_ntt(&coeffs)
                 })
                 .collect();
             let senders: Vec<_> = others.iter().map(|&j| (j, net_ref.sender(j))).collect();
-            let jobs: Vec<(usize, usize)> = (0..nab).flat_map(|ab| (0..nb).map(move |b| (ab, b))).collect();
+            let jobs: Vec<(usize, usize)> = (0..nab)
+                .flat_map(|ab| (0..nb).map(move |b| (ab, b)))
+                .collect();
             jobs.par_iter().for_each(|&(ab, b)| {
                 for kind in 0..2usize {
                     let pn = &pns[ab * 2 + kind];
@@ -488,8 +585,13 @@ impl He {
                             "ho|{}|{}|{}|{}|{}|{}|{}",
                             he.ou_seed, calls, me, j, ab, b, kname
                         ));
-                        let (ct, m) = make_return(&he.rns, &he.pks[j], (&acc0, &acc1), &mut rg, he.f_bits);
-                        tx.send((net::HE_RET, he.return_bytes(&[ab as u64, b as u64, kind as u64], &ct, &coefs))).expect("peer gone");
+                        let (ct, m) =
+                            make_return(&he.rns, &he.pks[j], (&acc0, &acc1), &mut rg, he.f_bits);
+                        tx.send((
+                            net::HE_RET,
+                            he.return_bytes(&[ab as u64, b as u64, kind as u64], &ct, &coefs),
+                        ))
+                        .expect("peer gone");
                         let base = if kind == 0 { gp } else { gmp };
                         // block (ab, b) is written by this job only
                         for r in 0..dr {
@@ -511,8 +613,12 @@ impl He {
         });
         {
             use rayon::prelude::*;
-            g.par_iter_mut().zip(addv.par_iter()).for_each(|(a, b)| *a = addmod(*a, *b, p));
-            gm.par_iter_mut().zip(addm.par_iter()).for_each(|(a, b)| *a = addmod(*a, *b, p));
+            g.par_iter_mut()
+                .zip(addv.par_iter())
+                .for_each(|(a, b)| *a = addmod(*a, *b, p));
+            gm.par_iter_mut()
+                .zip(addm.par_iter())
+                .for_each(|(a, b)| *a = addmod(*a, *b, p));
         }
         if let Some((kind, who)) = &self.attack {
             if kind == "wrong_return" && *who == me {
@@ -532,7 +638,8 @@ impl He {
         let com = hc.finish_hex();
         tl("commit hash");
         let coms = pt.net.exchange_bytes(net::CTRL, com.as_bytes());
-        let coms: [String; 3] = std::array::from_fn(|j| String::from_utf8(coms[j].clone()).expect("hex"));
+        let coms: [String; 3] =
+            std::array::from_fn(|j| String::from_utf8(coms[j].clone()).expect("hex"));
         pt.tr.phase.push(PH_OUTER_COMMIT);
         pt.tr.v.push(0);
         pt.tr.commits.push(coms);
@@ -555,14 +662,30 @@ impl He {
         tl("coins");
         let r1: Vec<u64> = (0..d1).map(|_| rr.randrange_u64(p)).collect();
         let r2: Vec<u64> = (0..d2).map(|_| rr.randrange_u64(p)).collect();
-        let out: Vec<Vec<Sh>> = (0..d1).map(|r| (0..d2).map(|c| Sh { s: g[r * d2 + c], m: gm[r * d2 + c] }).collect()).collect();
+        let out: Vec<Vec<Sh>> = (0..d1)
+            .map(|r| {
+                (0..d2)
+                    .map(|c| Sh {
+                        s: g[r * d2 + c],
+                        m: gm[r * d2 + c],
+                    })
+                    .collect()
+            })
+            .collect();
         drop(g);
         drop(gm);
         let lhs = {
             use rayon::prelude::*;
             let rows: Vec<Sh> = (0..d1)
                 .into_par_iter()
-                .map(|r| pt.lin(&(0..d2).map(|c| (mulmod(r1[r], r2[c], p), out[r][c])).collect::<Vec<_>>(), 0))
+                .map(|r| {
+                    pt.lin(
+                        &(0..d2)
+                            .map(|c| (mulmod(r1[r], r2[c], p), out[r][c]))
+                            .collect::<Vec<_>>(),
+                        0,
+                    )
+                })
                 .collect();
             let mut acc = Sh::default();
             for x in rows {

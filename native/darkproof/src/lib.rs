@@ -1,8 +1,8 @@
 //! The dark-learning MPC fork's collaborative ZK proof and its untrusted-input verifier, natively.
 //! Reference: research/dark_learning_2026_11_06/ (cozk, cosnark, cosnark_zk, cosnark_gates, cosnark_gates_zk,
 //! proofwire, owner_sig). Every proof byte equals the harness's for the same seed (`rng::Det`).
-pub mod ext;
 pub mod defer;
+pub mod ext;
 pub mod field;
 pub mod gmask;
 pub mod h;
@@ -34,11 +34,20 @@ pub struct Ctx {
 
 impl Ctx {
     pub fn new(model: &str, epoch: u64, step: u64) -> Self {
-        Ctx { model: model.into(), epoch, step }
+        Ctx {
+            model: model.into(),
+            epoch,
+            step,
+        }
     }
     /// str(context) / repr(context).
     pub fn repr(&self) -> String {
-        format!("({}, {}, {})", h::py_str_repr(&self.model), self.epoch, self.step)
+        format!(
+            "({}, {}, {})",
+            h::py_str_repr(&self.model),
+            self.epoch,
+            self.step
+        )
     }
 }
 
@@ -135,19 +144,81 @@ impl Profile {
             "demo" => Some(Self::demo()),
             // gen 5's evaluation points (the before/after comparison and the vectors made before the coset domain)
             // before bundle cut A: the square row split and K_L = 64 (every bundle made before 2026-11-07's cut)
-            "ledger-sq" => Some(Profile { name: "ledger-sq", k_l: 64, split: Split::Square, multiproof: false, ..Self::ledger() }),
-            "demo-sq" => Some(Profile { name: "demo-sq", k_l: 64, split: Split::Square, multiproof: false, ..Self::demo() }),
-            "ledger-int" => Some(Profile { name: "ledger-int", domain: Domain::Int, k_l: 64, split: Split::Square, multiproof: false, ..Self::ledger() }),
-            "demo-int" => Some(Profile { name: "demo-int", domain: Domain::Int, k_l: 64, split: Split::Square, multiproof: false, ..Self::demo() }),
+            "ledger-sq" => Some(Profile {
+                name: "ledger-sq",
+                k_l: 64,
+                split: Split::Square,
+                multiproof: false,
+                ..Self::ledger()
+            }),
+            "demo-sq" => Some(Profile {
+                name: "demo-sq",
+                k_l: 64,
+                split: Split::Square,
+                multiproof: false,
+                ..Self::demo()
+            }),
+            "ledger-int" => Some(Profile {
+                name: "ledger-int",
+                domain: Domain::Int,
+                k_l: 64,
+                split: Split::Square,
+                multiproof: false,
+                ..Self::ledger()
+            }),
+            "demo-int" => Some(Profile {
+                name: "demo-int",
+                domain: Domain::Int,
+                k_l: 64,
+                split: Split::Square,
+                multiproof: false,
+                ..Self::demo()
+            }),
             // F_{p^2} challenges: two lives x two proximity masks (one per component)
-            "ledger-x2" => Some(Profile { name: "ledger-x2", nmask: 4, ext: 2, ..Self::ledger() }),
-            "demo-x2" => Some(Profile { name: "demo-x2", nmask: 4, ext: 2, ..Self::demo() }),
+            "ledger-x2" => Some(Profile {
+                name: "ledger-x2",
+                nmask: 4,
+                ext: 2,
+                ..Self::ledger()
+            }),
+            "demo-x2" => Some(Profile {
+                name: "demo-x2",
+                nmask: 4,
+                ext: 2,
+                ..Self::demo()
+            }),
             // cut D in F_{p^2}: the masked sumcheck
-            "ledger-x2d" => Some(Profile { name: "ledger-x2d", nmask: 4, ext: 2, mask: true, ..Self::ledger() }),
-            "demo-x2d" => Some(Profile { name: "demo-x2d", nmask: 4, ext: 2, mask: true, ..Self::demo() }),
+            "ledger-x2d" => Some(Profile {
+                name: "ledger-x2d",
+                nmask: 4,
+                ext: 2,
+                mask: true,
+                ..Self::ledger()
+            }),
+            "demo-x2d" => Some(Profile {
+                name: "demo-x2d",
+                nmask: 4,
+                ext: 2,
+                mask: true,
+                ..Self::demo()
+            }),
             // cut E: deferred child opening
-            "ledger-x2de" => Some(Profile { name: "ledger-x2de", nmask: 4, ext: 2, mask: true, defer: true, ..Self::ledger() }),
-            "demo-x2de" => Some(Profile { name: "demo-x2de", nmask: 4, ext: 2, mask: true, defer: true, ..Self::demo() }),
+            "ledger-x2de" => Some(Profile {
+                name: "ledger-x2de",
+                nmask: 4,
+                ext: 2,
+                mask: true,
+                defer: true,
+                ..Self::ledger()
+            }),
+            "demo-x2de" => Some(Profile {
+                name: "demo-x2de",
+                nmask: 4,
+                ext: 2,
+                mask: true,
+                defer: true,
+                ..Self::demo()
+            }),
             _ => None,
         }
     }
@@ -155,7 +226,12 @@ impl Profile {
     /// proximity masks; otherwise the profile's own.
     pub fn w_life(&self) -> Profile {
         if self.defer {
-            Profile { hide: self.t_cols, nmask: self.ext, lives: 1, ..self.clone() }
+            Profile {
+                hide: self.t_cols,
+                nmask: self.ext,
+                lives: 1,
+                ..self.clone()
+            }
         } else {
             self.clone()
         }
@@ -171,7 +247,11 @@ impl Profile {
 pub fn rss_gb(key: &str) -> f64 {
     std::fs::read_to_string("/proc/self/status")
         .ok()
-        .and_then(|s| s.lines().find(|l| l.starts_with(key)).and_then(|l| l.split_whitespace().nth(1)?.parse::<f64>().ok()))
+        .and_then(|s| {
+            s.lines()
+                .find(|l| l.starts_with(key))
+                .and_then(|l| l.split_whitespace().nth(1)?.parse::<f64>().ok())
+        })
         .map(|kb| kb / 1e6)
         .unwrap_or(f64::NAN)
 }
@@ -184,17 +264,31 @@ pub struct Trace {
 }
 impl Trace {
     pub fn new(label: &'static str, party: usize) -> Self {
-        Trace { on: party == 0 && std::env::var_os("DP_TRACE").is_some(), t: std::time::Instant::now(), label }
+        Trace {
+            on: party == 0 && std::env::var_os("DP_TRACE").is_some(),
+            t: std::time::Instant::now(),
+            label,
+        }
     }
     pub fn lap(&mut self, what: &str) {
         if self.on {
             let hp = if heap::on() {
                 let (live, peak) = heap::take(0);
-                format!("; custodian 0 heap {:.2} GB, phase peak {:.2} GB", live as f64 / 1e9, peak as f64 / 1e9)
+                format!(
+                    "; custodian 0 heap {:.2} GB, phase peak {:.2} GB",
+                    live as f64 / 1e9,
+                    peak as f64 / 1e9
+                )
             } else {
                 String::new()
             };
-            eprintln!("  [{}] {what}: {:.2}s (process RSS {:.2} GB, peak {:.2} GB{hp})", self.label, self.t.elapsed().as_secs_f64(), rss_gb("VmRSS"), rss_gb("VmHWM"));
+            eprintln!(
+                "  [{}] {what}: {:.2}s (process RSS {:.2} GB, peak {:.2} GB{hp})",
+                self.label,
+                self.t.elapsed().as_secs_f64(),
+                rss_gb("VmRSS"),
+                rss_gb("VmHWM")
+            );
             self.t = std::time::Instant::now();
         }
     }

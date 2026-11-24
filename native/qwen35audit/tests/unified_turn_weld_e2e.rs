@@ -18,16 +18,17 @@ use qwen35audit::unified_turn_weld::{
     bls_drand::{verify_drand_quicknet_with_pk, verify_live_drand_quicknet, BlsTestCommitteeKey},
     derive_post_countersig_audit_target, extract_top_1024_mxfp4_submatrix,
     prove_legacy_bpe_to_canonical_whir_weld, prove_masked_whir_byte_equality,
-    prove_payable_compute_receipt, prove_spec_prefill_carry_weld,
-    provider_commit_turn_phase1, settle_expired_lease_refund,
-    verify_legacy_bpe_to_canonical_whir_weld, verify_masked_whir_byte_equality,
-    verify_payable_compute_receipt_and_settle, verify_spec_prefill_carry_weld,
-    CompactWhirMxfp4, DrandQuicknetBeacon, EscrowCountersignature, MaskedByteEqualityProof,
-    PayableComputeReceipt, ProviderExecutionLease, SaltedByteWhirCommitment,
-    SpecPrefillCarryWitness, WotsKeypair, CANONICAL_BYTE_MIN_PAD, CARRY_TURN_TOKENS,
-    DRAND_QUICKNET_GROUP_PUBLIC_KEY, GDN_LAYER_INDICES_18, PINNED_QUICKNET_ROUND_1M,
+    prove_payable_compute_receipt, prove_spec_prefill_carry_weld, provider_commit_turn_phase1,
+    settle_expired_lease_refund, verify_legacy_bpe_to_canonical_whir_weld,
+    verify_masked_whir_byte_equality, verify_payable_compute_receipt_and_settle,
+    verify_spec_prefill_carry_weld, CompactWhirMxfp4, DrandQuicknetBeacon, EscrowCountersignature,
+    MaskedByteEqualityProof, PayableComputeReceipt, ProviderExecutionLease,
+    SaltedByteWhirCommitment, SpecPrefillCarryWitness, WotsKeypair, CANONICAL_BYTE_MIN_PAD,
+    CARRY_TURN_TOKENS, DRAND_QUICKNET_GROUP_PUBLIC_KEY, GDN_LAYER_INDICES_18,
+    PINNED_QUICKNET_ROUND_1M,
 };
 use qwen35audit::whir_ext4::PrecommittedWhirMxfp4;
+use std::ops::Add;
 use std::time::Instant;
 
 #[test]
@@ -73,7 +74,8 @@ fn test_g9_drand_quicknet_and_tvd_zero_masked_byte_equality_weld() {
         prove_masked_whir_byte_equality(&c_512, &c_2048).expect("prove_masked_whir_byte_equality");
     let eq_prove_ms = t_eq_p.elapsed().as_secs_f64() * 1000.0;
     let eq_wire = eq_prf.to_bytes();
-    let eq_dec = MaskedByteEqualityProof::from_bytes(&eq_wire).expect("deserialize MaskedByteEqualityProof");
+    let eq_dec =
+        MaskedByteEqualityProof::from_bytes(&eq_wire).expect("deserialize MaskedByteEqualityProof");
     assert_eq!(eq_prf, eq_dec);
 
     let t_eq_v = Instant::now();
@@ -91,9 +93,11 @@ fn test_g9_drand_quicknet_and_tvd_zero_masked_byte_equality_weld() {
     // Witness-indistinguishability / algebraic `TVD == 0` bijection check on `(delta_r, mu_1)`:
     // For ANY two distinct witnesses `m_a != m_b` and any target transcript pair `(delta_r*, mu_1*)`,
     // `(R_1, R_2) = (mu_1* - alpha * B(z), mu_1* - alpha * B(z) - delta_r*)` has a UNIQUE preimage in `Ext4^2` (`det = 1`)!
-    let msg_alt = b"Secretly substituted 79-byte payload with identical length for TVD=0 check!!!!.";
+    let msg_alt =
+        b"Secretly substituted 79-byte payload with identical length for TVD=0 check!!!!.";
     assert_eq!(msg.len(), msg_alt.len());
-    let c_alt_2048 = SaltedByteWhirCommitment::commit_canonical(msg_alt, Some([0x33u8; 32])).unwrap();
+    let c_alt_2048 =
+        SaltedByteWhirCommitment::commit_canonical(msg_alt, Some([0x33u8; 32])).unwrap();
 
     // Falsifier A: Cross-commitment 1-byte prefix mismatch MUST fail!
     assert!(
@@ -111,7 +115,8 @@ fn test_g9_drand_quicknet_and_tvd_zero_masked_byte_equality_weld() {
     let mut bad_mu = eq_dec.clone();
     bad_mu.mu_1 = bad_mu.mu_1.add(Ext4::ONE);
     assert!(
-        verify_masked_whir_byte_equality(&c_512.content_root, &c_2048.content_root, &bad_mu).is_err()
+        verify_masked_whir_byte_equality(&c_512.content_root, &c_2048.content_root, &bad_mu)
+            .is_err()
     );
 
     // 3. Bridge Legacy `DualCharBridgeProof` (`SuccinctExt4Pcs` `pad=512, zk(3)` + `Tower256`) -> Canonical `WhirExt4Pcs` (`pad=2048`):
@@ -156,8 +161,9 @@ fn test_g9_drand_quicknet_and_tvd_zero_masked_byte_equality_weld() {
 fn test_l2_spec_prefill_token_carry_and_looped_residual_carry_weld() {
     let mmap = MmapSafetensors::open(std::path::Path::new(QWEN35_SAFETENSORS_FILE))
         .expect("mmap Qwen3.5-0.8B safetensors");
-    let gate0 = Mxfp4Matrix::from_safetensors(&mmap, "model.language_model.layers.0.mlp.gate_proj.weight")
-        .expect("load layer 0 gate_proj");
+    let gate0 =
+        Mxfp4Matrix::from_safetensors(&mmap, "model.language_model.layers.0.mlp.gate_proj.weight")
+            .expect("load layer 0 gate_proj");
     let w_loop = extract_top_1024_mxfp4_submatrix(&gate0);
     let loop_qs = PrecommittedWhirMxfp4::build(&w_loop);
 
@@ -167,8 +173,8 @@ fn test_l2_spec_prefill_token_carry_and_looped_residual_carry_weld() {
         .map(|i| 1000 + (i as u32) * 7)
         .collect();
     let mut b_in_stub = vec![0u32; 64 * 1024];
-    for i in 0..b_in_stub.len() {
-        b_in_stub[i] = ((i * 31 + 17) % 256) as u32;
+    for (i, slot) in b_in_stub.iter_mut().enumerate() {
+        *slot = ((i * 31 + 17) % 256) as u32;
     }
 
     let wit = SpecPrefillCarryWitness::build(&prompt_p1, &gen_toks, &b_in_stub, &w_loop)
@@ -305,7 +311,10 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     let phase1 = provider_commit_turn_phase1(
         &lease,
         &rom,
-        vec![exec_c0_init.boundaries_bb.clone(), exec_c1_init.boundaries_bb.clone()],
+        vec![
+            exec_c0_init.boundaries_bb.clone(),
+            exec_c1_init.boundaries_bb.clone(),
+        ],
         vec![chunk0_toks.clone(), chunk1_toks.clone()],
         generated_tokens.clone(),
         &gdn_loop_mats,
@@ -318,8 +327,9 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
 
     // --- Phase 2: Escrow countersigns at `round_commit = 999_999` -> `target_beacon_round = 1_000_000` ---
     let round_commit = PINNED_QUICKNET_ROUND_1M - 1; // 999,999
-    let countersig = EscrowCountersignature::sign(&lease, &phase1.commitment, round_commit, &escrow_kp)
-        .expect("EscrowCountersignature::sign");
+    let countersig =
+        EscrowCountersignature::sign(&lease, &phase1.commitment, round_commit, &escrow_kp)
+            .expect("EscrowCountersignature::sign");
     assert_eq!(countersig.target_beacon_round, PINNED_QUICKNET_ROUND_1M);
 
     // --- Phase 3: Published League of Entropy `drand` `quicknet` round `1_000_000` arrives (`> round_commit`) ---
@@ -362,8 +372,8 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     } else {
         &chunk1_toks
     };
-    let (audited_exec, _) =
-        execute_qwen35_24_layers_mmap(&mmap, sel_chunk_toks, audited_layer).expect("audited layer exec");
+    let (audited_exec, _) = execute_qwen35_24_layers_mmap(&mmap, sel_chunk_toks, audited_layer)
+        .expect("audited layer exec");
 
     // --- Phase 4: Prove Single-Cascade `PayableComputeReceipt` & Benchmark Standalone Verification ---
     let t_prove = Instant::now();
@@ -382,8 +392,8 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     .expect("prove_payable_compute_receipt");
     let prove_ms = t_prove.elapsed().as_secs_f64() * 1000.0;
     let receipt_bytes = receipt.to_bytes();
-    let decoded_receipt =
-        PayableComputeReceipt::from_bytes(&receipt_bytes).expect("PayableComputeReceipt::from_bytes");
+    let decoded_receipt = PayableComputeReceipt::from_bytes(&receipt_bytes)
+        .expect("PayableComputeReceipt::from_bytes");
     assert_eq!(decoded_receipt.to_bytes(), receipt_bytes);
     let receipt_kib = receipt_bytes.len() as f64 / 1024.0;
 
@@ -434,7 +444,10 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     );
     assert_eq!(settlement.paid, 5_000 + 125 * 1_000);
     assert_eq!(settlement.refunded, (256 - 125) * 1_000);
-    assert_eq!(settlement.paid + settlement.refunded, lease.prepaid_budget());
+    assert_eq!(
+        settlement.paid + settlement.refunded,
+        lease.prepaid_budget()
+    );
     assert_eq!(settlement.audited_gdn_layer, audited_layer);
     assert_eq!(settlement.audited_token_chunk, audited_chunk);
     assert!(!settlement.expired_refund_only);
@@ -458,8 +471,13 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     let mut committee_lease = lease.clone();
     committee_lease.drand_group_pk_g2 = committee.group_pk_g2;
     assert!(
-        verify_payable_compute_receipt_and_settle(&committee_lease, &rom, &stale_rec.to_bytes(), None)
-            .is_err(),
+        verify_payable_compute_receipt_and_settle(
+            &committee_lease,
+            &rom,
+            &stale_rec.to_bytes(),
+            None
+        )
+        .is_err(),
         "Falsifier 1: stale beacon round <= round_commit must be rejected!"
     );
 
@@ -467,8 +485,13 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     let mut shop_rec = receipt.clone();
     shop_rec.beacon = committee.sign_quicknet_round(round_commit + 2);
     assert!(
-        verify_payable_compute_receipt_and_settle(&committee_lease, &rom, &shop_rec.to_bytes(), None)
-            .is_err(),
+        verify_payable_compute_receipt_and_settle(
+            &committee_lease,
+            &rom,
+            &shop_rec.to_bytes(),
+            None
+        )
+        .is_err(),
         "Falsifier 2: off-schedule round shopping must be rejected!"
     );
 
@@ -476,7 +499,8 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     let mut forged_bls = receipt.clone();
     forged_bls.beacon.signature[17] ^= 0x04;
     assert!(
-        verify_payable_compute_receipt_and_settle(&lease, &rom, &forged_bls.to_bytes(), None).is_err(),
+        verify_payable_compute_receipt_and_settle(&lease, &rom, &forged_bls.to_bytes(), None)
+            .is_err(),
         "Falsifier 3: forged BLS12-381 signature must be rejected!"
     );
 
@@ -491,14 +515,14 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     // Falsifier 5: Post-countersignature root grinding (provider mutates `byte_root` after `round_commit`) -> REJECTED!
     let mut grind_rec = receipt.clone();
     grind_rec.commitment.byte_root[0] ^= 0xFF;
-    grind_rec.commitment.content_root =
-        qwen35audit::unified_turn_weld::compute_content_root_v1(
-            grind_rec.commitment.word_len,
-            &grind_rec.commitment.byte_root,
-        );
+    grind_rec.commitment.content_root = qwen35audit::unified_turn_weld::compute_content_root_v1(
+        grind_rec.commitment.word_len,
+        &grind_rec.commitment.byte_root,
+    );
     grind_rec.commitment.provider_sig = provider_kp.sign(&grind_rec.commitment.body_digest());
     assert!(
-        verify_payable_compute_receipt_and_settle(&lease, &rom, &grind_rec.to_bytes(), None).is_err(),
+        verify_payable_compute_receipt_and_settle(&lease, &rom, &grind_rec.to_bytes(), None)
+            .is_err(),
         "Falsifier 5: post-countersignature root grinding must fail countersig digest check!"
     );
 
@@ -506,7 +530,8 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     let mut wrong_slot = receipt.clone();
     wrong_slot.audited_chunk ^= 1;
     assert!(
-        verify_payable_compute_receipt_and_settle(&lease, &rom, &wrong_slot.to_bytes(), None).is_err(),
+        verify_payable_compute_receipt_and_settle(&lease, &rom, &wrong_slot.to_bytes(), None)
+            .is_err(),
         "Falsifier 6: wrong audited chunk must be rejected!"
     );
 
@@ -530,7 +555,8 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     let mut over_budget = receipt.clone();
     over_budget.commitment.claimed_units = lease.max_units + 1;
     assert!(
-        verify_payable_compute_receipt_and_settle(&lease, &rom, &over_budget.to_bytes(), None).is_err(),
+        verify_payable_compute_receipt_and_settle(&lease, &rom, &over_budget.to_bytes(), None)
+            .is_err(),
         "Falsifier 9: claimed_units > max_units must be rejected!"
     );
 
@@ -559,7 +585,8 @@ fn test_payable_compute_receipt_e2e_benchmark_and_adversarial_suite() {
     let mut sink_rec = receipt;
     sink_rec.commitment.final_dfa_state = 4;
     assert!(
-        verify_payable_compute_receipt_and_settle(&lease, &rom, &sink_rec.to_bytes(), None).is_err(),
+        verify_payable_compute_receipt_and_settle(&lease, &rom, &sink_rec.to_bytes(), None)
+            .is_err(),
         "Falsifier 10b: final_dfa_state >= 4 must be rejected by standalone verifier!"
     );
 }

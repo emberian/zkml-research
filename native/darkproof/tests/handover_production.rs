@@ -12,7 +12,13 @@ use std::collections::BTreeMap;
 
 type M = BTreeMap<String, Vec<Vec<u64>>>;
 
-fn once(pr: &Profile, d: usize, ctx: &HandoverCtx, old: &M, new: &M) -> (Vec<u8>, BTreeMap<String, Vec<[u8; 32]>>) {
+fn once(
+    pr: &Profile,
+    d: usize,
+    ctx: &HandoverCtx,
+    old: &M,
+    new: &M,
+) -> (Vec<u8>, BTreeMap<String, Vec<[u8; 32]>>) {
     let lp = pr.ligero();
     let det = Det(None);
     let outs: Vec<_> = std::thread::scope(|s| {
@@ -26,7 +32,8 @@ fn once(pr: &Profile, d: usize, ctx: &HandoverCtx, old: &M, new: &M) -> (Vec<u8>
                         .iter()
                         .map(|k| {
                             let c = if g < 3 {
-                                let mut c = PcsParty::commit(pr, &old[*k][g], &format!("{k}n"), g, det);
+                                let mut c =
+                                    PcsParty::commit(pr, &old[*k][g], &format!("{k}n"), g, det);
                                 c.opened_lives = 1;
                                 c
                             } else {
@@ -52,7 +59,15 @@ fn two_production_handovers_differ_and_verify() {
         let pr = Profile::by_name(name).unwrap();
         let d = 16;
         let p = field::p();
-        let old: M = ["W1", "W2"].iter().map(|k| (k.to_string(), (0..3).map(|_| handover::os_field(d * d, p)).collect())).collect();
+        let old: M = ["W1", "W2"]
+            .iter()
+            .map(|k| {
+                (
+                    k.to_string(),
+                    (0..3).map(|_| handover::os_field(d * d, p)).collect(),
+                )
+            })
+            .collect();
         // production resharing: two reshares of one share differ and both sum to it
         let a = handover::reshare_os(&old["W1"][0], 3);
         let b = handover::reshare_os(&old["W1"][0], 3);
@@ -64,8 +79,18 @@ fn two_production_handovers_differ_and_verify() {
         let new: M = old
             .iter()
             .map(|(k, v)| {
-                let subs: Vec<Vec<Vec<u64>>> = v.iter().map(|s| handover::reshare_os(s, 3)).collect();
-                (k.clone(), (0..3).map(|j| handover::combine(&subs.iter().map(|q| q[j].as_slice()).collect::<Vec<_>>())).collect())
+                let subs: Vec<Vec<Vec<u64>>> =
+                    v.iter().map(|s| handover::reshare_os(s, 3)).collect();
+                (
+                    k.clone(),
+                    (0..3)
+                        .map(|j| {
+                            handover::combine(
+                                &subs.iter().map(|q| q[j].as_slice()).collect::<Vec<_>>(),
+                            )
+                        })
+                        .collect(),
+                )
             })
             .collect();
         let ctx = HandoverCtx {
@@ -78,8 +103,14 @@ fn two_production_handovers_differ_and_verify() {
         };
         let (b1, r1) = once(&pr, d, &ctx, &old, &new);
         let (b2, r2) = once(&pr, d, &ctx, &old, &new);
-        assert_ne!(r1, r2, "{name}: the same shares committed to the same roots twice (tails or salts not secret)");
-        assert_ne!(b1, b2, "{name}: two production handovers gave the same bytes");
+        assert_ne!(
+            r1, r2,
+            "{name}: the same shares committed to the same roots twice (tails or salts not secret)"
+        );
+        assert_ne!(
+            b1, b2,
+            "{name}: two production handovers gave the same bytes"
+        );
         let same = b1.iter().zip(&b2).filter(|(x, y)| x == y).count();
         println!("[{name} d = {d}] two production handovers: {} bytes each, both verify, {:.4} of bytes equal", b1.len(), same as f64 / b1.len() as f64);
     }

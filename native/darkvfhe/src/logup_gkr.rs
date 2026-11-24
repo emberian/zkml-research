@@ -84,7 +84,9 @@ impl LogUpGkrProof {
             }
             b
         };
-        32 + 16 + self.witness_trees.iter().map(tree_bytes).sum::<usize>() + tree_bytes(&self.table_tree)
+        32 + 16
+            + self.witness_trees.iter().map(tree_bytes).sum::<usize>()
+            + tree_bytes(&self.table_tree)
     }
 }
 
@@ -98,7 +100,7 @@ impl FsTranscript {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_D1B_GKR|");
         h.update(domain_sep.as_bytes());
-        h.update(&p.to_le_bytes());
+        h.update(p.to_le_bytes());
         h.update(context_digest);
         FsTranscript {
             state: h.finalize().into(),
@@ -107,25 +109,25 @@ impl FsTranscript {
 
     fn absorb_bytes(&mut self, data: &[u8]) {
         let mut h = Sha256::new();
-        h.update(&self.state);
+        h.update(self.state);
         h.update(data);
         self.state = h.finalize().into();
     }
 
     fn absorb_u64s(&mut self, vals: &[u64]) {
         let mut h = Sha256::new();
-        h.update(&self.state);
+        h.update(self.state);
         for &v in vals {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         self.state = h.finalize().into();
     }
 
     fn squeeze_fp(&mut self, fp: &FastPrime61, tag: u64) -> u64 {
         let mut h = Sha256::new();
-        h.update(&self.state);
+        h.update(self.state);
         h.update(b"CHAL");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         self.state = out;
         let lo = u128::from_le_bytes(out[0..16].try_into().unwrap());
@@ -134,10 +136,10 @@ impl FsTranscript {
 
     fn fork_sub(&self, label: &str, idx: u64) -> Self {
         let mut h = Sha256::new();
-        h.update(&self.state);
+        h.update(self.state);
         h.update(b"SUB|");
         h.update(label.as_bytes());
-        h.update(&idx.to_le_bytes());
+        h.update(idx.to_le_bytes());
         FsTranscript {
             state: h.finalize().into(),
         }
@@ -153,9 +155,9 @@ pub fn commit_multiplicities(mults: &[u64]) -> [u8; 32] {
         .map(|(idx, ch)| {
             let mut h = Sha256::new();
             h.update(b"PKV2_SUBDOMAIN_M20|");
-            h.update(&(idx as u32).to_le_bytes());
+            h.update((idx as u32).to_le_bytes());
             for &v in ch {
-                h.update(&v.to_le_bytes());
+                h.update(v.to_le_bytes());
             }
             h.finalize().into()
         })
@@ -190,14 +192,17 @@ pub fn count_multiplicities_parallel(entries: &[u64]) -> Result<Vec<u64>, String
         .collect();
     let partials = partials?;
     let mut total = vec![0u64; TABLE_SIZE];
-    total.par_chunks_mut(16384).enumerate().for_each(|(blk, dst)| {
-        let base = blk * 16384;
-        for part in &partials {
-            for (i, slot) in dst.iter_mut().enumerate() {
-                *slot += part[base + i] as u64;
+    total
+        .par_chunks_mut(16384)
+        .enumerate()
+        .for_each(|(blk, dst)| {
+            let base = blk * 16384;
+            for part in &partials {
+                for (i, slot) in dst.iter_mut().enumerate() {
+                    *slot += part[base + i] as u64;
+                }
             }
-        }
-    });
+        });
     Ok(total)
 }
 
@@ -241,7 +246,12 @@ pub fn eval_mle_le(fp: &FastPrime61, vec_padded: &[u64], z: &[u64]) -> u64 {
 
 /// `O(d)` closed-form verifier evaluation of prefix indicator `sel_{[0, M)}(z_0..z_{d-1})`
 /// under little-endian bit indexing `i = sum_{b=0}^{d-1} 2^b i_b`!
-pub fn eval_prefix_selector_le(fp: &FastPrime61, active_len: usize, depth: usize, z: &[u64]) -> u64 {
+pub fn eval_prefix_selector_le(
+    fp: &FastPrime61,
+    active_len: usize,
+    depth: usize,
+    z: &[u64],
+) -> u64 {
     assert_eq!(z.len(), depth);
     if depth == 0 {
         return if active_len >= 1 { 1 } else { 0 };
@@ -281,6 +291,9 @@ pub fn eval_table_identity_le(fp: &FastPrime61, z: &[u64]) -> u64 {
     acc
 }
 
+type FractionTreeLayers = (Vec<Vec<Vec<u64>>>, Vec<Vec<Vec<u64>>>);
+type VerifiedTreeClaims = (Vec<u64>, Vec<u64>, Vec<u64>);
+
 /// Build all layers `0..=depth` of a `c`-challenge projective binary fraction tree in `rayon` parallel.
 /// Layer `0` has length `1` (root); layer `depth` has length `2^depth` (leaves).
 fn build_fraction_tree_layers(
@@ -288,7 +301,7 @@ fn build_fraction_tree_layers(
     leaf_p: Vec<Vec<u64>>,
     leaf_q: Vec<Vec<u64>>,
     depth: usize,
-) -> (Vec<Vec<Vec<u64>>>, Vec<Vec<Vec<u64>>>) {
+) -> FractionTreeLayers {
     let c = leaf_p.len();
     let mut p_layers = vec![Vec::new(); depth + 1];
     let mut q_layers = vec![Vec::new(); depth + 1];
@@ -346,7 +359,9 @@ fn prove_single_tree(
     depth: usize,
 ) -> (FractionTreeProof, Vec<u64>) {
     let c = p_layers[0].len();
-    let roots: Vec<[u64; 2]> = (0..c).map(|ell| [p_layers[0][ell][0], q_layers[0][ell][0]]).collect();
+    let roots: Vec<[u64; 2]> = (0..c)
+        .map(|ell| [p_layers[0][ell][0], q_layers[0][ell][0]])
+        .collect();
     for r in &roots {
         tr.absorb_u64s(r);
     }
@@ -394,8 +409,12 @@ fn prove_single_tree(
     // Therefore, folding `child_bit` at `r_child` prepends `r_child` at bit `0`: `z_next = [r_child, r_0, ..., r_{k-1}]`!
     for k in 1..depth {
         let m_len = 1usize << k;
-        let lam_p: Vec<u64> = (0..c).map(|ell| tr.squeeze_fp(fp, 100 + ell as u64)).collect();
-        let lam_q: Vec<u64> = (0..c).map(|ell| tr.squeeze_fp(fp, 200 + ell as u64)).collect();
+        let lam_p: Vec<u64> = (0..c)
+            .map(|ell| tr.squeeze_fp(fp, 100 + ell as u64))
+            .collect();
+        let lam_q: Vec<u64> = (0..c)
+            .map(|ell| tr.squeeze_fp(fp, 200 + ell as u64))
+            .collect();
 
         let mut eq_tbl = build_eq_le(fp, &z_point);
         let mut p_left: Vec<Vec<u64>> = Vec::with_capacity(c);
@@ -478,18 +497,17 @@ fn prove_single_tree(
             };
 
             let poly = if half >= 2048 {
-                (0..half)
-                    .into_par_iter()
-                    .map(compute_pair)
-                    .reduce(
-                        || [0u64; 4],
-                        |acc, x| [
+                (0..half).into_par_iter().map(compute_pair).reduce(
+                    || [0u64; 4],
+                    |acc, x| {
+                        [
                             fp.add(acc[0], x[0]),
                             fp.add(acc[1], x[1]),
                             fp.add(acc[2], x[2]),
                             fp.add(acc[3], x[3]),
-                        ],
-                    )
+                        ]
+                    },
+                )
             } else {
                 let mut acc = [0u64; 4];
                 for u in 0..half {
@@ -538,7 +556,14 @@ fn prove_single_tree(
         }
 
         let child_evals: Vec<[u64; 4]> = (0..c)
-            .map(|ell| [p_left[ell][0], p_right[ell][0], q_left[ell][0], q_right[ell][0]])
+            .map(|ell| {
+                [
+                    p_left[ell][0],
+                    p_right[ell][0],
+                    q_left[ell][0],
+                    q_right[ell][0],
+                ]
+            })
             .collect();
         for ce in &child_evals {
             tr.absorb_u64s(ce);
@@ -576,7 +601,7 @@ fn verify_single_tree(
     tr: &mut FsTranscript,
     proof: &FractionTreeProof,
     c: usize,
-) -> Result<(Vec<u64>, Vec<u64>, Vec<u64>), String> {
+) -> Result<VerifiedTreeClaims, String> {
     if proof.roots.len() != c {
         return Err("FractionTreeProof root count mismatch".into());
     }
@@ -607,7 +632,9 @@ fn verify_single_tree(
         let want_p = fp.red128(pl as u128 * qr as u128 + pr as u128 * ql as u128);
         let want_q = fp.mul(ql, qr);
         if want_p != proof.roots[ell][0] || want_q != proof.roots[ell][1] {
-            return Err(format!("GKR root 0->1 fraction check failed at challenge {ell}"));
+            return Err(format!(
+                "GKR root 0->1 fraction check failed at challenge {ell}"
+            ));
         }
         tr.absorb_u64s(v);
     }
@@ -631,8 +658,12 @@ fn verify_single_tree(
         if layer.sumcheck_rounds.len() != k || layer.child_evals.len() != c {
             return Err(format!("GKR layer {k} round/eval length mismatch"));
         }
-        let lam_p: Vec<u64> = (0..c).map(|ell| tr.squeeze_fp(fp, 100 + ell as u64)).collect();
-        let lam_q: Vec<u64> = (0..c).map(|ell| tr.squeeze_fp(fp, 200 + ell as u64)).collect();
+        let lam_p: Vec<u64> = (0..c)
+            .map(|ell| tr.squeeze_fp(fp, 100 + ell as u64))
+            .collect();
+        let lam_q: Vec<u64> = (0..c)
+            .map(|ell| tr.squeeze_fp(fp, 200 + ell as u64))
+            .collect();
 
         let mut running_claim = 0u64;
         for ell in 0..c {
@@ -654,7 +685,9 @@ fn verify_single_tree(
             let g0 = poly[0];
             let g1 = fp.add(fp.add(poly[0], poly[1]), fp.add(poly[2], poly[3]));
             if fp.add(g0, g1) != running_claim {
-                return Err(format!("GKR sumcheck round {round} at layer {k} failed g(0)+g(1)==claim"));
+                return Err(format!(
+                    "GKR sumcheck round {round} at layer {k} failed g(0)+g(1)==claim"
+                ));
             }
             tr.absorb_u64s(poly);
             let r_i = tr.squeeze_fp(fp, 1000 + round as u64);
@@ -686,7 +719,9 @@ fn verify_single_tree(
             let q_term = fp.mul(ql, qr);
             inner_sum = fp.add(
                 inner_sum,
-                fp.red128(lam_p[ell] as u128 * p_term as u128 + lam_q[ell] as u128 * q_term as u128),
+                fp.red128(
+                    lam_p[ell] as u128 * p_term as u128 + lam_q[ell] as u128 * q_term as u128,
+                ),
             );
             tr.absorb_u64s(&layer.child_evals[ell]);
         }
@@ -783,7 +818,8 @@ pub fn prove_logup_gkr_with_mults(
             }
             let (p_layers, q_layers) = build_fraction_tree_layers(fp, leaf_p, leaf_q, depth);
             let mut sub_tr = tr.fork_sub("WIT_TREE", b_idx as u64);
-            let (prf, _) = prove_single_tree(fp, &mut sub_tr, &p_layers, &q_layers, &f_pad, active, depth);
+            let (prf, _) =
+                prove_single_tree(fp, &mut sub_tr, &p_layers, &q_layers, &f_pad, active, depth);
             prf
         })
         .collect();
@@ -794,11 +830,15 @@ pub fn prove_logup_gkr_with_mults(
     let mults_mod_p: Vec<u64> = mults.iter().map(|&m| m % fp.p).collect();
     for &alpha in &alphas {
         let lp = mults_mod_p.clone();
-        let lq: Vec<u64> = (0..TABLE_SIZE as u64).into_par_iter().map(|j| fp.sub(alpha, j)).collect();
+        let lq: Vec<u64> = (0..TABLE_SIZE as u64)
+            .into_par_iter()
+            .map(|j| fp.sub(alpha, j))
+            .collect();
         tab_leaf_p.push(lp);
         tab_leaf_q.push(lq);
     }
-    let (tab_p_layers, tab_q_layers) = build_fraction_tree_layers(fp, tab_leaf_p, tab_leaf_q, TABLE_LOG2);
+    let (tab_p_layers, tab_q_layers) =
+        build_fraction_tree_layers(fp, tab_leaf_p, tab_leaf_q, TABLE_LOG2);
     let mut tab_tr = tr.fork_sub("TAB_TREE", 0);
     let (table_tree, _) = prove_single_tree(
         fp,
@@ -874,14 +914,20 @@ pub fn verify_logup_gkr(
                     w_prf.leaf_payload_eval,
                 );
                 if q_claims[ell] != want_q {
-                    return Err(format!("witness tree {b_idx} leaf Q_ell != (alpha-1)*sel + 1 - f_MLE"));
+                    return Err(format!(
+                        "witness tree {b_idx} leaf Q_ell != (alpha-1)*sel + 1 - f_MLE"
+                    ));
                 }
                 fracs[ell] = fp.mul(w_prf.roots[ell][0], fp.inv(w_prf.roots[ell][1]));
             }
             if let Some((entries, _)) = witness_and_mults {
                 let start = b_idx * chunk_cap;
                 let end = (start + w_prf.active_len).min(entries.len());
-                let slice = if entries.is_empty() { &[] } else { &entries[start..end] };
+                let slice = if entries.is_empty() {
+                    &[]
+                } else {
+                    &entries[start..end]
+                };
                 let padded_len = 1usize << w_prf.depth;
                 let mut f_pad = vec![0u64; padded_len];
                 for (i, &v) in slice.iter().enumerate() {
@@ -915,7 +961,8 @@ pub fn verify_logup_gkr(
         return Err("table tree depth/size != 2^20".into());
     }
     let mut tab_tr = tr.fork_sub("TAB_TREE", 0);
-    let (z_tab, tab_p_claims, tab_q_claims) = verify_single_tree(fp, &mut tab_tr, &proof.table_tree, c)?;
+    let (z_tab, tab_p_claims, tab_q_claims) =
+        verify_single_tree(fp, &mut tab_tr, &proof.table_tree, c)?;
     let id_ev = eval_table_identity_le(fp, &z_tab);
     for ell in 0..c {
         if tab_p_claims[ell] != proof.table_tree.leaf_payload_eval {
@@ -957,7 +1004,9 @@ mod tests {
         let params = HoistedParams::n8192();
         let fp = &params.fp[0];
         let ctx = [0x42u8; 32];
-        let mut entries: Vec<u64> = (0..50_000).map(|i| ((i * 7919) % TABLE_SIZE) as u64).collect();
+        let mut entries: Vec<u64> = (0..50_000)
+            .map(|i| ((i * 7919) % TABLE_SIZE) as u64)
+            .collect();
         entries.push(0);
         entries.push((TABLE_SIZE - 1) as u64);
 

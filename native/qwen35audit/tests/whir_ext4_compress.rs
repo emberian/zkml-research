@@ -3,7 +3,7 @@
 
 use qwen35audit::ext4::{badd, bsub, CShakeRng, CShakeTranscript, Ext4, P_U32};
 use qwen35audit::qwen35_layer::{
-    execute_qwen35_24_layers_mmap, solve_real_gdn_wy_chunk64, PrecommittedMxfp4Pcs,
+    execute_qwen35_24_layers_mmap, solve_real_gdn_wy_chunk64, GdnWyShape, PrecommittedMxfp4Pcs,
 };
 use qwen35audit::qwen38fn_slice::{prove_and_verify_qwen38fn_real_slice, QsaTopKbWitness};
 use qwen35audit::safetensors_mmap::{
@@ -17,10 +17,11 @@ use qwen35audit::whir_ext4::{
     commit_u1_whir_boundaries, open_whir_batch_ext4, prove_gmask_einsum_ext4,
     prove_qwen38fn_whir_slice, prove_u1_whir_audit_bundle, verify_gmask_einsum_ext4,
     verify_qwen38fn_whir_slice_bytes, verify_u1_whir_audit_bundle_standalone,
-    verify_whir_batch_ext4, GMaskExt4, GMaskSpecExt4, JointLinearClaimExt4, LinearTermExt4,
-    PrecommittedWhirMxfp4, Qwen35U1WhirBundle, Qwen38FnWhirReceipt, WhirCommittedMatrixExt4,
-    WHIR_EXT4_T_QUERIES_100,
+    verify_whir_batch_ext4, GMaskExt4, GMaskSpecExt4, GmaskEinSumParams, JointLinearClaimExt4,
+    LinearTermExt4, PrecommittedWhirMxfp4, Qwen35U1WhirBundle, Qwen38FnWhirReceipt,
+    WhirCommittedMatrixExt4, WHIR_EXT4_T_QUERIES_100,
 };
+use std::ops::{Add, Mul, Sub};
 use std::time::Instant;
 
 fn gaussian_rank_ext4(mut mat: Vec<Vec<Ext4>>) -> usize {
@@ -39,17 +40,20 @@ fn gaussian_rank_ext4(mut mat: Vec<Vec<Ext4>>) -> usize {
         };
         mat.swap(rank, piv);
         let inv_p = mat[rank][col].inv().unwrap();
-        for c in col..cols {
-            mat[rank][c] = mat[rank][c].mul(inv_p);
+        for cell in &mut mat[rank][col..cols] {
+            *cell = cell.mul(inv_p);
         }
-        for r in 0..rows {
-            if r == rank || mat[r][col].is_zero() {
+        let (upper, rest) = mat.split_at_mut(rank);
+        let (piv_slice, lower) = rest.split_at_mut(1);
+        let piv_row = &piv_slice[0];
+        for row in upper.iter_mut().chain(lower.iter_mut()) {
+            if row[col].is_zero() {
                 continue;
             }
-            let f = mat[r][col];
-            for c in col..cols {
-                let sub = f.mul(mat[rank][c]);
-                mat[r][c] = mat[r][c].sub(sub);
+            let f = row[col];
+            for (cell, &piv_cell) in row[col..cols].iter_mut().zip(piv_row[col..cols].iter()) {
+                let sub = f.mul(piv_cell);
+                *cell = cell.sub(sub);
             }
         }
         rank += 1;
@@ -81,8 +85,8 @@ fn test_gmask_ext4_algebraic_hvzk_and_witness_indistinguishability() {
                 let rp = gm.round_poly("s", i, &r_chals[..i]);
                 j_mat[off][v_idx] = rp[0];
                 off += 1;
-                for k in 2..=deg {
-                    j_mat[off][v_idx] = rp[k];
+                for &rp_k in &rp[2..=deg] {
+                    j_mat[off][v_idx] = rp_k;
                     off += 1;
                 }
             }
@@ -98,7 +102,9 @@ fn test_gmask_ext4_algebraic_hvzk_and_witness_indistinguishability() {
     //     public statement (`sum_x pub_a[x] * w[x] == S_pub`), opened with `BlindedEinSumExt4Proof` + `WhirExt4Pcs`!
     let m = 10usize;
     let n = 1usize << m;
-    let pub_a: Vec<Ext4> = (0..n).map(|i| Ext4::from_bb(((i * 13 + 5) % 97) as u32 + 1)).collect();
+    let pub_a: Vec<Ext4> = (0..n)
+        .map(|i| Ext4::from_bb(((i * 13 + 5) % 97) as u32 + 1))
+        .collect();
 
     // Pick `w_sparse` (only index 0 & 1 non-zero) and `w_dense` satisfying the exact same `<pub_a, w> == S_pub`!
     let mut w_sparse = vec![0u32; n];
@@ -106,7 +112,9 @@ fn test_gmask_ext4_algebraic_hvzk_and_witness_indistinguishability() {
     let mut w_dense: Vec<u32> = (0..n).map(|i| ((i * 99991 + 3) as u32) % P_U32).collect();
     // Adjust `w_dense[0]` so `<pub_a, w_dense> == <pub_a, w_sparse>` (note `pub_a` is in `F_p`, `pub_a[0] = 6` invertible!):
     let dot_bb = |w: &[u32]| -> u32 {
-        pub_a.iter().zip(w.iter()).fold(0u32, |acc, (a, &wi)| badd(acc, ((a.0[0] as u64 * wi as u64) % (P_U32 as u64)) as u32))
+        pub_a.iter().zip(w.iter()).fold(0u32, |acc, (a, &wi)| {
+            badd(acc, ((a.0[0] as u64 * wi as u64) % (P_U32 as u64)) as u32)
+        })
     };
     let want_s = dot_bb(&w_sparse);
     w_dense[0] = 0;
@@ -122,25 +130,74 @@ fn test_gmask_ext4_algebraic_hvzk_and_witness_indistinguishability() {
 
     for (w_idx, w_tab) in [&w_sparse, &w_dense].iter().enumerate() {
         for trial in 0..16u8 {
-            let seed = [w_idx as u8, trial, 0x5A, 0x3C, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28];
+            let seed = [
+                w_idx as u8,
+                trial,
+                0x5A,
+                0x3C,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26,
+                27,
+                28,
+            ];
             let mut rng = CShakeRng::from_seed(b"HVZK-TRIAL", &seed);
             let gm = GMaskExt4::sample(specs.clone(), &mut rng);
             let gm_limbs = gm.to_four_bb_tables();
 
             let mat = WhirCommittedMatrixExt4::commit(
-                &[w_tab, &gm_limbs[0], &gm_limbs[1], &gm_limbs[2], &gm_limbs[3]],
+                &[
+                    w_tab,
+                    &gm_limbs[0],
+                    &gm_limbs[1],
+                    &gm_limbs[2],
+                    &gm_limbs[3],
+                ],
                 true,
                 Some(seed),
             );
-            let (snd_thm14, snd_eta, _) = mat.shape.provable_soundness_bits(WHIR_EXT4_T_QUERIES_100);
+            let (snd_thm14, snd_eta, _) =
+                mat.shape.provable_soundness_bits(WHIR_EXT4_T_QUERIES_100);
             assert!(snd_thm14 >= 100.0 && snd_eta >= 100.0);
 
             let mut tr_p = CShakeTranscript::new(b"HVZK-TEST");
             tr_p.absorb_root(b"r", &mat.root);
             let w_ext: Vec<Ext4> = w_tab.iter().map(|&v| Ext4::from_bb(v)).collect();
-            let (bsc, rho, chals, pub_at_r, _, term) =
-                prove_gmask_einsum_ext4(&pub_a, &w_ext, 0, m, &[], &gm, "sc", &mut tr_p);
+            let (bsc, rho, chals, pub_at_r, _, term) = prove_gmask_einsum_ext4(
+                &pub_a,
+                &w_ext,
+                GmaskEinSumParams {
+                    mu_s: 0,
+                    kappa: m,
+                    z_s: &[],
+                    gmask: &gm,
+                    spec_name: "sc",
+                },
+                &mut tr_p,
+            );
             let (ws, wa) = GMaskExt4::build_spec_weights(&specs, "sc", &chals);
             let claims = vec![
                 JointLinearClaimExt4::gmask_sum_claim([1, 2, 3, 4], &ws, bsc.gmask_sum),
@@ -161,7 +218,8 @@ fn test_gmask_ext4_algebraic_hvzk_and_witness_indistinguishability() {
             let mut tr_v = CShakeTranscript::new(b"HVZK-TEST");
             tr_v.absorb_root(b"r", &mat.root);
             let (rho_v, chals_v, term_v) =
-                verify_gmask_einsum_ext4(Ext4::from_bb(want_s), 0, m, &[], &bsc, &mut tr_v).unwrap();
+                verify_gmask_einsum_ext4(Ext4::from_bb(want_s), 0, m, &[], &bsc, &mut tr_v)
+                    .unwrap();
             assert_eq!((rho_v, chals_v, term_v), (rho, chals, term));
             verify_whir_batch_ext4(
                 &[(&mat.root, &mat.shape, &claims)],
@@ -172,7 +230,10 @@ fn test_gmask_ext4_algebraic_hvzk_and_witness_indistinguishability() {
             .expect("standalone WhirExt4Pcs + GMaskExt4 must verify");
 
             for rd in &bsc.rounds {
-                assert!(!rd[3].is_zero(), "GMaskExt4 deg-3 coefficient must blind c_3 == 0!");
+                assert!(
+                    !rd[3].is_zero(),
+                    "GMaskExt4 deg-3 coefficient must blind c_3 == 0!"
+                );
                 for c in rd {
                     for &l in &c.0 {
                         for b in 0..8 {
@@ -186,7 +247,10 @@ fn test_gmask_ext4_algebraic_hvzk_and_witness_indistinguishability() {
     }
     let p0 = bits_ones[0] as f64 / bits_tot[0] as f64;
     let p1 = bits_ones[1] as f64 / bits_tot[1] as f64;
-    println!("[GMaskExt4 HVZK] sparse bit-balance={p0:.4}, dense bit-balance={p1:.4} (|diff|={:.4})", (p0 - p1).abs());
+    println!(
+        "[GMaskExt4 HVZK] sparse bit-balance={p0:.4}, dense bit-balance={p1:.4} (|diff|={:.4})",
+        (p0 - p1).abs()
+    );
     assert!((p0 - 0.5).abs() < 0.03 && (p1 - 0.5).abs() < 0.03);
 }
 
@@ -204,7 +268,8 @@ fn test_qwen35_and_qwen38_whir_compression_and_six_adversarial_attacks() {
     let audited_layer = 0usize;
     let (turn, _) = execute_qwen35_24_layers_mmap(&mmap, &prompt_ids, audited_layer).unwrap();
 
-    let raw_secret_out = b"Generated config:\nAPI_TOKEN = \"sk-proj-abc123XYZ_secret_key_99\"\nDone.";
+    let raw_secret_out =
+        b"Generated config:\nAPI_TOKEN = \"sk-proj-abc123XYZ_secret_key_99\"\nDone.";
     let (redacted_out, red_cnt) = redact_sk_secrets(raw_secret_out);
     assert_eq!(red_cnt, 1);
 
@@ -308,13 +373,36 @@ fn test_qwen35_and_qwen38_whir_compression_and_six_adversarial_attacks() {
     // PART B: Full-Width `Qwen3.8-Flash-Next` (`H_v = 48` WY + `512E` `MXFP4` MoE + `QSA`)
     // -----------------------------------------------------------------------------------------
     let c_len = 64usize;
-    let q: Vec<f32> = (0..(c_len * 16 * 128)).map(|i| ((i % 29) as f32 - 14.0) * 0.05).collect();
-    let k: Vec<f32> = (0..(c_len * 16 * 128)).map(|i| ((i % 31) as f32 - 15.0) * 0.05).collect();
-    let v: Vec<f32> = (0..(c_len * 48 * 128)).map(|i| ((i % 19) as f32 - 9.0) * 0.08).collect();
-    let g: Vec<f32> = (0..(c_len * 48)).map(|i| -0.05 * ((i % 7) as f32 + 1.0)).collect();
-    let beta: Vec<f32> = (0..(c_len * 48)).map(|i| 0.2 + 0.05 * ((i % 5) as f32)).collect();
+    let q: Vec<f32> = (0..(c_len * 16 * 128))
+        .map(|i| ((i % 29) as f32 - 14.0) * 0.05)
+        .collect();
+    let k: Vec<f32> = (0..(c_len * 16 * 128))
+        .map(|i| ((i % 31) as f32 - 15.0) * 0.05)
+        .collect();
+    let v: Vec<f32> = (0..(c_len * 48 * 128))
+        .map(|i| ((i % 19) as f32 - 9.0) * 0.08)
+        .collect();
+    let g: Vec<f32> = (0..(c_len * 48))
+        .map(|i| -0.05 * ((i % 7) as f32 + 1.0))
+        .collect();
+    let beta: Vec<f32> = (0..(c_len * 48))
+        .map(|i| 0.2 + 0.05 * ((i % 5) as f32))
+        .collect();
 
-    let wy48 = solve_real_gdn_wy_chunk64(&q, &k, &v, &g, &beta, 16, 48, 64, 128, 128);
+    let wy48 = solve_real_gdn_wy_chunk64(
+        &q,
+        &k,
+        &v,
+        &g,
+        &beta,
+        GdnWyShape {
+            h_k: 16,
+            h_v: 48,
+            c_len: 64,
+            d_k: 128,
+            d_v: 128,
+        },
+    );
     let x_in: Vec<i16> = (0..(64 * 2560)).map(|i| ((i % 41) as i16) - 20).collect();
     let mut nibs_pad = vec![0u8; 1024 * 128 * 32];
     let mut scs_pad = vec![0u32; 1024 * 128];
@@ -344,7 +432,13 @@ fn test_qwen35_and_qwen38_whir_compression_and_six_adversarial_attacks() {
         }
     }
     let relu_scores: Vec<u32> = (0..(64 * 16))
-        .map(|i| if (i % 3) == 0 { 0 } else { ((i * 5) % 25) as u32 })
+        .map(|i| {
+            if (i % 3) == 0 {
+                0
+            } else {
+                ((i * 5) % 25) as u32
+            }
+        })
         .collect();
     let qsa = QsaTopKbWitness {
         num_queries: 64,
@@ -354,13 +448,15 @@ fn test_qwen35_and_qwen38_whir_compression_and_six_adversarial_attacks() {
     };
 
     let old_q38 =
-        prove_and_verify_qwen38fn_real_slice(&wy48, &x_in, &nibs_pad, &scs_pad, &y_raw, &qsa).unwrap();
+        prove_and_verify_qwen38fn_real_slice(&wy48, &x_in, &nibs_pad, &scs_pad, &y_raw, &qsa)
+            .unwrap();
     let q38_old_wy_kib = old_q38.wy_proof_bytes.len() as f64 / 1024.0;
-    let q38_old_tot_kib = (old_q38.wy_proof_bytes.len() + old_q38.qsa_proof_bytes.len()) as f64 / 1024.0;
+    let q38_old_tot_kib =
+        (old_q38.wy_proof_bytes.len() + old_q38.qsa_proof_bytes.len()) as f64 / 1024.0;
 
     let expert_whir = PrecommittedWhirMxfp4::from_padded(1024, 128, nibs_pad, scs_pad);
-    let q38_whir =
-        prove_qwen38fn_whir_slice(&wy48, &x_in, &expert_whir, &y_raw, &qsa, None).expect("prove Qwen3.8 WHIR");
+    let q38_whir = prove_qwen38fn_whir_slice(&wy48, &x_in, &expert_whir, &y_raw, &qsa, None)
+        .expect("prove Qwen3.8 WHIR");
     let q38_whir_kib = q38_whir.proof_bytes.len() as f64 / 1024.0;
 
     println!(
@@ -501,7 +597,9 @@ fn test_qwen35_and_qwen38_whir_compression_and_six_adversarial_attacks() {
 
     // Attack 5: `cSHAKE256` WHIR Merkle multiproof / folded coset fiber bit-flip:
     let mut atk5a = base_u1.clone();
-    atk5a.whir_batch_proof.cascade_levels[0].multiproof.aux_hashes[0][2] ^= 0x40;
+    atk5a.whir_batch_proof.cascade_levels[0]
+        .multiproof
+        .aux_hashes[0][2] ^= 0x40;
     let mut atk5b = base_q38.clone();
     atk5b.whir_batch_proof.cascade_levels[1].opened_fibers[0] =
         atk5b.whir_batch_proof.cascade_levels[1].opened_fibers[0].add(Ext4::ONE);
@@ -612,8 +710,15 @@ fn test_qwen35_and_qwen38_whir_compression_and_six_adversarial_attacks() {
         "Attack 6b (non-accepting sink state 4 in receipt) must be rejected by verifier!"
     );
     assert!(
-        prove_qwen38fn_whir_slice(&wy48, &x_in, &expert_whir, &y_raw, &qsa, Some((40, (8u32 << 27) + 15)))
-            .is_err(),
+        prove_qwen38fn_whir_slice(
+            &wy48,
+            &x_in,
+            &expert_whir,
+            &y_raw,
+            &qsa,
+            Some((40, (8u32 << 27) + 15))
+        )
+        .is_err(),
         "Attack 6c (QSA Trap B1a 30-bit tau wraparound) must be rejected by C5!"
     );
 }

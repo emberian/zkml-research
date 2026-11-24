@@ -45,21 +45,28 @@ use serde_json::json;
 use std::net::{SocketAddr, TcpListener};
 use std::time::Instant;
 
-
 /// The process's peak resident set (VmHWM), where /proc exists.
 fn peak_rss_kb() -> Option<u64> {
     let st = std::fs::read_to_string("/proc/self/status").ok()?;
-    st.lines().find_map(|l| l.strip_prefix("VmHWM:")).and_then(|r| r.trim().trim_end_matches("kB").trim().parse().ok())
+    st.lines()
+        .find_map(|l| l.strip_prefix("VmHWM:"))
+        .and_then(|r| r.trim().trim_end_matches("kB").trim().parse().ok())
 }
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let cmd = args.get(1).map(|s| s.as_str()).unwrap_or("");
     if let Some(t) = flag(&args, "--threads") {
-        rayon::ThreadPoolBuilder::new().num_threads(t.parse().unwrap()).build_global().unwrap();
+        rayon::ThreadPoolBuilder::new()
+            .num_threads(t.parse().unwrap())
+            .build_global()
+            .unwrap();
     }
     match cmd {
-        "serve" => std::process::exit(darkstep::serve::serve_main(&args, &mut darkstep::serve::NoHook)),
+        "serve" => std::process::exit(darkstep::serve::serve_main(
+            &args,
+            &mut darkstep::serve::NoHook,
+        )),
         "relay" => {
             // relay I HOST:PORT HOST:PORT HOST:PORT --tls TLSDIR --local 127.0.0.1:P --forward-base L [--listen ADDR]
             let i: usize = args[2].parse().unwrap();
@@ -67,23 +74,44 @@ fn main() {
             let tlsdir = std::path::PathBuf::from(flag(&args, "--tls").expect("--tls TLSDIR"));
             let id = darkstep::tls::Identity {
                 key_der: std::fs::read(tlsdir.join(format!("tls_{i}.key"))).expect("own TLS key"),
-                cert_der: std::fs::read(tlsdir.join(format!("cert_{i}.der"))).expect("own certificate"),
+                cert_der: std::fs::read(tlsdir.join(format!("cert_{i}.der")))
+                    .expect("own certificate"),
             };
-            let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tlsdir.join(format!("cert_{j}.der"))).expect("peer certificate")).collect();
-            let local: SocketAddr = flag(&args, "--local").expect("--local 127.0.0.1:P").parse().unwrap();
-            let base: u16 = flag(&args, "--forward-base").expect("--forward-base L").parse().unwrap();
+            let certs: Vec<Vec<u8>> = (0..3)
+                .map(|j| {
+                    std::fs::read(tlsdir.join(format!("cert_{j}.der"))).expect("peer certificate")
+                })
+                .collect();
+            let local: SocketAddr = flag(&args, "--local")
+                .expect("--local 127.0.0.1:P")
+                .parse()
+                .unwrap();
+            let base: u16 = flag(&args, "--forward-base")
+                .expect("--forward-base L")
+                .parse()
+                .unwrap();
             let listener = if i + 1 < 3 {
-                let at: SocketAddr = flag(&args, "--listen").map(|a| a.parse().unwrap()).unwrap_or(addrs[i]);
+                let at: SocketAddr = flag(&args, "--listen")
+                    .map(|a| a.parse().unwrap())
+                    .unwrap_or(addrs[i]);
                 Some(TcpListener::bind(at).unwrap())
             } else {
                 None
             };
-            let timeout = std::time::Duration::from_secs(flag(&args, "--timeout").map(|t| t.parse().unwrap()).unwrap_or(3600));
-            let net = darkstep::net::Net::connect_tls(i, listener, &addrs, &id, &certs, timeout).unwrap_or_else(|e| {
-                eprintln!("{e}");
-                std::process::exit(2)
-            });
-            eprintln!("relay {i}: mesh up; forwarding 127.0.0.1:{}+j to each peer j, peers reach {local}", base);
+            let timeout = std::time::Duration::from_secs(
+                flag(&args, "--timeout")
+                    .map(|t| t.parse().unwrap())
+                    .unwrap_or(3600),
+            );
+            let net = darkstep::net::Net::connect_tls(i, listener, &addrs, &id, &certs, timeout)
+                .unwrap_or_else(|e| {
+                    eprintln!("{e}");
+                    std::process::exit(2)
+                });
+            eprintln!(
+                "relay {i}: mesh up; forwarding 127.0.0.1:{}+j to each peer j, peers reach {local}",
+                base
+            );
             if let Err(e) = darkstep::relay::run(std::sync::Arc::new(net), base, local) {
                 eprintln!("{e}");
                 std::process::exit(1);
@@ -94,10 +122,14 @@ fn main() {
             std::fs::create_dir_all(&dir).unwrap();
             let seat = &args[2];
             let id = darkstep::tls::generate(seat.parse::<usize>().unwrap_or(9));
-            let mut f = darkstep::serve::open_private(&dir.join(format!("tls_{seat}.key"))).unwrap();
+            let mut f =
+                darkstep::serve::open_private(&dir.join(format!("tls_{seat}.key"))).unwrap();
             std::io::Write::write_all(&mut f, &id.key_der).unwrap();
             std::fs::write(dir.join(format!("cert_{seat}.der")), &id.cert_der).unwrap();
-            println!("{}", json!({"seat": seat, "cert_sha256": darkstep::tls::cert_fingerprint(&id.cert_der)}));
+            println!(
+                "{}",
+                json!({"seat": seat, "cert_sha256": darkstep::tls::cert_fingerprint(&id.cert_der)})
+            );
         }
         #[cfg(feature = "test-harness")]
         "owner-test" => {
@@ -108,10 +140,14 @@ fn main() {
                 key_der: std::fs::read(tls.join("tls_owner.key")).expect("owner key"),
                 cert_der: std::fs::read(tls.join("cert_owner.der")).expect("owner cert"),
             };
-            let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(tls.join(format!("cert_{j}.der"))).unwrap()).collect();
+            let certs: Vec<Vec<u8>> = (0..3)
+                .map(|j| std::fs::read(tls.join(format!("cert_{j}.der"))).unwrap())
+                .collect();
             let l = TcpListener::bind(&args[2]).unwrap();
             let r = darkstep::serve::owner_serve(l, &id, &certs, |k, _| {
-                std::fs::read(dir.join(format!("public_step{k}.bin"))).map(|b| bytes_to_u64s(&b)).map_err(|e| e.to_string())
+                std::fs::read(dir.join(format!("public_step{k}.bin")))
+                    .map(|b| bytes_to_u64s(&b))
+                    .map_err(|e| e.to_string())
             });
             if let Err(e) = r {
                 eprintln!("{e}");
@@ -129,7 +165,9 @@ fn main() {
             let later: Vec<Vec<u64>> = (1..k)
                 .map(|s| {
                     let mut r = pycompat::PyRandom::from_u64(1000 + s as u64);
-                    (0..2 * pf.d).map(|_| darkstep::arith::from_i64(r.randint_i64(-7, 7), pf.t)).collect()
+                    (0..2 * pf.d)
+                        .map(|_| darkstep::arith::from_i64(r.randint_i64(-7, 7), pf.t))
+                        .collect()
                 })
                 .collect();
             // --proof-triples G,C: after each step its proof section (G triples at genesis, C after a carried step) on
@@ -140,55 +178,129 @@ fn main() {
             let (tapes, cs) = if pubgen {
                 let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
                 let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
-                let xy0: Vec<u64> = plain.x.iter().chain(plain.y.iter()).map(|&v| darkstep::arith::from_i64(v, pf.t)).collect();
-                let mut cs = vec![darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &xy0, &pf.program)];
+                let xy0: Vec<u64> = plain
+                    .x
+                    .iter()
+                    .chain(plain.y.iter())
+                    .map(|&v| darkstep::arith::from_i64(v, pf.t))
+                    .collect();
+                let mut cs = vec![darkstep::tape::deal_one_step(
+                    &mut dl,
+                    &mut owner,
+                    pf.d,
+                    &xy0,
+                    &pf.program,
+                )];
                 for xs in &later {
-                    cs.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, xs, &pf.program));
+                    cs.push(darkstep::tape::deal_one_step(
+                        &mut dl,
+                        &mut owner,
+                        pf.d,
+                        xs,
+                        &pf.program,
+                    ));
                 }
-                let w: Vec<u8> = plain.w1.iter().chain(plain.w2.iter()).flatten().flat_map(|x| x.to_le_bytes()).collect();
+                let w: Vec<u8> = plain
+                    .w1
+                    .iter()
+                    .chain(plain.w2.iter())
+                    .flatten()
+                    .flat_map(|x| x.to_le_bytes())
+                    .collect();
                 std::fs::write(dir.join("genesis_w.bin"), w).unwrap();
                 (dl.tapes, cs)
-            } else { match flag(&args, "--proof-triples") {
-                None => darkstep::tape::deal_steps_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), &later, false, &pf.program),
-                Some(gc) => {
-                    let (g, c) = gc.split_once(',').expect("--proof-triples G,C");
-                    let (g, c): (usize, usize) = (g.parse().unwrap(), c.parse().unwrap());
-                    let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
-                    dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
-                    let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
-                    let mut cs = vec![darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &plain.flat_mod(pf.t), &pf.program)];
-                    darkstep::tape::deal_proof_section(&mut dl, g);
-                    for xs in &later {
-                        cs.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, xs, &pf.program));
-                        darkstep::tape::deal_proof_section(&mut dl, c);
+            } else {
+                match flag(&args, "--proof-triples") {
+                    None => darkstep::tape::deal_steps_prog(
+                        pf.t,
+                        pf.d,
+                        DEALER_SEED,
+                        OWNER_SEED,
+                        &plain.flat_mod(pf.t),
+                        &later,
+                        false,
+                        &pf.program,
+                    ),
+                    Some(gc) => {
+                        let (g, c) = gc.split_once(',').expect("--proof-triples G,C");
+                        let (g, c): (usize, usize) = (g.parse().unwrap(), c.parse().unwrap());
+                        let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
+                        dl.proof_rng = Some(pycompat::PyRandom::from_u64(1));
+                        let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
+                        let mut cs = vec![darkstep::tape::deal_one_step(
+                            &mut dl,
+                            &mut owner,
+                            pf.d,
+                            &plain.flat_mod(pf.t),
+                            &pf.program,
+                        )];
+                        darkstep::tape::deal_proof_section(&mut dl, g);
+                        for xs in &later {
+                            cs.push(darkstep::tape::deal_one_step(
+                                &mut dl,
+                                &mut owner,
+                                pf.d,
+                                xs,
+                                &pf.program,
+                            ));
+                            darkstep::tape::deal_proof_section(&mut dl, c);
+                        }
+                        (dl.tapes, cs)
                     }
-                    (dl.tapes, cs)
                 }
-            } };
+            };
             // --only I: write custodian I's tape only (run the dealer on each custodian's own box)
             let only: Option<usize> = flag(&args, "--only").map(|x| x.parse().unwrap());
             for (i, tp) in tapes.iter().enumerate() {
                 if only.is_some_and(|o| o != i) {
                     continue;
                 }
-                let mut f = std::io::BufWriter::new(std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap());
+                let mut f = std::io::BufWriter::new(
+                    std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap(),
+                );
                 tp.write_to(&mut f).unwrap();
             }
-            for (s, c) in cs.iter().enumerate().filter(|_| only.is_none() || args.iter().any(|a| a == "--public")) {
+            for (s, c) in cs
+                .iter()
+                .enumerate()
+                .filter(|_| only.is_none() || args.iter().any(|a| a == "--public"))
+            {
                 std::fs::write(dir.join(format!("public_step{s}.bin")), u64s_to_bytes(c)).unwrap();
             }
-            let raw: Vec<Vec<i64>> = later.iter().map(|v| v.iter().map(|&x| if x > pf.t / 2 { x as i64 - pf.t as i64 } else { x as i64 }).collect()).collect();
-            std::fs::write(dir.join("later_inputs.json"), serde_json::to_string(&raw).unwrap()).unwrap();
+            let raw: Vec<Vec<i64>> = later
+                .iter()
+                .map(|v| {
+                    v.iter()
+                        .map(|&x| {
+                            if x > pf.t / 2 {
+                                x as i64 - pf.t as i64
+                            } else {
+                                x as i64
+                            }
+                        })
+                        .collect()
+                })
+                .collect();
+            std::fs::write(
+                dir.join("later_inputs.json"),
+                serde_json::to_string(&raw).unwrap(),
+            )
+            .unwrap();
             println!("{}", json!({"steps": k, "tape_len": tapes[0].len()}));
         }
         "local" => {
             let pf = gated(prof(&args[2..6]), &args);
-            let prefix = flag(&args, "--out").unwrap_or_else(|| format!("native_N{}_L{}_F{}_d{}", pf.n, pf.l, pf.f_bits, pf.d));
+            let prefix = flag(&args, "--out")
+                .unwrap_or_else(|| format!("native_N{}_L{}_F{}_d{}", pf.n, pf.l, pf.f_bits, pf.d));
             let (res, dump) = run_local(&pf, attack_of(&args));
             if let Some(d) = dump {
                 std::fs::write(format!("{prefix}.transcript.txt"), d).unwrap();
             }
-            std::fs::write(format!("{prefix}.json"), serde_json::to_string_pretty(&res).unwrap()).unwrap();
+            std::fs::write(
+                format!("{prefix}.json"),
+                serde_json::to_string_pretty(&res).unwrap(),
+            )
+            .unwrap();
             let mut short = res.clone();
             short.as_object_mut().unwrap().remove("detail");
             println!("{}", serde_json::to_string(&short).unwrap());
@@ -202,11 +314,16 @@ fn main() {
             let plain = inputs(pf.d);
             let (tapes, cs) = deal_step(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t));
             for (i, tp) in tapes.iter().enumerate() {
-                let mut f = std::io::BufWriter::new(std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap());
+                let mut f = std::io::BufWriter::new(
+                    std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap(),
+                );
                 tp.write_to(&mut f).unwrap();
             }
             std::fs::write(dir.join("public.bin"), u64s_to_bytes(&cs)).unwrap();
-            println!("{}", json!({"deal_seconds": t0.elapsed().as_secs_f64(), "tape_len": tapes[0].len(), "inputs": cs.len()}));
+            println!(
+                "{}",
+                json!({"deal_seconds": t0.elapsed().as_secs_f64(), "tape_len": tapes[0].len(), "inputs": cs.len()})
+            );
         }
         "party" => {
             let t_start = Instant::now();
@@ -215,7 +332,10 @@ fn main() {
             pf.secure_coins = true;
             let dir = std::path::PathBuf::from(&args[7]);
             let addrs: Vec<SocketAddr> = args[8..11].iter().map(|a| a.parse().unwrap()).collect();
-            let tape = Tape::read_from(&mut std::io::BufReader::new(std::fs::File::open(dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();
+            let tape = Tape::read_from(&mut std::io::BufReader::new(
+                std::fs::File::open(dir.join(format!("tape_{i}.bin"))).unwrap(),
+            ))
+            .unwrap();
             let cs = bytes_to_u64s(&std::fs::read(dir.join("public.bin")).unwrap());
             let listener = TcpListener::bind(addrs[i]).unwrap();
             let net = Net::connect(i, listener, &addrs);
@@ -224,9 +344,17 @@ fn main() {
             if let Some(kb) = peak_rss_kb() {
                 v["peak_rss_kb"] = json!(kb);
             }
-            std::fs::write(dir.join(format!("result_{i}.json")), serde_json::to_string_pretty(&v).unwrap()).unwrap();
+            std::fs::write(
+                dir.join(format!("result_{i}.json")),
+                serde_json::to_string_pretty(&v).unwrap(),
+            )
+            .unwrap();
             if let Some((w1, w2)) = shares {
-                let flat: Vec<u64> = w1.iter().chain(w2.iter()).flat_map(|r| r.iter().flat_map(|x| [x.s, x.m])).collect();
+                let flat: Vec<u64> = w1
+                    .iter()
+                    .chain(w2.iter())
+                    .flat_map(|r| r.iter().flat_map(|x| [x.s, x.m]))
+                    .collect();
                 std::fs::write(dir.join(format!("shares_{i}.bin")), u64s_to_bytes(&flat)).unwrap();
             }
             if let Some(d) = dump {
@@ -244,7 +372,8 @@ fn main() {
             let d = pf.d;
             let shares: Vec<(Vec<Vec<Sh>>, Vec<Vec<Sh>>)> = (0..3)
                 .map(|i| {
-                    let v = bytes_to_u64s(&std::fs::read(dir.join(format!("shares_{i}.bin"))).unwrap());
+                    let v =
+                        bytes_to_u64s(&std::fs::read(dir.join(format!("shares_{i}.bin"))).unwrap());
                     let sh: Vec<Sh> = v.chunks(2).map(|c| Sh { s: c[0], m: c[1] }).collect();
                     let rows: Vec<Vec<Sh>> = sh.chunks(d).map(|r| r.to_vec()).collect();
                     (rows[..d].to_vec(), rows[d..].to_vec())

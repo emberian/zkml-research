@@ -29,7 +29,9 @@ impl LigParams {
     pub fn new(k: usize, t: usize, tt: usize, blow: usize) -> Self {
         assert!(tt <= t);
         let zeta: Vec<u64> = (0..k).map(|i| field::p() - 1 - i as u64).collect();
-        let eta: Vec<u64> = (0..t).map(|l| field::p() - 1 - k as u64 - l as u64).collect();
+        let eta: Vec<u64> = (0..t)
+            .map(|l| field::p() - 1 - k as u64 - l as u64)
+            .collect();
         let mut nodes = zeta.clone();
         nodes.extend(&eta);
         let l = lagrange_basis(&nodes);
@@ -40,8 +42,21 @@ impl LigParams {
         }
         let npts = blow * (k + t);
         let maxlen = 2 * (k + t) - 1;
-        let pw = (0..npts).map(|j| poly::powers((j + 1) as u64, maxlen)).collect();
-        LigParams { k, t, tt, npts, zeta, l, lz, vz, pw, ext: 1 }
+        let pw = (0..npts)
+            .map(|j| poly::powers((j + 1) as u64, maxlen))
+            .collect();
+        LigParams {
+            k,
+            t,
+            tt,
+            npts,
+            zeta,
+            l,
+            lz,
+            vz,
+            pw,
+            ext: 1,
+        }
     }
     pub fn interp(&self, vals: &[u64]) -> Vec<u64> {
         poly::combine(vals, &self.l, self.k + self.t)
@@ -50,7 +65,9 @@ impl LigParams {
         poly::combine(alpha, &self.lz, self.k)
     }
     pub fn code(&self, f: &[u64]) -> Vec<u64> {
-        (0..self.npts).map(|j| field::dot(f, &self.pw[j][..f.len()])).collect()
+        (0..self.npts)
+            .map(|j| field::dot(f, &self.pw[j][..f.len()]))
+            .collect()
     }
     pub fn path_len(&self) -> usize {
         bitlen(self.npts - 1) + 1
@@ -121,15 +138,19 @@ impl LinSink for FirstViolated<'_> {
     }
 }
 
-pub fn first_violated(rows: &[Vec<u64>], sys: &dyn LinSystem, quad: &[(usize, usize, usize)]) -> Option<String> {
+pub fn first_violated(
+    rows: &[Vec<u64>],
+    sys: &dyn LinSystem,
+    quad: &[(usize, usize, usize)],
+) -> Option<String> {
     let mut fv = FirstViolated { rows, found: None };
     sys.emit(&mut fv);
     if fv.found.is_some() {
         return fv.found;
     }
     for &(x, y, z) in quad {
-        for pos in 0..rows[x].len() {
-            if field::mul(rows[x][pos], rows[y][pos]) != rows[z][pos] {
+        for (pos, ((&rx, &ry), &rz)) in rows[x].iter().zip(&rows[y]).zip(&rows[z]).enumerate() {
+            if field::mul(rx, ry) != rz {
                 return Some(format!("product gate {pos}"));
             }
         }
@@ -137,8 +158,19 @@ pub fn first_violated(rows: &[Vec<u64>], sys: &dyn LinSystem, quad: &[(usize, us
     None
 }
 
-fn alpha_of(sys: &dyn LinSystem, rr: &[u64], nrows: usize, k: usize, ext: usize) -> Vec<Vec<Vec<u64>>> {
-    let mut a = Alpha { rr, ext, idx: 0, alpha: vec![vec![vec![0u64; k]; nrows]; ext] };
+fn alpha_of(
+    sys: &dyn LinSystem,
+    rr: &[u64],
+    nrows: usize,
+    k: usize,
+    ext: usize,
+) -> Vec<Vec<Vec<u64>>> {
+    let mut a = Alpha {
+        rr,
+        ext,
+        idx: 0,
+        alpha: vec![vec![vec![0u64; k]; nrows]; ext],
+    };
     sys.emit(&mut a);
     a.alpha
 }
@@ -168,19 +200,20 @@ pub struct LigProof {
     pub more: Vec<(Vec<u64>, Vec<u64>, Vec<u64>)>,
 }
 
+type TapeTriples = (Vec<(u64, u64, u64)>, usize);
+
 /// One custodian's Ligero prover state.
 pub struct LigParty<'p> {
     pub pp: &'p LigParams,
     pub i: usize,
     pub n: usize,
-    det: bool,
     rng: Coins,
     /// the ideal dealer's stream (the harness: cozk's dealer under the hook, or one stream the in-process harness
     /// gives every party through with_dealer); None in the deployed run, which takes its triples from the tape
     dealer: Option<PyRandom>,
     /// this party's tape triples (value shares of authenticated triples; the MAC shares are unused: the quadratic
     /// test checks z = x y). None: the ideal dealer stream.
-    tape: Option<(Vec<(u64, u64, u64)>, usize)>,
+    tape: Option<TapeTriples>,
     /// this party's shares of every row's k message values (row-major, commit order)
     pub rows: Vec<Vec<u64>>,
     pub polys: Vec<Vec<u64>>,
@@ -211,21 +244,19 @@ fn deal(dealer: &mut PyRandom, v: &[u64], n: usize, i: usize) -> Vec<u64> {
 impl<'p> LigParty<'p> {
     /// seed_label = str((seed, context)) as cozk.Prover receives it.
     pub fn new(pp: &'p LigParams, i: usize, n: usize, seed_label: &str, det: &Det) -> Self {
-        let (rng, dealer, on) = match det.on() {
+        let (rng, dealer) = match det.on() {
             true => (
                 det.coins(&["cozk", seed_label, "party", &i.to_string()]),
                 det.rng(&["cozk", seed_label, "dealer"]),
-                true,
             ),
             // real runs: OS coins; triples from the tape (with_tape), or from an ideal dealer stream the in-process
             // harness gives every party identically through `with_dealer`
-            false => (crate::rng::secret_coins(), None, false),
+            false => (crate::rng::secret_coins(), None),
         };
         LigParty {
             pp,
             i,
             n,
-            det: on,
             rng,
             dealer,
             tape: None,
@@ -256,11 +287,16 @@ impl<'p> LigParty<'p> {
     fn scalar_triple(&mut self) -> (u64, u64, u64) {
         let (n, i) = (self.n, self.i);
         if let Some((t, pos)) = &mut self.tape {
-            let x = *t.get(*pos).expect("the tape's Ligero triples are exhausted");
+            let x = *t
+                .get(*pos)
+                .expect("the tape's Ligero triples are exhausted");
             *pos += 1;
             return x;
         }
-        let dl = self.dealer.as_mut().expect("no tape and no ideal dealer for the Ligero's triples");
+        let dl = self
+            .dealer
+            .as_mut()
+            .expect("no tape and no ideal dealer for the Ligero's triples");
         let a = dl.randrange_u64(field::p());
         let b = dl.randrange_u64(field::p());
         let ai = deal(dl, &[a], n, i)[0];
@@ -275,7 +311,10 @@ impl<'p> LigParty<'p> {
     fn poly_triple(&mut self, net: &mut dyn Net, deg: usize) -> (Vec<u64>, Vec<u64>, Vec<u64>) {
         let (n, i) = (self.n, self.i);
         if self.tape.is_none() {
-            let dl = self.dealer.as_mut().expect("no tape and no ideal dealer for the Ligero's triples");
+            let dl = self
+                .dealer
+                .as_mut()
+                .expect("no tape and no ideal dealer for the Ligero's triples");
             let a: Vec<u64> = (0..deg).map(|_| dl.randrange_u64(field::p())).collect();
             let b: Vec<u64> = (0..deg).map(|_| dl.randrange_u64(field::p())).collect();
             let cpoly = pmul(&a, &b);
@@ -284,10 +323,18 @@ impl<'p> LigParty<'p> {
             let cs_ = deal(dl, &cpoly, n, i);
             return (as_, bs_, cs_);
         }
-        let a: Vec<u64> = (0..deg).map(|_| self.rng.randrange_u64(field::p())).collect();
-        let b: Vec<u64> = (0..deg).map(|_| self.rng.randrange_u64(field::p())).collect();
+        let a: Vec<u64> = (0..deg)
+            .map(|_| self.rng.randrange_u64(field::p()))
+            .collect();
+        let b: Vec<u64> = (0..deg)
+            .map(|_| self.rng.randrange_u64(field::p()))
+            .collect();
         let m = 2 * deg - 1;
-        let ev = |f: &[u64], x: u64| f.iter().rev().fold(0u64, |acc, &c| field::add(field::mul(acc, x), c));
+        let ev = |f: &[u64], x: u64| {
+            f.iter()
+                .rev()
+                .fold(0u64, |acc, &c| field::add(field::mul(acc, x), c))
+        };
         let ea: Vec<u64> = (0..m as u64).map(|x| ev(&a, x)).collect();
         let eb: Vec<u64> = (0..m as u64).map(|x| ev(&b, x)).collect();
         let ec = self.mul_plain_batch(net, &ea, &eb);
@@ -349,8 +396,16 @@ impl<'p> LigParty<'p> {
         let refs: Vec<&Vec<u64>> = polys.iter().collect();
         let (codes, tree, salts) = self.commit_polys(&refs);
         let root = tree.last().unwrap()[0];
-        self.groups.push(Group { rows: idx, codes, tree, salts });
-        gather_hashes(net, &[root]).into_iter().map(|v| v[0]).collect()
+        self.groups.push(Group {
+            rows: idx,
+            codes,
+            tree,
+            salts,
+        });
+        gather_hashes(net, &[root])
+            .into_iter()
+            .map(|v| v[0])
+            .collect()
     }
 
     /// Per component of the F_{p^E} test coefficients: mask_p (deg < k + t), mask_l (deg < 2k + t - 1, zero sum on
@@ -360,16 +415,27 @@ impl<'p> LigParty<'p> {
         let (k, t, e) = (pp.k, pp.t, pp.ext);
         let mut masks = Vec::with_capacity(3 * e);
         for _ in 0..e {
-            masks.push((0..k + t).map(|_| self.rng.randrange_u64(field::p())).collect());
+            masks.push(
+                (0..k + t)
+                    .map(|_| self.rng.randrange_u64(field::p()))
+                    .collect(),
+            );
         }
         for _ in 0..e {
-            let mut ml: Vec<u64> = (0..2 * k + t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
-            let s = pp.zeta.iter().fold(0u64, |a, &z| field::add(a, peval(&ml, z)));
+            let mut ml: Vec<u64> = (0..2 * k + t - 1)
+                .map(|_| self.rng.randrange_u64(field::p()))
+                .collect();
+            let s = pp
+                .zeta
+                .iter()
+                .fold(0u64, |a, &z| field::add(a, peval(&ml, z)));
             ml[0] = field::sub(ml[0], field::mul(s, field::inv(k as u64)));
             masks.push(ml);
         }
         for _ in 0..e {
-            let r: Vec<u64> = (0..k + 2 * t - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
+            let r: Vec<u64> = (0..k + 2 * t - 1)
+                .map(|_| self.rng.randrange_u64(field::p()))
+                .collect();
             masks.push(pmul(&pp.vz, &r));
         }
         self.masks = masks;
@@ -377,8 +443,16 @@ impl<'p> LigParty<'p> {
         let refs: Vec<&Vec<u64>> = masks.iter().collect();
         let (codes, tree, salts) = self.commit_polys(&refs);
         let root = tree.last().unwrap()[0];
-        self.mask_group = Some(Group { rows: vec![], codes, tree, salts });
-        gather_hashes(net, &[root]).into_iter().map(|v| v[0]).collect()
+        self.mask_group = Some(Group {
+            rows: vec![],
+            codes,
+            tree,
+            salts,
+        });
+        gather_hashes(net, &[root])
+            .into_iter()
+            .map(|v| v[0])
+            .collect()
     }
 
     /// open_poly: every party sends its share vector; returns the sum.
@@ -458,15 +532,24 @@ impl<'p> LigParty<'p> {
             }
         });
         // linear
-        let mut cnt = Counter { n: 0, rhs: Vec::new() };
+        let mut cnt = Counter {
+            n: 0,
+            rhs: Vec::new(),
+        };
         sys.emit(&mut cnt);
         let rr = tr.chal(e * cnt.n);
         let alpha = alpha_of(sys, &rr, nrows, pp.k, e);
         let mut q: Vec<Vec<u64>> = Vec::with_capacity(e);
-        for kk in 0..e {
-            let rp: Vec<Option<Vec<u64>>> = alpha[kk]
+        for (kk, alpha_kk) in alpha.iter().enumerate().take(e) {
+            let rp: Vec<Option<Vec<u64>>> = alpha_kk
                 .par_iter()
-                .map(|a| if a.iter().any(|&x| x != 0) { Some(pp.interp_z(a)) } else { None })
+                .map(|a| {
+                    if a.iter().any(|&x| x != 0) {
+                        Some(pp.interp_z(a))
+                    } else {
+                        None
+                    }
+                })
                 .collect();
             let prods: Vec<Vec<u64>> = rp
                 .par_iter()
@@ -530,14 +613,28 @@ impl<'p> LigParty<'p> {
             .chain(std::iter::once(self.mask_group.as_ref().unwrap()))
             .map(|g| {
                 jj.iter()
-                    .map(|&j| (g.codes.iter().map(|c| c[j]).collect(), auth_path(&g.tree, &g.salts[j], j)))
+                    .map(|&j| {
+                        (
+                            g.codes.iter().map(|c| c[j]).collect(),
+                            auth_path(&g.tree, &g.salts[j], j),
+                        )
+                    })
                     .collect()
             })
             .collect();
         let cols = gather_openings(net, mine);
-        let more = (1..e).map(|kk| (w[kk].clone(), q[kk].clone(), pq[kk].clone())).collect();
+        let more = (1..e)
+            .map(|kk| (w[kk].clone(), q[kk].clone(), pq[kk].clone()))
+            .collect();
         let (w, q, pq) = (w.swap_remove(0), q.swap_remove(0), pq.swap_remove(0));
-        LigProof { w, q, pq, cols, j: jj, more }
+        LigProof {
+            w,
+            q,
+            pq,
+            cols,
+            j: jj,
+            more,
+        }
     }
 }
 
@@ -547,7 +644,9 @@ pub fn gather_openings(net: &mut dyn Net, mine: Vec<Vec<Opening>>) -> Vec<Vec<Ve
     let all = net.all_gather(enc);
     let per_party: Vec<Vec<Vec<Opening>>> = all.iter().map(|v| decode_openings(v)).collect();
     let ng = mine.len();
-    (0..ng).map(|g| per_party.iter().map(|pp| pp[g].clone()).collect()).collect()
+    (0..ng)
+        .map(|g| per_party.iter().map(|pp| pp[g].clone()).collect())
+        .collect()
 }
 
 pub fn encode_openings(groups: &[Vec<Opening>]) -> Vec<u64> {
@@ -590,30 +689,46 @@ pub fn decode_openings(v: &[u64]) -> Vec<Vec<Opening>> {
     out
 }
 
+pub struct VerifyGroups<'a> {
+    pub group_roots: &'a [Vec<Hash>],
+    pub group_sizes: &'a [usize],
+    pub mask_roots: &'a [Hash],
+}
+
+type MoreTuple = (Vec<u64>, Vec<u64>, Vec<u64>);
+
 /// cozk.verify: group_roots[g] = every party's root of group g (commit order); group_sizes[g] its row count.
 pub fn verify(
     pp: &LigParams,
     n: usize,
-    group_roots: &[Vec<Hash>],
-    group_sizes: &[usize],
-    mask_roots: &[Hash],
+    groups: &VerifyGroups<'_>,
     sys: &dyn LinSystem,
     quad: &[(usize, usize, usize)],
     msg: &LigProof,
     tr: &mut Transcript,
 ) -> Result<(), String> {
+    let VerifyGroups {
+        group_roots,
+        group_sizes,
+        mask_roots,
+    } = *groups;
     let (k, t, e) = (pp.k, pp.t, pp.ext);
     let nrows: usize = group_sizes.iter().sum();
     if msg.more.len() + 1 != e {
         return Err("Ligero: a message component is missing".into());
     }
-    let comps = |f: fn(&(Vec<u64>, Vec<u64>, Vec<u64>)) -> &Vec<u64>, c0: &Vec<u64>| -> Vec<Vec<u64>> {
-        std::iter::once(c0.clone()).chain(msg.more.iter().map(|m| f(m).clone())).collect()
+    let comps = |f: fn(&MoreTuple) -> &Vec<u64>, c0: &Vec<u64>| -> Vec<Vec<u64>> {
+        std::iter::once(c0.clone())
+            .chain(msg.more.iter().map(|m| f(m).clone()))
+            .collect()
     };
     let w = comps(|m| &m.0, &msg.w);
     let q = comps(|m| &m.1, &msg.q);
     let pq = comps(|m| &m.2, &msg.pq);
-    if w.iter().any(|x| x.len() > k + t) || q.iter().any(|x| x.len() > 2 * k + t - 1) || pq.iter().any(|x| x.len() > 2 * (k + t) - 1) {
+    if w.iter().any(|x| x.len() > k + t)
+        || q.iter().any(|x| x.len() > 2 * k + t - 1)
+        || pq.iter().any(|x| x.len() > 2 * (k + t) - 1)
+    {
         return Err("Ligero: a message exceeds its degree bound".into());
     }
     let gam = tr.chal(e * nrows);
@@ -623,11 +738,17 @@ pub fn verify(
             h.list(x);
         }
     });
-    let mut cnt = Counter { n: 0, rhs: Vec::new() };
+    let mut cnt = Counter {
+        n: 0,
+        rhs: Vec::new(),
+    };
     sys.emit(&mut cnt);
     let rr = tr.chal(e * cnt.n);
-    for kk in 0..e {
-        let lhs = pp.zeta.iter().fold(0u64, |a, &z| field::add(a, peval(&q[kk], z)));
+    for (kk, qk) in q.iter().enumerate().take(e) {
+        let lhs = pp
+            .zeta
+            .iter()
+            .fold(0u64, |a, &z| field::add(a, peval(qk, z)));
         if lhs != field::dot(&comp(&rr, e, kk), &cnt.rhs) {
             return Err("Ligero linear test: the constraints do not hold".into());
         }
@@ -635,7 +756,17 @@ pub fn verify(
     let alpha = alpha_of(sys, &rr, nrows, k, e);
     let rp: Vec<Vec<Option<Vec<u64>>>> = alpha
         .iter()
-        .map(|al| al.par_iter().map(|a| if a.iter().any(|&x| x != 0) { Some(pp.interp_z(a)) } else { None }).collect())
+        .map(|al| {
+            al.par_iter()
+                .map(|a| {
+                    if a.iter().any(|&x| x != 0) {
+                        Some(pp.interp_z(a))
+                    } else {
+                        None
+                    }
+                })
+                .collect()
+        })
         .collect();
     tr.absorb(|h| {
         h.s("lig-q");
@@ -672,12 +803,18 @@ pub fn verify(
             let mut colsum: Vec<u64> = Vec::with_capacity(nrows);
             let mut msum = vec![0u64; 3 * e];
             for g in 0..sizes.len() {
-                let rts = if g < group_roots.len() { &group_roots[g] } else { &mask_roots.to_vec() };
+                let rts = if g < group_roots.len() {
+                    &group_roots[g]
+                } else {
+                    &mask_roots.to_vec()
+                };
                 let mut s = vec![0u64; sizes[g]];
-                for i in 0..n {
-                    let (col, pth) = &msg.cols[g][i][t_];
+                for (i, col_openings) in msg.cols[g].iter().enumerate().take(n) {
+                    let (col, pth) = &col_openings[t_];
                     if col.len() != sizes[g] || !verify_path(&rts[i], col, j, pth) {
-                        return Some(format!("Ligero: Merkle opening fails (group {g}, custodian {i})"));
+                        return Some(format!(
+                            "Ligero: Merkle opening fails (group {g}, custodian {i})"
+                        ));
                     }
                     for (a, &b) in s.iter_mut().zip(col) {
                         *a = field::add(*a, b);
@@ -689,7 +826,10 @@ pub fn verify(
                     msum = s;
                 }
             }
-            let sq: Vec<u64> = quad.iter().map(|&(a, b, z)| field::sub(field::mul(colsum[a], colsum[b]), colsum[z])).collect();
+            let sq: Vec<u64> = quad
+                .iter()
+                .map(|&(a, b, z)| field::sub(field::mul(colsum[a], colsum[b]), colsum[z]))
+                .collect();
             for kk in 0..e {
                 let prox = field::add(field::dot(&gamc[kk], &colsum), msum[kk]);
                 if peval(&w[kk], x) != prox {

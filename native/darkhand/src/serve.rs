@@ -44,7 +44,10 @@ pub fn old_from_serve(
     let (w1, w2) = w.expect("the custodian holds its weight shares");
     let mut wm = BTreeMap::new();
     for (k, rows) in KINDS.iter().zip([w1, w2]) {
-        wm.insert(k.to_string(), rows.into_iter().flatten().collect::<Vec<Sh>>());
+        wm.insert(
+            k.to_string(),
+            rows.into_iter().flatten().collect::<Vec<Sh>>(),
+        );
     }
     let tape = std::mem::take(&mut pt.tape);
     // the open log holds this party's MAC shares of opened values
@@ -66,11 +69,26 @@ pub fn old_from_serve(
     };
     // default scan: the directories of the state files (the seat dir, the TLS dir, the step's tape dir); the caller
     // adds every other place its secret inputs lie (all tapes of the epoch, owner messages) to `old.scan_paths`
-    let mut scan_paths: Vec<PathBuf> = files.iter().filter_map(|f| f.parent().map(|p| p.to_path_buf())).collect();
+    let mut scan_paths: Vec<PathBuf> = files
+        .iter()
+        .filter_map(|f| f.parent().map(|p| p.to_path_buf()))
+        .collect();
     scan_paths.sort();
     scan_paths.dedup();
     OldParts {
-        old: Box::new(OldCustodian { i, w: wm, tape, keys, key, carry, files, scan_paths, captured: if retire_he { captured } else { None }, vault: None, old_carries: None }),
+        old: Box::new(OldCustodian {
+            i,
+            w: wm,
+            tape,
+            keys,
+            key,
+            carry,
+            files,
+            scan_paths,
+            captured: if retire_he { captured } else { None },
+            vault: None,
+            old_carries: None,
+        }),
         he,
         net3,
     }
@@ -109,11 +127,15 @@ pub fn self_setup(
     carry: BTreeMap<String, PcsParty>,
     files: Vec<PathBuf>,
     scan: Vec<PathBuf>,
-) -> (impl FnOnce() -> Box<OldCustodian>, std::sync::mpsc::Receiver<(darkstep::he::He, darkstep::net::Net)>) {
+) -> (
+    impl FnOnce() -> Box<OldCustodian>,
+    std::sync::mpsc::Receiver<(darkstep::he::He, darkstep::net::Net)>,
+) {
     let (tx, rx) = std::sync::mpsc::sync_channel(1);
     let f = move || {
         let OldParts { mut old, he, net3 } = old_from_serve(*st, carry, files, false, None);
-        tx.send((he.expect("a self-handover keeps the HE side"), net3)).expect("the new role waits for its HE side and mesh");
+        tx.send((he.expect("a self-handover keeps the HE side"), net3))
+            .expect("the new role waits for its HE side and mesh");
         old.scan_paths.extend(scan);
         old.scan_paths.sort();
         old.scan_paths.dedup();
@@ -131,7 +153,10 @@ pub fn shares_rows(w: &BTreeMap<String, Vec<Sh>>, d: usize) -> Shares {
 /// Give the old custodian its epoch's file key (darkhand::vault): old_side canaries it, checks the small sealed
 /// files open under it (control), destroys it (keyring invalidated, memory zeroed) and checks nothing opens them after.
 ///   let setup = serve::with_vault(serve::rotation_setup(..), vault);   // or self_setup's closure
-pub fn with_vault(setup: impl FnOnce() -> Box<OldCustodian>, vault: crate::vault::Vault) -> impl FnOnce() -> Box<OldCustodian> {
+pub fn with_vault(
+    setup: impl FnOnce() -> Box<OldCustodian>,
+    vault: crate::vault::Vault,
+) -> impl FnOnce() -> Box<OldCustodian> {
     move || {
         let mut old = setup();
         old.vault = Some(vault);
@@ -141,7 +166,10 @@ pub fn with_vault(setup: impl FnOnce() -> Box<OldCustodian>, vault: crate::vault
 
 /// Cut E with a pending head: give the old custodian its carries c1p, c2p of the head step (the step's DeferIn
 /// carries), which the handover's discharge opens and the erasure wipes; run old_side_e with the ledger's pending.
-pub fn with_old_carries(setup: impl FnOnce() -> Box<OldCustodian>, carries: BTreeMap<String, PcsParty>) -> impl FnOnce() -> Box<OldCustodian> {
+pub fn with_old_carries(
+    setup: impl FnOnce() -> Box<OldCustodian>,
+    carries: BTreeMap<String, PcsParty>,
+) -> impl FnOnce() -> Box<OldCustodian> {
     move || {
         let mut old = setup();
         old.old_carries = Some(carries);

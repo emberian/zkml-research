@@ -55,3 +55,7 @@ required-features = ["test-harness"]
 [[test]]
 name = "release_sealed"
 required-features = ["test-harness"]
+
+[[test]]
+name = "xt_redo"
+required-features = ["test-harness"]

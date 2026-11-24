@@ -2,7 +2,7 @@
 
 use crate::field::Fp;
 use crate::mpspdz::Transactions;
-use crate::schedule::{runs, Event, Inputs, Plan, StepParams, Tag, DEG, KAPPA};
+use crate::schedule::{runs, Event, Inputs, Plan, StepParams, Tag, DEG};
 use std::io::{Read, Write};
 
 pub const MAGIC: &[u8; 8] = b"DLTAPE1\n";
@@ -67,20 +67,41 @@ impl Tape {
         let n = u64at(45) as usize;
         let body = &b[53..];
         if body.len() != 17 * n {
-            return Err(format!("tape body is {} bytes, header says {} entries", body.len(), n));
+            return Err(format!(
+                "tape body is {} bytes, header says {} entries",
+                body.len(),
+                n
+            ));
         }
         let mut entries = Vec::with_capacity(n);
         for c in body.chunks_exact(17) {
             let t = Tag::from_code(c[0]).ok_or(format!("bad tag code {}", c[0]))?;
-            entries.push((t, u64::from_le_bytes(c[1..9].try_into().unwrap()), u64::from_le_bytes(c[9..17].try_into().unwrap())));
+            entries.push((
+                t,
+                u64::from_le_bytes(c[1..9].try_into().unwrap()),
+                u64::from_le_bytes(c[9..17].try_into().unwrap()),
+            ));
         }
-        Ok(Tape { p: u64at(8), n_parties: u32at(16), party: u32at(20), alpha_i: u64at(24), d: u32at(32), inputs: b[36], trunc, entries })
+        Ok(Tape {
+            p: u64at(8),
+            n_parties: u32at(16),
+            party: u32at(20),
+            alpha_i: u64at(24),
+            d: u32at(32),
+            inputs: b[36],
+            trunc,
+            entries,
+        })
     }
 
     pub fn step_params(&self) -> StepParams {
         StepParams {
             d: self.d as usize,
-            inputs: if self.inputs == 0 { Inputs::Harness } else { Inputs::Steady },
+            inputs: if self.inputs == 0 {
+                Inputs::Harness
+            } else {
+                Inputs::Steady
+            },
             trunc: self.trunc.map(|(s, k)| (s as u32, k as u32)),
             proof_atoms: false,
             proof_triples: 0,
@@ -98,21 +119,40 @@ pub fn assemble(sp: &StepParams, tx: &Transactions, party: u32) -> Result<Tape, 
 }
 
 /// Step `j` of a chunk of `steps` steps generated in one MASCOT run (Plan::of_chunk): each kind's j-th slice.
-pub fn assemble_step(sp: &StepParams, tx: &Transactions, party: u32, j: usize, steps: usize) -> Result<Tape, String> {
+pub fn assemble_step(
+    sp: &StepParams,
+    tx: &Transactions,
+    party: u32,
+    j: usize,
+    steps: usize,
+) -> Result<Tape, String> {
     assemble_in_chunk(&vec![*sp; steps], tx, party, j)
 }
 
 /// Step `j` of a chunk whose steps are `chunk` (crate::schedule::plan_of_steps).
-pub fn assemble_in_chunk(chunk: &[StepParams], tx: &Transactions, party: u32, j: usize) -> Result<Tape, String> {
+pub fn assemble_in_chunk(
+    chunk: &[StepParams],
+    tx: &Transactions,
+    party: u32,
+    j: usize,
+) -> Result<Tape, String> {
     let mut entries = Vec::with_capacity(crate::schedule::n_entries(&chunk[j]));
-    let mut t = assemble_in_chunk_emit(chunk, tx, party, j, &mut |tag, (s, m)| entries.push((tag, s, m)))?;
+    let mut t = assemble_in_chunk_emit(chunk, tx, party, j, &mut |tag, (s, m)| {
+        entries.push((tag, s, m))
+    })?;
     t.entries = entries;
     Ok(t)
 }
 
 /// As assemble_in_chunk, streaming: each entry goes to `emit` in tape order, none is kept; the returned Tape has
 /// the header only (no entries).
-pub fn assemble_in_chunk_emit(chunk: &[StepParams], tx: &Transactions, party: u32, j: usize, emit: &mut dyn FnMut(Tag, (u64, u64))) -> Result<Tape, String> {
+pub fn assemble_in_chunk_emit(
+    chunk: &[StepParams],
+    tx: &Transactions,
+    party: u32,
+    j: usize,
+    emit: &mut dyn FnMut(Tag, (u64, u64)),
+) -> Result<Tape, String> {
     let sp = &chunk[j];
     let fp: Fp = tx.fp;
     let one = Plan::of(sp);
@@ -120,11 +160,19 @@ pub fn assemble_in_chunk_emit(chunk: &[StepParams], tx: &Transactions, party: u3
     let sec = plan.sections();
     let (o_in, o_ar, o_tri, o_lp, o_tr) = crate::schedule::offsets(chunk, j);
     if tx.len() != sec.total {
-        return Err(format!("Transactions holds {} shares, the plan needs {}", tx.len(), sec.total));
+        return Err(format!(
+            "Transactions holds {} shares, the plan needs {}",
+            tx.len(),
+            sec.total
+        ));
     }
-    let at = |(base, _nc, m): (usize, usize, usize), comp: usize, k: usize| tx.share(base + comp * m + k);
+    let at = |(base, _nc, m): (usize, usize, usize), comp: usize, k: usize| {
+        tx.share(base + comp * m + k)
+    };
     let lin = |terms: &[(u64, (u64, u64))]| {
-        terms.iter().fold((0u64, 0u64), |(s, m), &(c, (x, y))| (fp.add(s, fp.mul(c, x)), fp.add(m, fp.mul(c, y))))
+        terms.iter().fold((0u64, 0u64), |(s, m), &(c, (x, y))| {
+            (fp.add(s, fp.mul(c, x)), fp.add(m, fp.mul(c, y)))
+        })
     };
     let mut cur_in = o_in;
     let mut cur_ar = o_ar;
@@ -162,7 +210,9 @@ pub fn assemble_in_chunk_emit(chunk: &[StepParams], tx: &Transactions, party: u3
                     for b in bits.iter().take(s as usize) {
                         emit(Tag::Trb, *b);
                     }
-                    let hi: Vec<_> = (s as usize..nb).map(|j| (fp.two_pow(j as u32 - s), bits[j])).collect();
+                    let hi: Vec<_> = (s as usize..nb)
+                        .map(|j| (fp.two_pow(j as u32 - s), bits[j]))
+                        .collect();
                     emit(Tag::Trh, lin(&hi));
                     if sp.proof_atoms {
                         for b in &bits[s as usize..s as usize + sp.trhb(s, k)] {
@@ -182,7 +232,14 @@ pub fn assemble_in_chunk_emit(chunk: &[StepParams], tx: &Transactions, party: u3
             }
         }
     }
-    if (cur_in, cur_ar, cur_tri, cur_lp) != (o_in + one.n_in, o_ar + one.n_ar, o_tri + one.n_tri, o_lp + one.n_lp) {
+    if (cur_in, cur_ar, cur_tri, cur_lp)
+        != (
+            o_in + one.n_in,
+            o_ar + one.n_ar,
+            o_tri + one.n_tri,
+            o_lp + one.n_lp,
+        )
+    {
         return Err("assembly consumed a different number of objects than the plan".into());
     }
     Ok(Tape {
@@ -223,7 +280,11 @@ impl DarkstepWriter {
             g.seek(SeekFrom::Start(off))?;
             Ok(std::io::BufWriter::with_capacity(1 << 20, g))
         };
-        Ok(DarkstepWriter { cols: [col(24)?, col(24 + n as u64)?, col(24 + 9 * n as u64)?], n, k: 0 })
+        Ok(DarkstepWriter {
+            cols: [col(24)?, col(24 + n as u64)?, col(24 + 9 * n as u64)?],
+            n,
+            k: 0,
+        })
     }
     pub fn push(&mut self, t: Tag, (s, m): (u64, u64)) -> std::io::Result<()> {
         use std::io::Write;
@@ -238,7 +299,10 @@ impl DarkstepWriter {
     pub fn finish(self) -> std::io::Result<()> {
         use std::io::Write;
         if self.k != self.n {
-            return Err(std::io::Error::other(format!("{} entries written, the header says {}", self.k, self.n)));
+            return Err(std::io::Error::other(format!(
+                "{} entries written, the header says {}",
+                self.k, self.n
+            )));
         }
         for mut c in self.cols {
             c.flush()?;
@@ -277,7 +341,10 @@ impl DarkstepBuf {
     }
     pub fn finish(self) -> Result<Vec<u8>, String> {
         if self.k != self.n {
-            return Err(format!("{} entries written, the header says {}", self.k, self.n));
+            return Err(format!(
+                "{} entries written, the header says {}",
+                self.k, self.n
+            ));
         }
         Ok(self.buf)
     }
@@ -296,18 +363,37 @@ pub struct SealedDarkstepWriter<'k> {
 
 impl<'k> SealedDarkstepWriter<'k> {
     const FLUSH: usize = 1 << 20;
-    pub fn create(path: &std::path::Path, key: &'k dlvault::Key, role: &str, alpha_i: u64, n: usize) -> std::io::Result<Self> {
+    pub fn create(
+        path: &std::path::Path,
+        key: &'k dlvault::Key,
+        role: &str,
+        alpha_i: u64,
+        n: usize,
+    ) -> std::io::Result<Self> {
         Self::create_bs(path, key, role, alpha_i, n, dlvault::BLOCK)
     }
     /// With another block size (tests: many blocks from a small tape).
-    pub fn create_bs(path: &std::path::Path, key: &'k dlvault::Key, role: &str, alpha_i: u64, n: usize, bs: u32) -> std::io::Result<Self> {
+    pub fn create_bs(
+        path: &std::path::Path,
+        key: &'k dlvault::Key,
+        role: &str,
+        alpha_i: u64,
+        n: usize,
+        bs: u32,
+    ) -> std::io::Result<Self> {
         let mut w = dlvault::Writer::create_bs(path, key, role, 24 + 17 * n as u64, bs)?;
         let mut h = b"DLTAPE01".to_vec();
         h.extend_from_slice(&alpha_i.to_le_bytes());
         h.extend_from_slice(&(n as u64).to_le_bytes());
         w.write_at(0, &h)?;
         let n64 = n as u64;
-        Ok(SealedDarkstepWriter { w, n, k: 0, bufs: [Vec::new(), Vec::new(), Vec::new()], offs: [24, 24 + n64, 24 + 9 * n64] })
+        Ok(SealedDarkstepWriter {
+            w,
+            n,
+            k: 0,
+            bufs: [Vec::new(), Vec::new(), Vec::new()],
+            offs: [24, 24 + n64, 24 + 9 * n64],
+        })
     }
     fn flush(&mut self, c: usize) -> std::io::Result<()> {
         let b = std::mem::take(&mut self.bufs[c]);
@@ -332,7 +418,10 @@ impl<'k> SealedDarkstepWriter<'k> {
     }
     pub fn finish(mut self) -> std::io::Result<()> {
         if self.k != self.n {
-            return Err(std::io::Error::other(format!("{} entries written, the header says {}", self.k, self.n)));
+            return Err(std::io::Error::other(format!(
+                "{} entries written, the header says {}",
+                self.k, self.n
+            )));
         }
         for c in 0..3 {
             self.flush(c)?;
@@ -351,22 +440,42 @@ pub fn owner_msg_role(chunk: &str, j: usize) -> String {
 
 /// Open a sealed step tape (DLVAULT1 around DLTAPE01) of chunk `chunk` (its directory's basename), step `j`. A plain
 /// DLTAPE01 file is refused: tapes at rest are sealed.
-pub fn open_sealed(vault: &darkhand::vault::Vault, path: &std::path::Path, chunk: &str, j: usize) -> Result<darkstep::tape::Tape, String> {
+pub fn open_sealed(
+    vault: &darkhand::vault::Vault,
+    path: &std::path::Path,
+    chunk: &str,
+    j: usize,
+) -> Result<darkstep::tape::Tape, String> {
     let b = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
     if b.starts_with(b"DLTAPE01") {
-        return Err(format!("{}: an unsealed tape (DLTAPE01); tapes at rest must be sealed (DLVAULT1)", path.display()));
+        return Err(format!(
+            "{}: an unsealed tape (DLTAPE01); tapes at rest must be sealed (DLVAULT1)",
+            path.display()
+        ));
     }
-    let plain = vault.open(&tape_role(chunk, j), b).map_err(|e| format!("{}: {e}", path.display()))?;
+    let plain = vault
+        .open(&tape_role(chunk, j), b)
+        .map_err(|e| format!("{}: {e}", path.display()))?;
     darkstep::tape::Tape::read_from(&mut &plain[..]).map_err(|e| format!("{}: {e}", path.display()))
 }
 
 /// Open a sealed owner message of chunk `chunk`, step `j` (refuses a plain DLOMSG1 file).
-pub fn open_sealed_owner_msg(vault: &darkhand::vault::Vault, path: &std::path::Path, chunk: &str, j: usize) -> Result<Vec<u8>, String> {
+pub fn open_sealed_owner_msg(
+    vault: &darkhand::vault::Vault,
+    path: &std::path::Path,
+    chunk: &str,
+    j: usize,
+) -> Result<Vec<u8>, String> {
     let b = std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?;
     if b.starts_with(b"DLOMSG1") {
-        return Err(format!("{}: an unsealed owner message; files at rest must be sealed (DLVAULT1)", path.display()));
+        return Err(format!(
+            "{}: an unsealed owner message; files at rest must be sealed (DLVAULT1)",
+            path.display()
+        ));
     }
-    vault.open(&owner_msg_role(chunk, j), b).map_err(|e| format!("{}: {e}", path.display()))
+    vault
+        .open(&owner_msg_role(chunk, j), b)
+        .map_err(|e| format!("{}: {e}", path.display()))
 }
 
 pub fn write_owner(w: &mut impl Write, p: u64, rs: &[u64]) -> std::io::Result<()> {
@@ -391,5 +500,11 @@ pub fn read_owner(r: &mut impl Read) -> Result<(u64, Vec<u64>), String> {
     if b.len() != 24 + 8 * n {
         return Err("owner file length mismatch".into());
     }
-    Ok((p, b[24..].chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect()))
+    Ok((
+        p,
+        b[24..]
+            .chunks_exact(8)
+            .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
+            .collect(),
+    ))
 }

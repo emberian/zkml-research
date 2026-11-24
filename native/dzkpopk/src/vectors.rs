@@ -33,7 +33,11 @@ pub fn instances(n: usize, l: usize, m: usize) -> Vec<(&'static str, Statement, 
     let dc = 64.min(n / 2);
     let (mut cts, mut ws, mut slots) = (vec![], vec![], vec![]);
     for j in 0..m {
-        let sl: Vec<usize> = if j == m - 1 && m > 1 { (0..n).step_by((n / dc).max(1)).take(dc).collect() } else { (0..dc).collect() };
+        let sl: Vec<usize> = if j == m - 1 && m > 1 {
+            (0..n).step_by((n / dc).max(1)).take(dc).collect()
+        } else {
+            (0..dc).collect()
+        };
         let mut pm = vec![0u64; n];
         for &k in &sl {
             pm[k] = rng.randrange_u64(t);
@@ -59,12 +63,32 @@ pub fn instances(n: usize, l: usize, m: usize) -> Vec<(&'static str, Statement, 
         psl.push(sx);
     }
     let st_pk = Statement::new(regj, Kind::Pk, pcts, psl, ctx()).unwrap();
-    let key_ctx = Json::list(vec![Json::s("dl-keygen-key"), Json::i(1), Json::i(1), Json::s("vectors")]);
+    let key_ctx = Json::list(vec![
+        Json::s("dl-keygen-key"),
+        Json::i(1),
+        Json::i(1),
+        Json::s("vectors"),
+    ]);
     let st_key = Statement::new(reg, Kind::Key, vec![], vec![], key_ctx).unwrap();
     vec![
-        ("sk", st_sk, Witness::Sk { s: s.clone(), e_pk: epk.clone(), cts: ws }),
+        (
+            "sk",
+            st_sk,
+            Witness::Sk {
+                s: s.clone(),
+                e_pk: epk.clone(),
+                cts: ws,
+            },
+        ),
         ("pk", st_pk, Witness::Pk { cts: pws }),
-        ("key", st_key, Witness::Sk { s, e_pk: epk, cts: vec![] }),
+        (
+            "key",
+            st_key,
+            Witness::Sk {
+                s,
+                e_pk: epk,
+                cts: vec![],
+            },
+        ),
     ]
 }
-

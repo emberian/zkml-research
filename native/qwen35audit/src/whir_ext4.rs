@@ -9,17 +9,17 @@
 //!    receipt from `4,707.54 KiB` (`+698.6 KiB` QSA) -> **`< 495 KiB`** (`~9.8x–11.4x`, **`< 12 ms`** standalone verify).
 
 use crate::ext4::{
-    bb_from_i64, binv, bmul, bpow, bsub, build_eq_suffix_tables_ext4,
-    build_eq_table_lsb_ext4, cshake256_32, eq_lin_ext4, eq_mle_ext4,
-    eval_cubic_zero_one_two_inf_ext4, fold_ext4, merkle_node_cshake, mle_eval_bb_at_ext4,
-    ntt_bb_in_place, os_random_seed_32, precompute_twiddles_bb, ByteCursor, CShakeRng,
-    CShakeTranscript, Ext4, MerkleSinglePath, G_PRIM, P, P_U32,
+    bb_from_i64, binv, bmul, bpow, bsub, build_eq_suffix_tables_ext4, build_eq_table_lsb_ext4,
+    cshake256_32, eq_lin_ext4, eq_mle_ext4, eval_cubic_zero_one_two_inf_ext4, fold_ext4,
+    merkle_node_cshake, mle_eval_bb_at_ext4, ntt_bb_in_place, os_random_seed_32,
+    precompute_twiddles_bb, ByteCursor, CShakeRng, CShakeTranscript, Ext4, MerkleSinglePath,
+    G_PRIM, P, P_U32,
 };
 use crate::gruen_ext4::{
-    compute_d1b_multiplicities, compute_d1b_public_table_multiplicities, prove_d1b_public_table_ext4,
-    prove_d1b_range_ext4, prove_mxfp4_delayed_bjk_horner_ext4, verify_d1b_public_table_ext4,
-    verify_d1b_range_ext4, verify_mxfp4_delayed_bjk_horner_ext4, D1bRangeExt4Proof,
-    Mxfp4DelayedBjkExt4Proof,
+    compute_d1b_multiplicities, compute_d1b_public_table_multiplicities,
+    prove_d1b_public_table_ext4, prove_d1b_range_ext4, prove_mxfp4_delayed_bjk_horner_ext4,
+    verify_d1b_public_table_ext4, verify_d1b_range_ext4, verify_mxfp4_delayed_bjk_horner_ext4,
+    D1bRangeExt4Proof, Mxfp4DelayedBjkExt4Proof,
 };
 use crate::pcs_ext4::MerkleMultiProof;
 use crate::qwen35_layer::{pad_mxfp4_cols_pow2, Qwen35TurnExecution, RealGdnWyWitness};
@@ -30,6 +30,7 @@ use crate::safetensors_mmap::{
 use crate::u1_audit::{padded_complement_sk_step, run_padded_complement_sk_dfa};
 use rayon::prelude::*;
 use std::collections::{BTreeMap, BTreeSet};
+use std::ops::{Add, Mul, Sub};
 
 pub const WHIR_EXT4_BLOWUP: usize = 8;
 /// At `blow = 8` (`rate = 1/8`) and `N_max <= 2^{18} = 262,144`:
@@ -92,7 +93,9 @@ pub fn unpack_bb_31b(cur: &mut ByteCursor<'_>, max_len: usize) -> Result<Vec<u32
         buf[..read_n].copy_from_slice(&raw[byte_idx..byte_idx + read_n]);
         let val = ((u64::from_le_bytes(buf) >> bit_off) & mask) as u32;
         if val >= P_U32 {
-            return Err(format!("non-canonical packed BabyBear felt {val} >= {P_U32}"));
+            return Err(format!(
+                "non-canonical packed BabyBear felt {val} >= {P_U32}"
+            ));
         }
         out.push(val);
         bit_pos += 31;
@@ -112,7 +115,10 @@ pub fn pack_ext4_slice(xs: &[Ext4], out: &mut Vec<u8>) {
     pack_bb_31b(&flat, out);
 }
 
-pub fn unpack_ext4_slice(cur: &mut ByteCursor<'_>, max_ext_len: usize) -> Result<Vec<Ext4>, String> {
+pub fn unpack_ext4_slice(
+    cur: &mut ByteCursor<'_>,
+    max_ext_len: usize,
+) -> Result<Vec<Ext4>, String> {
     let flat = unpack_bb_31b(cur, max_ext_len * 4)?;
     if flat.len() % 4 != 0 {
         return Err("packed Ext4 slice not divisible by 4".into());
@@ -175,7 +181,11 @@ impl GMaskExt4 {
         let mut offsets = BTreeMap::new();
         let mut total_ext = 0usize;
         for sp in &specs {
-            assert!(!offsets.contains_key(&sp.name), "duplicate GMaskSpecExt4 {}", sp.name);
+            assert!(
+                !offsets.contains_key(&sp.name),
+                "duplicate GMaskSpecExt4 {}",
+                sp.name
+            );
             offsets.insert(sp.name.clone(), (total_ext, sp.num_rounds, sp.deg));
             total_ext += sp.num_rounds * (sp.deg + 1);
         }
@@ -199,8 +209,8 @@ impl GMaskExt4 {
         let cap = self.padded_limb_len();
         let mut out: [Vec<u32>; 4] = std::array::from_fn(|_| vec![0u32; cap]);
         for (i, c) in self.coeffs.iter().enumerate() {
-            for l in 0..4 {
-                out[l][i] = c.0[l];
+            for (limb_vec, &val) in out.iter_mut().zip(c.0.iter()) {
+                limb_vec[i] = val;
             }
         }
         out
@@ -374,18 +384,31 @@ fn cubic_from_zero_one_two_inf_monomial(p0: Ext4, p1: Ext4, p2: Ext4, p_inf: Ext
     [p0, c1, c2, p_inf]
 }
 
+/// Parameters for [`prove_gmask_einsum_ext4`].
+#[derive(Clone, Copy)]
+pub struct GmaskEinSumParams<'a> {
+    pub mu_s: usize,
+    pub kappa: usize,
+    pub z_s: &'a [Ext4],
+    pub gmask: &'a GMaskExt4,
+    pub spec_name: &'a str,
+}
+
 /// Prove `claim = sum_{h, p} eq(z_s, h) * left[h, p] * right[h, p]` blinded by `GMaskExt4` (`deg = 3`).
 /// Returns `(proof, rho, challenges, left_at_r, right_at_r, terminal_masked_val)`.
 pub fn prove_gmask_einsum_ext4(
     left_tab: &[Ext4],
     right_tab: &[Ext4],
-    mu_s: usize,
-    kappa: usize,
-    z_s: &[Ext4],
-    gmask: &GMaskExt4,
-    spec_name: &str,
+    params: GmaskEinSumParams<'_>,
     tr: &mut CShakeTranscript,
 ) -> (BlindedEinSumExt4Proof, Ext4, Vec<Ext4>, Ext4, Ext4, Ext4) {
+    let GmaskEinSumParams {
+        mu_s,
+        kappa,
+        z_s,
+        gmask,
+        spec_name,
+    } = params;
     let m = mu_s + kappa;
     assert_eq!(left_tab.len(), 1usize << m);
     assert_eq!(right_tab.len(), 1usize << m);
@@ -413,8 +436,7 @@ pub fn prove_gmask_einsum_ext4(
         let mut q2 = Ext4::ZERO;
         let mut q_inf = Ext4::ZERO;
 
-        for h_rem in 0..rem_h_pairs {
-            let w = suf[h_rem];
+        for (h_rem, &w) in suf.iter().enumerate() {
             let mut s0 = Ext4::ZERO;
             let mut s1 = Ext4::ZERO;
             let mut s2 = Ext4::ZERO;
@@ -526,7 +548,9 @@ pub fn verify_gmask_einsum_ext4(
         let p0 = poly[0];
         let p1 = poly[0].add(poly[1]).add(poly[2]).add(poly[3]);
         if p0.add(p1) != running {
-            return Err(format!("BlindedEinSumExt4Proof round {i} failed p(0)+p(1) == claim"));
+            return Err(format!(
+                "BlindedEinSumExt4Proof round {i} failed p(0)+p(1) == claim"
+            ));
         }
         tr.absorb_ext4_slice(b"gm_es_rd", poly);
         let ch = tr.squeeze_ext4(b"gm_es_ch", true);
@@ -629,7 +653,14 @@ impl WhirExt4MatrixShape {
         indexed.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(&b.0)));
 
         let mut offset = 0usize;
-        let mut by_orig = vec![SubtableMeta { id: 0, m_vars: 0, base_cell: 0 }; m_vars_list.len()];
+        let mut by_orig = vec![
+            SubtableMeta {
+                id: 0,
+                m_vars: 0,
+                base_cell: 0
+            };
+            m_vars_list.len()
+        ];
         for (orig_id, m_v) in indexed {
             debug_assert_eq!(offset & ((1usize << m_v) - 1), 0);
             by_orig[orig_id] = SubtableMeta {
@@ -662,9 +693,10 @@ impl WhirExt4MatrixShape {
             let w0 = if zk { 2 * c } else { c };
             let n0 = blow * w0;
             // Minimize Stage-0 proof bytes (`140 * r_total * 31/8 + Merkle`) while preferring larger `mc` up to `N_0 <= 2^{18}`:
-            let est = 140 * r_total * 4 + 140 * (n0.trailing_zeros().saturating_sub(6) as usize) * 32
+            let est = 140 * r_total * 4
+                + 140 * (n0.trailing_zeros().saturating_sub(6) as usize) * 32
                 + (mr + mc) * 64;
-            if best.map_or(true, |b| est < b.0) {
+            if best.is_none_or(|b| est < b.0) {
                 best = Some((est, mr, mc));
             }
         }
@@ -1030,12 +1062,12 @@ impl JointLinearClaimExt4 {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct WhirMatrixPartProofExt4 {
     pub zk: bool,
-    pub gmask_sum: Ext4,          // `ZERO` if `!zk`
-    pub z_gm_masks: [Ext4; 2],    // `[ZERO; 2]` if `!zk`
+    pub gmask_sum: Ext4,       // `ZERO` if `!zk`
+    pub z_gm_masks: [Ext4; 2], // `[ZERO; 2]` if `!zk`
     pub row_sc_rounds: Vec<[Ext4; 3]>,
     pub m_eval: Ext4,
     pub u_eval_at_zeta: Ext4,
-    pub p_gm_hat_at_zeta: Ext4,   // `ZERO` if `!zk`
+    pub p_gm_hat_at_zeta: Ext4, // `ZERO` if `!zk`
     pub u_prox_at_zeta: Ext4,
     /// Opened single columns at canonical deduplicated `q_idx & (N_m - 1)` (`n_uniq_m * r_total` `u32`s).
     pub s0_col_vals: Vec<u32>,
@@ -1140,20 +1172,35 @@ impl WhirBatchOpeningProofExt4 {
             if hdr.len() != base_ext + n_sc * 3 {
                 return Err("matrix_parts header count mismatch".into());
             }
-            let (gmask_sum, z_gm_masks, p_gm_hat_at_zeta, m_eval, u_eval_at_zeta, u_prox_at_zeta, off) =
-                if zk {
-                    (hdr[0], [hdr[1], hdr[2]], hdr[3], hdr[4], hdr[5], hdr[6], 7usize)
-                } else {
-                    (
-                        Ext4::ZERO,
-                        [Ext4::ZERO; 2],
-                        Ext4::ZERO,
-                        hdr[0],
-                        hdr[1],
-                        hdr[2],
-                        3usize,
-                    )
-                };
+            let (
+                gmask_sum,
+                z_gm_masks,
+                p_gm_hat_at_zeta,
+                m_eval,
+                u_eval_at_zeta,
+                u_prox_at_zeta,
+                off,
+            ) = if zk {
+                (
+                    hdr[0],
+                    [hdr[1], hdr[2]],
+                    hdr[3],
+                    hdr[4],
+                    hdr[5],
+                    hdr[6],
+                    7usize,
+                )
+            } else {
+                (
+                    Ext4::ZERO,
+                    [Ext4::ZERO; 2],
+                    Ext4::ZERO,
+                    hdr[0],
+                    hdr[1],
+                    hdr[2],
+                    3usize,
+                )
+            };
             let mut row_sc_rounds = Vec::with_capacity(n_sc);
             for i in 0..n_sc {
                 let st = off + 3 * i;
@@ -1372,7 +1419,9 @@ pub fn open_whir_batch_ext4(
     let w_max = matrices.iter().map(|(m, _)| m.shape.w0).max().unwrap();
     let w_max_bits = w_max.trailing_zeros() as usize;
     assert!(
-        matrices.iter().any(|(m, _)| m.shape.w0 == w_max && m.shape.zk),
+        matrices
+            .iter()
+            .any(|(m, _)| m.shape.w0 == w_max && m.shape.zk),
         "at least one widest matrix in WHIR batch must have zk = true to mask F_joint^(0)"
     );
 
@@ -1801,12 +1850,7 @@ pub fn open_whir_batch_ext4(
     // 4. `CommitF0` + Multi-Round $2^{k_r}$-ary WHIR Coset Cascade with `u = 2` OOD samples (`DKT26` Lemma 8.1)!
     let k_sched = canonical_ext4_k_schedule(w_max_bits);
     let num_rounds = k_sched.len();
-    let n_max = matrices[0]
-        .0
-        .shape
-        .blow
-        .checked_mul(w_max)
-        .unwrap();
+    let n_max = matrices[0].0.shape.blow.checked_mul(w_max).unwrap();
     let mut cur_level = CosetLevelExt4::new(n_max.trailing_zeros() as usize);
     let mut cur_poly = f_joint;
 
@@ -2053,7 +2097,9 @@ pub fn verify_whir_batch_ext4(
             let p0 = poly[0];
             let p1 = poly[0].add(poly[1]).add(poly[2]);
             if p0.add(p1) != running {
-                return Err(format!("WHIR matrix {m_idx} row sumcheck round {rd_i} failed"));
+                return Err(format!(
+                    "WHIR matrix {m_idx} row sumcheck round {rd_i} failed"
+                ));
             }
             tr.absorb_ext4_slice(b"whir_rsc", poly);
             let ri = squeeze_non_binary_ext4(tr, b"whir_rz");
@@ -2084,9 +2130,9 @@ pub fn verify_whir_batch_ext4(
                         for (b, &pt_b) in point.iter().enumerate() {
                             p_ev = p_ev.mul(eq_lin_ext4(pt_b, z_challenges[b]));
                         }
-                        for b in st.m_vars..m_bits {
+                        for (b, &zb) in z_challenges.iter().enumerate().take(m_bits).skip(st.m_vars)
+                        {
                             let bit = (prefix >> (b - st.m_vars)) & 1;
-                            let zb = z_challenges[b];
                             p_ev = p_ev.mul(if bit == 1 { zb } else { Ext4::ONE.sub(zb) });
                         }
                         cl_ev = cl_ev.add(p_ev);
@@ -2108,9 +2154,9 @@ pub fn verify_whir_batch_ext4(
                         for (w, e) in weights_lsb.iter().zip(eq_lo.iter()) {
                             lo_ev = lo_ev.add(w.mul(*e));
                         }
-                        for b in st.m_vars..m_bits {
+                        for (b, &zb) in z_challenges.iter().enumerate().take(m_bits).skip(st.m_vars)
+                        {
                             let bit = (prefix >> (b - st.m_vars)) & 1;
-                            let zb = z_challenges[b];
                             lo_ev = lo_ev.mul(if bit == 1 { zb } else { Ext4::ONE.sub(zb) });
                         }
                         cl_ev = cl_ev.add(lo_ev);
@@ -2184,7 +2230,7 @@ pub fn verify_whir_batch_ext4(
     }
 
     let mut want_csc = Ext4::ZERO;
-    for (m_idx, &( _, sh, _)) in matrices.iter().enumerate() {
+    for (m_idx, &(_, sh, _)) in matrices.iter().enumerate() {
         let mp = &prf.matrix_parts[m_idx];
         let mv = &mvers[m_idx];
         let s_m = w_max_bits - (sh.w0.trailing_zeros() as usize);
@@ -2352,8 +2398,8 @@ pub fn verify_whir_batch_ext4(
                 z_pow = z_pow.sq();
             }
             let mut cur = pref;
-            for q in 0..w_final {
-                fin_weights[q] = fin_weights[q].add(cur);
+            for fw in &mut fin_weights {
+                *fw = fw.add(cur);
                 cur = cur.mul(z_pow);
             }
         }
@@ -2394,8 +2440,11 @@ pub fn verify_whir_batch_ext4(
                 hash_s0_col_cshake(uniq_cols[ui], salt, col)
             })
             .collect();
-        if !verify_whir_cshake_multiproof(&mp.s0_multiproof, root, sh.n0, &uniq_cols, &leaf_hashes) {
-            return Err(format!("WHIR Stage-0 Merkle multiproof failed on matrix {m_idx}"));
+        if !verify_whir_cshake_multiproof(&mp.s0_multiproof, root, sh.n0, &uniq_cols, &leaf_hashes)
+        {
+            return Err(format!(
+                "WHIR Stage-0 Merkle multiproof failed on matrix {m_idx}"
+            ));
         }
 
         // Build row weight vector `w_row[0..r_total]` scaled by `mus[m_idx]`:
@@ -2404,8 +2453,8 @@ pub fn verify_whir_batch_ext4(
         let mut w_row = vec![Ext4::ZERO; sh.r_total];
         let non_prox = if sh.zk { sh.rd + 8 } else { sh.rd };
         let mut g_pw = mu;
-        for r in 0..non_prox {
-            w_row[r] = g_pw;
+        for w_cell in w_row.iter_mut().take(non_prox) {
+            *w_cell = g_pw;
             g_pw = g_pw.mul(gammas[m_idx]);
         }
         let e_basis = [
@@ -2439,8 +2488,12 @@ pub fn verify_whir_batch_ext4(
                 dot_ext4_bb(&w_row, col)
             })
             .collect();
-        let pos_map: BTreeMap<usize, usize> =
-            uniq_cols.iter().copied().enumerate().map(|(i, c)| (c, i)).collect();
+        let pos_map: BTreeMap<usize, usize> = uniq_cols
+            .iter()
+            .copied()
+            .enumerate()
+            .map(|(i, c)| (c, i))
+            .collect();
         for (qi, &q) in q_indices.iter().enumerate() {
             let ui = pos_map[&(q & mask_m)];
             f_joint_s0[qi] = f_joint_s0[qi].add(col_evals[ui]);
@@ -2469,7 +2522,9 @@ pub fn verify_whir_batch_ext4(
         }
         let uniq_fibers: Vec<usize> = uniq_f.into_iter().collect();
         if cl.opened_fibers.len() != uniq_fibers.len() * b_len {
-            return Err(format!("WHIR cascade level {r} opened_fibers count mismatch"));
+            return Err(format!(
+                "WHIR cascade level {r} opened_fibers count mismatch"
+            ));
         }
         let leaf_hashes: Vec<[u8; 32]> = (0..uniq_fibers.len())
             .into_par_iter()
@@ -2478,16 +2533,29 @@ pub fn verify_whir_batch_ext4(
                 hash_fold_fiber_cshake(r, uniq_fibers[ui], fv)
             })
             .collect();
-        if !verify_whir_cshake_multiproof(&cl.multiproof, &cl.root, n_fibers, &uniq_fibers, &leaf_hashes) {
+        if !verify_whir_cshake_multiproof(
+            &cl.multiproof,
+            &cl.root,
+            n_fibers,
+            &uniq_fibers,
+            &leaf_hashes,
+        ) {
             return Err(format!("WHIR cascade level {r} Merkle multiproof failed"));
         }
 
-        let pos_map: BTreeMap<usize, usize> =
-            uniq_fibers.iter().copied().enumerate().map(|(i, f)| (f, i)).collect();
+        let pos_map: BTreeMap<usize, usize> = uniq_fibers
+            .iter()
+            .copied()
+            .enumerate()
+            .map(|(i, f)| (f, i))
+            .collect();
         for (i, &(f_idx, sub_pos)) in locs.iter().enumerate() {
             let ui = pos_map[&f_idx];
             if cl.opened_fibers[ui * b_len + sub_pos] != prev_vals[i] {
-                return Err(format!("WHIR cascade level {r} consistency mismatch at point {}", cur_pts[i]));
+                return Err(format!(
+                    "WHIR cascade level {r} consistency mismatch at point {}",
+                    cur_pts[i]
+                ));
             }
         }
 
@@ -2536,7 +2604,9 @@ pub fn verify_whir_batch_ext4(
     for (i, &p_idx) in cur_pts.iter().enumerate() {
         let y = cur_level.point(p_idx);
         if prev_vals[i] != eval_poly_ext4_at_bb(&prf.final_poly, y) {
-            return Err(format!("WHIR final_poly evaluation mismatch at point {p_idx}"));
+            return Err(format!(
+                "WHIR final_poly evaluation mismatch at point {p_idx}"
+            ));
         }
     }
     Ok(())
@@ -2571,7 +2641,7 @@ fn verify_whir_cshake_multiproof(
         .collect();
     let mut aux_pos = 0usize;
     for level in 0..num_levels {
-        let mut next_nodes = Vec::with_capacity((cur_nodes.len() + 1) / 2);
+        let mut next_nodes = Vec::with_capacity(cur_nodes.len().div_ceil(2));
         let mut k = 0usize;
         while k < cur_nodes.len() {
             let (idx, hash) = cur_nodes[k];
@@ -2597,7 +2667,13 @@ fn verify_whir_cshake_multiproof(
                     (sh, hash)
                 }
             };
-            let parent = merkle_node_cshake(WHIR_MERKLE_NODE_DOM, level as u8, (idx >> 1) as u32, &left, &right);
+            let parent = merkle_node_cshake(
+                WHIR_MERKLE_NODE_DOM,
+                level as u8,
+                (idx >> 1) as u32,
+                &left,
+                &right,
+            );
             next_nodes.push((idx >> 1, parent));
         }
         cur_nodes = next_nodes;
@@ -2797,14 +2873,13 @@ pub fn commit_u1_whir_boundaries(boundaries_bb: &[Vec<u32>]) -> U1WhirOnlineComm
 fn eval_non_slt_mask_mle(z_i: &[Ext4], z_j: &[Ext4]) -> Ext4 {
     let eq_i = build_eq_table_lsb_ext4(z_i);
     let eq_j = build_eq_table_lsb_ext4(z_j);
-    let c_len = eq_i.len();
     let mut acc = Ext4::ZERO;
-    for j in 0..c_len {
+    for (j, &eq_jv) in eq_j.iter().enumerate() {
         let mut s_i = Ext4::ZERO;
-        for i in 0..=j {
-            s_i = s_i.add(eq_i[i]);
+        for &eq_iv in &eq_i[..=j] {
+            s_i = s_i.add(eq_iv);
         }
-        acc = acc.add(eq_j[j].mul(s_i));
+        acc = acc.add(eq_jv.mul(s_i));
     }
     acc
 }
@@ -3093,6 +3168,9 @@ impl Qwen35U1WhirBundle {
     }
 }
 
+/// `(bundle_bytes, content_root, qs_binding)` returned by [`prove_u1_whir_audit_bundle`].
+pub type U1WhirAuditBundleResult = (Vec<u8>, [u8; 32], [u8; 32]);
+
 /// Prove the full `Qwen3.5-0.8B` `U1` VRF-Audited `GDN + SwiGLU + ZK Absent("sk-...")` turn using
 /// `WhirExt4Pcs` + `GMaskExt4` (`< 530 KiB` serialized receipt, `>= 100.6` bits `[BCIKS20]` UD soundness)!
 pub fn prove_u1_whir_audit_bundle(
@@ -3103,12 +3181,16 @@ pub fn prove_u1_whir_audit_bundle(
     u1_online: &U1WhirOnlineCommitment,
     turn: &Qwen35TurnExecution,
     redacted_output_bytes: &[u8],
-) -> Result<(Vec<u8>, [u8; 32], [u8; 32]), String> {
+) -> Result<U1WhirAuditBundleResult, String> {
     let (final_dfa_state, dfa_trace) = run_padded_complement_sk_dfa(redacted_output_bytes);
     if final_dfa_state >= 4 {
-        return Err("prover refusal: redacted_output_bytes enters sink state 4 (`sk-...` leak!)".into());
+        return Err(
+            "prover refusal: redacted_output_bytes enters sink state 4 (`sk-...` leak!)".into(),
+        );
     }
-    let pad_len = (redacted_output_bytes.len() + 2).next_power_of_two().max(2048);
+    let pad_len = (redacted_output_bytes.len() + 2)
+        .next_power_of_two()
+        .max(2048);
     let m_abs = pad_len.trailing_zeros() as usize;
 
     let mut bytes_pad = vec![256u32; pad_len];
@@ -3258,19 +3340,31 @@ pub fn prove_u1_whir_audit_bundle(
     for j in 0..wy.c_len {
         for h in 0..wy.h_pad {
             let mut al = Ext4::ZERO;
-            for i in 0..wy.c_len {
-                al = al.add(eq_i[i].scale_bb(wy.l_lsb_hij[h + (i << log_h) + (j << (log_h + log_c))]));
+            for (i, &eq_iv) in eq_i.iter().enumerate() {
+                al =
+                    al.add(eq_iv.scale_bb(wy.l_lsb_hij[h + (i << log_h) + (j << (log_h + log_c))]));
             }
             left_hj[h + (j << log_h)] = al;
             let mut ar = Ext4::ZERO;
-            for k in 0..wy_cols {
-                ar = ar.add(eq_k[k].scale_bb(wy.uw_lsb_hik[h + (j << log_h) + (k << (log_h + log_c))]));
+            for (k, &eq_kv) in eq_k.iter().enumerate() {
+                ar = ar
+                    .add(eq_kv.scale_bb(wy.uw_lsb_hik[h + (j << log_h) + (k << (log_h + log_c))]));
             }
             right_hj[h + (j << log_h)] = ar;
         }
     }
-    let (wy_blinded_sc, wy_rho, wy_chals, wy_l_eval, wy_uw_eval, wy_term) =
-        prove_gmask_einsum_ext4(&left_hj, &right_hj, log_h, log_c, &z_h, &ext_gmask, "wy_sc", &mut tr);
+    let (wy_blinded_sc, wy_rho, wy_chals, wy_l_eval, wy_uw_eval, wy_term) = prove_gmask_einsum_ext4(
+        &left_hj,
+        &right_hj,
+        GmaskEinSumParams {
+            mu_s: log_h,
+            kappa: log_c,
+            z_s: &z_h,
+            gmask: &ext_gmask,
+            spec_name: "wy_sc",
+        },
+        &mut tr,
+    );
     tr.absorb_ext4(b"wy_l_ev", wy_l_eval);
     tr.absorb_ext4(b"wy_uw_ev", wy_uw_eval);
 
@@ -3289,8 +3383,18 @@ pub fn prove_u1_whir_audit_bundle(
             }
         }
     }
-    let (slt_blinded_sc, slt_rho, slt_chals, _, _, slt_term) =
-        prove_gmask_einsum_ext4(&non_slt, &l_ext, m_slt, 0, &z_slt, &ext_gmask, "slt_sc", &mut tr);
+    let (slt_blinded_sc, slt_rho, slt_chals, _, _, slt_term) = prove_gmask_einsum_ext4(
+        &non_slt,
+        &l_ext,
+        GmaskEinSumParams {
+            mu_s: m_slt,
+            kappa: 0,
+            z_s: &z_slt,
+            gmask: &ext_gmask,
+            spec_name: "slt_sc",
+        },
+        &mut tr,
+    );
 
     let (d1b_rem_proof, d1b_leaf_pt) =
         prove_d1b_range_ext4(&wy.rem_lsb_hik, &mult_wy, m_wy_wit, m_wy_tab, &mut tr);
@@ -3355,8 +3459,18 @@ pub fn prove_u1_whir_audit_bundle(
         }
         right_eof[t] = Ext4::from_bb(bytes_pad[t]).sub(Ext4::from_bb(256));
     }
-    let (eof_blinded_sc, eof_rho, eof_chals, _, _, eof_term) =
-        prove_gmask_einsum_ext4(&left_eof, &right_eof, m_abs, 0, &z_eof, &ext_gmask, "eof_sc", &mut tr);
+    let (eof_blinded_sc, eof_rho, eof_chals, _, _, eof_term) = prove_gmask_einsum_ext4(
+        &left_eof,
+        &right_eof,
+        GmaskEinSumParams {
+            mu_s: m_abs,
+            kappa: 0,
+            z_s: &z_eof,
+            gmask: &ext_gmask,
+            spec_name: "eof_sc",
+        },
+        &mut tr,
+    );
     let b_at_zeof = mle_eval_bb_at_ext4(&bytes_pad, &eof_chals);
     tr.absorb_ext4(b"abs_beof", b_at_zeof);
 
@@ -3365,12 +3479,20 @@ pub fn prove_u1_whir_audit_bundle(
     tr.absorb_ext4(b"abs_qn_zsh", q_next_at_zsh);
     let eq_zsh = build_eq_table_lsb_ext4(&z_sh);
     let mut shift_col = vec![Ext4::ZERO; pad_len];
-    for t in 0..(pad_len - 1) {
-        shift_col[t + 1] = eq_zsh[t];
-    }
+    shift_col[1..pad_len].copy_from_slice(&eq_zsh[..(pad_len - 1)]);
     let q_ext: Vec<Ext4> = q_vec.iter().map(|&v| Ext4::from_bb(v)).collect();
-    let (shift_blinded_sc, sh_rho, sh_chals, _, _, sh_term) =
-        prove_gmask_einsum_ext4(&shift_col, &q_ext, 0, m_abs, &[], &ext_gmask, "shift_sc", &mut tr);
+    let (shift_blinded_sc, sh_rho, sh_chals, _, _, sh_term) = prove_gmask_einsum_ext4(
+        &shift_col,
+        &q_ext,
+        GmaskEinSumParams {
+            mu_s: 0,
+            kappa: m_abs,
+            z_s: &[],
+            gmask: &ext_gmask,
+            spec_name: "shift_sc",
+        },
+        &mut tr,
+    );
 
     // 5. Build `JointLinearClaimExt4`s & Open ALL 5 WHIR Matrices in **ONE SHARED WHIR CASCADE**!
     let gm_ids = [14usize, 15, 16, 17];
@@ -3396,10 +3518,14 @@ pub fn prove_u1_whir_audit_bundle(
     pt_y.extend_from_slice(&r_i_mxfp4);
     pt_y.extend_from_slice(&r_j_mxfp4);
 
-    let non_slt_factor = eq_mle_ext4(&z_slt, &slt_chals)
-        .mul(eval_non_slt_mask_mle(&slt_chals[log_h..log_h + log_c], &slt_chals[log_h + log_c..]));
+    let non_slt_factor = eq_mle_ext4(&z_slt, &slt_chals).mul(eval_non_slt_mask_mle(
+        &slt_chals[log_h..log_h + log_c],
+        &slt_chals[log_h + log_c..],
+    ));
     let shift_factor = eval_shift_kernel_mle_whir(&z_sh, &sh_chals);
-    let wy_unmasked_term = eq_mle_ext4(&z_h, &wy_chals[..log_h]).mul(wy_l_eval).mul(wy_uw_eval);
+    let wy_unmasked_term = eq_mle_ext4(&z_h, &wy_chals[..log_h])
+        .mul(wy_l_eval)
+        .mul(wy_uw_eval);
 
     let online_claims = vec![
         JointLinearClaimExt4::point_eval(0, l_pt1, wy_l_eval),
@@ -3408,7 +3534,11 @@ pub fn prove_u1_whir_audit_bundle(
         JointLinearClaimExt4::point_eval(2, uw_pt2, wy_uw_eval),
         JointLinearClaimExt4::point_eval(3, z_hik, rem_eval_at_z),
         JointLinearClaimExt4::point_eval(3, d1b_leaf_pt.clone(), d1b_rem_proof.rem_leaf_eval),
-        JointLinearClaimExt4::point_eval(4, d1b_leaf_pt[..m_wy_tab].to_vec(), d1b_rem_proof.mult_leaf_eval),
+        JointLinearClaimExt4::point_eval(
+            4,
+            d1b_leaf_pt[..m_wy_tab].to_vec(),
+            d1b_rem_proof.mult_leaf_eval,
+        ),
         JointLinearClaimExt4::point_eval(5, pt_x, mxfp4_proof.finals.0),
         JointLinearClaimExt4::point_eval(6, pt_y, mxfp4_proof.claim),
         JointLinearClaimExt4::point_eval(7, z_bnd.clone(), delta_gdn_eval),
@@ -3419,7 +3549,11 @@ pub fn prove_u1_whir_audit_bundle(
         JointLinearClaimExt4::point_eval(9, z_q_leaf.clone(), q_range_proof.rem_leaf_eval),
         JointLinearClaimExt4::point_eval(10, z_dfa_leaf.clone(), q_next_at_dfa_leaf),
         JointLinearClaimExt4::point_eval(10, z_sh, q_next_at_zsh),
-        JointLinearClaimExt4::point_eval(11, z_dfa_leaf[..11].to_vec(), dfa_d1b_proof.mult_leaf_eval),
+        JointLinearClaimExt4::point_eval(
+            11,
+            z_dfa_leaf[..11].to_vec(),
+            dfa_d1b_proof.mult_leaf_eval,
+        ),
         JointLinearClaimExt4::point_eval(12, z_b_leaf[..8].to_vec(), b_range_proof.mult_leaf_eval),
         JointLinearClaimExt4::point_eval(13, z_q_leaf[..3].to_vec(), q_range_proof.mult_leaf_eval),
         // External `GMaskExt4` `G` & HVZK terminal welds (`0` unmasked `g(r)`, `L(r_slt)`, or `q(r_sh)` leaked!):
@@ -3481,7 +3615,11 @@ pub fn prove_u1_whir_audit_bundle(
         JointLinearClaimExt4::point_eval(0, pt_q, mxfp4_proof.finals.1),
         JointLinearClaimExt4::point_eval(1, pt_s, mxfp4_proof.finals.2),
     ];
-    let bin_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd.clone(), b_in_eval)];
+    let bin_claims = vec![JointLinearClaimExt4::point_eval(
+        0,
+        z_bnd.clone(),
+        b_in_eval,
+    )];
     let bout_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd, b_out_eval)];
     let exp_b_pad_at_zb = b_range_proof
         .rem_leaf_eval
@@ -3579,7 +3717,7 @@ pub fn verify_u1_whir_audit_bundle_standalone(
     }
     if !b.pad_len.is_power_of_two()
         || !(2048..=(1 << 20)).contains(&b.pad_len)
-        || b.word_len.checked_add(2).map_or(true, |n| n > b.pad_len)
+        || b.word_len.checked_add(2).is_none_or(|n| n > b.pad_len)
         || !(1..=24).contains(&b.bnd_vars)
         || !b.h_pad.is_power_of_two()
         || !b.c_len.is_power_of_two()
@@ -3623,10 +3761,11 @@ pub fn verify_u1_whir_audit_bundle_standalone(
         return Err("layer_weight_path depth >= 32".into());
     }
     let n_wleaves = 1usize << b.layer_weight_path.siblings.len();
-    if !b
-        .layer_weight_path
-        .verify(b"QW35-GLOBAL-WEIGHT-TREE-V1", expected_weight_root, n_wleaves)
-    {
+    if !b.layer_weight_path.verify(
+        b"QW35-GLOBAL-WEIGHT-TREE-V1",
+        expected_weight_root,
+        n_wleaves,
+    ) {
         return Err("global weight_root Merkle path failed".into());
     }
     let mut qs_bind_in = [0u8; 64];
@@ -3639,7 +3778,10 @@ pub fn verify_u1_whir_audit_bundle_standalone(
     let mut tr = CShakeTranscript::new(b"QW35-U1-WHIR-AUDIT-V1");
     tr.absorb_root(b"stmt_weight_root", expected_weight_root);
     tr.absorb_root(b"stmt_b_in_root", &boundary_roots[expected_audited_layer]);
-    tr.absorb_root(b"stmt_b_out_root", &boundary_roots[expected_audited_layer + 1]);
+    tr.absorb_root(
+        b"stmt_b_out_root",
+        &boundary_roots[expected_audited_layer + 1],
+    );
     tr.absorb_root(b"stmt_content_root", &b.content_root);
     tr.absorb_root(b"stmt_bytes_root", &b.bytes_whir_root);
     tr.absorb_root(b"stmt_qs_root", &b.qs_whir_root);
@@ -3700,7 +3842,12 @@ pub fn verify_u1_whir_audit_bundle_standalone(
     )?;
 
     let z_bnd = tr.squeeze_ext4_vec(b"u1_zb", b.bnd_vars, true);
-    for e in [b.b_in_eval, b.b_out_eval, b.delta_gdn_eval, b.delta_mlp_eval] {
+    for e in [
+        b.b_in_eval,
+        b.b_out_eval,
+        b.delta_gdn_eval,
+        b.delta_mlp_eval,
+    ] {
         tr.absorb_ext4(b"u1_ev", e);
     }
     if b.b_out_eval != b.b_in_eval.add(b.delta_gdn_eval).add(b.delta_mlp_eval) {
@@ -3734,7 +3881,9 @@ pub fn verify_u1_whir_audit_bundle_standalone(
             clear_pad[i] = byte as u32;
         }
         if mle_eval_bb_at_ext4(&clear_pad, &z_dfa_leaf) != b.b_at_dfa_leaf {
-            return Err("cleartext bytes_pad MLE mismatch against committed bytes_whir_root".into());
+            return Err(
+                "cleartext bytes_pad MLE mismatch against committed bytes_whir_root".into(),
+            );
         }
     }
     let z_b_leaf = verify_d1b_range_ext4(&b.b_range_proof, &mut tr)?;
@@ -3790,10 +3939,14 @@ pub fn verify_u1_whir_audit_bundle_standalone(
     pt_y.extend_from_slice(&r_i_mxfp4);
     pt_y.extend_from_slice(&r_j_mxfp4);
 
-    let non_slt_factor = eq_mle_ext4(&z_slt, &slt_chals)
-        .mul(eval_non_slt_mask_mle(&slt_chals[log_h..log_h + log_c], &slt_chals[log_h + log_c..]));
+    let non_slt_factor = eq_mle_ext4(&z_slt, &slt_chals).mul(eval_non_slt_mask_mle(
+        &slt_chals[log_h..log_h + log_c],
+        &slt_chals[log_h + log_c..],
+    ));
     let shift_factor = eval_shift_kernel_mle_whir(&z_sh, &sh_chals);
-    let wy_unmasked_term = eq_mle_ext4(&z_h, &wy_chals[..log_h]).mul(b.wy_l_eval).mul(b.wy_uw_eval);
+    let wy_unmasked_term = eq_mle_ext4(&z_h, &wy_chals[..log_h])
+        .mul(b.wy_l_eval)
+        .mul(b.wy_uw_eval);
 
     let online_claims = vec![
         JointLinearClaimExt4::point_eval(0, l_pt1, b.wy_l_eval),
@@ -3802,7 +3955,11 @@ pub fn verify_u1_whir_audit_bundle_standalone(
         JointLinearClaimExt4::point_eval(2, uw_pt2, b.wy_uw_eval),
         JointLinearClaimExt4::point_eval(3, z_hik, b.rem_eval_at_z),
         JointLinearClaimExt4::point_eval(3, d1b_leaf_pt.clone(), b.d1b_rem_proof.rem_leaf_eval),
-        JointLinearClaimExt4::point_eval(4, d1b_leaf_pt[..m_wy_tab].to_vec(), b.d1b_rem_proof.mult_leaf_eval),
+        JointLinearClaimExt4::point_eval(
+            4,
+            d1b_leaf_pt[..m_wy_tab].to_vec(),
+            b.d1b_rem_proof.mult_leaf_eval,
+        ),
         JointLinearClaimExt4::point_eval(5, pt_x, b.mxfp4_proof.finals.0),
         JointLinearClaimExt4::point_eval(6, pt_y, b.mxfp4_proof.claim),
         JointLinearClaimExt4::point_eval(7, z_bnd.clone(), b.delta_gdn_eval),
@@ -3812,9 +3969,21 @@ pub fn verify_u1_whir_audit_bundle_standalone(
         JointLinearClaimExt4::point_eval(9, z_q_leaf.clone(), b.q_range_proof.rem_leaf_eval),
         JointLinearClaimExt4::point_eval(10, z_dfa_leaf.clone(), b.q_next_at_dfa_leaf),
         JointLinearClaimExt4::point_eval(10, z_sh, b.q_next_at_zsh),
-        JointLinearClaimExt4::point_eval(11, z_dfa_leaf[..11].to_vec(), b.dfa_d1b_proof.mult_leaf_eval),
-        JointLinearClaimExt4::point_eval(12, z_b_leaf[..8].to_vec(), b.b_range_proof.mult_leaf_eval),
-        JointLinearClaimExt4::point_eval(13, z_q_leaf[..3].to_vec(), b.q_range_proof.mult_leaf_eval),
+        JointLinearClaimExt4::point_eval(
+            11,
+            z_dfa_leaf[..11].to_vec(),
+            b.dfa_d1b_proof.mult_leaf_eval,
+        ),
+        JointLinearClaimExt4::point_eval(
+            12,
+            z_b_leaf[..8].to_vec(),
+            b.b_range_proof.mult_leaf_eval,
+        ),
+        JointLinearClaimExt4::point_eval(
+            13,
+            z_q_leaf[..3].to_vec(),
+            b.q_range_proof.mult_leaf_eval,
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &wy_ws, b.wy_blinded_sc.gmask_sum),
         JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
@@ -3873,7 +4042,11 @@ pub fn verify_u1_whir_audit_bundle_standalone(
         JointLinearClaimExt4::point_eval(0, pt_q, b.mxfp4_proof.finals.1),
         JointLinearClaimExt4::point_eval(1, pt_s, b.mxfp4_proof.finals.2),
     ];
-    let bin_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd.clone(), b.b_in_eval)];
+    let bin_claims = vec![JointLinearClaimExt4::point_eval(
+        0,
+        z_bnd.clone(),
+        b.b_in_eval,
+    )];
     let bout_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd, b.b_out_eval)];
     let exp_b_pad_at_zb = b
         .b_range_proof
@@ -3909,8 +4082,11 @@ pub fn verify_u1_whir_audit_bundle_standalone(
         true,
         WHIR_EXT4_BLOWUP,
     );
-    let qs_shape =
-        WhirExt4MatrixShape::for_subtables(&[5 + log_j + log_k, log_j + log_k], false, WHIR_EXT4_BLOWUP);
+    let qs_shape = WhirExt4MatrixShape::for_subtables(
+        &[5 + log_j + log_k, log_j + log_k],
+        false,
+        WHIR_EXT4_BLOWUP,
+    );
     let bnd_shape = WhirExt4MatrixShape::single_table(b.bnd_vars, true);
     let bytes_shape = WhirExt4MatrixShape::single_table(m_abs, true);
 
@@ -3918,8 +4094,16 @@ pub fn verify_u1_whir_audit_bundle_standalone(
         &[
             (&b.online_whir_root, &online_shape, &online_claims),
             (&b.qs_whir_root, &qs_shape, &qs_claims),
-            (&boundary_roots[expected_audited_layer], &bnd_shape, &bin_claims),
-            (&boundary_roots[expected_audited_layer + 1], &bnd_shape, &bout_claims),
+            (
+                &boundary_roots[expected_audited_layer],
+                &bnd_shape,
+                &bin_claims,
+            ),
+            (
+                &boundary_roots[expected_audited_layer + 1],
+                &bnd_shape,
+                &bout_claims,
+            ),
             (&b.bytes_whir_root, &bytes_shape, &bytes_claims),
         ],
         WHIR_EXT4_T_QUERIES_100,
@@ -3963,9 +4147,9 @@ fn eval_qsa_active_pair_mle(
 fn eval_qsa_active_query_mle(num_queries: usize, k_budget: usize, z_q: &[Ext4]) -> Ext4 {
     let eq_q = build_eq_table_lsb_ext4(z_q);
     let mut acc = Ext4::ZERO;
-    for q in 0..num_queries {
+    for (q, &eq_qv) in eq_q.iter().enumerate().take(num_queries) {
         if (q + 1) / 4 > k_budget {
-            acc = acc.add(eq_q[q]);
+            acc = acc.add(eq_qv);
         }
     }
     acc
@@ -4226,7 +4410,9 @@ pub fn prove_qwen38fn_whir_slice(
         let tau_lo = tau_q & 0x7FFF;
         let tau_hi = tau_q >> 15;
         if tau_hi >= (1u32 << 15) {
-            return Err(format!("C5 QSA threshold wraparound rejected: tau={tau_q} >= 2^30"));
+            return Err(format!(
+                "C5 QSA threshold wraparound rejected: tau={tau_q} >= 2^30"
+            ));
         }
         tau_limbs[2 * q] = tau_lo;
         tau_limbs[2 * q + 1] = tau_hi;
@@ -4313,19 +4499,29 @@ pub fn prove_qwen38fn_whir_slice(
     for j in 0..64 {
         for h in 0..64 {
             let mut al = Ext4::ZERO;
-            for i in 0..64 {
-                al = al.add(eq_i[i].scale_bb(wy_48.l_lsb_hij[h + (i << 6) + (j << 12)]));
+            for (i, &eq_iv) in eq_i.iter().enumerate() {
+                al = al.add(eq_iv.scale_bb(wy_48.l_lsb_hij[h + (i << 6) + (j << 12)]));
             }
             left_hj[h + (j << 6)] = al;
             let mut ar = Ext4::ZERO;
-            for k in 0..256 {
-                ar = ar.add(eq_k[k].scale_bb(wy_48.uw_lsb_hik[h + (j << 6) + (k << 12)]));
+            for (k, &eq_kv) in eq_k.iter().enumerate() {
+                ar = ar.add(eq_kv.scale_bb(wy_48.uw_lsb_hik[h + (j << 6) + (k << 12)]));
             }
             right_hj[h + (j << 6)] = ar;
         }
     }
-    let (wy_blinded_sc, wy_rho, wy_chals, wy_l_eval, wy_uw_eval, wy_term) =
-        prove_gmask_einsum_ext4(&left_hj, &right_hj, log_h, log_c, &z_h, &ext_gmask, "wy_sc", &mut tr);
+    let (wy_blinded_sc, wy_rho, wy_chals, wy_l_eval, wy_uw_eval, wy_term) = prove_gmask_einsum_ext4(
+        &left_hj,
+        &right_hj,
+        GmaskEinSumParams {
+            mu_s: log_h,
+            kappa: log_c,
+            z_s: &z_h,
+            gmask: &ext_gmask,
+            spec_name: "wy_sc",
+        },
+        &mut tr,
+    );
     tr.absorb_ext4(b"wy_l", wy_l_eval);
     tr.absorb_ext4(b"wy_u", wy_uw_eval);
 
@@ -4342,8 +4538,18 @@ pub fn prove_qwen38fn_whir_slice(
             }
         }
     }
-    let (slt_blinded_sc, slt_rho, slt_chals, _, _, slt_term) =
-        prove_gmask_einsum_ext4(&non_slt, &l_ext, m_slt, 0, &z_slt, &ext_gmask, "slt_sc", &mut tr);
+    let (slt_blinded_sc, slt_rho, slt_chals, _, _, slt_term) = prove_gmask_einsum_ext4(
+        &non_slt,
+        &l_ext,
+        GmaskEinSumParams {
+            mu_s: m_slt,
+            kappa: 0,
+            z_s: &z_slt,
+            gmask: &ext_gmask,
+            spec_name: "slt_sc",
+        },
+        &mut tr,
+    );
 
     let (wy_d1b, d1b_pt) =
         prove_d1b_range_ext4(&wy_48.rem_lsb_hik, &mult_wy, m_wy_wit, m_wy_tab, &mut tr);
@@ -4372,8 +4578,10 @@ pub fn prove_qwen38fn_whir_slice(
         &mut tr,
     );
 
-    let (qsa_slack_d1b, z_sl) = prove_d1b_range_ext4(&slacks, &mult_slack, m_qsa_pairs, 16, &mut tr);
-    let (qsa_tau_d1b, z_tau) = prove_d1b_range_ext4(&tau_limbs, &mult_tau, m_qsa_limbs, 15, &mut tr);
+    let (qsa_slack_d1b, z_sl) =
+        prove_d1b_range_ext4(&slacks, &mult_slack, m_qsa_pairs, 16, &mut tr);
+    let (qsa_tau_d1b, z_tau) =
+        prove_d1b_range_ext4(&tau_limbs, &mult_tau, m_qsa_limbs, 15, &mut tr);
 
     // Algebraic QSA `C3 + C5` Top-K_B welds (`#117.A.1`):
     // (a) Booleanity + inactive-zero: `sel * ((1 - sel) + eta_inact * (1 - active_pair)) == 0`:
@@ -4384,11 +4592,25 @@ pub fn prove_qwen38fn_whir_slice(
     for idx in 0..n_pairs {
         let sv = Ext4::from_bb(sel_table[idx]);
         left_qb[idx] = sv;
-        let inact = if active_pair_bool[idx] { Ext4::ZERO } else { eta_inact };
+        let inact = if active_pair_bool[idx] {
+            Ext4::ZERO
+        } else {
+            eta_inact
+        };
         right_qb[idx] = Ext4::ONE.sub(sv).add(inact);
     }
-    let (qsa_bool_sc, qb_rho, qb_chals, _, _, qb_term) =
-        prove_gmask_einsum_ext4(&left_qb, &right_qb, m_qsa_pairs, 0, &z_qbool, &ext_gmask, "qsa_bool_sc", &mut tr);
+    let (qsa_bool_sc, qb_rho, qb_chals, _, _, qb_term) = prove_gmask_einsum_ext4(
+        &left_qb,
+        &right_qb,
+        GmaskEinSumParams {
+            mu_s: m_qsa_pairs,
+            kappa: 0,
+            z_s: &z_qbool,
+            gmask: &ext_gmask,
+            spec_name: "qsa_bool_sc",
+        },
+        &mut tr,
+    );
     let qsa_sel_at_qb = mle_eval_bb_at_ext4(&sel_table, &qb_chals);
     tr.absorb_ext4(b"qsa_sqb", qsa_sel_at_qb);
 
@@ -4412,7 +4634,11 @@ pub fn prove_qwen38fn_whir_slice(
     let mut right_qsl = vec![Ext4::ZERO; n_pairs];
     let active_limit = qsa_wit.num_blocks * qsa_wit.num_queries;
     for idx in 0..n_pairs {
-        let act = if active_pair_bool[idx] { Ext4::ONE } else { Ext4::ZERO };
+        let act = if active_pair_bool[idx] {
+            Ext4::ONE
+        } else {
+            Ext4::ZERO
+        };
         left_qsl[idx] = Ext4::from_bb(sel_table[idx]).scale_bb(2).sub(act);
         if idx < active_limit {
             let q = idx >> log_b_qsa;
@@ -4420,8 +4646,18 @@ pub fn prove_qwen38fn_whir_slice(
             right_qsl[idx] = Ext4::from_bb(keys_table[idx]).sub(Ext4::from_bb(tau_q));
         }
     }
-    let (qsa_slack_sc, qsl_rho, qsl_chals, _, _, qsl_term) =
-        prove_gmask_einsum_ext4(&left_qsl, &right_qsl, m_qsa_pairs, 0, &z_qsl, &ext_gmask, "qsa_slack_sc", &mut tr);
+    let (qsa_slack_sc, qsl_rho, qsl_chals, _, _, qsl_term) = prove_gmask_einsum_ext4(
+        &left_qsl,
+        &right_qsl,
+        GmaskEinSumParams {
+            mu_s: m_qsa_pairs,
+            kappa: 0,
+            z_s: &z_qsl,
+            gmask: &ext_gmask,
+            spec_name: "qsa_slack_sc",
+        },
+        &mut tr,
+    );
     let qsa_sel_at_r = mle_eval_bb_at_ext4(&sel_table, &qsl_chals);
     let qsa_key_at_r = mle_eval_bb_at_ext4(&keys_table, &qsl_chals);
     let mut pt_tau_lo = Vec::with_capacity(m_qsa_limbs);
@@ -4460,7 +4696,9 @@ pub fn prove_qwen38fn_whir_slice(
 
     let non_slt_factor = eq_mle_ext4(&z_slt, &slt_chals)
         .mul(eval_non_slt_mask_mle(&slt_chals[6..12], &slt_chals[12..]));
-    let wy_unm = eq_mle_ext4(&z_h, &wy_chals[..6]).mul(wy_l_eval).mul(wy_uw_eval);
+    let wy_unm = eq_mle_ext4(&z_h, &wy_chals[..6])
+        .mul(wy_l_eval)
+        .mul(wy_uw_eval);
 
     let act_qb = eval_qsa_active_pair_mle(
         qsa_wit.num_queries,
@@ -4468,9 +4706,11 @@ pub fn prove_qwen38fn_whir_slice(
         qsa_wit.k_budget,
         &qb_chals,
     );
-    let qb_unm = eq_mle_ext4(&z_qbool, &qb_chals)
-        .mul(qsa_sel_at_qb)
-        .mul(Ext4::ONE.sub(qsa_sel_at_qb).add(eta_inact.mul(Ext4::ONE.sub(act_qb))));
+    let qb_unm = eq_mle_ext4(&z_qbool, &qb_chals).mul(qsa_sel_at_qb).mul(
+        Ext4::ONE
+            .sub(qsa_sel_at_qb)
+            .add(eta_inact.mul(Ext4::ONE.sub(act_qb))),
+    );
 
     let act_r = eval_qsa_active_pair_mle(
         qsa_wit.num_queries,
@@ -4651,7 +4891,9 @@ pub fn verify_qwen38fn_whir_slice_bytes(
     {
         return Err("invalid or mismatched QSA (num_queries, num_blocks, k_budget)".into());
     }
-    let exp_n_pairs = (r.num_queries * r.num_blocks).next_power_of_two().max(65536);
+    let exp_n_pairs = (r.num_queries * r.num_blocks)
+        .next_power_of_two()
+        .max(65536);
     let exp_n_limbs = (r.num_queries * 2).next_power_of_two().max(32768);
     if r.m_qsa_pairs != (exp_n_pairs.trailing_zeros() as usize)
         || r.m_qsa_limbs != (exp_n_limbs.trailing_zeros() as usize)
@@ -4717,8 +4959,14 @@ pub fn verify_qwen38fn_whir_slice_bytes(
 
     let z_qbool = tr.squeeze_ext4_vec(b"qsa_zb", r.m_qsa_pairs, true);
     let eta_inact = tr.squeeze_ext4(b"qsa_eta", true);
-    let (qb_rho, qb_chals, qb_term) =
-        verify_gmask_einsum_ext4(Ext4::ZERO, r.m_qsa_pairs, 0, &z_qbool, &r.qsa_bool_sc, &mut tr)?;
+    let (qb_rho, qb_chals, qb_term) = verify_gmask_einsum_ext4(
+        Ext4::ZERO,
+        r.m_qsa_pairs,
+        0,
+        &z_qbool,
+        &r.qsa_bool_sc,
+        &mut tr,
+    )?;
     tr.absorb_ext4(b"qsa_sqb", r.qsa_sel_at_qb);
 
     let z_qbud = tr.squeeze_ext4_vec(b"qsa_zbud", log_q_qsa, true);
@@ -4734,8 +4982,14 @@ pub fn verify_qwen38fn_whir_slice_bytes(
     tr.absorb_ext4(b"qsa_sez", r.qsa_sel_at_z);
     let act_z = eval_qsa_active_pair_mle(r.num_queries, r.num_blocks, r.k_budget, &z_qsl);
     let exp_qsl_claim = r.qsa_slack_at_z.add(act_z).sub(r.qsa_sel_at_z);
-    let (qsl_rho, qsl_chals, qsl_term) =
-        verify_gmask_einsum_ext4(exp_qsl_claim, r.m_qsa_pairs, 0, &z_qsl, &r.qsa_slack_sc, &mut tr)?;
+    let (qsl_rho, qsl_chals, qsl_term) = verify_gmask_einsum_ext4(
+        exp_qsl_claim,
+        r.m_qsa_pairs,
+        0,
+        &z_qsl,
+        &r.qsa_slack_sc,
+        &mut tr,
+    )?;
     for e in [
         r.qsa_sel_at_r,
         r.qsa_key_at_r,
@@ -4788,19 +5042,26 @@ pub fn verify_qwen38fn_whir_slice_bytes(
 
     let non_slt_factor = eq_mle_ext4(&z_slt, &slt_chals)
         .mul(eval_non_slt_mask_mle(&slt_chals[6..12], &slt_chals[12..]));
-    let wy_unm = eq_mle_ext4(&z_h, &wy_chals[..6]).mul(r.wy_l_eval).mul(r.wy_uw_eval);
+    let wy_unm = eq_mle_ext4(&z_h, &wy_chals[..6])
+        .mul(r.wy_l_eval)
+        .mul(r.wy_uw_eval);
 
     let act_qb = eval_qsa_active_pair_mle(r.num_queries, r.num_blocks, r.k_budget, &qb_chals);
-    let qb_unm = eq_mle_ext4(&z_qbool, &qb_chals)
-        .mul(r.qsa_sel_at_qb)
-        .mul(Ext4::ONE.sub(r.qsa_sel_at_qb).add(eta_inact.mul(Ext4::ONE.sub(act_qb))));
+    let qb_unm = eq_mle_ext4(&z_qbool, &qb_chals).mul(r.qsa_sel_at_qb).mul(
+        Ext4::ONE
+            .sub(r.qsa_sel_at_qb)
+            .add(eta_inact.mul(Ext4::ONE.sub(act_qb))),
+    );
 
     let act_r = eval_qsa_active_pair_mle(r.num_queries, r.num_blocks, r.k_budget, &qsl_chals);
     let mut zero_hi_r = Ext4::ONE;
     for &zt in &qsl_chals[log_b_qsa + log_q_qsa..] {
         zero_hi_r = zero_hi_r.mul(Ext4::ONE.sub(zt));
     }
-    let tau_full_r = zero_hi_r.mul(r.qsa_tau_lo_at_r.add(r.qsa_tau_hi_at_r.scale_bb(1u32 << 15)));
+    let tau_full_r = zero_hi_r.mul(
+        r.qsa_tau_lo_at_r
+            .add(r.qsa_tau_hi_at_r.scale_bb(1u32 << 15)),
+    );
     let qsl_unm = eq_mle_ext4(&z_qsl, &qsl_chals)
         .mul(r.qsa_sel_at_r.scale_bb(2).sub(act_r))
         .mul(r.qsa_key_at_r.sub(tau_full_r));
@@ -4876,7 +5137,11 @@ pub fn verify_qwen38fn_whir_slice_bytes(
         JointLinearClaimExt4::point_eval(0, pt_q, r.moe_pf.finals.1),
         JointLinearClaimExt4::point_eval(1, pt_s, r.moe_pf.finals.2),
     ];
-    let qsa_keys_claims = vec![JointLinearClaimExt4::point_eval(0, qsl_chals, r.qsa_key_at_r)];
+    let qsa_keys_claims = vec![JointLinearClaimExt4::point_eval(
+        0,
+        qsl_chals,
+        r.qsa_key_at_r,
+    )];
 
     let online_shape = WhirExt4MatrixShape::for_subtables(
         &[

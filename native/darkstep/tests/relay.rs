@@ -35,7 +35,11 @@ fn echo() -> SocketAddr {
 fn free_run(k: u16) -> u16 {
     // k consecutive free ports
     loop {
-        let p = TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port();
+        let p = TcpListener::bind("127.0.0.1:0")
+            .unwrap()
+            .local_addr()
+            .unwrap()
+            .port();
         if p < 60000 && (0..k).all(|j| TcpListener::bind(("127.0.0.1", p + j)).is_ok()) {
             return p;
         }
@@ -46,7 +50,9 @@ fn free_run(k: u16) -> u16 {
 fn relay_streams_survive_a_link_drop() {
     let ids: Vec<Identity> = (0..3).map(generate).collect();
     let certs: Vec<Vec<u8>> = ids.iter().map(|x| x.cert_der.clone()).collect();
-    let ls: Vec<TcpListener> = (0..3).map(|_| TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    let ls: Vec<TcpListener> = (0..3)
+        .map(|_| TcpListener::bind("127.0.0.1:0").unwrap())
+        .collect();
     let addrs: Vec<SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
     let hs: Vec<_> = ids
         .into_iter()
@@ -54,10 +60,23 @@ fn relay_streams_survive_a_link_drop() {
         .enumerate()
         .map(|(i, (id, l))| {
             let (addrs, certs) = (addrs.clone(), certs.clone());
-            thread::spawn(move || Net::connect_tls(i, if i < 2 { Some(l) } else { None }, &addrs, &id, &certs, Duration::from_secs(20)).unwrap())
+            thread::spawn(move || {
+                Net::connect_tls(
+                    i,
+                    if i < 2 { Some(l) } else { None },
+                    &addrs,
+                    &id,
+                    &certs,
+                    Duration::from_secs(20),
+                )
+                .unwrap()
+            })
         })
         .collect();
-    let nets: Vec<Arc<Net>> = hs.into_iter().map(|h| Arc::new(h.join().unwrap())).collect();
+    let nets: Vec<Arc<Net>> = hs
+        .into_iter()
+        .map(|h| Arc::new(h.join().unwrap()))
+        .collect();
     let services: Vec<SocketAddr> = (0..3).map(|_| echo()).collect();
     let b0 = free_run(9);
     let bases: Vec<u16> = (0..3).map(|i| b0 + 3 * i as u16).collect();
@@ -73,7 +92,9 @@ fn relay_streams_survive_a_link_drop() {
             let port = bases[from] + to as u16;
             clients.push(thread::spawn(move || {
                 let mut s = TcpStream::connect(("127.0.0.1", port)).unwrap();
-                let data: Vec<u8> = (0..6 << 20).map(|x: u32| (x.wrapping_mul(2654435761) >> 13) as u8 ^ k).collect();
+                let data: Vec<u8> = (0..6 << 20)
+                    .map(|x: u32| (x.wrapping_mul(2654435761) >> 13) as u8 ^ k)
+                    .collect();
                 let mut r = s.try_clone().unwrap();
                 let reader = thread::spawn(move || {
                     let mut got = Vec::new();
@@ -85,7 +106,11 @@ fn relay_streams_survive_a_link_drop() {
                     thread::sleep(Duration::from_millis(8));
                 }
                 s.shutdown(std::net::Shutdown::Write).unwrap();
-                assert_eq!(reader.join().unwrap(), data, "stream {from}->{to}/{k}: every byte back, in order, then EOF");
+                assert_eq!(
+                    reader.join().unwrap(),
+                    data,
+                    "stream {from}->{to}/{k}: every byte back, in order, then EOF"
+                );
             }));
         }
     }

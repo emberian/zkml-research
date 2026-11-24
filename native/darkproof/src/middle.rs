@@ -1,8 +1,8 @@
 //! cosnark_gates_zk.py: the middle (SPDZ execution integrity of the nonlinear gates) with ZK layers 2-3.
 //! `prove` is ONE custodian's prover; `verify` the public verifier. The constraint system comes from the
 //! verifier's own symbolic replay of the step (`step::replay`). Generic over the challenges' field F_{p^E} (cosnark_ext).
-use crate::ext::{self, Tab};
 use crate::defer::{self, DeferIn, Pending, CARRY_IN};
+use crate::ext::{self, Tab};
 use crate::field;
 use crate::gmask::{self, GMask, MaskZ};
 use crate::h::Hash;
@@ -87,11 +87,26 @@ pub fn public_shapes_io(
             }
         }
     }
-    let carried: Vec<&str> = io.map(|io| io.carried.clone()).unwrap_or_else(|| SPINE.to_vec());
+    let carried: Vec<&str> = io
+        .map(|io| io.carried.clone())
+        .unwrap_or_else(|| SPINE.to_vec());
     let block = if pr.nmask > 0 { pr.nmask / pr.lives } else { 0 };
     let mut sh: BTreeMap<String, Shape> = lens
         .iter()
-        .map(|(k, &l)| (k.clone(), Shape::new(pr, lg(l), if carried.contains(&k.as_str()) { block } else { 0 })))
+        .map(|(k, &l)| {
+            (
+                k.clone(),
+                Shape::new(
+                    pr,
+                    lg(l),
+                    if carried.contains(&k.as_str()) {
+                        block
+                    } else {
+                        0
+                    },
+                ),
+            )
+        })
         .collect();
     if pr.defer && io.is_some() {
         // the release's head W (cosnark_release.io_spec: cosnark_zk.shapes' W1, W2): one life under DEFER
@@ -128,12 +143,22 @@ pub fn build_q_src<const E: usize>(
     lens: &BTreeMap<String, usize>,
     next: &mut dyn FnMut() -> [u64; E],
 ) -> (BTreeMap<String, Vec<[u64; E]>>, [u64; E]) {
-    let mut q: BTreeMap<String, Vec<[u64; E]>> = lens.iter().map(|(k, &l)| (k.clone(), vec![[0u64; E]; l])).collect();
+    let mut q: BTreeMap<String, Vec<[u64; E]>> = lens
+        .iter()
+        .map(|(k, &l)| (k.clone(), vec![[0u64; E]; l]))
+        .collect();
     let mut cst = ext::zero::<E>();
     {
-        let mut qn: Vec<Vec<[u64; E]>> = rec.names.iter().map(|nm| std::mem::take(q.get_mut(*nm).unwrap())).collect();
+        let mut qn: Vec<Vec<[u64; E]>> = rec
+            .names
+            .iter()
+            .map(|nm| std::mem::take(q.get_mut(*nm).unwrap()))
+            .collect();
         let qp = q.get_mut("P").unwrap();
-        let pmr = rec.pubmat.as_ref().map_or(0..0, |pm| pm.start..pm.start + pm.d * pm.m);
+        let pmr = rec
+            .pubmat
+            .as_ref()
+            .map_or(0..0, |pm| pm.start..pm.start + pm.d * pm.m);
         let mut pmg: Vec<[u64; E]> = Vec::with_capacity(pmr.len());
         for (j, con) in cons.iter().enumerate() {
             let gj = next();
@@ -165,13 +190,16 @@ pub fn build_q_src<const E: usize>(
                 qz[k] = ext::add(qz[k], *gv);
             }
             let qw = &mut qn[pm.w1 as usize];
-            qw[..d * d].par_chunks_mut(d).enumerate().for_each(|(j, row)| {
-                let gj = &g[j * m..(j + 1) * m];
-                for (k, s) in row.iter_mut().enumerate() {
-                    let v = ext::dot_base(&pm.x[k * m..(k + 1) * m], gj);
-                    *s = ext::sub(*s, v);
-                }
-            });
+            qw[..d * d]
+                .par_chunks_mut(d)
+                .enumerate()
+                .for_each(|(j, row)| {
+                    let gj = &g[j * m..(j + 1) * m];
+                    for (k, s) in row.iter_mut().enumerate() {
+                        let v = ext::dot_base(&pm.x[k * m..(k + 1) * m], gj);
+                        *s = ext::sub(*s, v);
+                    }
+                });
         }
         for (nm, v) in rec.names.iter().zip(qn) {
             *q.get_mut(*nm).unwrap() = v;
@@ -195,7 +223,11 @@ pub fn evaluations<const E: usize>(
     rr: &[[u64; E]],
     rb: Option<&[[u64; E]]>,
 ) -> EvalsE<E> {
-    let mut ev: EvalsE<E> = vec![("A".into(), zrs.to_vec()), ("B".into(), zrs.to_vec()), ("C".into(), zrs.to_vec())];
+    let mut ev: EvalsE<E> = vec![
+        ("A".into(), zrs.to_vec()),
+        ("B".into(), zrs.to_vec()),
+        ("C".into(), zrs.to_vec()),
+    ];
     for (k, &l) in lens {
         ev.push((k.clone(), rr[..lg(l)].to_vec()));
     }
@@ -219,13 +251,28 @@ pub struct MLayout {
 
 /// Row numbering: zerocheck rounds, the claims row, the linear rounds (a value j, component k at j E + k), every
 /// evaluation's u rows (E component blocks), the product rows.
-pub fn row_layout<T>(sh: &BTreeMap<String, Shape>, ev: &[(String, T)], lh: usize, lmax: usize, kl: usize, e: usize) -> MLayout {
+pub fn row_layout<T>(
+    sh: &BTreeMap<String, Shape>,
+    ev: &[(String, T)],
+    lh: usize,
+    lmax: usize,
+    kl: usize,
+    e: usize,
+) -> MLayout {
     row_layout_g(sh, ev, lh, lmax, kl, e, None)
 }
 
 /// The same with ZKSC "mask": ng = Some(the g group's rows), first, then the claims row (no round rows).
 #[allow(clippy::too_many_arguments)]
-pub fn row_layout_g<T>(sh: &BTreeMap<String, Shape>, ev: &[(String, T)], lh: usize, lmax: usize, kl: usize, e: usize, ng: Option<usize>) -> MLayout {
+pub fn row_layout_g<T>(
+    sh: &BTreeMap<String, Shape>,
+    ev: &[(String, T)],
+    lh: usize,
+    lmax: usize,
+    kl: usize,
+    e: usize,
+    ng: Option<usize>,
+) -> MLayout {
     let mut nxt = 0;
     let (zrows, crow, lrows);
     if let Some(g) = ng {
@@ -248,7 +295,15 @@ pub fn row_layout_g<T>(sh: &BTreeMap<String, Shape>, ev: &[(String, T)], lh: usi
         urows.push((nxt..nxt + e * nr).collect());
         nxt += e * nr;
     }
-    MLayout { ng: ng.unwrap_or(0), zrows, crow, lrows, urows, prod: (nxt, nxt + 1, nxt + 2), nrows: nxt + 3 }
+    MLayout {
+        ng: ng.unwrap_or(0),
+        zrows,
+        crow,
+        lrows,
+        urows,
+        prod: (nxt, nxt + 1, nxt + 2),
+        nrows: nxt + 3,
+    }
 }
 
 pub struct MiddleSys<const E: usize> {
@@ -272,13 +327,28 @@ pub struct MiddleSys<const E: usize> {
 
 impl<const E: usize> MiddleSys<E> {
     fn y(&self, em: &mut EEm<E>, e: usize, coef: [u64; E]) {
-        y_form(em, &self.ev, &self.shapes, &self.lay.urows, self.kl, e, coef);
+        y_form(
+            em,
+            &self.ev,
+            &self.shapes,
+            &self.lay.urows,
+            self.kl,
+            e,
+            coef,
+        );
     }
 }
 
 impl<const E: usize> LinSystem for MiddleSys<E> {
     fn emit(&self, sink: &mut dyn LinSink) {
-        spine::pcs_consistency_e(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.lay.urows);
+        spine::pcs_consistency_e(
+            sink,
+            self.kl,
+            &self.ev,
+            &self.shapes,
+            &self.cols,
+            &self.lay.urows,
+        );
         let mut em = EEm::<E>::new(sink);
         let one = ext::one::<E>();
         let m1 = ext::neg(one);
@@ -291,14 +361,30 @@ impl<const E: usize> LinSystem for MiddleSys<E> {
                 em.form(&pf.z, eq);
                 self.y(em, 2, ext::neg(eq));
             });
-            operands(&mut em, &pf, "product operands", "product operand sums", &|em| self.y(em, 0, m1), &|em| self.y(em, 1, m1));
+            operands(
+                &mut em,
+                &pf,
+                "product operands",
+                "product operand sums",
+                &|em| self.y(em, 0, m1),
+                &|em| self.y(em, 1, m1),
+            );
             for i in 0..self.ks.len() {
                 rc(&mut em, self.lay.crow, i, one);
             }
-            em.done("linear batch: openings/IO/copy constraints", ext::neg(self.cst));
+            em.done(
+                "linear batch: openings/IO/copy constraints",
+                ext::neg(self.cst),
+            );
             for (i, k) in self.ks.iter().enumerate() {
                 let first = |em: &mut EEm<E>| rc(em, self.lay.crow, i, one);
-                mz.sumcheck(&mut em, &format!("l:{k}"), &self.rr, Some(&first), &|em: &mut EEm<E>| self.y(em, 3 + i, self.coef[i]));
+                mz.sumcheck(
+                    &mut em,
+                    &format!("l:{k}"),
+                    &self.rr,
+                    Some(&first),
+                    &|em: &mut EEm<E>| self.y(em, 3 + i, self.coef[i]),
+                );
             }
             self.binding(&mut em);
             return;
@@ -310,23 +396,33 @@ impl<const E: usize> LinSystem for MiddleSys<E> {
             let lc = ext::lagc(3, self.zrs[i - 1]);
             rc(&mut em, z[i], 0, one);
             rc(&mut em, z[i], 1, one);
-            for j in 0..4 {
-                rc(&mut em, z[i - 1], j, ext::neg(lc[j]));
+            for (j, &lc_j) in lc.iter().enumerate() {
+                rc(&mut em, z[i - 1], j, ext::neg(lc_j));
             }
             em.done("Hadamard zerocheck: round sums", zero);
         }
         let lc = ext::lagc(3, *self.zrs.last().unwrap());
-        for j in 0..4 {
-            rc(&mut em, *z.last().unwrap(), j, lc[j]);
+        for (j, &lc_j) in lc.iter().enumerate() {
+            rc(&mut em, *z.last().unwrap(), j, lc_j);
         }
         em.form(&pf.z, ext::neg(eq));
         self.y(&mut em, 2, eq);
         em.done("Hadamard zerocheck: final = eq (A B - C)", zero);
-        operands(&mut em, &pf, "product operands", "product operand sums", &|em| self.y(em, 0, m1), &|em| self.y(em, 1, m1));
+        operands(
+            &mut em,
+            &pf,
+            "product operands",
+            "product operand sums",
+            &|em| self.y(em, 0, m1),
+            &|em| self.y(em, 1, m1),
+        );
         for i in 0..self.ks.len() {
             rc(&mut em, self.lay.crow, i, one);
         }
-        em.done("linear batch: openings/IO/copy constraints", ext::neg(self.cst));
+        em.done(
+            "linear batch: openings/IO/copy constraints",
+            ext::neg(self.cst),
+        );
         let l = &self.lay.lrows;
         for (i, k) in self.ks.iter().enumerate() {
             let lab = format!("linear sumcheck {k}");
@@ -338,14 +434,14 @@ impl<const E: usize> LinSystem for MiddleSys<E> {
                 let lc = ext::lagc(2, self.rr[r - 1]);
                 rc(&mut em, l[r], 3 * i, one);
                 rc(&mut em, l[r], 3 * i + 1, one);
-                for j in 0..3 {
-                    rc(&mut em, l[r - 1], 3 * i + j, ext::neg(lc[j]));
+                for (j, &lc_j) in lc.iter().enumerate() {
+                    rc(&mut em, l[r - 1], 3 * i + j, ext::neg(lc_j));
                 }
                 em.done(&lab, zero);
             }
             let lc = ext::lagc(2, *self.rr.last().unwrap());
-            for j in 0..3 {
-                rc(&mut em, *l.last().unwrap(), 3 * i + j, lc[j]);
+            for (j, &lc_j) in lc.iter().enumerate() {
+                rc(&mut em, *l.last().unwrap(), 3 * i + j, lc_j);
             }
             self.y(&mut em, 3 + i, ext::neg(self.coef[i]));
             em.done(&format!("linear sumcheck {k}: final"), zero);
@@ -368,13 +464,20 @@ impl<const E: usize> MiddleSys<E> {
             let e = self.ev.len();
             self.y(em, e - 2, ext::one());
             self.y(em, e - 1, ext::neg(ext::one()));
-            em.done("signed input binding: the custodians' y = the owner's signed y", ext::zero());
+            em.done(
+                "signed input binding: the custodians' y = the owner's signed y",
+                ext::zero(),
+            );
         }
     }
 }
 
 /// The final coefficients of the lockstep linear sumchecks.
-fn final_coefs<const E: usize>(q: &BTreeMap<String, Vec<[u64; E]>>, lens: &BTreeMap<String, usize>, rr: &[[u64; E]]) -> Vec<[u64; E]> {
+fn final_coefs<const E: usize>(
+    q: &BTreeMap<String, Vec<[u64; E]>>,
+    lens: &BTreeMap<String, usize>,
+    rr: &[[u64; E]],
+) -> Vec<[u64; E]> {
     let e = ext::eqv(rr);
     lens.iter()
         .map(|(k, &l)| {
@@ -408,11 +511,13 @@ pub struct MiddleIn<'a> {
     /// TEST ONLY: prove even when a truncation input is outside its proved bound (the forced-bundle refusal rows)
     pub ignore_range: bool,
     /// ATTACK HOOK (fs_public_falsifier; EXT = 1 only): colluders rewrite the batch constant after seeing gamma
-    pub cst_patch: Option<&'a (dyn Fn(&BTreeMap<String, Vec<u64>>, u64, &[u64]) -> u64 + Sync)>,
+    pub cst_patch: Option<CstPatchFn<'a>>,
     /// the release's inputs moved out of rec and the party record, freed as soon as they are spent (None: read rec.cons
     /// and `atoms`)
     pub spent: Option<&'a Spent>,
 }
+
+pub type CstPatchFn<'a> = &'a (dyn Fn(&BTreeMap<String, Vec<u64>>, u64, &[u64]) -> u64 + Sync);
 
 /// Inputs prove_g frees once spent (the release, memory at M = 52): the constraint list after build_q (1.6 GB), the
 /// party's middle atoms after the witness is made (0.4 GB), the fills' rows after the fills (0.7 GB).
@@ -441,12 +546,6 @@ pub struct MiddleOut {
     pub stats: BTreeMap<String, u64>,
 }
 
-fn padv(v: &[Sh], l: usize) -> Vec<Sh> {
-    let mut o = v.to_vec();
-    o.resize(l, (0, 0));
-    o
-}
-
 /// One zerocheck round with one product per live pair (1 or 3 Beaver triples: round 0's tables are base, later
 /// rounds' are folded by F_{p^E} challenges): the round's values at X = 0..3 and every pair's products at X = 0, 1, 2.
 #[allow(clippy::type_complexity)]
@@ -472,14 +571,25 @@ fn zc_round<const E: usize>(
         let b1 = (b0 + BLK).min(na);
         let ops: Vec<([Sh; E], [Sh; E])> = (b0..b1)
             .into_par_iter()
-            .map(|k| (ext::slin2b(m1, st.f.get(2 * k), 2, st.f.get(2 * k + 1)), ext::slin2b(m1, st.g.get(2 * k), 2, st.g.get(2 * k + 1))))
+            .map(|k| {
+                (
+                    ext::slin2b(m1, st.f.get(2 * k), 2, st.f.get(2 * k + 1)),
+                    ext::slin2b(m1, st.g.get(2 * k), 2, st.g.get(2 * k + 1)),
+                )
+            })
             .collect();
-        let (mut xs, mut ys) = (Vec::with_capacity((b1 - b0) * per), Vec::with_capacity((b1 - b0) * per));
+        let (mut xs, mut ys) = (
+            Vec::with_capacity((b1 - b0) * per),
+            Vec::with_capacity((b1 - b0) * per),
+        );
         for (x, y) in ops {
             ext::push_mul(x, fb, y, gb, &mut xs, &mut ys);
         }
         let p2 = sp.mul_batch(net, &xs, &ys);
-        cs.par_extend(p2.par_chunks(per).map(|c| ext::take_mul::<E>(fb, gb, c, nr)));
+        cs.par_extend(
+            p2.par_chunks(per)
+                .map(|c| ext::take_mul::<E>(fb, gb, c, nr)),
+        );
     }
     cs.resize(half, ext::szero());
     let sub = st.sub.as_ref().unwrap();
@@ -497,7 +607,10 @@ fn zc_round<const E: usize>(
                         2 => c,
                         _ => ext::sadd(ext::slin2b(1, a, m1 - 2, b), ext::slin2b(3, c, 0, c)),
                     };
-                    let term = ext::ssub(prod, ext::slin2b(om, sub.get(2 * k), xv, sub.get(2 * k + 1)));
+                    let term = ext::ssub(
+                        prod,
+                        ext::slin2b(om, sub.get(2 * k), xv, sub.get(2 * k + 1)),
+                    );
                     let e = ext::add(ext::scal(om, eq[2 * k]), ext::scal(xv, eq[2 * k + 1]));
                     ext::scmul(e, term, nr)
                 })
@@ -521,7 +634,13 @@ impl<'a, const E: usize> UT<'a, E> {
         match self {
             UT::B(v) => v.get(k).map_or([0; E], |&x| ext::lift(x)),
             UT::X(v) => v.get(k).copied().unwrap_or([0; E]),
-            UT::R(x, c, w, n) => if k < *n { ext::lift(x[(k / c) * w + k % c]) } else { [0; E] },
+            UT::R(x, c, w, n) => {
+                if k < *n {
+                    ext::lift(x[(k / c) * w + k % c])
+                } else {
+                    [0; E]
+                }
+            }
         }
     }
     fn len(&self) -> usize {
@@ -536,13 +655,36 @@ impl<'a, const E: usize> UT<'a, E> {
         let n = self.len().div_ceil(2);
         match self {
             UT::B(v) if E == 1 => UT::B(
-                v.par_chunks(2).map(|c| field::add(field::mul(c[0], om[0]), field::mul(*c.get(1).unwrap_or(&0), r[0]))).collect(),
+                v.par_chunks(2)
+                    .map(|c| {
+                        field::add(
+                            field::mul(c[0], om[0]),
+                            field::mul(*c.get(1).unwrap_or(&0), r[0]),
+                        )
+                    })
+                    .collect(),
             ),
             UT::R(..) if E == 1 => UT::B(
-                (0..n).into_par_iter().map(|j| field::add(field::mul(self.get(2 * j)[0], om[0]), field::mul(self.get(2 * j + 1)[0], r[0]))).collect(),
+                (0..n)
+                    .into_par_iter()
+                    .map(|j| {
+                        field::add(
+                            field::mul(self.get(2 * j)[0], om[0]),
+                            field::mul(self.get(2 * j + 1)[0], r[0]),
+                        )
+                    })
+                    .collect(),
             ),
             _ => UT::X(
-                (0..n).into_par_iter().map(|j| ext::add(ext::ucmul(om, self.get(2 * j), nr), ext::ucmul(r, self.get(2 * j + 1), nr))).collect(),
+                (0..n)
+                    .into_par_iter()
+                    .map(|j| {
+                        ext::add(
+                            ext::ucmul(om, self.get(2 * j), nr),
+                            ext::ucmul(r, self.get(2 * j + 1), nr),
+                        )
+                    })
+                    .collect(),
             ),
         }
     }
@@ -550,13 +692,20 @@ impl<'a, const E: usize> UT<'a, E> {
 
 /// cosnark_gates.fill_range: this party's shares of the range rows' atoms (Beaver products round by round over every
 /// checked truncation), then every truncation's violation indicator opened; returns the violated ones.
-fn fill_range(rows: &[crate::step::RangeRow], a: &mut [Sh], net: &mut dyn Net, sp: &mut Spdz) -> Vec<(&'static str, usize)> {
+fn fill_range(
+    rows: &[crate::step::RangeRow],
+    a: &mut [Sh],
+    net: &mut dyn Net,
+    sp: &mut Spdz,
+) -> Vec<(&'static str, usize)> {
     let maxl = rows.iter().map(|r| r.l).max().unwrap_or(0);
     let mut beta: Vec<Option<Sh>> = vec![None; rows.len()];
     let add = |x: Sh, y: Sh| (field::add(x.0, y.0), field::add(x.1, y.1));
     let sub = |x: Sh, y: Sh| (field::sub(x.0, y.0), field::sub(x.1, y.1));
     for i in 0..maxl {
-        let idx: Vec<usize> = (0..rows.len()).filter(|&k| i < rows[k].l && rows[k].t[i].is_some()).collect();
+        let idx: Vec<usize> = (0..rows.len())
+            .filter(|&k| i < rows[k].l && rows[k].t[i].is_some())
+            .collect();
         let xs: Vec<Sh> = idx.iter().map(|&k| a[rows[k].d.bits[i] as usize]).collect();
         let ys: Vec<Sh> = idx.iter().map(|&k| beta[k].unwrap()).collect();
         let prods = sp.mul_batch(net, &xs, &ys);
@@ -610,7 +759,10 @@ fn fill_range(rows: &[crate::step::RangeRow], a: &mut [Sh], net: &mut dyn Net, s
             }
             v = add(v, sc(field::pow(2, bl as u64), a[row.bb[bl - 1] as usize]));
             sv = add(sv, sc(gk, v));
-            let chi_f = field::mul(field::from_i64(row.chi.rem_euclid(field::p() as i128) as i64), field::pow(2, bl as u64));
+            let chi_f = field::mul(
+                field::from_i64(row.chi.rem_euclid(field::p() as i128) as i64),
+                field::pow(2, bl as u64),
+            );
             cst = field::sub(cst, field::mul(gk, chi_f));
         }
         if cst != 0 {
@@ -619,7 +771,11 @@ fn fill_range(rows: &[crate::step::RangeRow], a: &mut [Sh], net: &mut dyn Net, s
         let rho = sp.rand_from_triple();
         let t = sp.mul_batch(net, &[sv], &[rho]);
         let v = sp.open_batch(net, &t, "range-check");
-        return if v[0] != 0 { vec![("some truncation (RS: one masked zero test)", usize::MAX)] } else { vec![] };
+        return if v[0] != 0 {
+            vec![("some truncation (RS: one masked zero test)", usize::MAX)]
+        } else {
+            vec![]
+        };
     }
     let ind: Vec<Sh> = rows
         .iter()
@@ -637,11 +793,19 @@ fn fill_range(rows: &[crate::step::RangeRow], a: &mut [Sh], net: &mut dyn Net, s
                 }
                 cst = field::add(cst, row.cb[i]);
             }
-            if cst != 0 { sp.cadd(cst, v) } else { v }
+            if cst != 0 {
+                sp.cadd(cst, v)
+            } else {
+                v
+            }
         })
         .collect();
     let vals = sp.open_batch(net, &ind, "range-check");
-    rows.iter().zip(vals).filter(|(_, v)| *v != 0).map(|(r, _)| (r.d.name, r.d.k)).collect()
+    rows.iter()
+        .zip(vals)
+        .filter(|(_, v)| *v != 0)
+        .map(|(r, _)| (r.d.name, r.d.k))
+        .collect()
 }
 
 /// cosnark_gates.fill_lookup: this party's shares of the lookups' bit-circuit atoms. Level by level: the linear atoms
@@ -653,7 +817,10 @@ fn fill_lookup(lb_rows: &[Vec<crate::step::LbOp>], a: &mut [Sh], net: &mut dyn N
     for ops in lb_rows {
         for op in ops {
             let (x, l) = match op {
-                LbOp::Lin(x, f, _) => (*x, f.iter().map(|&(y, _)| lvl[y as usize]).max().unwrap_or(0)),
+                LbOp::Lin(x, f, _) => (
+                    *x,
+                    f.iter().map(|&(y, _)| lvl[y as usize]).max().unwrap_or(0),
+                ),
                 LbOp::Mul(x, b, y) => (*x, lvl[*b as usize].max(lvl[*y as usize]) + 1),
             };
             lvl[x as usize] = l;
@@ -668,7 +835,10 @@ fn fill_lookup(lb_rows: &[Vec<crate::step::LbOp>], a: &mut [Sh], net: &mut dyn N
                         let mut v = (0u64, 0u64);
                         for &(y, co) in f {
                             let s = a[y as usize];
-                            v = (field::add(v.0, field::mul(co, s.0)), field::add(v.1, field::mul(co, s.1)));
+                            v = (
+                                field::add(v.0, field::mul(co, s.0)),
+                                field::add(v.1, field::mul(co, s.1)),
+                            );
                         }
                         a[*x as usize] = if *c != 0 { sp.cadd(*c, v) } else { v };
                     }
@@ -693,7 +863,6 @@ fn fill_lookup(lb_rows: &[Vec<crate::step::LbOp>], a: &mut [Sh], net: &mut dyn N
         }
     }
 }
-
 
 /// prove_middle_zk for custodian `inp.i`. spine_coms: the spine's commitments of SPINE (carried, second life).
 pub fn prove(
@@ -728,7 +897,12 @@ pub fn prove_d(
 /// GZ.deferred_evals: the head W's pending claims at the last step's points.
 fn deferred_evals<const E: usize>(w1: Vec<[u64; E]>, w2: Vec<[u64; E]>) -> EvalsE<E> {
     let cpt = vec![ext::zero::<E>(); defer::carry_m(E)];
-    vec![("W1".into(), w1), ("c1p".into(), cpt.clone()), ("W2".into(), w2), ("c2p".into(), cpt)]
+    vec![
+        ("W1".into(), w1),
+        ("c1p".into(), cpt.clone()),
+        ("W2".into(), w2),
+        ("c2p".into(), cpt),
+    ]
 }
 
 fn prove_g<const E: usize>(
@@ -752,16 +926,34 @@ fn prove_g<const E: usize>(
     };
     let cons_own: Option<crate::step::Cons> = inp.spent.and_then(|s| s.cons.lock().unwrap().take());
     let cons = cons_own.as_ref().unwrap_or(&rec.cons);
-    tt.lap(&format!("witness atoms ({} cons, {} hadamard rows, {} atoms)", cons.len(), rec.had.len(), atoms_v.len()));
+    tt.lap(&format!(
+        "witness atoms ({} cons, {} hadamard rows, {} atoms)",
+        cons.len(),
+        rec.had.len(),
+        atoms_v.len()
+    ));
     // the fills' rows: the release moved them here (freed once filled)
     let range_own = inp.spent.and_then(|s| s.range_rows.lock().unwrap().take());
     let lb_own = inp.spent.and_then(|s| s.lb_rows.lock().unwrap().take());
-    let (range_rows, lb_rows) = (range_own.as_deref().unwrap_or(&rec.range_rows), lb_own.as_deref().unwrap_or(&rec.lb_rows));
+    let (range_rows, lb_rows) = (
+        range_own.as_deref().unwrap_or(&rec.range_rows),
+        lb_own.as_deref().unwrap_or(&rec.lb_rows),
+    );
     if !range_rows.is_empty() {
         atoms_v.resize(rec.n_prep(), (0, 0));
         let bad = fill_range(range_rows, &mut atoms_v, net, sp);
         if !bad.is_empty() && !inp.ignore_range {
-            let names: Vec<String> = bad.iter().take(4).map(|(nm, k)| if *k == usize::MAX { nm.to_string() } else { format!("{nm}[{k}]") }).collect();
+            let names: Vec<String> = bad
+                .iter()
+                .take(4)
+                .map(|(nm, k)| {
+                    if *k == usize::MAX {
+                        nm.to_string()
+                    } else {
+                        format!("{nm}[{k}]")
+                    }
+                })
+                .collect();
             return Err(format!(
                 "proving refused: truncation input outside its proved bound: {}{}",
                 names.join(", "),
@@ -780,7 +972,11 @@ fn prove_g<const E: usize>(
     // shares alone, made one at a time (memory: no MAC-carrying copy of P, 2^26 x 16 B at M = 52, nor of the wires)
     let pick = |sel: fn(&(u32, u32, u32)) -> u32| -> Vec<Sh> {
         let mut v = Vec::with_capacity(lens["A"]);
-        v.extend(rec.had.iter().map(|t| atoms_v.get(sel(t) as usize).copied().unwrap_or((0, 0))));
+        v.extend(
+            rec.had
+                .iter()
+                .map(|t| atoms_v.get(sel(t) as usize).copied().unwrap_or((0, 0))),
+        );
         v.resize(lens["A"], (0, 0));
         v
     };
@@ -795,10 +991,18 @@ fn prove_g<const E: usize>(
         Some(v)
     };
     drop(atoms_v);
-    let mut vkeys: Vec<String> = ["A", "B", "C", "P"].iter().map(|k| k.to_string()).chain(rec.names.iter().map(|nm| nm.to_string())).collect();
+    let mut vkeys: Vec<String> = ["A", "B", "C", "P"]
+        .iter()
+        .map(|k| k.to_string())
+        .chain(rec.names.iter().map(|nm| nm.to_string()))
+        .collect();
     vkeys.sort();
     let mut xs: BTreeMap<String, Vec<u64>> = BTreeMap::new();
-    let carried: Vec<&str> = rec.io.as_ref().map(|io| io.carried.clone()).unwrap_or_else(|| SPINE.to_vec());
+    let carried: Vec<&str> = rec
+        .io
+        .as_ref()
+        .map(|io| io.carried.clone())
+        .unwrap_or_else(|| SPINE.to_vec());
     let mut com: BTreeMap<String, PcsParty> = BTreeMap::new();
     for k in vkeys {
         let sh: Vec<u64> = match k.as_str() {
@@ -832,7 +1036,9 @@ fn prove_g<const E: usize>(
     if let Some(oy) = owner_y {
         com.insert("yo".into(), oy);
     }
-    let dpts = dfr.as_ref().map(|d| (d.points_e::<E>("W1"), d.points_e::<E>("W2")));
+    let dpts = dfr
+        .as_ref()
+        .map(|d| (d.points_e::<E>("W1"), d.points_e::<E>("W2")));
     if let Some(d) = dfr {
         for k in CARRY_IN {
             let mut c = d.carries[k].clone();
@@ -843,8 +1049,11 @@ fn prove_g<const E: usize>(
     let keys: Vec<String> = com.keys().cloned().collect();
     let my: Vec<Hash> = keys.iter().map(|k| com[k].root).collect();
     let all = gather_hashes(net, &my);
-    let roots: BTreeMap<String, Vec<Hash>> =
-        keys.iter().enumerate().map(|(ki, k)| (k.clone(), (0..n).map(|p| all[p][ki]).collect())).collect();
+    let roots: BTreeMap<String, Vec<Hash>> = keys
+        .iter()
+        .enumerate()
+        .map(|(ki, k)| (k.clone(), (0..n).map(|p| all[p][ki]).collect()))
+        .collect();
     let mut lg_ = LigParty::new(lp, i, n, &format!("(2, {})", inp.ctx.repr()), inp.det);
     if let Some(dl) = &inp.lig_dealer {
         lg_ = lg_.with_dealer(dl.clone());
@@ -906,21 +1115,51 @@ fn prove_g<const E: usize>(
             let pv: Vec<[Sh; E]> = pp
                 .par_iter()
                 .enumerate()
-                .map(|(k, &c)| ext::sadd(ext::sadd(ext::scmul(l0, pt.get(2 * k), nr), ext::scmul(l1, pt.get(2 * k + 1), nr)), ext::scmul(l2, c, nr)))
+                .map(|(k, &c)| {
+                    ext::sadd(
+                        ext::sadd(
+                            ext::scmul(l0, pt.get(2 * k), nr),
+                            ext::scmul(l1, pt.get(2 * k + 1), nr),
+                        ),
+                        ext::scmul(l2, c, nr),
+                    )
+                })
                 .collect();
-            prev = Some(if E == 1 { Tab::B(pv.into_iter().map(|x| x[0]).collect()) } else { Tab::X(pv) });
-            pp = Vec::new();
+            prev = Some(if E == 1 {
+                Tab::B(pv.into_iter().map(|x| x[0]).collect())
+            } else {
+                Tab::X(pv)
+            });
+            let _ = std::mem::take(&mut pp);
             st.f = st.f.fold(r);
             st.g = st.g.fold(r);
             st.sub = Some(st.sub.as_ref().unwrap().fold(r));
             st.eq = Some(spine::fold_pub(st.eq.as_ref().unwrap(), r));
-            live = (live + 1) / 2;
+            live = live.div_ceil(2);
         }
-        let (vals, p_) = zc_round(sp, net, &st, prev.as_ref().unwrap_or_else(|| st.sub.as_ref().unwrap()), live);
+        let (vals, p_) = zc_round(
+            sp,
+            net,
+            &st,
+            prev.as_ref().unwrap_or_else(|| st.sub.as_ref().unwrap()),
+            live,
+        );
         pp = p_;
         if let Some((mz, gsh, _)) = &mut gmz {
-            let fv: Vec<[u64; E]> = vals.iter().map(|v| ext::shares(v)).collect();
-            let plain = gmask::open_round::<E>(mz, gsh, net, &["zc"], rnd, &zrs, &[fv], None).remove(0);
+            let fv: Vec<[u64; E]> = vals.iter().map(ext::shares).collect();
+            let plain = gmask::open_round::<E>(
+                mz,
+                gsh,
+                net,
+                gmask::RoundOpen {
+                    names: &["zc"],
+                    rnd,
+                    pts: &zrs,
+                    vals: &[fv],
+                    bump: None,
+                },
+            )
+            .remove(0);
             let fl = gmask::flat(&plain);
             mz.msgs.entry("zc".into()).or_default().push(plain);
             tr.absorb(|h| {
@@ -929,7 +1168,7 @@ fn prove_g<const E: usize>(
             zrs.push(ext::chal1::<E>(&mut tr));
             continue;
         }
-        lg_.add_row(&vals.iter().flat_map(|v| ext::shares(v)).collect::<Vec<_>>());
+        lg_.add_row(&vals.iter().flat_map(ext::shares).collect::<Vec<_>>());
         let rts = lg_.commit(net);
         tr.absorb(|h| {
             h.s("zc").list_hx(&rts);
@@ -942,21 +1181,24 @@ fn prove_g<const E: usize>(
     drop(pp);
     tt.lap("zerocheck");
     let ng = cons.len() + 3 * rec.had.len();
-    let (mut q, mut cst) = if let Some(f) = inp.cst_patch {
+    let (mut q, cst) = if let Some(f) = inp.cst_patch {
         if E != 1 {
             return Err("the fs_public attack hook is EXT = 1 only".into());
         }
         let gam = ext::chal::<E>(&mut tr, ng);
         let mut it = gam.iter();
         let (q, mut cst) = build_q_src::<E>(rec, cons, &lens, &mut || *it.next().expect("gamma"));
-        let q1: BTreeMap<String, Vec<u64>> = q.iter().map(|(k, v)| (k.clone(), v.iter().map(|x| x[0]).collect())).collect();
+        let q1: BTreeMap<String, Vec<u64>> = q
+            .iter()
+            .map(|(k, v)| (k.clone(), v.iter().map(|x| x[0]).collect()))
+            .collect();
         let g1: Vec<u64> = gam.iter().map(|x| x[0]).collect();
         cst[0] = f(&q1, cst[0], &g1);
         (q, cst)
     } else {
         // gamma streamed into build_q (memory: never the 70M-element table at M = 52)
         let mut gs = ext::ChalStream::<E>::new(&mut tr, ng);
-        let out = build_q_src::<E>(rec, cons, &lens, &mut || gs.next());
+        let out = build_q_src::<E>(rec, cons, &lens, &mut || gs.draw());
         assert!(gs.done(), "build_q drew every gamma");
         out
     };
@@ -988,14 +1230,22 @@ fn prove_g<const E: usize>(
                 .reduce(ext::zero::<E>, ext::add)
         })
         .collect();
-    lg_.add_row(&claims.iter().flat_map(|c| c.iter().copied()).collect::<Vec<_>>());
+    lg_.add_row(
+        &claims
+            .iter()
+            .flat_map(|c| c.iter().copied())
+            .collect::<Vec<_>>(),
+    );
     let croot = lg_.commit(net);
     tr.absorb(|h| {
         h.s("claims").list_hx(&croot);
     });
     // lockstep linear sumchecks; a vector's zero padding is never materialized (folds of zeros stay zero)
     // q is folded in place, not kept (memory: q is 16 B a point at EXT = 2): the final coefficients come from its folds
-    let mut tabs: Vec<(Vec<[u64; E]>, UT<E>)> = ks.iter().map(|k| (q.remove(k).unwrap(), xt.remove(k).unwrap())).collect();
+    let mut tabs: Vec<(Vec<[u64; E]>, UT<E>)> = ks
+        .iter()
+        .map(|k| (q.remove(k).unwrap(), xt.remove(k).unwrap()))
+        .collect();
     let mut rr: Vec<[u64; E]> = Vec::new();
     let mut lsc_roots = Vec::new();
     for rnd in 0..lmax {
@@ -1005,7 +1255,12 @@ fn prove_g<const E: usize>(
             for (qq, xx) in tabs.iter_mut() {
                 *qq = qq
                     .par_chunks(2)
-                    .map(|c| ext::add(ext::mul(c[0], om), ext::mul(*c.get(1).unwrap_or(&[0; E]), r)))
+                    .map(|c| {
+                        ext::add(
+                            ext::mul(c[0], om),
+                            ext::mul(*c.get(1).unwrap_or(&[0; E]), r),
+                        )
+                    })
                     .collect();
                 *xx = xx.fold(r, nr);
             }
@@ -1023,7 +1278,10 @@ fn prove_g<const E: usize>(
                         let q0 = qq[2 * j];
                         let q1 = *qq.get(2 * j + 1).unwrap_or(&[0; E]);
                         let qa = ext::add(ext::scal(omt, q0), ext::scal(t, q1));
-                        ext::add(ext::ucmul(ext::scal(omt, qa), xx.get(2 * j), nr), ext::ucmul(ext::scal(t, qa), xx.get(2 * j + 1), nr))
+                        ext::add(
+                            ext::ucmul(ext::scal(omt, qa), xx.get(2 * j), nr),
+                            ext::ucmul(ext::scal(t, qa), xx.get(2 * j + 1), nr),
+                        )
                     })
                     .reduce(ext::zero::<E>, ext::add);
                 row.extend(v);
@@ -1034,7 +1292,18 @@ fn prove_g<const E: usize>(
         if let Some((mz, gsh, _)) = &mut gmz {
             let names: Vec<String> = ks.iter().map(|k| format!("l:{k}")).collect();
             let nref: Vec<&str> = names.iter().map(|x| x.as_str()).collect();
-            let opened = gmask::open_round::<E>(mz, gsh, net, &nref, rnd, &rr, &per, None);
+            let opened = gmask::open_round::<E>(
+                mz,
+                gsh,
+                net,
+                gmask::RoundOpen {
+                    names: &nref,
+                    rnd,
+                    pts: &rr,
+                    vals: &per,
+                    bump: None,
+                },
+            );
             let mut fl = Vec::with_capacity(3 * E * ks.len());
             for (nm, m) in names.into_iter().zip(opened) {
                 fl.extend(gmask::flat(&m));
@@ -1061,7 +1330,10 @@ fn prove_g<const E: usize>(
         .zip(&ks)
         .map(|((qq, _), k)| {
             let r = *rr.last().unwrap();
-            let mut c = ext::add(ext::mul(qq[0], ext::one_minus(r)), ext::mul(*qq.get(1).unwrap_or(&[0; E]), r));
+            let mut c = ext::add(
+                ext::mul(qq[0], ext::one_minus(r)),
+                ext::mul(*qq.get(1).unwrap_or(&[0; E]), r),
+            );
             for &rj in &rr[lg(lens[k])..] {
                 c = ext::mul(c, ext::one_minus(rj));
             }
@@ -1070,14 +1342,29 @@ fn prove_g<const E: usize>(
         .collect();
     drop(tabs);
     tt.lap("claims and linear sumchecks");
-    let rb = if bind { Some(ext::chal::<E>(&mut tr, lg(plen(d)))) } else { None };
+    let rb = if bind {
+        Some(ext::chal::<E>(&mut tr, lg(plen(d))))
+    } else {
+        None
+    };
     let mut ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
     let dfr_on = dpts.is_some();
     if let Some((w1, w2)) = dpts {
         ev.extend(deferred_evals(w1, w2));
     }
-    let shp: BTreeMap<String, Shape> = com.iter().map(|(k, c)| (k.clone(), c.shape.clone())).collect();
-    let lay = row_layout_g(&shp, &ev, lh, lmax, kl, E, gmz.as_ref().map(|g| g.0.gm.nrows));
+    let shp: BTreeMap<String, Shape> = com
+        .iter()
+        .map(|(k, c)| (k.clone(), c.shape.clone()))
+        .collect();
+    let lay = row_layout_g(
+        &shp,
+        &ev,
+        lh,
+        lmax,
+        kl,
+        E,
+        gmz.as_ref().map(|g| g.0.gm.nrows),
+    );
     let mut ys = Vec::new();
     for (k, pt) in &ev {
         let c = &com[k];
@@ -1102,7 +1389,10 @@ fn prove_g<const E: usize>(
     tt.lap("ligero commits");
     let (prox, pcs_cols) = spine::pcs_prove_e::<E>(pr, &mut com, &mut tr, net, n)?;
     tt.lap("pcs openings");
-    let cols = pcs_cols.iter().map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r)))).collect();
+    let cols = pcs_cols
+        .iter()
+        .map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r))))
+        .collect();
     let (mz, g_roots) = match gmz {
         Some((mz, _, gr)) => (Some(mz), gr),
         None => (None, Vec::new()),
@@ -1111,7 +1401,13 @@ fn prove_g<const E: usize>(
         Some(m) => (
             m.g_flat(),
             m.msgs["zc"].iter().map(|x| gmask::flat(x)).collect(),
-            (0..lmax).map(|r| ks.iter().flat_map(|k| gmask::flat(&m.msgs[&format!("l:{k}")][r])).collect()).collect(),
+            (0..lmax)
+                .map(|r| {
+                    ks.iter()
+                        .flat_map(|k| gmask::flat(&m.msgs[&format!("l:{k}")][r]))
+                        .collect()
+                })
+                .collect(),
         ),
         None => (Vec::new(), Vec::new(), Vec::new()),
     };
@@ -1155,7 +1451,13 @@ fn prove_g<const E: usize>(
         zc,
         lsc,
     };
-    Ok(MiddleOut { proof, lig_rows: lg_.rows.clone(), sys: Box::new(sys), quad, stats })
+    Ok(MiddleOut {
+        proof,
+        lig_rows: lg_.rows.clone(),
+        sys: Box::new(sys),
+        quad,
+        stats,
+    })
 }
 
 /// verify_middle_zk: public data only (rec is the verifier's own replay).
@@ -1172,7 +1474,19 @@ pub fn verify(
     bind: bool,
     public: &[u64],
 ) -> Result<(), String> {
-    verify_d(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public, None)
+    verify_d(
+        pr,
+        lp,
+        n,
+        rec,
+        d,
+        spine_roots,
+        ctx,
+        proof,
+        bind,
+        public,
+        None,
+    )
 }
 
 /// verify with DEFER (the release): dfr = the head's pending claims from the ledger, discharged by this proof.
@@ -1194,14 +1508,46 @@ pub fn verify_d(
         return Err("the Ligero's EXT is not the profile's".into());
     }
     match pr.ext {
-        1 => verify_g::<1>(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public, dfr),
-        2 => verify_g::<2>(pr, lp, n, rec, d, spine_roots, ctx, proof, bind, public, dfr),
+        1 => verify_g::<1>(
+            pr,
+            lp,
+            n,
+            rec,
+            d,
+            spine_roots,
+            ctx,
+            proof,
+            bind,
+            public,
+            dfr,
+        ),
+        2 => verify_g::<2>(
+            pr,
+            lp,
+            n,
+            rec,
+            d,
+            spine_roots,
+            ctx,
+            proof,
+            bind,
+            public,
+            dfr,
+        ),
         e => Err(format!("unsupported EXT {e}")),
     }
 }
 
 /// The middle's commitment shapes with DEFER's carried-in carries (the release discharging the head).
-pub fn shapes_d(pr: &Profile, n_prep: usize, n_had: usize, d: usize, bind: bool, io: Option<&Io>, deferred_in: bool) -> (BTreeMap<String, usize>, BTreeMap<String, Shape>) {
+pub fn shapes_d(
+    pr: &Profile,
+    n_prep: usize,
+    n_had: usize,
+    d: usize,
+    bind: bool,
+    io: Option<&Io>,
+    deferred_in: bool,
+) -> (BTreeMap<String, usize>, BTreeMap<String, Shape>) {
     let (lens, mut sh) = public_shapes_io(pr, n_prep, n_had, d, bind, io);
     if deferred_in {
         for k in CARRY_IN {
@@ -1225,13 +1571,24 @@ fn verify_g<const E: usize>(
     public: &[u64],
     dfr: Option<&Pending>,
 ) -> Result<(), String> {
-    let (lens, sh) = shapes_d(pr, rec.n_prep(), rec.had.len(), d, bind, rec.io.as_ref(), dfr.is_some());
+    let (lens, sh) = shapes_d(
+        pr,
+        rec.n_prep(),
+        rec.had.len(),
+        d,
+        bind,
+        rec.io.as_ref(),
+        dfr.is_some(),
+    );
     let roots = &proof.roots;
     if roots.keys().ne(sh.keys()) {
         return Err("proof names the wrong commitments".into());
     }
     if let Some(df) = dfr {
-        if CARRY_IN.iter().any(|k| Some(&roots[*k]) != df.carry_roots.get(*k)) {
+        if CARRY_IN
+            .iter()
+            .any(|k| Some(&roots[*k]) != df.carry_roots.get(*k))
+        {
             return Err("the head's carry commitments are not the last step's".into());
         }
     }
@@ -1283,9 +1640,19 @@ fn verify_g<const E: usize>(
         }
         let gm = GMask::new(sp, 0, pr.k_l, E);
         let mut m = MaskZ::<E>::from_wire(gm, &proof.g_roots, &proof.g_open, &mut tr);
-        m.msgs.insert("zc".into(), proof.zc.iter().map(|v| gmask::unflat::<E>(v)).collect());
+        m.msgs.insert(
+            "zc".into(),
+            proof.zc.iter().map(|v| gmask::unflat::<E>(v)).collect(),
+        );
         for (i, k) in ks.iter().enumerate() {
-            m.msgs.insert(format!("l:{k}"), proof.lsc.iter().map(|v| gmask::unflat::<E>(&v[3 * E * i..3 * E * (i + 1)])).collect());
+            m.msgs.insert(
+                format!("l:{k}"),
+                proof
+                    .lsc
+                    .iter()
+                    .map(|v| gmask::unflat::<E>(&v[3 * E * i..3 * E * (i + 1)]))
+                    .collect(),
+            );
         }
         mz = Some(m);
     } else if proof.zc_roots.len() != lh {
@@ -1329,21 +1696,44 @@ fn verify_g<const E: usize>(
     }
     if let Some(m) = &mz {
         // cut D: the round sums in the clear (the zerocheck's claim is public: rho G)
-        gmask::check_rounds::<E>("zc", &m.msgs["zc"], &zrs, 3, Some(ext::mul(m.rho, m.g["zc"])))?;
+        gmask::check_rounds::<E>(
+            "zc",
+            &m.msgs["zc"],
+            &zrs,
+            3,
+            Some(ext::mul(m.rho, m.g["zc"])),
+        )?;
         for k in &ks {
             let nm = format!("l:{k}");
             gmask::check_rounds::<E>(&nm, &m.msgs[&nm], &rr, 2, None)?;
         }
     }
-    let rb = if bind { Some(ext::chal::<E>(&mut tr, lg(plen(d)))) } else { None };
+    let rb = if bind {
+        Some(ext::chal::<E>(&mut tr, lg(plen(d))))
+    } else {
+        None
+    };
     let mut ev = evaluations(&lens, &zrs, &rr, rb.as_deref());
     let dfr_on = dfr.is_some();
     if let Some(df) = dfr {
-        ev.extend(deferred_evals(df.points_e::<E>("W1"), df.points_e::<E>("W2")));
+        ev.extend(deferred_evals(
+            df.points_e::<E>("W1"),
+            df.points_e::<E>("W2"),
+        ));
     }
-    let lay = row_layout_g(&sh, &ev, lh, lmax, pr.k_l, E, mz.as_ref().map(|m| m.gm.nrows));
+    let lay = row_layout_g(
+        &sh,
+        &ev,
+        lh,
+        lmax,
+        pr.k_l,
+        E,
+        mz.as_ref().map(|m| m.gm.nrows),
+    );
     tr.absorb(|h| {
-        h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
+        h.s("lig-evals")
+            .list_hx(&proof.eval_roots)
+            .list_hx(&proof.mask_roots);
     });
     let keys: Vec<String> = sh.keys().cloned().collect();
     let shv: Vec<Shape> = sh.values().cloned().collect();
@@ -1353,7 +1743,15 @@ fn verify_g<const E: usize>(
     pcs::verify_e::<E>(pr, &keys, &shv, &rootv, &proxv, &colv, &mut tr, n)?;
     let cols = keys
         .iter()
-        .map(|k| (k.clone(), (proof.pcs_cols[k].j.clone(), colsums(&proof.pcs_cols[k], sh[k].r))))
+        .map(|k| {
+            (
+                k.clone(),
+                (
+                    proof.pcs_cols[k].j.clone(),
+                    colsums(&proof.pcs_cols[k], sh[k].r),
+                ),
+            )
+        })
         .collect();
     let coef = final_coefs(&q, &lens, &rr);
     drop(q);
@@ -1376,7 +1774,14 @@ fn verify_g<const E: usize>(
         dfr: dfr_on,
     };
     let (groups, sizes) = if masked {
-        (vec![proof.g_roots.clone(), proof.claims_root.clone(), proof.eval_roots.clone()], vec![ng, 1, nrows - ng - 1])
+        (
+            vec![
+                proof.g_roots.clone(),
+                proof.claims_root.clone(),
+                proof.eval_roots.clone(),
+            ],
+            vec![ng, 1, nrows - ng - 1],
+        )
     } else {
         let mut groups: Vec<Vec<Hash>> = proof.zc_roots.clone();
         groups.push(proof.claims_root.clone());
@@ -1387,7 +1792,19 @@ fn verify_g<const E: usize>(
         (groups, sizes)
     };
     let quad = vec![sys.lay.prod];
-    ligero::verify(lp, n, &groups, &sizes, &proof.mask_roots, &sys, &quad, &proof.ligero, &mut tr)
+    ligero::verify(
+        lp,
+        n,
+        &ligero::VerifyGroups {
+            group_roots: &groups,
+            group_sizes: &sizes,
+            mask_roots: &proof.mask_roots,
+        },
+        &sys,
+        &quad,
+        &proof.ligero,
+        &mut tr,
+    )
 }
 
 /// Beaver triples the middle's degree-3 zerocheck consumes at EXT = 1: one per live pair per round, sum over the

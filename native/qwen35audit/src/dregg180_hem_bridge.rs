@@ -7,7 +7,9 @@
 #![deny(warnings)]
 
 use crate::bpe_bridge::QwenBpeRom;
-use crate::ext4::{cshake256_32, merkle_open_single_cshake, merkle_root_cshake, Ext4 as BbExt4, MerkleSinglePath};
+use crate::ext4::{
+    cshake256_32, merkle_open_single_cshake, merkle_root_cshake, Ext4 as BbExt4, MerkleSinglePath,
+};
 use crate::u1_audit::run_padded_complement_sk_dfa;
 use crate::unified_turn_weld::{
     verify_payable_compute_receipt_and_settle, verify_wots_signature, PayableComputeReceipt,
@@ -221,10 +223,28 @@ impl MulAssign for Goldilocks {
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Hash)]
 pub struct GoldilocksExt4(pub [Goldilocks; 4]);
 
+/// Precomputed constants for `GoldilocksExt4::cwyz_duet_fold`.
+#[derive(Clone, Copy, Debug)]
+pub struct CwyzDuetFoldPrecomp {
+    pub inv2: Goldilocks,
+    pub inv2_y0: Goldilocks,
+    pub y0_sq: Goldilocks,
+}
+
 impl GoldilocksExt4 {
     pub const ZERO: Self = Self([Goldilocks::ZERO; 4]);
-    pub const ONE: Self = Self([Goldilocks::ONE, Goldilocks::ZERO, Goldilocks::ZERO, Goldilocks::ZERO]);
-    pub const V: Self = Self([Goldilocks::ZERO, Goldilocks::ZERO, Goldilocks::ONE, Goldilocks::ZERO]);
+    pub const ONE: Self = Self([
+        Goldilocks::ONE,
+        Goldilocks::ZERO,
+        Goldilocks::ZERO,
+        Goldilocks::ZERO,
+    ]);
+    pub const V: Self = Self([
+        Goldilocks::ZERO,
+        Goldilocks::ZERO,
+        Goldilocks::ONE,
+        Goldilocks::ZERO,
+    ]);
 
     #[inline(always)]
     pub const fn from_base(x: Goldilocks) -> Self {
@@ -243,10 +263,18 @@ impl GoldilocksExt4 {
 
     #[inline(always)]
     pub const fn from_canonical_u64_limbs(w: [u64; 4]) -> Option<Self> {
-        let Some(l0) = Goldilocks::from_canonical_u64(w[0]) else { return None };
-        let Some(l1) = Goldilocks::from_canonical_u64(w[1]) else { return None };
-        let Some(l2) = Goldilocks::from_canonical_u64(w[2]) else { return None };
-        let Some(l3) = Goldilocks::from_canonical_u64(w[3]) else { return None };
+        let Some(l0) = Goldilocks::from_canonical_u64(w[0]) else {
+            return None;
+        };
+        let Some(l1) = Goldilocks::from_canonical_u64(w[1]) else {
+            return None;
+        };
+        let Some(l2) = Goldilocks::from_canonical_u64(w[2]) else {
+            return None;
+        };
+        let Some(l3) = Goldilocks::from_canonical_u64(w[3]) else {
+            return None;
+        };
         Some(Self([l0, l1, l2, l3]))
     }
 
@@ -356,15 +384,21 @@ impl GoldilocksExt4 {
         let (a0, a1) = (self.0[0], self.0[1]);
         let (b0, b1) = (self.0[2], self.0[3]);
         // c0^2 in F_p[u]/(u^2 - 7): (a0^2 + 7 a1^2) + (2 a0 a1) u
-        let c0_sq_0 = a0.square().const_add(Goldilocks::SEVEN.const_mul(a1.square()));
+        let c0_sq_0 = a0
+            .square()
+            .const_add(Goldilocks::SEVEN.const_mul(a1.square()));
         let c0_sq_1 = Goldilocks::TWO.const_mul(a0.const_mul(a1));
         // c1^2 = (b0^2 + 7 b1^2) + (2 b0 b1) u; u * c1^2 = 7*(2 b0 b1) + (b0^2 + 7 b1^2) u
-        let c1_sq_0 = b0.square().const_add(Goldilocks::SEVEN.const_mul(b1.square()));
+        let c1_sq_0 = b0
+            .square()
+            .const_add(Goldilocks::SEVEN.const_mul(b1.square()));
         let c1_sq_1 = Goldilocks::TWO.const_mul(b0.const_mul(b1));
         let n0 = c0_sq_0.const_sub(Goldilocks::SEVEN.const_mul(c1_sq_1));
         let n1 = c0_sq_1.const_sub(c1_sq_0);
         // Inverse of (n0 + n1 u) in F_{p^2}: (n0 - n1 u) / (n0^2 - 7 n1^2)
-        let base_norm = n0.square().const_sub(Goldilocks::SEVEN.const_mul(n1.square()));
+        let base_norm = n0
+            .square()
+            .const_sub(Goldilocks::SEVEN.const_mul(n1.square()));
         let base_inv = base_norm.inv();
         let inv_n0 = n0.const_mul(base_inv);
         let inv_n1 = n1.const_neg().const_mul(base_inv);
@@ -400,13 +434,11 @@ impl GoldilocksExt4 {
         alpha: Self,
         beta: Self,
         theta: Self,
-        inv2: Goldilocks,
-        inv2_y0: Goldilocks,
-        y0_sq: Goldilocks,
+        precomp: CwyzDuetFoldPrecomp,
     ) -> Self {
-        let even = v0.const_add(v1).scale_base(inv2);
-        let odd = v0.const_sub(v1).scale_base(inv2_y0);
-        let gamma = alpha.const_add(beta.scale_base(y0_sq));
+        let even = v0.const_add(v1).scale_base(precomp.inv2);
+        let odd = v0.const_sub(v1).scale_base(precomp.inv2_y0);
+        let gamma = alpha.const_add(beta.scale_base(precomp.y0_sq));
         let mixed = even.const_add(theta.const_mul(odd));
         odd.const_add(gamma.const_mul(mixed))
     }
@@ -544,7 +576,11 @@ pub fn ntt_ext4_in_place(a: &mut [GoldilocksExt4], inverse: bool) {
 }
 
 /// Coset Reed-Solomon encoding over `7 * H` (`|H| = coeffs.len() * blowup`).
-pub fn encode_rs_coset_ext4(coeffs: &[GoldilocksExt4], blowup: usize, shift: Goldilocks) -> Vec<GoldilocksExt4> {
+pub fn encode_rs_coset_ext4(
+    coeffs: &[GoldilocksExt4],
+    blowup: usize,
+    shift: Goldilocks,
+) -> Vec<GoldilocksExt4> {
     assert!(coeffs.len().is_power_of_two() && blowup.is_power_of_two() && blowup >= 2);
     let domain_len = coeffs.len() * blowup;
     let mut buf = vec![GoldilocksExt4::ZERO; domain_len];
@@ -739,7 +775,7 @@ pub fn p2_sponge_hash_limbs(domain: u64, cap: [u64; 4], limbs: &[u64]) -> [u64; 
     let mut first = true;
     while first || off < total {
         let take = (total - off).min(8);
-        for k in 0..take {
+        for (k, st_k) in st.iter_mut().take(take).enumerate() {
             let idx = off + k;
             let raw = if idx == 0 {
                 domain
@@ -748,7 +784,7 @@ pub fn p2_sponge_hash_limbs(domain: u64, cap: [u64; 4], limbs: &[u64]) -> [u64; 
             } else {
                 limbs[idx - 2]
             };
-            st[k] += Goldilocks::from_u128_reduced(raw as u128);
+            *st_k += Goldilocks::from_u128_reduced(raw as u128);
         }
         poseidon2_perm12(&mut st);
         off += take;
@@ -772,7 +808,7 @@ pub fn p2_sponge12_rate6(limbs: &[u64]) -> [u64; 12] {
         poseidon2_perm12(&mut st);
         off += take;
     }
-    if limbs.len() % 6 == 0 {
+    if limbs.len().is_multiple_of(6) {
         st[0] += Goldilocks::ONE;
         poseidon2_perm12(&mut st);
     }
@@ -831,7 +867,12 @@ pub fn p2_ordered_compress(acc: [u64; 4], val: [u64; 4], tag: u64) -> [u64; 4] {
 }
 
 /// Walk a `Poseidon2-12` Canopy path from `leaf` at `leaf_index` up `siblings`.
-pub fn p2_canopy_path(leaf: [u64; 4], siblings: &[[u64; 4]], key3: [u64; 3], leaf_index: u32) -> [u64; 4] {
+pub fn p2_canopy_path(
+    leaf: [u64; 4],
+    siblings: &[[u64; 4]],
+    key3: [u64; 3],
+    leaf_index: u32,
+) -> [u64; 4] {
     let mut idx = (1u64 << siblings.len()) | (leaf_index as u64);
     let mut cur = leaf.map(|x| Goldilocks::from_u128_reduced(x as u128).0);
     for &sib in siblings {
@@ -912,12 +953,30 @@ pub const fn unpack_5_limbs_to_digest32(limbs: [u64; 5]) -> Option<[u8; 32]> {
 }
 
 const KECCAK_RC: [u64; 24] = [
-    0x0000_0000_0000_0001, 0x0000_0000_0000_8082, 0x8000_0000_0000_808A, 0x8000_0000_8000_8000,
-    0x0000_0000_0000_808B, 0x0000_0000_8000_0001, 0x8000_0000_8000_8081, 0x8000_0000_0000_8009,
-    0x0000_0000_0000_008A, 0x0000_0000_0000_0088, 0x0000_0000_8000_8009, 0x0000_0000_8000_000A,
-    0x0000_0000_8000_808B, 0x8000_0000_0000_008B, 0x8000_0000_0000_8089, 0x8000_0000_0000_8003,
-    0x8000_0000_0000_8002, 0x8000_0000_0000_0080, 0x0000_0000_0000_800A, 0x8000_0000_8000_000A,
-    0x8000_0000_8000_8081, 0x8000_0000_0000_8080, 0x0000_0000_8000_0001, 0x8000_0000_8000_8008,
+    0x0000_0000_0000_0001,
+    0x0000_0000_0000_8082,
+    0x8000_0000_0000_808A,
+    0x8000_0000_8000_8000,
+    0x0000_0000_0000_808B,
+    0x0000_0000_8000_0001,
+    0x8000_0000_8000_8081,
+    0x8000_0000_0000_8009,
+    0x0000_0000_0000_008A,
+    0x0000_0000_0000_0088,
+    0x0000_0000_8000_8009,
+    0x0000_0000_8000_000A,
+    0x0000_0000_8000_808B,
+    0x8000_0000_0000_008B,
+    0x8000_0000_0000_8089,
+    0x8000_0000_0000_8003,
+    0x8000_0000_0000_8002,
+    0x8000_0000_0000_0080,
+    0x0000_0000_0000_800A,
+    0x8000_0000_8000_000A,
+    0x8000_0000_8000_8081,
+    0x8000_0000_0000_8080,
+    0x0000_0000_8000_0001,
+    0x8000_0000_8000_8008,
 ];
 
 const KECCAK_ROT: [[u32; 5]; 5] = [
@@ -956,7 +1015,8 @@ pub const fn keccak_p1600_stack(a: &mut [u64; 25], rounds: usize) {
             while y < 5 {
                 let rot = KECCAK_ROT[x][y];
                 let val = a[x + 5 * y];
-                b[y + 5 * ((2 * x + 3 * y) % 5)] = if rot == 0 { val } else { val.rotate_left(rot) };
+                b[y + 5 * ((2 * x + 3 * y) % 5)] =
+                    if rot == 0 { val } else { val.rotate_left(rot) };
                 y += 1;
             }
             x += 1;
@@ -983,11 +1043,17 @@ pub fn turboshake256_32_stack(slices: &[&[u8]]) -> [u8; 32] {
             blk[pos] ^= byte;
             pos += 1;
             if pos == 136 {
-                for l in 0..17 {
+                for (l, st_l) in st.iter_mut().take(17).enumerate() {
                     let b = 8 * l;
-                    st[l] ^= u64::from_le_bytes([
-                        blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5],
-                        blk[b + 6], blk[b + 7],
+                    *st_l ^= u64::from_le_bytes([
+                        blk[b],
+                        blk[b + 1],
+                        blk[b + 2],
+                        blk[b + 3],
+                        blk[b + 4],
+                        blk[b + 5],
+                        blk[b + 6],
+                        blk[b + 7],
                     ]);
                 }
                 keccak_p1600_stack(&mut st, 12);
@@ -998,10 +1064,16 @@ pub fn turboshake256_32_stack(slices: &[&[u8]]) -> [u8; 32] {
     }
     blk[pos] ^= 0x1F;
     blk[135] ^= 0x80;
-    for l in 0..17 {
+    for (l, st_l) in st.iter_mut().take(17).enumerate() {
         let b = 8 * l;
-        st[l] ^= u64::from_le_bytes([
-            blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5], blk[b + 6],
+        *st_l ^= u64::from_le_bytes([
+            blk[b],
+            blk[b + 1],
+            blk[b + 2],
+            blk[b + 3],
+            blk[b + 4],
+            blk[b + 5],
+            blk[b + 6],
             blk[b + 7],
         ]);
     }
@@ -1059,11 +1131,17 @@ pub fn cshake256_canopy_stack(tag: u8, slices: &[&[u8]]) -> [u8; 32] {
             blk[pos] = byte;
             pos += 1;
             if pos == 136 {
-                for l in 0..17 {
+                for (l, st_l) in st.iter_mut().take(17).enumerate() {
                     let b = 8 * l;
-                    st[l] ^= u64::from_le_bytes([
-                        blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5],
-                        blk[b + 6], blk[b + 7],
+                    *st_l ^= u64::from_le_bytes([
+                        blk[b],
+                        blk[b + 1],
+                        blk[b + 2],
+                        blk[b + 3],
+                        blk[b + 4],
+                        blk[b + 5],
+                        blk[b + 6],
+                        blk[b + 7],
                     ]);
                 }
                 keccak_p1600_stack(&mut st, 24);
@@ -1074,10 +1152,16 @@ pub fn cshake256_canopy_stack(tag: u8, slices: &[&[u8]]) -> [u8; 32] {
     }
     blk[pos] ^= 0x04;
     blk[135] ^= 0x80;
-    for l in 0..17 {
+    for (l, st_l) in st.iter_mut().take(17).enumerate() {
         let b = 8 * l;
-        st[l] ^= u64::from_le_bytes([
-            blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5], blk[b + 6],
+        *st_l ^= u64::from_le_bytes([
+            blk[b],
+            blk[b + 1],
+            blk[b + 2],
+            blk[b + 3],
+            blk[b + 4],
+            blk[b + 5],
+            blk[b + 6],
             blk[b + 7],
         ]);
     }
@@ -1125,11 +1209,17 @@ pub fn cshake256_canopy_words_leaf(stage: u8, fiber_idx: u32, words: &[u64]) -> 
             blk[pos] = byte;
             pos += 1;
             if pos == 136 {
-                for l in 0..17 {
+                for (l, st_l) in st.iter_mut().take(17).enumerate() {
                     let b = 8 * l;
-                    st[l] ^= u64::from_le_bytes([
-                        blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5],
-                        blk[b + 6], blk[b + 7],
+                    *st_l ^= u64::from_le_bytes([
+                        blk[b],
+                        blk[b + 1],
+                        blk[b + 2],
+                        blk[b + 3],
+                        blk[b + 4],
+                        blk[b + 5],
+                        blk[b + 6],
+                        blk[b + 7],
                     ]);
                 }
                 keccak_p1600_stack(&mut st, 24);
@@ -1140,10 +1230,16 @@ pub fn cshake256_canopy_words_leaf(stage: u8, fiber_idx: u32, words: &[u64]) -> 
     }
     blk[pos] ^= 0x04;
     blk[135] ^= 0x80;
-    for l in 0..17 {
+    for (l, st_l) in st.iter_mut().take(17).enumerate() {
         let b = 8 * l;
-        st[l] ^= u64::from_le_bytes([
-            blk[b], blk[b + 1], blk[b + 2], blk[b + 3], blk[b + 4], blk[b + 5], blk[b + 6],
+        *st_l ^= u64::from_le_bytes([
+            blk[b],
+            blk[b + 1],
+            blk[b + 2],
+            blk[b + 3],
+            blk[b + 4],
+            blk[b + 5],
+            blk[b + 6],
             blk[b + 7],
         ]);
     }
@@ -1564,8 +1660,14 @@ impl Dregg180StreamVm {
             for l in 0..17 {
                 let b = 8 * l;
                 self.cs_st[l] ^= u64::from_le_bytes([
-                    self.cs_blk[b], self.cs_blk[b + 1], self.cs_blk[b + 2], self.cs_blk[b + 3],
-                    self.cs_blk[b + 4], self.cs_blk[b + 5], self.cs_blk[b + 6], self.cs_blk[b + 7],
+                    self.cs_blk[b],
+                    self.cs_blk[b + 1],
+                    self.cs_blk[b + 2],
+                    self.cs_blk[b + 3],
+                    self.cs_blk[b + 4],
+                    self.cs_blk[b + 5],
+                    self.cs_blk[b + 6],
+                    self.cs_blk[b + 7],
                 ]);
             }
             keccak_p1600_stack(&mut self.cs_st, 24);
@@ -1583,8 +1685,14 @@ impl Dregg180StreamVm {
         for l in 0..17 {
             let b = 8 * l;
             self.cs_st[l] ^= u64::from_le_bytes([
-                self.cs_blk[b], self.cs_blk[b + 1], self.cs_blk[b + 2], self.cs_blk[b + 3],
-                self.cs_blk[b + 4], self.cs_blk[b + 5], self.cs_blk[b + 6], self.cs_blk[b + 7],
+                self.cs_blk[b],
+                self.cs_blk[b + 1],
+                self.cs_blk[b + 2],
+                self.cs_blk[b + 3],
+                self.cs_blk[b + 4],
+                self.cs_blk[b + 5],
+                self.cs_blk[b + 6],
+                self.cs_blk[b + 7],
             ]);
         }
         keccak_p1600_stack(&mut self.cs_st, 24);
@@ -1635,7 +1743,14 @@ impl Dregg180StreamVm {
         }
     }
 
-    fn finish_hash_record(&mut self, dst: u8, c_flags: u8, rate6: bool, total_limbs: u16, rate_pos: u8) {
+    fn finish_hash_record(
+        &mut self,
+        dst: u8,
+        c_flags: u8,
+        rate6: bool,
+        total_limbs: u16,
+        rate_pos: u8,
+    ) {
         let l = self.limbs_per_reg as usize;
         if rate6 {
             if total_limbs == 0 {
@@ -1656,8 +1771,8 @@ impl Dregg180StreamVm {
                 self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
             }
             let mut res = [0u64; 5];
-            for i in 0..l {
-                res[i] = self.p2_state[i].0;
+            for (res_i, st_i) in res[..l].iter_mut().zip(self.p2_state[..l].iter()) {
+                *res_i = st_i.0;
             }
             self.apply_hash_latch(c_flags, total_limbs);
             self.regs[R_T0 as usize] = res;
@@ -1671,8 +1786,8 @@ impl Dregg180StreamVm {
                 self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
             }
             let mut res = [0u64; 5];
-            for i in 0..4 {
-                res[i] = self.p2_state[i].0;
+            for (res_i, st_i) in res[..4].iter_mut().zip(self.p2_state[..4].iter()) {
+                *res_i = st_i.0;
             }
             self.apply_hash_latch(c_flags, total_limbs);
             self.regs[R_T0 as usize] = res;
@@ -1873,7 +1988,9 @@ impl Dregg180StreamVm {
                             };
                         } else {
                             let l = self.limbs_per_reg as usize;
-                            if self.regs[(b & 15) as usize][..l] != self.regs[(c & 15) as usize][..l] {
+                            if self.regs[(b & 15) as usize][..l]
+                                != self.regs[(c & 15) as usize][..l]
+                            {
                                 self.mark_bad();
                             }
                         }
@@ -1890,7 +2007,11 @@ impl Dregg180StreamVm {
                             };
                         } else {
                             let bits = (c & 63).min(32);
-                            let mask = if bits == 32 { 0xFFFF_FFFFu64 } else { (1u64 << bits) - 1 };
+                            let mask = if bits == 32 {
+                                0xFFFF_FFFFu64
+                            } else {
+                                (1u64 << bits) - 1
+                            };
                             if (self.regs[(b & 15) as usize][0] & mask) != 0 {
                                 self.mark_bad();
                             }
@@ -1925,7 +2046,11 @@ impl Dregg180StreamVm {
                             };
                         } else {
                             let bits = (c & 63).min(32);
-                            let mask = if bits == 32 { 0xFFFF_FFFFu64 } else { (1u64 << bits) - 1 };
+                            let mask = if bits == 32 {
+                                0xFFFF_FFFFu64
+                            } else {
+                                (1u64 << bits) - 1
+                            };
                             self.bound_idx = self.regs[(b & 15) as usize][(a & 3) as usize] & mask;
                             self.idx_armed = true;
                             self.metrics.core_cycles += silicon_cycles::GL64_ADDSUB;
@@ -1959,10 +2084,15 @@ impl Dregg180StreamVm {
                                 if n != 0 || k != 0 || b >= 16 {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
-                                    self.z_chals[b as usize] = reg_to_ext4(self.regs[(c & 15) as usize]);
+                                    self.z_chals[b as usize] =
+                                        reg_to_ext4(self.regs[(c & 15) as usize]);
                                     self.metrics.core_cycles += silicon_cycles::EXT4_ADDSUB;
                                 }
                             }
@@ -1970,10 +2100,15 @@ impl Dregg180StreamVm {
                                 if n != 0 || k != 0 || b >= 16 {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
-                                    self.bf_chals[b as usize] = reg_to_ext4(self.regs[(c & 15) as usize]);
+                                    self.bf_chals[b as usize] =
+                                        reg_to_ext4(self.regs[(c & 15) as usize]);
                                     self.metrics.core_cycles += silicon_cycles::EXT4_ADDSUB;
                                 }
                             }
@@ -1981,10 +2116,15 @@ impl Dregg180StreamVm {
                                 if n != 0 || k != 0 || b >= 16 {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
-                                    self.tau_chals[b as usize] = reg_to_ext4(self.regs[(c & 15) as usize]);
+                                    self.tau_chals[b as usize] =
+                                        reg_to_ext4(self.regs[(c & 15) as usize]);
                                     self.metrics.core_cycles += silicon_cycles::EXT4_ADDSUB;
                                 }
                             }
@@ -1993,28 +2133,49 @@ impl Dregg180StreamVm {
                                 if n != 0 || k != 0 || len == 0 || len > 16 {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
                                     let mut acc = GoldilocksExt4::ONE;
                                     for j in 0..len {
-                                        let lhs = if a == BF_AUX_EVAL_EQ_Z_BF { self.z_chals[j] } else { self.tau_chals[j] };
-                                        let rhs = if a == BF_AUX_EVAL_EQ_Z_BF { self.bf_chals[j] } else { self.z_chals[j] };
-                                        let term = (GoldilocksExt4::ONE - lhs) * (GoldilocksExt4::ONE - rhs) + (lhs * rhs);
+                                        let lhs = if a == BF_AUX_EVAL_EQ_Z_BF {
+                                            self.z_chals[j]
+                                        } else {
+                                            self.tau_chals[j]
+                                        };
+                                        let rhs = if a == BF_AUX_EVAL_EQ_Z_BF {
+                                            self.bf_chals[j]
+                                        } else {
+                                            self.z_chals[j]
+                                        };
+                                        let term = (GoldilocksExt4::ONE - lhs)
+                                            * (GoldilocksExt4::ONE - rhs)
+                                            + (lhs * rhs);
                                         acc = acc * term;
                                     }
                                     self.regs[(c & 15) as usize] = ext4_to_reg(acc);
                                     self.metrics.ext4_muls += (3 * len) as u32;
                                     self.metrics.ext4_addsubs += (3 * len) as u32;
-                                    self.metrics.core_cycles += (len as u64) * (3 * silicon_cycles::EXT4_MUL + 3 * silicon_cycles::EXT4_ADDSUB);
+                                    self.metrics.core_cycles += (len as u64)
+                                        * (3 * silicon_cycles::EXT4_MUL
+                                            + 3 * silicon_cycles::EXT4_ADDSUB);
                                 }
                             }
                             BF_AUX_FOLD_FINAL_POLY => {
                                 let start = b as usize;
-                                if n != 0 || k != 0 || start + 3 > 16 || !self.bf_final_poly_loaded {
+                                if n != 0 || k != 0 || start + 3 > 16 || !self.bf_final_poly_loaded
+                                {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
                                     let mut cur = self.bf_final_poly;
@@ -2032,16 +2193,27 @@ impl Dregg180StreamVm {
                                     self.regs[(c & 15) as usize] = ext4_to_reg(cur[0]);
                                     self.metrics.ext4_muls += 7;
                                     self.metrics.ext4_addsubs += 14;
-                                    self.metrics.core_cycles += 7 * silicon_cycles::EXT4_MUL + 14 * silicon_cycles::EXT4_ADDSUB;
+                                    self.metrics.core_cycles += 7 * silicon_cycles::EXT4_MUL
+                                        + 14 * silicon_cycles::EXT4_ADDSUB;
                                 }
                             }
                             BF_AUX_ASSERT_FINAL_EVAL => {
                                 self.has_assert = true;
-                                if n != 0 || k != 0 || b > 24 || !self.bf_chain_active || !self.bf_final_poly_loaded || self.bf_saved_idx >= 64 {
+                                if n != 0
+                                    || k != 0
+                                    || b > 24
+                                    || !self.bf_chain_active
+                                    || !self.bf_final_poly_loaded
+                                    || self.bf_saved_idx >= 64
+                                {
                                     self.mark_bad();
                                     self.bf_chain_active = false;
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
                                     let mut shift = Goldilocks::SEVEN;
@@ -2051,7 +2223,8 @@ impl Dregg180StreamVm {
                                     let omega = Goldilocks::two_adic_generator(6); // N_final = 64
                                     let x_final = shift * omega.pow(self.bf_saved_idx);
                                     let x_ext = GoldilocksExt4::from_base(x_final);
-                                    let want = GoldilocksExt4::eval_univariate(&self.bf_final_poly, x_ext);
+                                    let want =
+                                        GoldilocksExt4::eval_univariate(&self.bf_final_poly, x_ext);
                                     let got = reg_to_ext4(self.regs[(c & 15) as usize]);
                                     if want != got {
                                         self.mark_bad();
@@ -2059,7 +2232,8 @@ impl Dregg180StreamVm {
                                     self.bf_chain_active = false;
                                     self.metrics.ext4_muls += 7;
                                     self.metrics.ext4_addsubs += 7;
-                                    self.metrics.core_cycles += ((b as u64) + 6) * silicon_cycles::GL64_MUL
+                                    self.metrics.core_cycles += ((b as u64) + 6)
+                                        * silicon_cycles::GL64_MUL
                                         + 7 * silicon_cycles::EXT4_MUL
                                         + 7 * silicon_cycles::EXT4_ADDSUB;
                                 }
@@ -2068,28 +2242,46 @@ impl Dregg180StreamVm {
                                 let len = (b & 31) as usize;
                                 let mode = (c >> 4) & 15;
                                 let dst = (c & 15) as usize;
-                                if n != 0 || k != 0 || len == 0 || len > 16 || (mode == 1 && len < 8) || (mode == 2 && len < 10) || mode > 4 {
+                                if n != 0
+                                    || k != 0
+                                    || len == 0
+                                    || len > 16
+                                    || (mode == 1 && len < 8)
+                                    || (mode == 2 && len < 10)
+                                    || mode > 4
+                                {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
                                     let val = match mode {
                                         0 => {
                                             let mut acc = GoldilocksExt4::ZERO;
                                             for j in 0..len {
-                                                acc = acc + self.z_chals[j].scale_base(Goldilocks(1u64 << j));
+                                                acc = acc
+                                                    + self.z_chals[j]
+                                                        .scale_base(Goldilocks(1u64 << j));
                                             }
                                             acc
                                         }
                                         1 => {
                                             let mut acc = GoldilocksExt4::ZERO;
                                             for j in 0..8 {
-                                                acc = acc + self.z_chals[j].scale_base(Goldilocks(1u64 << j));
+                                                acc = acc
+                                                    + self.z_chals[j]
+                                                        .scale_base(Goldilocks(1u64 << j));
                                             }
                                             acc
                                         }
-                                        2 => self.z_chals[8] + self.z_chals[9].scale_base(Goldilocks::TWO),
+                                        2 => {
+                                            self.z_chals[8]
+                                                + self.z_chals[9].scale_base(Goldilocks::TWO)
+                                        }
                                         3 => {
                                             let mut acc = GoldilocksExt4::ONE;
                                             for j in 0..len {
@@ -2108,7 +2300,8 @@ impl Dregg180StreamVm {
                                     self.regs[dst] = ext4_to_reg(val);
                                     self.metrics.ext4_muls += len as u32;
                                     self.metrics.ext4_addsubs += len as u32;
-                                    self.metrics.core_cycles += (len as u64) * (silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB);
+                                    self.metrics.core_cycles += (len as u64)
+                                        * (silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB);
                                 }
                             }
                             BF_AUX_EVAL_SPARSE_SEL_Z => {
@@ -2116,7 +2309,11 @@ impl Dregg180StreamVm {
                                 if n == 0 || k != n || len == 0 || len > 16 {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
                                     self.phase = ActiveRecordPhase::BfSparseSel {
@@ -2132,25 +2329,45 @@ impl Dregg180StreamVm {
                                 if n != 32 || k != 0 {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
                                     let rch = self.regs[R_CH as usize];
                                     self.p2_state = [Goldilocks::ZERO; 12];
-                                    for i in 0..4 {
-                                        self.p2_state[8 + i] = Goldilocks::from_u128_reduced(rch[i] as u128);
+                                    for (st_slot, &w) in
+                                        self.p2_state[8..12].iter_mut().zip(rch[..4].iter())
+                                    {
+                                        *st_slot = Goldilocks::from_u128_reduced(w as u128);
                                     }
-                                    self.p2_state[0] += Goldilocks::from_u128_reduced(P2_DOMAIN_FS_ABSORB_LIMBS as u128);
+                                    self.p2_state[0] += Goldilocks::from_u128_reduced(
+                                        P2_DOMAIN_FS_ABSORB_LIMBS as u128,
+                                    );
                                     self.p2_state[1] += Goldilocks(32);
-                                    self.phase = ActiveRecordPhase::BfLatchFinalPoly { seen: 0, rate_pos: 2 };
+                                    self.phase = ActiveRecordPhase::BfLatchFinalPoly {
+                                        seen: 0,
+                                        rate_pos: 2,
+                                    };
                                 }
                             }
                             BF_AUX_STAGE0_FOLD2 => {
                                 let log_n = b as usize;
-                                if n != 0 || k != 0 || !(4..=24).contains(&log_n) || !self.bf_chain_active || self.bf_saved_idx >= (1u64 << (log_n - 1)) {
+                                if n != 0
+                                    || k != 0
+                                    || !(4..=24).contains(&log_n)
+                                    || !self.bf_chain_active
+                                    || self.bf_saved_idx >= (1u64 << (log_n - 1))
+                                {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
                                     let v0 = reg_to_ext4(self.regs[R_A as usize]);
@@ -2164,7 +2381,8 @@ impl Dregg180StreamVm {
                                     self.regs[(c & 15) as usize] = ext4_to_reg(folded);
                                     self.metrics.ext4_muls += 1;
                                     self.metrics.ext4_addsubs += 4;
-                                    self.metrics.core_cycles += ((log_n as u64) + 64) * silicon_cycles::GL64_MUL
+                                    self.metrics.core_cycles += ((log_n as u64) + 64)
+                                        * silicon_cycles::GL64_MUL
                                         + silicon_cycles::EXT4_MUL
                                         + 4 * silicon_cycles::EXT4_ADDSUB;
                                 }
@@ -2176,16 +2394,25 @@ impl Dregg180StreamVm {
                                 if n != 1 || k != 1 || dst == R_CH || self.fp5_mode {
                                     self.mark_bad();
                                     if n > 0 {
-                                        self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                        self.phase = ActiveRecordPhase::DrainBad {
+                                            rem_words: n,
+                                            word_idx: 0,
+                                            imm_k: k,
+                                        };
                                     }
                                 } else {
-                                    self.phase = ActiveRecordPhase::BfCompressReg { dst, src_a, src_b };
+                                    self.phase =
+                                        ActiveRecordPhase::BfCompressReg { dst, src_a, src_b };
                                 }
                             }
                             _ => {
                                 self.mark_bad();
                                 if n > 0 {
-                                    self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                    self.phase = ActiveRecordPhase::DrainBad {
+                                        rem_words: n,
+                                        word_idx: 0,
+                                        imm_k: k,
+                                    };
                                 }
                             }
                         }
@@ -2205,11 +2432,16 @@ impl Dregg180StreamVm {
                             || n != expected_n
                             || k != 0
                             || !self.idx_armed
-                            || (!reset_acc && (!self.bf_chain_active || self.bound_idx != self.bf_saved_idx))
+                            || (!reset_acc
+                                && (!self.bf_chain_active || self.bound_idx != self.bf_saved_idx))
                         {
                             self.mark_bad();
                             if n > 0 {
-                                self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                self.phase = ActiveRecordPhase::DrainBad {
+                                    rem_words: n,
+                                    word_idx: 0,
+                                    imm_k: k,
+                                };
                             }
                         } else {
                             if reset_acc {
@@ -2220,10 +2452,12 @@ impl Dregg180StreamVm {
                             }
                             let kr = self.regs[key_reg];
                             self.p2_state = [Goldilocks::ZERO; 12];
-                            for i in 0..4 {
-                                self.p2_state[8 + i] = Goldilocks::from_u128_reduced(kr[i] as u128);
+                            for (st_slot, &w) in self.p2_state[8..12].iter_mut().zip(kr[..4].iter())
+                            {
+                                *st_slot = Goldilocks::from_u128_reduced(w as u128);
                             }
-                            self.p2_state[0] += Goldilocks::from_u128_reduced(P2_DOMAIN_CANOPY_LEAF as u128);
+                            self.p2_state[0] +=
+                                Goldilocks::from_u128_reduced(P2_DOMAIN_CANOPY_LEAF as u128);
                             self.p2_state[1] += Goldilocks(n as u64);
                             if use_cs_leaf {
                                 self.cs_st = CANOPY_CSHAKE_MIDSTATE;
@@ -2256,7 +2490,11 @@ impl Dregg180StreamVm {
                         let round_start = (b >> 4) & 15;
                         let expected_reg = c & 15;
                         let dst_reg = (c >> 4) & 15;
-                        let expected_n = if fold_k >= 1 && fold_k <= 3 { (1u16 << fold_k) * 4 } else { 0 };
+                        let expected_n = if (1..=3).contains(&fold_k) {
+                            (1u16 << fold_k) * 4
+                        } else {
+                            0
+                        };
                         if fold_k == 0
                             || fold_k > 3
                             || log_n_cur <= fold_k
@@ -2269,7 +2507,11 @@ impl Dregg180StreamVm {
                         {
                             self.mark_bad();
                             if n > 0 {
-                                self.phase = ActiveRecordPhase::DrainBad { rem_words: n, word_idx: 0, imm_k: k };
+                                self.phase = ActiveRecordPhase::DrainBad {
+                                    rem_words: n,
+                                    word_idx: 0,
+                                    imm_k: k,
+                                };
                             }
                         } else {
                             let log_nfib = log_n_cur - fold_k;
@@ -2280,10 +2522,12 @@ impl Dregg180StreamVm {
                             self.bf_saved_idx = f_cur;
                             let kr = self.regs[key_reg];
                             self.p2_state = [Goldilocks::ZERO; 12];
-                            for i in 0..4 {
-                                self.p2_state[8 + i] = Goldilocks::from_u128_reduced(kr[i] as u128);
+                            for (st_slot, &w) in self.p2_state[8..12].iter_mut().zip(kr[..4].iter())
+                            {
+                                *st_slot = Goldilocks::from_u128_reduced(w as u128);
                             }
-                            self.p2_state[0] += Goldilocks::from_u128_reduced(P2_DOMAIN_CANOPY_LEAF as u128);
+                            self.p2_state[0] +=
+                                Goldilocks::from_u128_reduced(P2_DOMAIN_CANOPY_LEAF as u128);
                             self.p2_state[1] += Goldilocks(n as u64);
                             self.phase = ActiveRecordPhase::BfFoldFiber {
                                 k: fold_k,
@@ -2332,8 +2576,8 @@ impl Dregg180StreamVm {
                     [r[0], r[1], r[2], r[3]]
                 };
                 self.p2_state = [Goldilocks::ZERO; 12];
-                for i in 0..4 {
-                    self.p2_state[8 + i] = Goldilocks::from_u128_reduced(cap[i] as u128);
+                for (st_slot, &w) in self.p2_state[8..12].iter_mut().zip(cap[..4].iter()) {
+                    *st_slot = Goldilocks::from_u128_reduced(w as u128);
                 }
                 let n_limbs = rem_words - 1;
                 self.p2_state[0] += Goldilocks::from_u128_reduced(word as u128);
@@ -2402,7 +2646,8 @@ impl Dregg180StreamVm {
                 if word >= GOLDILOCKS_PRIME {
                     self.non_canonical = true;
                 }
-                self.regs[dst as usize][seen as usize] = Goldilocks::from_u128_reduced(word as u128).0;
+                self.regs[dst as usize][seen as usize] =
+                    Goldilocks::from_u128_reduced(word as u128).0;
                 let next_seen = seen + 1;
                 if next_seen == l {
                     self.phase = ActiveRecordPhase::Idle;
@@ -2468,13 +2713,13 @@ impl Dregg180StreamVm {
                     self.metrics.poseidon2_perms += 1;
                     self.metrics.canopy_p2_nodes += 1;
                     self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
-                    for j in 0..4 {
-                        self.regs[R_X as usize][j] = next4[j];
-                    }
+                    self.regs[R_X as usize][..4].copy_from_slice(&next4);
                     let next_lvl = cur_lvl + 1;
                     if next_lvl == depth {
-                        for j in 0..4 {
-                            self.regs[R_Y as usize][j] = Goldilocks::from_u128_reduced(sib_buf[j] as u128).0;
+                        for (ry_slot, &sib_w) in
+                            self.regs[R_Y as usize][..4].iter_mut().zip(sib_buf.iter())
+                        {
+                            *ry_slot = Goldilocks::from_u128_reduced(sib_w as u128).0;
                         }
                         self.phase = ActiveRecordPhase::Idle;
                     } else {
@@ -2547,7 +2792,8 @@ impl Dregg180StreamVm {
                         }
                     };
                     // Verify that `buf5[0..4]` matches the leaf commitment loaded in `R_X`:
-                    let want_rx = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &buf5);
+                    let want_rx =
+                        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &buf5);
                     self.metrics.poseidon2_perms += 1;
                     self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
                     if self.regs[R_X as usize][..4] != want_rx {
@@ -2605,12 +2851,14 @@ impl Dregg180StreamVm {
                     let next_lvl = cur_lvl + 1;
                     if next_lvl == depth {
                         let root_limbs5 = pack_digest32_to_5_limbs(&next_dig);
-                        let root4 = p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &root_limbs5);
+                        let root4 = p2_sponge_hash_limbs(
+                            P2_DOMAIN_FS_ABSORB_LIMBS,
+                            FS_INIT_CAP,
+                            &root_limbs5,
+                        );
                         self.metrics.poseidon2_perms += 1;
                         self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
-                        for j in 0..4 {
-                            self.regs[R_X as usize][j] = root4[j];
-                        }
+                        self.regs[R_X as usize][..4].copy_from_slice(&root4);
                         self.phase = ActiveRecordPhase::Idle;
                     } else {
                         self.phase = ActiveRecordPhase::CShakeMerkleSiblings {
@@ -2650,7 +2898,8 @@ impl Dregg180StreamVm {
                 let next_acc = acc * lam + eq_z;
                 self.metrics.ext4_muls += (len as u32) + 1;
                 self.metrics.ext4_addsubs += (len as u32) + 1;
-                self.metrics.core_cycles += ((len as u64) + 1) * (silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB);
+                self.metrics.core_cycles +=
+                    ((len as u64) + 1) * (silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB);
                 if rem_words <= 1 {
                     self.regs[dst as usize] = ext4_to_reg(next_acc);
                     self.phase = ActiveRecordPhase::Idle;
@@ -2687,8 +2936,8 @@ impl Dregg180StreamVm {
                         self.metrics.core_cycles += silicon_cycles::POSEIDON2_12;
                     }
                     let mut res = [0u64; 5];
-                    for i in 0..4 {
-                        res[i] = self.p2_state[i].0;
+                    for (res_i, st_i) in res[..4].iter_mut().zip(self.p2_state[..4].iter()) {
+                        *res_i = st_i.0;
                     }
                     self.regs[R_T0 as usize] = res;
                     self.regs[R_CH as usize] = res;
@@ -2730,7 +2979,11 @@ impl Dregg180StreamVm {
                         self.cs_stream_byte(byte);
                     }
                 }
-                let target_reg = if seen < half_words { R_A as usize } else { R_B as usize };
+                let target_reg = if seen < half_words {
+                    R_A as usize
+                } else {
+                    R_B as usize
+                };
                 let eta = reg_to_ext4(self.regs[eta_reg as usize]);
                 let mut next_limb_pos = limb_pos;
                 if !is_ext4 {
@@ -2739,7 +2992,8 @@ impl Dregg180StreamVm {
                     self.regs[target_reg] = ext4_to_reg(next_acc);
                     self.metrics.ext4_muls += 1;
                     self.metrics.ext4_addsubs += 1;
-                    self.metrics.core_cycles += silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB;
+                    self.metrics.core_cycles +=
+                        silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB;
                 } else {
                     cur_limbs[limb_pos as usize] = canon;
                     if limb_pos == 3 {
@@ -2748,7 +3002,8 @@ impl Dregg180StreamVm {
                         self.regs[target_reg] = ext4_to_reg(next_acc);
                         self.metrics.ext4_muls += 1;
                         self.metrics.ext4_addsubs += 1;
-                        self.metrics.core_cycles += silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB;
+                        self.metrics.core_cycles +=
+                            silicon_cycles::EXT4_MUL + silicon_cycles::EXT4_ADDSUB;
                         next_limb_pos = 0;
                         cur_limbs = [Goldilocks::ZERO; 4];
                     } else {
@@ -2950,7 +3205,9 @@ impl Dregg180StreamVm {
         ];
 
         let pdig_mismatch = self.expected_pdig.is_some_and(|want| want != self.pdig)
-            || self.expected_prog_hash.is_some_and(|want| want != public_program_hash);
+            || self
+                .expected_prog_hash
+                .is_some_and(|want| want != public_program_hash);
         let verdict = !self.sticky_fail
             && !self.non_canonical
             && self.has_assert
@@ -2982,7 +3239,8 @@ impl Dregg180StreamVm {
         for i in 0..l {
             ch_bytes[8 * i..8 * (i + 1)].copy_from_slice(&ch[i].to_le_bytes());
         }
-        let receipt = turboshake256_32_stack(&[&self.k_mac, &stat_bytes, &pdig_bytes, &ch_bytes[..8 * l]]);
+        let receipt =
+            turboshake256_32_stack(&[&self.k_mac, &stat_bytes, &pdig_bytes, &ch_bytes[..8 * l]]);
         self.metrics.keccak_perms += 1;
         self.metrics.core_cycles += silicon_cycles::KECCAK_P12;
 
@@ -3015,7 +3273,10 @@ impl Dregg180StreamVm {
         })
     }
 
-    pub fn verify_stream(&mut self, stream: &[u8]) -> Result<Dregg180VmVerdict, Dregg180StreamError> {
+    pub fn verify_stream(
+        &mut self,
+        stream: &[u8],
+    ) -> Result<Dregg180VmVerdict, Dregg180StreamError> {
         self.feed_bytes(stream)?;
         self.finalize()
     }
@@ -3043,6 +3304,41 @@ pub struct Dregg180HvmAssembler {
     pub records: Vec<HvmRecord>,
 }
 
+/// Arguments for `Dregg180HvmAssembler::hash`.
+#[derive(Clone, Copy)]
+pub struct HvmHashOp<'a> {
+    pub dst: u8,
+    pub cap_reg: Option<u8>,
+    pub domain: u64,
+    pub imm: &'a [u64],
+    pub proof: &'a [u64],
+    pub latch: u8,
+    pub skip: u8,
+}
+
+/// Configuration for `Dregg180HvmAssembler::fiber_acc`.
+#[derive(Clone, Copy)]
+pub struct HvmFiberAccCfg {
+    pub stage_id: u8,
+    pub is_ext4: bool,
+    pub reset_acc: bool,
+    pub use_cs_leaf: bool,
+    pub key_reg: u8,
+    pub eta_reg: u8,
+    pub num_cols: u8,
+}
+
+/// Configuration for `Dregg180HvmAssembler::bf_fold_fiber`.
+#[derive(Clone, Copy)]
+pub struct HvmFoldFiberCfg {
+    pub fold_k: u8,
+    pub log_n_cur: u8,
+    pub key_reg: u8,
+    pub round_start: u8,
+    pub expected_reg: u8,
+    pub dst_reg: u8,
+}
+
 impl Dregg180HvmAssembler {
     pub fn new(op: u8, pin_mode: bool, fp5_mode: bool) -> Self {
         Self {
@@ -3055,7 +3351,11 @@ impl Dregg180HvmAssembler {
 
     #[inline]
     fn limbs(&self) -> u16 {
-        if self.fp5_mode { 5 } else { 4 }
+        if self.fp5_mode {
+            5
+        } else {
+            4
+        }
     }
 
     pub fn push_rec(&mut self, hop: u8, a: u8, b: u8, c: u8, data: Vec<u64>, imm_k: u16) {
@@ -3069,28 +3369,19 @@ impl Dregg180HvmAssembler {
         });
     }
 
-    pub fn hash(
-        &mut self,
-        dst: u8,
-        cap_reg: Option<u8>,
-        domain: u64,
-        imm: &[u64],
-        proof: &[u64],
-        latch: u8,
-        skip: u8,
-    ) {
-        let c = (latch & 7) | (if cap_reg.is_none() { 8 } else { 0 }) | ((skip & 3) << 4);
-        let mut data = Vec::with_capacity(1 + imm.len() + proof.len());
-        data.push(domain);
-        data.extend_from_slice(imm);
-        data.extend_from_slice(proof);
+    pub fn hash(&mut self, op: HvmHashOp<'_>) {
+        let c = (op.latch & 7) | (if op.cap_reg.is_none() { 8 } else { 0 }) | ((op.skip & 3) << 4);
+        let mut data = Vec::with_capacity(1 + op.imm.len() + op.proof.len());
+        data.push(op.domain);
+        data.extend_from_slice(op.imm);
+        data.extend_from_slice(op.proof);
         self.push_rec(
             H_HASH,
-            dst,
-            cap_reg.unwrap_or(0),
+            op.dst,
+            op.cap_reg.unwrap_or(0),
             c,
             data,
-            (1 + imm.len()) as u16,
+            (1 + op.imm.len()) as u16,
         );
     }
 
@@ -3104,19 +3395,43 @@ impl Dregg180HvmAssembler {
 
     pub fn absorb_limbs_proof(&mut self, label: &[u8], limbs: &[u64], latch: u8, skip: u8) {
         let imm = pack_bytes_7_limbs(label);
-        self.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_ABSORB_LIMBS, &imm, limbs, latch, skip);
+        self.hash(HvmHashOp {
+            dst: R_CH,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_ABSORB_LIMBS,
+            imm: &imm,
+            proof: limbs,
+            latch,
+            skip,
+        });
     }
 
     pub fn absorb_limbs_immediate(&mut self, label: &[u8], imm_limbs: &[u64], latch: u8, skip: u8) {
         let mut imm = pack_bytes_7_limbs(label);
         imm.extend_from_slice(imm_limbs);
-        self.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_ABSORB_LIMBS, &imm, &[], latch, skip);
+        self.hash(HvmHashOp {
+            dst: R_CH,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_ABSORB_LIMBS,
+            imm: &imm,
+            proof: &[],
+            latch,
+            skip,
+        });
     }
 
     pub fn squeeze_ext4(&mut self, dst: u8, label: &[u8], counter: u64) {
         let mut imm = pack_bytes_7_limbs(label);
         imm.push(counter);
-        self.hash(dst, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_EXT4, &imm, &[], 0, 0);
+        self.hash(HvmHashOp {
+            dst,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_EXT4,
+            imm: &imm,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
     }
 
     pub fn load(&mut self, dst: u8, val: &[u64], imm: bool) {
@@ -3157,7 +3472,12 @@ impl Dregg180HvmAssembler {
         self.push_rec(H_MERKLE, siblings.len() as u8, key_reg, 0, data, 0);
     }
 
-    pub fn cshake_merkle(&mut self, leaf_index: u32, leaf_digest: &[u8; 32], siblings: &[[u8; 32]]) {
+    pub fn cshake_merkle(
+        &mut self,
+        leaf_index: u32,
+        leaf_digest: &[u8; 32],
+        siblings: &[[u8; 32]],
+    ) {
         let mut data = Vec::with_capacity(1 + 5 + 5 * siblings.len());
         data.push(leaf_index as u64);
         data.extend_from_slice(&pack_digest32_to_5_limbs(leaf_digest));
@@ -3190,23 +3510,58 @@ impl Dregg180HvmAssembler {
     }
 
     pub fn bf_eval_eq_z_bf(&mut self, len: u8, dst_reg: u8) {
-        self.push_rec(H_BF_AUX, BF_AUX_EVAL_EQ_Z_BF, len, dst_reg & 15, Vec::new(), 0);
+        self.push_rec(
+            H_BF_AUX,
+            BF_AUX_EVAL_EQ_Z_BF,
+            len,
+            dst_reg & 15,
+            Vec::new(),
+            0,
+        );
     }
 
     pub fn bf_eval_eq_tau_z(&mut self, len: u8, dst_reg: u8) {
-        self.push_rec(H_BF_AUX, BF_AUX_EVAL_EQ_TAU_Z, len, dst_reg & 15, Vec::new(), 0);
+        self.push_rec(
+            H_BF_AUX,
+            BF_AUX_EVAL_EQ_TAU_Z,
+            len,
+            dst_reg & 15,
+            Vec::new(),
+            0,
+        );
     }
 
     pub fn bf_fold_final_poly(&mut self, round_start: u8, dst_reg: u8) {
-        self.push_rec(H_BF_AUX, BF_AUX_FOLD_FINAL_POLY, round_start, dst_reg & 15, Vec::new(), 0);
+        self.push_rec(
+            H_BF_AUX,
+            BF_AUX_FOLD_FINAL_POLY,
+            round_start,
+            dst_reg & 15,
+            Vec::new(),
+            0,
+        );
     }
 
     pub fn bf_assert_final_eval(&mut self, total_folded_rounds: u8, got_reg: u8) {
-        self.push_rec(H_BF_AUX, BF_AUX_ASSERT_FINAL_EVAL, total_folded_rounds, got_reg & 15, Vec::new(), 0);
+        self.push_rec(
+            H_BF_AUX,
+            BF_AUX_ASSERT_FINAL_EVAL,
+            total_folded_rounds,
+            got_reg & 15,
+            Vec::new(),
+            0,
+        );
     }
 
     pub fn bf_eval_public_mle_z(&mut self, len: u8, mode: u8, dst_reg: u8) {
-        self.push_rec(H_BF_AUX, BF_AUX_EVAL_PUBLIC_MLE_Z, len & 31, ((mode & 15) << 4) | (dst_reg & 15), Vec::new(), 0);
+        self.push_rec(
+            H_BF_AUX,
+            BF_AUX_EVAL_PUBLIC_MLE_Z,
+            len & 31,
+            ((mode & 15) << 4) | (dst_reg & 15),
+            Vec::new(),
+            0,
+        );
     }
 
     pub fn bf_eval_sparse_sel_z(&mut self, len: u8, lam_reg: u8, dst_reg: u8, row_indices: &[u64]) {
@@ -3229,7 +3584,14 @@ impl Dregg180HvmAssembler {
     }
 
     pub fn bf_stage0_fold2(&mut self, log_n: u8, dst_reg: u8) {
-        self.push_rec(H_BF_AUX, BF_AUX_STAGE0_FOLD2, log_n, dst_reg & 15, Vec::new(), 0);
+        self.push_rec(
+            H_BF_AUX,
+            BF_AUX_STAGE0_FOLD2,
+            log_n,
+            dst_reg & 15,
+            Vec::new(),
+            0,
+        );
     }
 
     /// Ordered Davies-Meyer `Poseidon2-12` compression `dst = H_ord(tag, regs[src_a], regs[src_b])`.
@@ -3239,38 +3601,19 @@ impl Dregg180HvmAssembler {
         self.push_rec(H_BF_AUX, BF_AUX_COMPRESS_REG, b, dst & 15, vec![tag], 1);
     }
 
-    pub fn fiber_acc(
-        &mut self,
-        stage_id: u8,
-        is_ext4: bool,
-        reset_acc: bool,
-        use_cs_leaf: bool,
-        key_reg: u8,
-        eta_reg: u8,
-        num_cols: u8,
-        words: &[u64],
-    ) {
-        let a = (stage_id & 7)
-            | ((is_ext4 as u8) << 3)
-            | ((reset_acc as u8) << 4)
-            | ((use_cs_leaf as u8) << 5);
-        let b = (key_reg & 15) | ((eta_reg & 15) << 4);
-        self.push_rec(H_FIBER_ACC, a, b, num_cols, words.to_vec(), 0);
+    pub fn fiber_acc(&mut self, cfg: HvmFiberAccCfg, words: &[u64]) {
+        let a = (cfg.stage_id & 7)
+            | ((cfg.is_ext4 as u8) << 3)
+            | ((cfg.reset_acc as u8) << 4)
+            | ((cfg.use_cs_leaf as u8) << 5);
+        let b = (cfg.key_reg & 15) | ((cfg.eta_reg & 15) << 4);
+        self.push_rec(H_FIBER_ACC, a, b, cfg.num_cols, words.to_vec(), 0);
     }
 
-    pub fn bf_fold_fiber(
-        &mut self,
-        fold_k: u8,
-        log_n_cur: u8,
-        key_reg: u8,
-        round_start: u8,
-        expected_reg: u8,
-        dst_reg: u8,
-        fiber: &[GoldilocksExt4],
-    ) {
-        let a = (fold_k & 3) | ((log_n_cur & 31) << 2);
-        let b = (key_reg & 15) | ((round_start & 15) << 4);
-        let c = (expected_reg & 15) | ((dst_reg & 15) << 4);
+    pub fn bf_fold_fiber(&mut self, cfg: HvmFoldFiberCfg, fiber: &[GoldilocksExt4]) {
+        let a = (cfg.fold_k & 3) | ((cfg.log_n_cur & 31) << 2);
+        let b = (cfg.key_reg & 15) | ((cfg.round_start & 15) << 4);
+        let c = (cfg.expected_reg & 15) | ((cfg.dst_reg & 15) << 4);
         let mut data = Vec::with_capacity(fiber.len() * 4);
         for v in fiber {
             data.extend_from_slice(&v.to_u64_limbs());
@@ -3281,7 +3624,8 @@ impl Dregg180HvmAssembler {
     /// Compute the keyless `Poseidon2-12` public program hash covering ONLY `(wire_hdr, record headers, imm_k words)`.
     pub fn compute_public_program_hash(&self) -> [u64; 4] {
         let total_words: usize = self.records.iter().map(|r| 1 + r.data.len()).sum();
-        let flags = (if self.pin_mode { 8u64 } else { 0 }) | (if self.fp5_mode { 16u64 } else { 0 });
+        let flags =
+            (if self.pin_mode { 8u64 } else { 0 }) | (if self.fp5_mode { 16u64 } else { 0 });
         let wire_hdr = (QSAG_WIRE_MAGIC as u64)
             | ((self.op as u64) << 8)
             | (flags << 16)
@@ -3336,7 +3680,8 @@ impl Dregg180HvmAssembler {
             words.push(hdr_w);
             words.extend_from_slice(&r.data);
         }
-        let flags = (if self.pin_mode { 8u64 } else { 0 }) | (if self.fp5_mode { 16u64 } else { 0 });
+        let flags =
+            (if self.pin_mode { 8u64 } else { 0 }) | (if self.fp5_mode { 16u64 } else { 0 });
         let wire_hdr = (QSAG_WIRE_MAGIC as u64)
             | ((self.op as u64) << 8)
             | (flags << 16)
@@ -3461,11 +3806,8 @@ impl WearableQwenWhirLeafReceipt {
             d_mlp[i] = ((i * 29 + 3) % 4_000) as u32;
             b_out[i] = b_in[i] + d_gdn[i] + d_mlp[i];
         }
-        let layer_mat = WhirCommittedMatrixExt4::commit(
-            &[&b_in, &d_gdn, &d_mlp, &b_out],
-            true,
-            Some(salt),
-        );
+        let layer_mat =
+            WhirCommittedMatrixExt4::commit(&[&b_in, &d_gdn, &d_mlp, &b_out], true, Some(salt));
 
         let mut tr = crate::ext4::CShakeTranscript::new(b"SHE-WEARABLE-QWEN-WHIR-LEAF-V1");
         tr.absorb_root(b"lease_id", &lease_id);
@@ -3473,14 +3815,21 @@ impl WearableQwenWhirLeafReceipt {
         tr.absorb_root(b"byte_whir_root", &byte_comm.whir_mat.root);
         tr.absorb_root(b"layer_whir_root", &layer_mat.root);
         let z_layer = tr.squeeze_ext4_vec(b"z_layer", m_vars, true);
-        let z_byte = tr.squeeze_ext4_vec(b"z_byte", byte_comm.pad_len.trailing_zeros() as usize, true);
+        let z_byte =
+            tr.squeeze_ext4_vec(b"z_byte", byte_comm.pad_len.trailing_zeros() as usize, true);
 
         let b_in_eval = crate::ext4::mle_eval_bb_at_ext4(&b_in, &z_layer);
         let delta_gdn_eval = crate::ext4::mle_eval_bb_at_ext4(&d_gdn, &z_layer);
         let delta_mlp_eval = crate::ext4::mle_eval_bb_at_ext4(&d_mlp, &z_layer);
         let b_out_eval = crate::ext4::mle_eval_bb_at_ext4(&b_out, &z_layer);
         let byte_eval_at_z = crate::ext4::mle_eval_bb_at_ext4(&byte_comm.bytes_pad, &z_byte);
-        for e in [b_in_eval, delta_gdn_eval, delta_mlp_eval, b_out_eval, byte_eval_at_z] {
+        for e in [
+            b_in_eval,
+            delta_gdn_eval,
+            delta_mlp_eval,
+            b_out_eval,
+            byte_eval_at_z,
+        ] {
             tr.absorb_ext4(b"leaf_ev", e);
         }
 
@@ -3492,7 +3841,10 @@ impl WearableQwenWhirLeafReceipt {
         ];
         let byte_claims = vec![JointLinearClaimExt4::point_eval(0, z_byte, byte_eval_at_z)];
         let whir_batch_proof = open_whir_batch_ext4(
-            &[(&layer_mat, &layer_claims), (&byte_comm.whir_mat, &byte_claims)],
+            &[
+                (&layer_mat, &layer_claims),
+                (&byte_comm.whir_mat, &byte_claims),
+            ],
             36,
             &mut tr,
         );
@@ -3515,16 +3867,29 @@ impl WearableQwenWhirLeafReceipt {
     }
 
     pub fn verify(&self) -> Result<[u8; 32], String> {
-        if self.b_out_eval != self.b_in_eval.add(self.delta_gdn_eval).add(self.delta_mlp_eval) {
-            return Err("Qwen WhirExt4 residual weld B_out == B_in + delta_gdn + delta_mlp failed".into());
+        if self.b_out_eval
+            != self
+                .b_in_eval
+                .add(self.delta_gdn_eval)
+                .add(self.delta_mlp_eval)
+        {
+            return Err(
+                "Qwen WhirExt4 residual weld B_out == B_in + delta_gdn + delta_mlp failed".into(),
+            );
         }
-        let want_content = crate::unified_turn_weld::compute_content_root_v1(self.word_len, &self.byte_whir_root);
+        let want_content =
+            crate::unified_turn_weld::compute_content_root_v1(self.word_len, &self.byte_whir_root);
         if want_content != self.content_root {
             return Err("Qwen WhirExt4 content_root != H(word_len || byte_whir_root)".into());
         }
         let m_vars = 10usize;
-        let layer_shape = WhirExt4MatrixShape::for_subtables(&[m_vars, m_vars, m_vars, m_vars], true, WHIR_EXT4_BLOWUP);
-        let byte_shape = SaltedByteWhirCommitment::expected_shape(self.pad_len, self.byte_gm_limb_vars);
+        let layer_shape = WhirExt4MatrixShape::for_subtables(
+            &[m_vars, m_vars, m_vars, m_vars],
+            true,
+            WHIR_EXT4_BLOWUP,
+        );
+        let byte_shape =
+            SaltedByteWhirCommitment::expected_shape(self.pad_len, self.byte_gm_limb_vars);
 
         let mut tr = crate::ext4::CShakeTranscript::new(b"SHE-WEARABLE-QWEN-WHIR-LEAF-V1");
         tr.absorb_root(b"lease_id", &self.lease_id);
@@ -3548,7 +3913,11 @@ impl WearableQwenWhirLeafReceipt {
             JointLinearClaimExt4::point_eval(2, z_layer.clone(), self.delta_mlp_eval),
             JointLinearClaimExt4::point_eval(3, z_layer, self.b_out_eval),
         ];
-        let byte_claims = vec![JointLinearClaimExt4::point_eval(0, z_byte, self.byte_eval_at_z)];
+        let byte_claims = vec![JointLinearClaimExt4::point_eval(
+            0,
+            z_byte,
+            self.byte_eval_at_z,
+        )];
         verify_whir_batch_ext4(
             &[
                 (&self.layer_whir_root, &layer_shape, &layer_claims),
@@ -3590,9 +3959,16 @@ impl Tower256AbsentLeafReceipt {
     ) -> Result<Self, String> {
         let (q_end, states) = run_padded_complement_sk_dfa(assistant_bytes);
         if q_end >= 4 {
-            return Err("Tower256 Absent(\"sk-...\") prover refused: payload entered sink state >= 4".into());
+            return Err(
+                "Tower256 Absent(\"sk-...\") prover refused: payload entered sink state >= 4"
+                    .into(),
+            );
         }
-        let d_vars = assistant_bytes.len().max(16).next_power_of_two().trailing_zeros() as usize;
+        let d_vars = assistant_bytes
+            .len()
+            .max(16)
+            .next_power_of_two()
+            .trailing_zeros() as usize;
         let n_rows = 1usize << d_vars;
         // Build blinded `Tower256` mask table `M(x)` (`TVD = 0` sumcheck blinding) and verify zero defect:
         let mut mask_tab = Vec::with_capacity(n_rows);
@@ -3604,7 +3980,8 @@ impl Tower256AbsentLeafReceipt {
             let m_i = Tower256Elem::from_digest32(&cshake256_32(b"SHE-T256-MASK-V1", &seed_in));
             mask_tab.push(m_i);
             if i < assistant_bytes.len() {
-                let want_next = crate::u1_audit::padded_complement_sk_step(states[i], assistant_bytes[i]);
+                let want_next =
+                    crate::u1_audit::padded_complement_sk_step(states[i], assistant_bytes[i]);
                 debug_assert_eq!(want_next, states[i + 1]);
                 let diff = Tower256Elem::from_u64((states[i + 1] ^ want_next) as u64);
                 defect_check = defect_check.add_gf2(diff);
@@ -3629,7 +4006,7 @@ impl Tower256AbsentLeafReceipt {
         let mut tr_buf = Vec::new();
         tr_buf.extend_from_slice(&content_root);
         tr_buf.extend_from_slice(&trace_commitment);
-        tr_buf.push(q_end as u8);
+        tr_buf.push(q_end);
         tr_buf.extend_from_slice(&masked_sum.to_bytes());
 
         let mut cur = mask_tab;
@@ -3666,7 +4043,7 @@ impl Tower256AbsentLeafReceipt {
         Ok(Self {
             content_root,
             word_len: assistant_bytes.len(),
-            final_dfa_state: q_end as u8,
+            final_dfa_state: q_end,
             trace_commitment,
             masked_sum,
             round_polys,
@@ -3697,11 +4074,15 @@ impl Tower256AbsentLeafReceipt {
             // In GF(2^256), linear fold `p(X) = p0 + X*(p0 + p1)` satisfies `p(0) + p(1) == running`
             // and `p(tau_el) == p0 + tau_el*(p0 + p1)`:
             if poly[0].add_gf2(poly[1]) != running {
-                return Err(format!("Tower256 Absent sumcheck round {r_idx} p(0)+p(1) != claim"));
+                return Err(format!(
+                    "Tower256 Absent sumcheck round {r_idx} p(0)+p(1) != claim"
+                ));
             }
             let want_tau = poly[0].add_gf2(tau_el.mul_gf2(poly[0].add_gf2(poly[1])));
             if poly[2] != want_tau {
-                return Err(format!("Tower256 Absent sumcheck round {r_idx} degree-1 consistency failed"));
+                return Err(format!(
+                    "Tower256 Absent sumcheck round {r_idx} degree-1 consistency failed"
+                ));
             }
             for e in poly {
                 tr_buf.extend_from_slice(&e.to_bytes());
@@ -3741,6 +4122,20 @@ pub struct SimplexFinCertLeafReceipt {
 const SIMPLEX_ROSTER_LEAF_DOM: &[u8] = b"SHE-SIMPLEX-ROSTER-LEAF-V1";
 const SIMPLEX_ROSTER_NODE_DOM: &[u8] = b"SHE-SIMPLEX-ROSTER-NODE-V1";
 
+#[derive(Clone, Copy, Debug)]
+pub struct SimplexQuorumCfg {
+    pub n_validators: usize,
+    pub max_faulty_f: usize,
+    pub view: u64,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct SimplexFinalizedClaims {
+    pub content_root: [u8; 32],
+    pub qwen_claim: [u8; 32],
+    pub absent_claim: [u8; 32],
+}
+
 impl SimplexFinCertLeafReceipt {
     pub fn build_committee(n: usize, seed_tag: u8) -> (Vec<WotsKeypair>, [u8; 32], Vec<[u8; 32]>) {
         assert!(n.is_power_of_two() && n >= 4);
@@ -3778,41 +4173,41 @@ impl SimplexFinCertLeafReceipt {
     }
 
     pub fn sign_quorum(
-        n_validators: usize,
-        max_faulty_f: usize,
-        view: u64,
+        cfg: SimplexQuorumCfg,
         kps: &[WotsKeypair],
         roster_root: [u8; 32],
         roster_leaves: &[[u8; 32]],
         signer_indices: &[usize],
-        finalized_content_root: [u8; 32],
-        finalized_qwen_claim: [u8; 32],
-        finalized_absent_claim: [u8; 32],
+        claims: SimplexFinalizedClaims,
     ) -> Self {
         let msg = Self::signing_digest(
-            view,
+            cfg.view,
             &roster_root,
-            &finalized_content_root,
-            &finalized_qwen_claim,
-            &finalized_absent_claim,
+            &claims.content_root,
+            &claims.qwen_claim,
+            &claims.absent_claim,
         );
         let attestations = signer_indices
             .iter()
             .map(|&idx| SimplexSignerAttestation {
                 validator_index: idx,
                 validator_pk: kps[idx].pk,
-                roster_merkle_path: merkle_open_single_cshake(SIMPLEX_ROSTER_NODE_DOM, roster_leaves, idx),
+                roster_merkle_path: merkle_open_single_cshake(
+                    SIMPLEX_ROSTER_NODE_DOM,
+                    roster_leaves,
+                    idx,
+                ),
                 wots_sig: kps[idx].sign(&msg),
             })
             .collect();
         Self {
-            n_validators,
-            max_faulty_f,
-            view,
+            n_validators: cfg.n_validators,
+            max_faulty_f: cfg.max_faulty_f,
+            view: cfg.view,
             roster_root,
-            finalized_content_root,
-            finalized_qwen_claim,
-            finalized_absent_claim,
+            finalized_content_root: claims.content_root,
+            finalized_qwen_claim: claims.qwen_claim,
+            finalized_absent_claim: claims.absent_claim,
             attestations,
         }
     }
@@ -3859,7 +4254,9 @@ impl SimplexFinCertLeafReceipt {
             }
             if let Some(p) = prev_idx {
                 if att.validator_index <= p {
-                    return Err("Simplex duplicate or non-strictly-increasing validator_index".into());
+                    return Err(
+                        "Simplex duplicate or non-strictly-increasing validator_index".into(),
+                    );
                 }
             }
             prev_idx = Some(att.validator_index);
@@ -3870,7 +4267,11 @@ impl SimplexFinCertLeafReceipt {
             let want_leaf = cshake256_32(SIMPLEX_ROSTER_LEAF_DOM, &lbuf);
             if att.roster_merkle_path.index != att.validator_index
                 || att.roster_merkle_path.leaf != want_leaf
-                || !att.roster_merkle_path.verify(SIMPLEX_ROSTER_NODE_DOM, &self.roster_root, self.n_validators)
+                || !att.roster_merkle_path.verify(
+                    SIMPLEX_ROSTER_NODE_DOM,
+                    &self.roster_root,
+                    self.n_validators,
+                )
             {
                 return Err("Simplex validator Merkle roster path failed".into());
             }
@@ -3909,9 +4310,21 @@ impl DeferredLeafClaim {
         let d = pack_digest32_to_5_limbs(&self.claim_digest);
         [
             self.kind as u64,
-            c[0], c[1], c[2], c[3], c[4],
-            l[0], l[1], l[2], l[3], l[4],
-            d[0], d[1], d[2], d[3], d[4],
+            c[0],
+            c[1],
+            c[2],
+            c[3],
+            c[4],
+            l[0],
+            l[1],
+            l[2],
+            l[3],
+            l[4],
+            d[0],
+            d[1],
+            d[2],
+            d[3],
+            d[4],
         ]
     }
 
@@ -3936,7 +4349,11 @@ pub struct CompiledDregg180HemStream {
 }
 
 /// Coset Reed-Solomon encoding over `shift * H` (`|H| = coeffs.len() * blowup`) for base-field `Goldilocks`.
-pub fn encode_rs_coset_goldilocks(coeffs: &[Goldilocks], blowup: usize, shift: Goldilocks) -> Vec<Goldilocks> {
+pub fn encode_rs_coset_goldilocks(
+    coeffs: &[Goldilocks],
+    blowup: usize,
+    shift: Goldilocks,
+) -> Vec<Goldilocks> {
     assert!(coeffs.len().is_power_of_two() && blowup.is_power_of_two() && blowup >= 2);
     let domain_len = coeffs.len() * blowup;
     let mut buf = vec![Goldilocks::ZERO; domain_len];
@@ -3953,7 +4370,11 @@ pub fn encode_rs_coset_goldilocks(coeffs: &[Goldilocks], blowup: usize, shift: G
 fn fs_squeeze_ext4_local(ch_cur: [u64; 4], label: &[u8], ctr: u64) -> GoldilocksExt4 {
     let mut inp = pack_bytes_7_limbs(label);
     inp.push(ctr);
-    GoldilocksExt4::from_u64_limbs(p2_sponge_hash_limbs(P2_DOMAIN_FS_SQUEEZE_EXT4, ch_cur, &inp))
+    GoldilocksExt4::from_u64_limbs(p2_sponge_hash_limbs(
+        P2_DOMAIN_FS_SQUEEZE_EXT4,
+        ch_cur,
+        &inp,
+    ))
 }
 
 #[inline]
@@ -4051,9 +4472,14 @@ pub struct Stage0MatrixCanopy {
 }
 
 impl Stage0MatrixCanopy {
-    pub fn commit_base(stage_id: u8, cols: &[Vec<Goldilocks>], blowup: usize, canopy_key: [u64; 4]) -> Self {
+    pub fn commit_base(
+        stage_id: u8,
+        cols: &[Vec<Goldilocks>],
+        blowup: usize,
+        canopy_key: [u64; 4],
+    ) -> Self {
         let num_cols = cols.len();
-        assert!(num_cols >= 1 && num_cols <= 32);
+        assert!((1..=32).contains(&num_cols));
         let codes: Vec<Vec<Goldilocks>> = cols
             .par_iter()
             .map(|c| encode_rs_coset_goldilocks(c, blowup, Goldilocks::SEVEN))
@@ -4066,23 +4492,36 @@ impl Stage0MatrixCanopy {
             .into_par_iter()
             .map(|f| {
                 let mut w = Vec::with_capacity(words_per_fiber);
-                for c in 0..num_cols {
-                    w.push(codes[c][f].0);
+                for col in &codes {
+                    w.push(col[f].0);
                 }
-                for c in 0..num_cols {
-                    w.push(codes[c][f + n_fibers].0);
+                for col in &codes {
+                    w.push(col[f + n_fibers].0);
                 }
                 let p2 = p2_sponge_hash_limbs(P2_DOMAIN_CANOPY_LEAF, canopy_key, &w);
                 let cs = cshake256_canopy_words_leaf(stage_id, f as u32, &w);
                 (w, p2, cs)
             })
             .collect();
-        Self::finish_tree(stage_id, false, num_cols, log_fibers, canopy_key, words_per_fiber, leaves)
+        Self::finish_tree(
+            stage_id,
+            false,
+            num_cols,
+            log_fibers,
+            canopy_key,
+            words_per_fiber,
+            leaves,
+        )
     }
 
-    pub fn commit_ext4(stage_id: u8, cols: &[Vec<GoldilocksExt4>], blowup: usize, canopy_key: [u64; 4]) -> Self {
+    pub fn commit_ext4(
+        stage_id: u8,
+        cols: &[Vec<GoldilocksExt4>],
+        blowup: usize,
+        canopy_key: [u64; 4],
+    ) -> Self {
         let num_cols = cols.len();
-        assert!(num_cols >= 1 && num_cols <= 32);
+        assert!((1..=32).contains(&num_cols));
         let codes: Vec<Vec<GoldilocksExt4>> = cols
             .par_iter()
             .map(|c| encode_rs_coset_ext4(c, blowup, Goldilocks::SEVEN))
@@ -4095,18 +4534,26 @@ impl Stage0MatrixCanopy {
             .into_par_iter()
             .map(|f| {
                 let mut w = Vec::with_capacity(words_per_fiber);
-                for c in 0..num_cols {
-                    w.extend_from_slice(&codes[c][f].to_u64_limbs());
+                for col in &codes {
+                    w.extend_from_slice(&col[f].to_u64_limbs());
                 }
-                for c in 0..num_cols {
-                    w.extend_from_slice(&codes[c][f + n_fibers].to_u64_limbs());
+                for col in &codes {
+                    w.extend_from_slice(&col[f + n_fibers].to_u64_limbs());
                 }
                 let p2 = p2_sponge_hash_limbs(P2_DOMAIN_CANOPY_LEAF, canopy_key, &w);
                 let cs = cshake256_canopy_words_leaf(stage_id, f as u32, &w);
                 (w, p2, cs)
             })
             .collect();
-        Self::finish_tree(stage_id, true, num_cols, log_fibers, canopy_key, words_per_fiber, leaves)
+        Self::finish_tree(
+            stage_id,
+            true,
+            num_cols,
+            log_fibers,
+            canopy_key,
+            words_per_fiber,
+            leaves,
+        )
     }
 
     fn finish_tree(
@@ -4136,11 +4583,15 @@ impl Stage0MatrixCanopy {
                 .map(|idx| {
                     (
                         p2_canopy_node(p2_nodes[2 * idx], p2_nodes[2 * idx + 1], key3, idx as u32),
-                        cshake256_canopy_node(&cshake_nodes[2 * idx], &cshake_nodes[2 * idx + 1], idx as u32),
+                        cshake256_canopy_node(
+                            &cshake_nodes[2 * idx],
+                            &cshake_nodes[2 * idx + 1],
+                            idx as u32,
+                        ),
                     )
                 })
                 .unzip();
-            for (off, (p2, cs)) in p2_lvl.into_iter().zip(cs_lvl.into_iter()).enumerate() {
+            for (off, (p2, cs)) in p2_lvl.into_iter().zip(cs_lvl).enumerate() {
                 p2_nodes[start + off] = p2;
                 cshake_nodes[start + off] = cs;
             }
@@ -4210,7 +4661,13 @@ struct BaseFoldStageCanopy {
 }
 
 impl BaseFoldStageCanopy {
-    fn commit(coeffs: &[GoldilocksExt4], blowup: usize, round_start: usize, fold_k: usize, canopy_key: [u64; 4]) -> Self {
+    fn commit(
+        coeffs: &[GoldilocksExt4],
+        blowup: usize,
+        round_start: usize,
+        fold_k: usize,
+        canopy_key: [u64; 4],
+    ) -> Self {
         let mut shift = Goldilocks::SEVEN;
         for _ in 0..round_start {
             shift = shift.square();
@@ -4247,7 +4704,9 @@ impl BaseFoldStageCanopy {
             let start = level_size;
             let p2_lvl: Vec<[u64; 4]> = (start..(2 * start))
                 .into_par_iter()
-                .map(|idx| p2_canopy_node(p2_nodes[2 * idx], p2_nodes[2 * idx + 1], key3, idx as u32))
+                .map(|idx| {
+                    p2_canopy_node(p2_nodes[2 * idx], p2_nodes[2 * idx + 1], key3, idx as u32)
+                })
                 .collect();
             for (off, p2) in p2_lvl.into_iter().enumerate() {
                 p2_nodes[start + off] = p2;
@@ -4366,7 +4825,8 @@ fn prove_lockstep_basefold(
             let mut next_poly = Vec::with_capacity(half);
             for i in 0..half {
                 next_eq.push(eq_tab[2 * i] + r_j * (eq_tab[2 * i + 1] - eq_tab[2 * i]));
-                next_poly.push(poly_coeffs[2 * i] + r_j * (poly_coeffs[2 * i + 1] - poly_coeffs[2 * i]));
+                next_poly
+                    .push(poly_coeffs[2 * i] + r_j * (poly_coeffs[2 * i + 1] - poly_coeffs[2 * i]));
             }
             eq_tab = next_eq;
             poly_coeffs = next_poly;
@@ -4432,7 +4892,10 @@ fn emit_lockstep_basefold_sumcheck(
 
     for rnd in 0..num_vars {
         let (c0_w, c2_w) = match proof {
-            Some(p) => (p.round_c0_c2[rnd].0.to_u64_limbs(), p.round_c0_c2[rnd].1.to_u64_limbs()),
+            Some(p) => (
+                p.round_c0_c2[rnd].0.to_u64_limbs(),
+                p.round_c0_c2[rnd].1.to_u64_limbs(),
+            ),
             None => (zero4, zero4),
         };
         asm.absorb_limbs_proof(&lab_c0, &c0_w, R_X, 0);
@@ -4498,13 +4961,20 @@ pub fn compile_deferred_leaves_to_dregg180_hem_stream(
     if leaf_claims[0].content_root != leaf_claims[1].content_root
         || leaf_claims[1].content_root != leaf_claims[2].content_root
     {
-        return Err("Cross-leaf content_root mismatch across Qwen / Absent / FinCert leaves".into());
+        return Err(
+            "Cross-leaf content_root mismatch across Qwen / Absent / FinCert leaves".into(),
+        );
     }
 
     let num_vars = 6usize; // 64-element multilinear polynomial over GoldilocksExt4
     let n_coeffs = 1usize << num_vars;
     let stage_ks: &[usize] = &[2]; // Stage 0 (2-ary) -> Stage 1 (4-ary, depth 6) -> final_poly[8]
-    let canopy_key0 = [0x4452_4731_8000_0001, 0x4341_4E50_0000_0000, 0x5354_4730_0000_0001, P2_IV];
+    let canopy_key0 = [
+        0x4452_4731_8000_0001,
+        0x4341_4E50_0000_0000,
+        0x5354_4730_0000_0001,
+        P2_IV,
+    ];
 
     let mut asm = Dregg180HvmAssembler::new(OP_HEM, pin_mode, false);
 
@@ -4516,7 +4986,15 @@ pub fn compile_deferred_leaves_to_dregg180_hem_stream(
         UD100_NUM_QUERIES as u64,
         UD100_POW_BITS as u64,
     ]);
-    asm.hash(R_CH, None, P2_DOMAIN_FS_BIND_REL, &rel_imm, &[], 0, 0);
+    asm.hash(HvmHashOp {
+        dst: R_CH,
+        cap_reg: None,
+        domain: P2_DOMAIN_FS_BIND_REL,
+        imm: &rel_imm,
+        proof: &[],
+        latch: 0,
+        skip: 0,
+    });
     let mut ch = p2_sponge_hash_limbs(P2_DOMAIN_FS_BIND_REL, FS_INIT_CAP, &rel_imm);
 
     // 2. Absorb all 3 commitment-pinned `DeferredLeafClaim`s as program immediates:
@@ -4560,15 +5038,38 @@ pub fn compile_deferred_leaves_to_dregg180_hem_stream(
     asm.absorb_limbs_proof(b"HEM_SC_CLAIM", &init_claim.to_u64_limbs(), R_A, 0);
     ch = fs_absorb_limbs_local(ch, b"HEM_SC_CLAIM", &init_claim.to_u64_limbs());
 
-    let bf_proof = prove_lockstep_basefold(evals, &z_pt, stage_ks, 0x4452_4731_8000_0000, b"BF_LEAF", &mut ch);
+    let bf_proof = prove_lockstep_basefold(
+        evals,
+        &z_pt,
+        stage_ks,
+        0x4452_4731_8000_0000,
+        b"BF_LEAF",
+        &mut ch,
+    );
     let p2_root1 = bf_proof.stages[0].p2_root();
     let stage1_key = bf_proof.stages[0].canopy_key;
-    emit_lockstep_basefold_sumcheck(&mut asm, num_vars, stage_ks, b"BF_LEAF", Some(&[8]), None, Some(&bf_proof));
+    emit_lockstep_basefold_sumcheck(
+        &mut asm,
+        num_vars,
+        stage_ks,
+        b"BF_LEAF",
+        Some(&[8]),
+        None,
+        Some(&bf_proof),
+    );
 
     // 5. Grind `16`-bit `Poseidon2-12` Transcript Proof-of-Work ONCE directly into `R_CH` & check `H_ASSERT_POW(R_CH, 16)` (H1 fix!):
     let (pow_nonce, ch_after_pow) = grind_p2_pow(P2_DOMAIN_FS_POW, ch, UD100_POW_BITS);
     let nonce_words = [pow_nonce & 0xFFFF_FFFF, pow_nonce >> 32];
-    asm.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_POW, &[], &nonce_words, 0, 0);
+    asm.hash(HvmHashOp {
+        dst: R_CH,
+        cap_reg: Some(R_CH),
+        domain: P2_DOMAIN_FS_POW,
+        imm: &[],
+        proof: &nonce_words,
+        latch: 0,
+        skip: 0,
+    });
     asm.assert_pow(R_CH, UD100_POW_BITS);
     ch = ch_after_pow;
 
@@ -4584,12 +5085,39 @@ pub fn compile_deferred_leaves_to_dregg180_hem_stream(
 
         // Stage-0 bound dual Canopy opening (exact same words feed P2 leaf, cSHAKE leaf, and Stage-0 fold!):
         asm.load(12, &canopy_key0, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, stage0.log_fibers as u8);
-        asm.fiber_acc(0, true, true, true, 12, 9, 1, stage0.fiber_words(f0));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 0,
+                is_ext4: true,
+                reset_acc: true,
+                use_cs_leaf: true,
+                key_reg: 12,
+                eta_reg: 9,
+                num_cols: 1,
+            },
+            stage0.fiber_words(f0),
+        );
         asm.merkle(12, f0 as u32, &stage0.p2_siblings(f0));
         asm.assert_eq(R_X, 6);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, stage0.log_fibers as u8);
         asm.cshake_merkle_bound(f0 as u32, &stage0.cshake_siblings(f0));
         asm.assert_eq(R_X, 7);
@@ -4598,7 +5126,17 @@ pub fn compile_deferred_leaves_to_dregg180_hem_stream(
         // Stage-1 4-ary BaseFold check & fold (f1 = f0 & 63, depth 6):
         let f1 = f0 & ((1usize << bf_proof.stages[0].log_fibers) - 1);
         asm.load(12, &stage1_key, true);
-        asm.bf_fold_fiber(2, bf_proof.stages[0].log_n_cur as u8, 12, 1, R_A, R_A, &bf_proof.stages[0].fibers[f1]);
+        asm.bf_fold_fiber(
+            HvmFoldFiberCfg {
+                fold_k: 2,
+                log_n_cur: bf_proof.stages[0].log_n_cur as u8,
+                key_reg: 12,
+                round_start: 1,
+                expected_reg: R_A,
+                dst_reg: R_A,
+            },
+            &bf_proof.stages[0].fibers[f1],
+        );
         asm.merkle(12, f1 as u32, &bf_proof.stages[0].p2_siblings(f1));
         asm.assert_eq(R_X, 8);
 
@@ -4666,6 +5204,13 @@ pub fn bridge_wearable_she_bundle_to_dregg180_stream(
     compile_deferred_leaves_to_dregg180_hem_stream(claims, pin_mode, k_mac_opt)
 }
 
+/// MAC / pin-mode configuration for `bridge_payable_compute_receipt_to_dregg180_stream`.
+#[derive(Clone, Copy, Debug)]
+pub struct Dregg180HemStreamAuth {
+    pub pin_mode: bool,
+    pub k_mac_opt: Option<[u8; 16]>,
+}
+
 /// Bridge a full 24-layer `Qwen/Qwen3.5-0.8B-Base` `PayableComputeReceipt` + `Tower256` `Absent`
 /// + `Simplex` `n - f` `FinCert` into one `Dregg-180` `GoldilocksExt4` `Hem` stream.
 pub fn bridge_payable_compute_receipt_to_dregg180_stream(
@@ -4675,10 +5220,10 @@ pub fn bridge_payable_compute_receipt_to_dregg180_stream(
     absent_leaf: &Tower256AbsentLeafReceipt,
     fincert_leaf: &SimplexFinCertLeafReceipt,
     expected_roster_root: &[u8; 32],
-    pin_mode: bool,
-    k_mac_opt: Option<[u8; 16]>,
+    auth: Dregg180HemStreamAuth,
 ) -> Result<CompiledDregg180HemStream, String> {
-    let settlement = verify_payable_compute_receipt_and_settle(lease, rom, payable_receipt_bytes, None)?;
+    let settlement =
+        verify_payable_compute_receipt_and_settle(lease, rom, payable_receipt_bytes, None)?;
     let parsed = PayableComputeReceipt::from_bytes(payable_receipt_bytes)?;
     let content_root = parsed.commitment.content_root;
     let mut qwen_buf = [0u8; 96];
@@ -4716,7 +5261,7 @@ pub fn bridge_payable_compute_receipt_to_dregg180_stream(
             claim_digest: fincert_claim_dig,
         },
     ];
-    compile_deferred_leaves_to_dregg180_hem_stream(claims, pin_mode, k_mac_opt)
+    compile_deferred_leaves_to_dregg180_hem_stream(claims, auth.pin_mode, auth.k_mac_opt)
 }
 
 // ================================================================================================
@@ -4724,13 +5269,48 @@ pub fn bridge_payable_compute_receipt_to_dregg180_stream(
 //     Sumcheck + `Absent("sk-")` 4-State DFA `GoldilocksExt4` `OP_HEM` AIR & `[0, 2^16)` LogUp
 // ================================================================================================
 
-const CANOPY_KEY_VK: [u64; 4] = [0x4452_4731_564B_0001, 0x4341_4E50_0000_0010, 0x564B_5330_0000_0001, P2_IV];
-const CANOPY_KEY_BYTES: [u64; 4] = [0x4452_4731_4259_0002, 0x4341_4E50_0000_0020, 0x4259_5330_0000_0002, P2_IV];
-const CANOPY_KEY_WIT1: [u64; 4] = [0x4452_4731_5731_0003, 0x4341_4E50_0000_0030, 0x5731_5330_0000_0003, P2_IV];
-const CANOPY_KEY_WIT2: [u64; 4] = [0x4452_4731_5732_0004, 0x4341_4E50_0000_0040, 0x5732_5330_0000_0004, P2_IV];
-const CANOPY_KEY_MRNG: [u64; 4] = [0x4452_4731_4D52_0005, 0x4341_4E50_0000_0050, 0x4D52_5330_0000_0005, P2_IV];
-const CANOPY_KEY_HRNG: [u64; 4] = [0x4452_4731_4852_0006, 0x4341_4E50_0000_0060, 0x4852_5330_0000_0006, P2_IV];
-const CANOPY_KEY_WBB: [u64; 4] = [0x4452_4731_5742_0007, 0x4341_4E50_0000_0070, 0x5742_5330_0000_0007, P2_IV];
+const CANOPY_KEY_VK: [u64; 4] = [
+    0x4452_4731_564B_0001,
+    0x4341_4E50_0000_0010,
+    0x564B_5330_0000_0001,
+    P2_IV,
+];
+const CANOPY_KEY_BYTES: [u64; 4] = [
+    0x4452_4731_4259_0002,
+    0x4341_4E50_0000_0020,
+    0x4259_5330_0000_0002,
+    P2_IV,
+];
+const CANOPY_KEY_WIT1: [u64; 4] = [
+    0x4452_4731_5731_0003,
+    0x4341_4E50_0000_0030,
+    0x5731_5330_0000_0003,
+    P2_IV,
+];
+const CANOPY_KEY_WIT2: [u64; 4] = [
+    0x4452_4731_5732_0004,
+    0x4341_4E50_0000_0040,
+    0x5732_5330_0000_0004,
+    P2_IV,
+];
+const CANOPY_KEY_MRNG: [u64; 4] = [
+    0x4452_4731_4D52_0005,
+    0x4341_4E50_0000_0050,
+    0x4D52_5330_0000_0005,
+    P2_IV,
+];
+const CANOPY_KEY_HRNG: [u64; 4] = [
+    0x4452_4731_4852_0006,
+    0x4341_4E50_0000_0060,
+    0x4852_5330_0000_0006,
+    P2_IV,
+];
+const CANOPY_KEY_WBB: [u64; 4] = [
+    0x4452_4731_5742_0007,
+    0x4341_4E50_0000_0070,
+    0x5742_5330_0000_0007,
+    P2_IV,
+];
 const T1_BF_KEY_SEED: u64 = 0x4452_4731_5431_0000;
 const T2_BF_KEY_SEED: u64 = 0x4452_4731_5432_0000;
 const T1_STAGE_KS: &[usize] = &[3, 3, 2]; // 1 + 3 + 3 + 2 = 9 = 12 - 3 -> final_poly[8]
@@ -4743,9 +5323,7 @@ const T2_STAGE_KS: &[usize] = &[3, 3, 3, 3]; // 1 + 3 + 3 + 3 + 3 = 13 = 16 - 3 
 ///   - `3`: **INESCAPABLE SINK** — matched `"sk-"` (`45`, non-accepting!)
 #[inline]
 pub const fn no_sk_dash_step_4state(q: u8, b: u8) -> u8 {
-    if q == 3 {
-        3
-    } else if q == 2 && b == b'-' {
+    if q == 3 || (q == 2 && b == b'-') {
         3
     } else if q == 1 && b == b'k' {
         2
@@ -4779,14 +5357,26 @@ pub struct PayloadBytesCommitment {
 impl PayloadBytesCommitment {
     pub fn commit(payload: &[u8]) -> Result<Self, String> {
         if payload.len() > HEM_EXEC_ROWS {
-            return Err(format!("payload length {} exceeds HEM_EXEC_ROWS={}", payload.len(), HEM_EXEC_ROWS));
+            return Err(format!(
+                "payload length {} exceeds HEM_EXEC_ROWS={}",
+                payload.len(),
+                HEM_EXEC_ROWS
+            ));
         }
         let mut padded_bytes = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
         for (i, &b) in payload.iter().enumerate() {
             padded_bytes[i] = Goldilocks(b as u64);
         }
-        let canopy = Stage0MatrixCanopy::commit_base(1, &[padded_bytes.clone()], UD100_BLOWUP, CANOPY_KEY_BYTES);
-        Ok(Self { padded_bytes, canopy })
+        let canopy = Stage0MatrixCanopy::commit_base(
+            1,
+            &[padded_bytes.clone()],
+            UD100_BLOWUP,
+            CANOPY_KEY_BYTES,
+        );
+        Ok(Self {
+            padded_bytes,
+            canopy,
+        })
     }
 
     pub fn p2_root(&self) -> [u64; 4] {
@@ -4817,7 +5407,9 @@ pub struct BabyBearWitnessCommitment {
 impl BabyBearWitnessCommitment {
     pub fn commit(m_rounds: usize, a_vals: &[u32], b_vals: &[u32]) -> Result<Self, String> {
         if m_rounds == 0 || m_rounds > HEM_MAX_BB_ROUNDS {
-            return Err(format!("m_rounds must be in 1..={HEM_MAX_BB_ROUNDS}, got {m_rounds}"));
+            return Err(format!(
+                "m_rounds must be in 1..={HEM_MAX_BB_ROUNDS}, got {m_rounds}"
+            ));
         }
         let n_bb = 1usize << m_rounds;
         if a_vals.len() != n_bb || b_vals.len() != n_bb {
@@ -4825,14 +5417,22 @@ impl BabyBearWitnessCommitment {
         }
         let mut w_bb_col = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
         for i in 0..n_bb {
-            if (a_vals[i] as u64) >= BABYBEAR_PRIME_U64 || (b_vals[i] as u64) >= BABYBEAR_PRIME_U64 {
-                return Err("BabyBearWitnessCommitment contains non-canonical entry >= p_BB".into());
+            if (a_vals[i] as u64) >= BABYBEAR_PRIME_U64 || (b_vals[i] as u64) >= BABYBEAR_PRIME_U64
+            {
+                return Err(
+                    "BabyBearWitnessCommitment contains non-canonical entry >= p_BB".into(),
+                );
             }
             w_bb_col[HEM_ROW_WBB_START + i] = Goldilocks(a_vals[i] as u64);
             w_bb_col[HEM_ROW_WBB_START + n_bb + i] = Goldilocks(b_vals[i] as u64);
         }
-        let canopy = Stage0MatrixCanopy::commit_base(6, &[w_bb_col.clone()], UD100_BLOWUP, CANOPY_KEY_WBB);
-        Ok(Self { bb_num_rounds: m_rounds, w_bb_col, canopy })
+        let canopy =
+            Stage0MatrixCanopy::commit_base(6, &[w_bb_col.clone()], UD100_BLOWUP, CANOPY_KEY_WBB);
+        Ok(Self {
+            bb_num_rounds: m_rounds,
+            w_bb_col,
+            canopy,
+        })
     }
 
     pub fn p2_root(&self) -> [u64; 4] {
@@ -4841,9 +5441,17 @@ impl BabyBearWitnessCommitment {
 
     /// Test-only helper that commits raw `Goldilocks` entries without `< p_BB` check so adversarial tests
     /// can prove `Dregg180StreamVm` rejects a committed `W_bb` containing non-canonical `>= p_BB` entries!
-    pub fn commit_unchecked_raw(m_rounds: usize, a_vals: &[u64], b_vals: &[u64]) -> Result<Self, String> {
+    pub fn commit_unchecked_raw(
+        m_rounds: usize,
+        a_vals: &[u64],
+        b_vals: &[u64],
+    ) -> Result<Self, String> {
         let n_bb = 1usize << m_rounds;
-        if m_rounds == 0 || m_rounds > HEM_MAX_BB_ROUNDS || a_vals.len() != n_bb || b_vals.len() != n_bb {
+        if m_rounds == 0
+            || m_rounds > HEM_MAX_BB_ROUNDS
+            || a_vals.len() != n_bb
+            || b_vals.len() != n_bb
+        {
             return Err("commit_unchecked_raw dimension mismatch".into());
         }
         let mut w_bb_col = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
@@ -4851,8 +5459,13 @@ impl BabyBearWitnessCommitment {
             w_bb_col[HEM_ROW_WBB_START + i] = Goldilocks(a_vals[i]);
             w_bb_col[HEM_ROW_WBB_START + n_bb + i] = Goldilocks(b_vals[i]);
         }
-        let canopy = Stage0MatrixCanopy::commit_base(6, &[w_bb_col.clone()], UD100_BLOWUP, CANOPY_KEY_WBB);
-        Ok(Self { bb_num_rounds: m_rounds, w_bb_col, canopy })
+        let canopy =
+            Stage0MatrixCanopy::commit_base(6, &[w_bb_col.clone()], UD100_BLOWUP, CANOPY_KEY_WBB);
+        Ok(Self {
+            bb_num_rounds: m_rounds,
+            w_bb_col,
+            canopy,
+        })
     }
 
     pub fn cshake_root(&self) -> [u8; 32] {
@@ -4894,8 +5507,9 @@ impl TrustlessHemCircuitLayout {
         let mut src_b = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
         let mut src_c = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
         let mut rom_q_next = vec![Goldilocks::ZERO; HEM_EXEC_ROWS];
-        for u in 0..HEM_EXEC_ROWS {
-            rom_q_next[u] = Goldilocks(no_sk_dash_step_4state(((u >> 8) & 3) as u8, (u & 0xFF) as u8) as u64);
+        for (u, slot) in rom_q_next.iter_mut().enumerate() {
+            *slot =
+                Goldilocks(no_sk_dash_step_4state(((u >> 8) & 3) as u8, (u & 0xFF) as u8) as u64);
         }
 
         // Fixed public header rows `0..32`:
@@ -4931,22 +5545,23 @@ impl TrustlessHemCircuitLayout {
         let mut cur_row = HEM_ROW_WBB_START + 2 * n_bb;
         let mut first_mac_row = 0usize;
 
-        let mut push_gate = |is_mac: bool, sa: usize, sb: usize, sc: usize, row: &mut usize| -> usize {
-            let r = *row;
-            if is_mac {
-                if first_mac_row == 0 {
-                    first_mac_row = r;
+        let mut push_gate =
+            |is_mac: bool, sa: usize, sb: usize, sc: usize, row: &mut usize| -> usize {
+                let r = *row;
+                if is_mac {
+                    if first_mac_row == 0 {
+                        first_mac_row = r;
+                    }
+                    sel_mac[r] = Goldilocks::ONE;
+                } else {
+                    sel_eq[r] = Goldilocks::ONE;
                 }
-                sel_mac[r] = Goldilocks::ONE;
-            } else {
-                sel_eq[r] = Goldilocks::ONE;
-            }
-            src_a[r] = Goldilocks(sa as u64);
-            src_b[r] = Goldilocks(sb as u64);
-            src_c[r] = Goldilocks(sc as u64);
-            *row += 1;
-            r
-        };
+                src_a[r] = Goldilocks(sa as u64);
+                src_b[r] = Goldilocks(sb as u64);
+                src_c[r] = Goldilocks(sc as u64);
+                *row += 1;
+                r
+            };
 
         fn push_ext4_mul<F: FnMut(bool, usize, usize, usize, &mut usize) -> usize>(
             push_gate: &mut F,
@@ -4987,9 +5602,9 @@ impl TrustlessHemCircuitLayout {
         let mut claim_rows = init_claim_rows;
         for _rnd in 0..bb_num_rounds {
             let mut gr = [[0usize; 4]; 4];
-            for k in 0..4 {
-                for l in 0..4 {
-                    gr[k][l] = cur_row;
+            for gr_k in &mut gr {
+                for gr_kl in gr_k.iter_mut() {
+                    *gr_kl = cur_row;
                     pub_r_indices.push(cur_row as u64);
                     cur_row += 1;
                 }
@@ -4997,9 +5612,9 @@ impl TrustlessHemCircuitLayout {
             g_rows.push(gr);
 
             let mut fr = [0usize; 4];
-            for l in 0..4 {
+            for fr_l in &mut fr {
                 sel_fs[cur_row] = Goldilocks::ONE;
-                fr[l] = cur_row;
+                *fr_l = cur_row;
                 pub_a_indices.push(cur_row as u64);
                 cur_row += 1;
             }
@@ -5039,9 +5654,8 @@ impl TrustlessHemCircuitLayout {
         ];
         chi_rows.push(one_minus_r0);
         chi_rows.push(fs_rows[0]);
-        for rnd in 1..bb_num_rounds {
+        for &ri in fs_rows.iter().skip(1) {
             let cur_len = chi_rows.len();
-            let ri = fs_rows[rnd];
             for idx in 0..cur_len {
                 let base = chi_rows[idx];
                 let hi = push_ext4_mul(&mut push_gate, base, ri, &mut cur_row);
@@ -5109,15 +5723,25 @@ impl TrustlessHemCircuitLayout {
         let ab_prod = push_ext4_mul(&mut push_gate, eval_a, eval_b, &mut cur_row);
         let computed_term = push_ext4_mul(&mut push_gate, eq_acc, ab_prod, &mut cur_row);
         for l in 0..4 {
-            push_gate(false, claim_rows[l], computed_term[l], ROW_ZERO, &mut cur_row);
+            push_gate(
+                false,
+                claim_rows[l],
+                computed_term[l],
+                ROW_ZERO,
+                &mut cur_row,
+            );
         }
         if cur_row > HEM_EXEC_ROWS {
-            return Err(format!("circuit rows {cur_row} exceed HEM_EXEC_ROWS={HEM_EXEC_ROWS}"));
+            return Err(format!(
+                "circuit rows {cur_row} exceed HEM_EXEC_ROWS={HEM_EXEC_ROWS}"
+            ));
         }
 
         Ok(Self {
             bb_num_rounds,
-            vk_cols: vec![sel_mac, sel_eq, sel_fs, sel_wbb, src_a, src_b, src_c, rom_q_next],
+            vk_cols: vec![
+                sel_mac, sel_eq, sel_fs, sel_wbb, src_a, src_b, src_c, rom_q_next,
+            ],
             g_rows,
             fs_rows,
             pub_r_indices,
@@ -5139,7 +5763,8 @@ pub struct TrustlessHemVk {
 impl TrustlessHemVk {
     pub fn build(bb_num_rounds: usize) -> Result<Self, String> {
         let layout = TrustlessHemCircuitLayout::build(bb_num_rounds)?;
-        let canopy = Stage0MatrixCanopy::commit_base(0, &layout.vk_cols, UD100_BLOWUP, CANOPY_KEY_VK);
+        let canopy =
+            Stage0MatrixCanopy::commit_base(0, &layout.vk_cols, UD100_BLOWUP, CANOPY_KEY_VK);
         Ok(Self { layout, canopy })
     }
 
@@ -5164,11 +5789,17 @@ impl TrustlessHemVk {
 pub fn canonical_trustless_vk(bb_num_rounds: usize) -> Result<&'static TrustlessHemVk, String> {
     use std::sync::OnceLock;
     if bb_num_rounds == 0 || bb_num_rounds > HEM_MAX_BB_ROUNDS {
-        return Err(format!("bb_num_rounds must be in 1..={HEM_MAX_BB_ROUNDS}, got {bb_num_rounds}"));
+        return Err(format!(
+            "bb_num_rounds must be in 1..={HEM_MAX_BB_ROUNDS}, got {bb_num_rounds}"
+        ));
     }
     static CACHE: [OnceLock<TrustlessHemVk>; HEM_MAX_BB_ROUNDS] = [
-        OnceLock::new(), OnceLock::new(), OnceLock::new(),
-        OnceLock::new(), OnceLock::new(), OnceLock::new(),
+        OnceLock::new(),
+        OnceLock::new(),
+        OnceLock::new(),
+        OnceLock::new(),
+        OnceLock::new(),
+        OnceLock::new(),
     ];
     Ok(CACHE[bb_num_rounds - 1].get_or_init(|| {
         TrustlessHemVk::build(bb_num_rounds).expect("canonical TrustlessHemVk build")
@@ -5205,15 +5836,27 @@ pub struct VerifierExpectedTrustlessStatement {
 
 impl TrustlessHemPublicStatement {
     pub fn vk_cs_pin4(&self) -> [u64; 4] {
-        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &pack_digest32_to_5_limbs(&self.vk_cs_root))
+        p2_sponge_hash_limbs(
+            P2_DOMAIN_FS_ABSORB_LIMBS,
+            FS_INIT_CAP,
+            &pack_digest32_to_5_limbs(&self.vk_cs_root),
+        )
     }
 
     pub fn w_bb_cs_pin4(&self) -> [u64; 4] {
-        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &pack_digest32_to_5_limbs(&self.w_bb_cs_root))
+        p2_sponge_hash_limbs(
+            P2_DOMAIN_FS_ABSORB_LIMBS,
+            FS_INIT_CAP,
+            &pack_digest32_to_5_limbs(&self.w_bb_cs_root),
+        )
     }
 
     pub fn bytes_cs_pin4(&self) -> [u64; 4] {
-        p2_sponge_hash_limbs(P2_DOMAIN_FS_ABSORB_LIMBS, FS_INIT_CAP, &pack_digest32_to_5_limbs(&self.bytes_cs_root))
+        p2_sponge_hash_limbs(
+            P2_DOMAIN_FS_ABSORB_LIMBS,
+            FS_INIT_CAP,
+            &pack_digest32_to_5_limbs(&self.bytes_cs_root),
+        )
     }
 
     /// Strict statement-ingress canonicality check (`L3` + BabyBear canonicality + unused-slot zeroing).
@@ -5230,15 +5873,21 @@ impl TrustlessHemPublicStatement {
             ("bytes_p2_root", self.bytes_p2_root),
         ] {
             if root.iter().any(|&w| w >= GOLDILOCKS_PRIME) {
-                return Err(format!("statement {name} contains non-canonical Goldilocks limb >= p_GL"));
+                return Err(format!(
+                    "statement {name} contains non-canonical Goldilocks limb >= p_GL"
+                ));
             }
         }
         if !self.bb_initial_claim.is_canonical() {
-            return Err("statement contains non-canonical BabyBear Ext4 initial claim >= p_BB".into());
+            return Err(
+                "statement contains non-canonical BabyBear Ext4 initial claim >= p_BB".into(),
+            );
         }
         for i in 0..self.bb_num_rounds {
             if !self.bb_tau[i].is_canonical() {
-                return Err(format!("statement bb_tau[{i}] contains non-canonical limb >= p_BB"));
+                return Err(format!(
+                    "statement bb_tau[{i}] contains non-canonical limb >= p_BB"
+                ));
             }
         }
         for i in self.bb_num_rounds..HEM_MAX_BB_ROUNDS {
@@ -5302,13 +5951,16 @@ pub fn prove_child_babybear_ext4_cubic_sumcheck(
     tau_bb: &[BbExt4],
 ) -> Result<ChildBabyBearSumcheckTranscript, String> {
     let n = 1usize << m_rounds;
-    if m_rounds == 0 || m_rounds > HEM_MAX_BB_ROUNDS || a_vals.len() != n || b_vals.len() != n || tau_bb.len() != m_rounds {
+    if m_rounds == 0
+        || m_rounds > HEM_MAX_BB_ROUNDS
+        || a_vals.len() != n
+        || b_vals.len() != n
+        || tau_bb.len() != m_rounds
+    {
         return Err("child BabyBear sumcheck dimension mismatch".into());
     }
     let mut tau_arr = [BbExt4::ZERO; HEM_MAX_BB_ROUNDS];
-    for j in 0..m_rounds {
-        tau_arr[j] = tau_bb[j];
-    }
+    tau_arr[..m_rounds].copy_from_slice(&tau_bb[..m_rounds]);
     let mut eq_t = crate::ext4::build_eq_table_lsb_ext4(tau_bb);
     let mut a_t: Vec<BbExt4> = a_vals.iter().map(|&v| BbExt4::from_bb(v)).collect();
     let mut b_t: Vec<BbExt4> = b_vals.iter().map(|&v| BbExt4::from_bb(v)).collect();
@@ -5341,7 +5993,8 @@ pub fn prove_child_babybear_ext4_cubic_sumcheck(
 
     for rnd in 0..m_rounds {
         let half = a_t.len() / 2;
-        let (mut y0, mut y1, mut y2, mut y3) = (BbExt4::ZERO, BbExt4::ZERO, BbExt4::ZERO, BbExt4::ZERO);
+        let (mut y0, mut y1, mut y2, mut y3) =
+            (BbExt4::ZERO, BbExt4::ZERO, BbExt4::ZERO, BbExt4::ZERO);
         for i in 0..half {
             let (e0, e1) = (eq_t[2 * i], eq_t[2 * i + 1]);
             let (u0, u1) = (a_t[2 * i], a_t[2 * i + 1]);
@@ -5374,17 +6027,20 @@ pub fn prove_child_babybear_ext4_cubic_sumcheck(
         let poly = [c0, c1, c2, c3];
         round_polys.push(poly);
 
-        for k in 0..4 {
+        for (k, poly_k) in poly.iter().enumerate() {
             let mut lab = *b"BB_SC_G0";
             lab[7] = b'0' + (k as u8);
-            let limbs4 = poly[k].0.map(|x| x as u64);
+            let limbs4 = poly_k.0.map(|x| x as u64);
             ch = fs_absorb_limbs_local(ch, &lab, &limbs4);
         }
         let raw_ext = fs_squeeze_ext4_local(ch, b"BB_SC_RAW_R", rnd as u64);
         let raw4 = raw_ext.to_u64_limbs();
         for &w in &raw4 {
             if w / BABYBEAR_PRIME_U64 > BABYBEAR_FS_Q_SAFE {
-                return Err("squeezed Goldilocks challenge exceeded BABYBEAR_FS_Q_SAFE tail (prob 4.7e-11)".into());
+                return Err(
+                    "squeezed Goldilocks challenge exceeded BABYBEAR_FS_Q_SAFE tail (prob 4.7e-11)"
+                        .into(),
+                );
             }
         }
         let r_bb = BbExt4([
@@ -5570,7 +6226,9 @@ fn eval_g_exec_point(
     // C_17: bind Table 1 witness rows `32..32+2^{m+1}` to the public committed `W_bb` Canopy column!
     let c17 = sel_wbb * (r_val - w_bb);
 
-    let cs = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17];
+    let cs = [
+        c0, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13, c14, c15, c16, c17,
+    ];
     let mut zero_acc = GoldilocksExt4::ZERO;
     let mut ap = GoldilocksExt4::ONE;
     for &ck in &cs {
@@ -5580,14 +6238,14 @@ fn eval_g_exec_point(
     // `ap == alpha_exec^18` now:
     let mut tot = eq_tau * zero_acc;
     let sum_terms = [
-        h_w01 + h_w2r,                                     // 18
-        h_dfa,                                             // 19
-        h_sh,                                              // 20
-        h_rng0 + h_rng1 + h_rng2 + h_rng3 + h_rng4,        // 21
-        pub_sel_r * r_val,                                 // 22
-        pub_sel_a * a,                                     // 23
-        eq_first * dfa_s,                                  // 24
-        eq_last * dfa_s_next,                              // 25
+        h_w01 + h_w2r,                              // 18
+        h_dfa,                                      // 19
+        h_sh,                                       // 20
+        h_rng0 + h_rng1 + h_rng2 + h_rng3 + h_rng4, // 21
+        pub_sel_r * r_val,                          // 22
+        pub_sel_a * a,                              // 23
+        eq_first * dfa_s,                           // 24
+        eq_last * dfa_s_next,                       // 25
     ];
     for &st in &sum_terms {
         tot = tot + ap * st;
@@ -5673,7 +6331,9 @@ fn emit_checked_evals37_load(
     latches: &[(usize, u8)],
 ) {
     debug_assert!(
-        latches.iter().all(|&(_, dst)| dst != R_T0 && dst != R_X && dst != R_Y),
+        latches
+            .iter()
+            .all(|&(_, dst)| dst != R_T0 && dst != R_X && dst != R_Y),
         "emit_checked_evals37_load latches must not target clobbered scratch regs R_T0/R_X/R_Y"
     );
     emit_zero_reg(asm, R_Y);
@@ -5694,10 +6354,24 @@ fn emit_checked_evals37_load(
 }
 
 /// Helper: squeeze a Fiat-Shamir `GoldilocksExt4` challenge from a saved checkpoint register `ckpt_reg`!
-fn emit_squeeze_from_ckpt(asm: &mut Dregg180HvmAssembler, dst: u8, ckpt_reg: u8, label: &[u8], ctr: u64) {
+fn emit_squeeze_from_ckpt(
+    asm: &mut Dregg180HvmAssembler,
+    dst: u8,
+    ckpt_reg: u8,
+    label: &[u8],
+    ctr: u64,
+) {
     let mut imm = pack_bytes_7_limbs(label);
     imm.push(ctr);
-    asm.hash(dst, Some(ckpt_reg), P2_DOMAIN_FS_SQUEEZE_EXT4, &imm, &[], 0, 0);
+    asm.hash(HvmHashOp {
+        dst,
+        cap_reg: Some(ckpt_reg),
+        domain: P2_DOMAIN_FS_SQUEEZE_EXT4,
+        imm: &imm,
+        proof: &[],
+        latch: 0,
+        skip: 0,
+    });
 }
 
 /// Single unified deterministic bytecode emitter for BOTH:
@@ -5724,7 +6398,15 @@ fn emit_trustless_hem_stream(
         UD100_NUM_QUERIES as u64,
         UD100_POW_BITS as u64,
     ]);
-    asm.hash(R_CH, None, P2_DOMAIN_FS_BIND_REL, &rel_imm, &[], 0, 0);
+    asm.hash(HvmHashOp {
+        dst: R_CH,
+        cap_reg: None,
+        domain: P2_DOMAIN_FS_BIND_REL,
+        imm: &rel_imm,
+        proof: &[],
+        latch: 0,
+        skip: 0,
+    });
     asm.absorb_limbs_immediate(b"VK_P2_ROOT", &stmt.vk_p2_root, 0, 0);
     asm.absorb_limbs_immediate(b"VK_CS_ROOT", &stmt.vk_cs_pin4(), 0, 0);
     asm.absorb_limbs_immediate(b"WBB_P2_ROOT", &stmt.w_bb_p2_root, 0, 0);
@@ -5767,7 +6449,13 @@ fn emit_trustless_hem_stream(
     emit_zero_reg(&mut asm, 14); // `t1_root_bundle`
     emit_zero_reg(&mut asm, 15); // `t2_root_bundle`
     let (w1_p2, w1_cs, mr_p2, mr_cs, s_term_w) = match proof {
-        Some(p) => (p.wit1_p2_root, p.wit1_cs_pin4, p.mrng_p2_root, p.mrng_cs_pin4, p.s_terminal.to_u64_limbs()),
+        Some(p) => (
+            p.wit1_p2_root,
+            p.wit1_cs_pin4,
+            p.mrng_p2_root,
+            p.mrng_cs_pin4,
+            p.s_terminal.to_u64_limbs(),
+        ),
         None => (zero4, zero4, zero4, zero4, zero4),
     };
     asm.absorb_limbs_proof(b"WIT1_P2_ROOT", &w1_p2, R_X, 0);
@@ -5780,13 +6468,13 @@ fn emit_trustless_hem_stream(
     emit_compress_reg(&mut asm, 15, R_X, 0x2002);
     asm.absorb_limbs_proof(b"DFA_S_TERM", &s_term_w, R_X, 0);
     emit_copy_reg(&mut asm, 9, R_X); // `R_9 = s_terminal`
-    // Enforce `s_terminal * (s_terminal - 1) * (s_terminal - 2) == 0` right on chip (`s_T ∈ {0, 1, 2}`!):
+                                     // Enforce `s_terminal * (s_terminal - 1) * (s_terminal - 2) == 0` right on chip (`s_T ∈ {0, 1, 2}`!):
     asm.load(R_Y, &[1, 0, 0, 0], true);
-    asm.esub(R_A, 9, R_Y);       // s - 1
-    asm.emul(R_A, 9, R_A);       // s * (s - 1)
+    asm.esub(R_A, 9, R_Y); // s - 1
+    asm.emul(R_A, 9, R_A); // s * (s - 1)
     asm.load(R_Y, &[2, 0, 0, 0], true);
-    asm.esub(R_B, 9, R_Y);       // s - 2
-    asm.emul(R_A, R_A, R_B);     // s * (s - 1) * (s - 2)
+    asm.esub(R_B, 9, R_Y); // s - 2
+    asm.emul(R_A, R_A, R_B); // s * (s - 1) * (s - 2)
     emit_zero_reg(&mut asm, R_Y);
     asm.assert_eq(R_A, R_Y);
 
@@ -5797,7 +6485,13 @@ fn emit_trustless_hem_stream(
     // Round 4: Commit Phase-2 LogUp Helpers (`wit2`, `h_rng_tab`) + `S_rng16`
     // --------------------------------------------------------------------------------------------
     let (w2_p2, w2_cs, hr_p2, hr_cs, s_rng_w) = match proof {
-        Some(p) => (p.wit2_p2_root, p.wit2_cs_pin4, p.hrng_p2_root, p.hrng_cs_pin4, p.s_rng16.to_u64_limbs()),
+        Some(p) => (
+            p.wit2_p2_root,
+            p.wit2_cs_pin4,
+            p.hrng_p2_root,
+            p.hrng_cs_pin4,
+            p.s_rng16.to_u64_limbs(),
+        ),
         None => (zero4, zero4, zero4, zero4, zero4),
     };
     asm.absorb_limbs_proof(b"WIT2_P2_ROOT", &w2_p2, R_X, 0);
@@ -5818,8 +6512,8 @@ fn emit_trustless_hem_stream(
     // Round 5 + Pass 2: Compute `PubRhs_r` (`R_6`) and `PubRhs_a` (`R_7`) and assert Pass 2 == Pass 1 (`R_12`)!
     // --------------------------------------------------------------------------------------------
     emit_squeeze_from_ckpt(&mut asm, R_B, 10, b"SC_LAMBDA_PUB", 0); // `R_B = lambda_pub`
-    emit_zero_reg(&mut asm, 6);  // `PubRhs_r` (Horner over `pub_r_indices`)
-    emit_zero_reg(&mut asm, 7);  // `PubRhs_a` (Horner over `pub_a_indices`)
+    emit_zero_reg(&mut asm, 6); // `PubRhs_r` (Horner over `pub_r_indices`)
+    emit_zero_reg(&mut asm, 7); // `PubRhs_a` (Horner over `pub_a_indices`)
     emit_zero_reg(&mut asm, 13); // `pass2_digest_check`
 
     // Prefix of `pub_r`: constants `[0, 1, 11, p_BB - 1]`, `bb_initial_claim[0..4]`, `bb_tau[0..m][0..4]` (all immediates!):
@@ -5843,38 +6537,33 @@ fn emit_trustless_hem_stream(
         asm.load(R_X, &[val, 0, 0, 0], true);
         asm.eadd(6, 6, R_X);
     }
-    let basis_e: [[u64; 4]; 4] = [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-    ];
+    let basis_e: [[u64; 4]; 4] = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
     let inv7 = Goldilocks::SEVEN.inv().0;
     for rnd in 0..m {
         for k in 0..4 {
             emit_zero_reg(&mut asm, R_A); // reconstruct 4-limb `g_i[k]`
-            for l in 0..4 {
+            for (l, basis_l) in basis_e.iter().enumerate() {
                 let limb = proof.map_or(0u64, |p| p.bb_round_polys[rnd][k].0[l] as u64);
                 asm.push_rec(H_LOAD, R_X, 0, 0, vec![0, 0, 0, limb], 3);
                 asm.load(R_Y, &[0, 0, inv7, 0], true);
                 asm.emul(R_X, R_X, R_Y); // `R_X = [limb, 0, 0, 0]` GUARANTEED pure base-field!
                 asm.emul(6, 6, R_B);
                 asm.eadd(6, 6, R_X); // `PubRhs_r = PubRhs_r * lambda + limb`
-                asm.load(R_Y, &basis_e[l], true);
+                asm.load(R_Y, basis_l, true);
                 asm.emul(R_T0, R_X, R_Y);
                 asm.eadd(R_A, R_A, R_T0); // accumulate exact 4-limb `Ext4` `g_i[k]`
             }
             emit_compress_reg(&mut asm, 13, R_A, 0xB000 + ((rnd * 5 + k) as u64));
         }
         emit_zero_reg(&mut asm, R_A); // reconstruct 4-limb `raw_r_i`
-        for l in 0..4 {
+        for (l, basis_l) in basis_e.iter().enumerate() {
             let limb = proof.map_or(0u64, |p| p.bb_raw_chals[rnd][l]);
             asm.push_rec(H_LOAD, R_X, 0, 0, vec![0, 0, 0, limb], 3);
             asm.load(R_Y, &[0, 0, inv7, 0], true);
             asm.emul(R_X, R_X, R_Y); // `R_X = [limb, 0, 0, 0]` GUARANTEED pure base-field!
             asm.emul(7, 7, R_B);
             asm.eadd(7, 7, R_X); // `PubRhs_a = PubRhs_a * lambda + limb`
-            asm.load(R_Y, &basis_e[l], true);
+            asm.load(R_Y, basis_l, true);
             asm.emul(R_T0, R_X, R_Y);
             asm.eadd(R_A, R_A, R_T0);
         }
@@ -5896,17 +6585,17 @@ fn emit_trustless_hem_stream(
     for _ in 0..21 {
         asm.emul(R_X, R_X, R_B); // `R_X = alpha^21`
     }
-    asm.emul(R_A, R_X, 8);       // `alpha^21 * S_rng16`
-    asm.emul(R_X, R_X, R_B);     // `alpha^22`
+    asm.emul(R_A, R_X, 8); // `alpha^21 * S_rng16`
+    asm.emul(R_X, R_X, R_B); // `alpha^22`
     asm.emul(R_T0, R_X, 6);
-    asm.eadd(R_A, R_A, R_T0);    // `+ alpha^22 * PubRhs_r`
-    asm.emul(R_X, R_X, R_B);     // `alpha^23`
+    asm.eadd(R_A, R_A, R_T0); // `+ alpha^22 * PubRhs_r`
+    asm.emul(R_X, R_X, R_B); // `alpha^23`
     asm.emul(R_T0, R_X, 7);
-    asm.eadd(R_A, R_A, R_T0);    // `+ alpha^23 * PubRhs_a`
-    asm.emul(R_X, R_X, R_B);     // `alpha^24`
-    asm.emul(R_X, R_X, R_B);     // `alpha^25`
+    asm.eadd(R_A, R_A, R_T0); // `+ alpha^23 * PubRhs_a`
+    asm.emul(R_X, R_X, R_B); // `alpha^24`
+    asm.emul(R_X, R_X, R_B); // `alpha^25`
     asm.emul(R_T0, R_X, 9);
-    asm.eadd(R_A, R_A, R_T0);    // `+ alpha^25 * s_terminal`
+    asm.eadd(R_A, R_A, R_T0); // `+ alpha^25 * s_terminal`
 
     // Execute 10 rounds of degree-4 sumcheck (`c0, c2, c3, c4` sent; `c1 = claim - 2*c0 - c2 - c3 - c4`):
     // Use `R_6 = c0, R_7 = c2, R_9 = c3, R_12 = c4` (all free now!).
@@ -5972,12 +6661,13 @@ fn emit_trustless_hem_stream(
     };
 
     // Helper: compute `lo + 2^16 * hi` into `dst` using `tmp` (neither `R_T0`, `R_X`, nor `R_Y`!):
-    let load_lin2 = |asm: &mut Dregg180HvmAssembler, idx_lo: usize, idx_hi: usize, dst: u8, tmp: u8| {
-        emit_checked_evals37_load(asm, evals_opt, 12, &[(idx_lo, dst), (idx_hi, tmp)]);
-        asm.load(R_Y, &[1u64 << 16, 0, 0, 0], true);
-        asm.emul(tmp, tmp, R_Y);
-        asm.eadd(dst, dst, tmp);
-    };
+    let load_lin2 =
+        |asm: &mut Dregg180HvmAssembler, idx_lo: usize, idx_hi: usize, dst: u8, tmp: u8| {
+            emit_checked_evals37_load(asm, evals_opt, 12, &[(idx_lo, dst), (idx_hi, tmp)]);
+            asm.load(R_Y, &[1u64 << 16, 0, 0, 0], true);
+            asm.emul(tmp, tmp, R_Y);
+            asm.eadd(dst, dst, tmp);
+        };
 
     // C_0 = sel_mac (0) * (a (10) * b (11) + c (12) - q_val (17,18) * p_BB - r_val (13,14)):
     emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(10, R_A), (11, R_B), (12, 6)]);
@@ -6080,11 +6770,11 @@ fn emit_trustless_hem_stream(
     asm.load(R_Y, &[1, 0, 0, 0], true);
     asm.esub(R_A, R_Y, R_A); // `1 - sel_fs`
     asm.emul(R_A, R_A, R_B); // `(1 - sel_fs) * dw_b`
-    asm.eadd(R_A, R_A, 6);   // `R_A = (1 - sel_fs)*dw_b + dw_a`
-    asm.emul(6, 6, R_B);     // `6 = dw_a * dw_b`
+    asm.eadd(R_A, R_A, 6); // `R_A = (1 - sel_fs)*dw_b + dw_a`
+    asm.emul(6, 6, R_B); // `6 = dw_a * dw_b`
     emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(28, R_B)]); // `h_w01`
     asm.emul(6, R_B, 6);
-    asm.esub(6, 6, R_A);     // `C_8`
+    asm.esub(6, 6, R_A); // `C_8`
     add_c_term(&mut asm, 6);
 
     // C_9 (`h_w2r` = 29): `h_w2r * dw_c * dw_r - (dw_r - m_wire * dw_c)`:
@@ -6102,12 +6792,12 @@ fn emit_trustless_hem_stream(
     emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_W", 0);
     asm.esub(R_B, R_T0, R_A); // `R_B = dw_r`
     emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(23, R_A)]); // `m_wire`
-    asm.emul(R_A, R_A, 6);   // `m_wire * dw_c`
+    asm.emul(R_A, R_A, 6); // `m_wire * dw_c`
     asm.esub(R_A, R_B, R_A); // `R_A = dw_r - m_wire * dw_c`
-    asm.emul(6, 6, R_B);     // `6 = dw_c * dw_r`
+    asm.emul(6, 6, R_B); // `6 = dw_c * dw_r`
     emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(29, R_B)]); // `h_w2r`
     asm.emul(6, R_B, 6);
-    asm.esub(6, 6, R_A);     // `C_9`
+    asm.esub(6, 6, R_A); // `C_9`
     add_c_term(&mut asm, 6);
 
     // C_10 (`h_dfa` = 30): `h_dfa * dd_l * dd_r - (dd_r - m_dfa_rom * dd_l)`:
@@ -6134,10 +6824,10 @@ fn emit_trustless_hem_stream(
     emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(27, R_A)]); // `m_dfa_rom`
     asm.emul(R_A, R_A, 6);
     asm.esub(R_A, R_B, R_A); // `R_A = dd_r - m_dfa_rom * dd_l`
-    asm.emul(6, 6, R_B);     // `6 = dd_l * dd_r`
+    asm.emul(6, 6, R_B); // `6 = dd_l * dd_r`
     emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(30, R_B)]); // `h_dfa`
     asm.emul(6, R_B, 6);
-    asm.esub(6, 6, R_A);     // `C_10`
+    asm.esub(6, 6, R_A); // `C_10`
     add_c_term(&mut asm, 6);
 
     // C_11 (`h_sh` = 31): `h_sh * ds_l * ds_r - ((1 - eq_last)*ds_r - (1 - eq_first)*ds_l)`:
@@ -6179,7 +6869,12 @@ fn emit_trustless_hem_stream(
         (35, 20, 21),
         (36, 8, 26),
     ] {
-        emit_checked_evals37_load(&mut asm, evals_opt, 12, &[(h_idx, 6), (x0_idx, R_A), (x1_idx, R_B)]);
+        emit_checked_evals37_load(
+            &mut asm,
+            evals_opt,
+            12,
+            &[(h_idx, 6), (x0_idx, R_A), (x1_idx, R_B)],
+        );
         emit_squeeze_from_ckpt(&mut asm, R_T0, 11, b"LU_BETA_16", 0);
         asm.esub(R_A, R_T0, R_A); // `d0`
         asm.esub(R_B, R_T0, R_B); // `d1`
@@ -6284,8 +6979,18 @@ fn emit_trustless_hem_stream(
 
     // `16`-bit PoW #1 (`H1` fix: single nonce read hashed ONCE directly into `R_CH`, checked on `R_CH`,
     // and immediately used as query seed — zero decoupled second read!):
-    let t1_pow_w = proof.map_or([0u64; 2], |p| [p.t1_pow_nonce & 0xFFFF_FFFF, p.t1_pow_nonce >> 32]);
-    asm.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_POW_T1, &[], &t1_pow_w, 0, 0);
+    let t1_pow_w = proof.map_or([0u64; 2], |p| {
+        [p.t1_pow_nonce & 0xFFFF_FFFF, p.t1_pow_nonce >> 32]
+    });
+    asm.hash(HvmHashOp {
+        dst: R_CH,
+        cap_reg: Some(R_CH),
+        domain: P2_DOMAIN_FS_POW_T1,
+        imm: &[],
+        proof: &t1_pow_w,
+        latch: 0,
+        skip: 0,
+    });
     asm.assert_pow(R_CH, UD100_POW_BITS);
 
     // Reload Table 1's prover roots into `R_6..R_12` (`R_13` already holds `eta_1`!) and verify `compress(...) == R_14`!
@@ -6312,9 +7017,24 @@ fn emit_trustless_hem_stream(
 
     // Execute `122` Transcript-Bound Dual-Canopy Query Chains on Table 1 (`N_exec = 4096`, `depth_0 = 14`):
     let t1_s_keys: [[u64; 4]; 3] = [
-        [T1_BF_KEY_SEED ^ 1, 0x4341_4E50_0000_0000, 0x4246_5354_0000_0000, P2_IV],
-        [T1_BF_KEY_SEED ^ 2, 0x4341_4E50_0000_0001, 0x4246_5354_0000_0003, P2_IV],
-        [T1_BF_KEY_SEED ^ 3, 0x4341_4E50_0000_0002, 0x4246_5354_0000_0006, P2_IV],
+        [
+            T1_BF_KEY_SEED ^ 1,
+            0x4341_4E50_0000_0000,
+            0x4246_5354_0000_0000,
+            P2_IV,
+        ],
+        [
+            T1_BF_KEY_SEED ^ 2,
+            0x4341_4E50_0000_0001,
+            0x4246_5354_0000_0003,
+            P2_IV,
+        ],
+        [
+            T1_BF_KEY_SEED ^ 3,
+            0x4341_4E50_0000_0002,
+            0x4246_5354_0000_0006,
+            P2_IV,
+        ],
     ];
     let dummy_sib14_p2 = vec![zero4; 14];
     let dummy_sib14_cs = vec![[0u8; 32]; 14];
@@ -6334,13 +7054,40 @@ fn emit_trustless_hem_stream(
 
         // Stage 0a: `vk` (`8` base cols, public roots `vk_p2_root` & `vk_cs_pin4`!)
         asm.load(14, &CANOPY_KEY_VK, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
-        asm.fiber_acc(0, false, true, true, 14, 13, 8, q.map_or(&dummy_w16, |x| &x.vk_words));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 0,
+                is_ext4: false,
+                reset_acc: true,
+                use_cs_leaf: true,
+                key_reg: 14,
+                eta_reg: 13,
+                num_cols: 8,
+            },
+            q.map_or(&dummy_w16, |x| &x.vk_words),
+        );
         asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.vk_p2_sibs));
         asm.load(R_Y, &stmt.vk_p2_root, true);
         asm.assert_eq(R_X, R_Y);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
         asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.vk_cs_sibs));
         asm.load(R_Y, &stmt.vk_cs_pin4(), true);
@@ -6348,13 +7095,40 @@ fn emit_trustless_hem_stream(
 
         // Stage 0b: `bytes` (`1` base col, public payload roots `bytes_p2_root` & `bytes_cs_pin4`!)
         asm.load(14, &CANOPY_KEY_BYTES, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
-        asm.fiber_acc(1, false, false, true, 14, 13, 1, q.map_or(&dummy_w2, |x| &x.bytes_words));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 1,
+                is_ext4: false,
+                reset_acc: false,
+                use_cs_leaf: true,
+                key_reg: 14,
+                eta_reg: 13,
+                num_cols: 1,
+            },
+            q.map_or(&dummy_w2, |x| &x.bytes_words),
+        );
         asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.bytes_p2_sibs));
         asm.load(R_Y, &stmt.bytes_p2_root, true);
         asm.assert_eq(R_X, R_Y);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
         asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.bytes_cs_sibs));
         asm.load(R_Y, &stmt.bytes_cs_pin4(), true);
@@ -6362,13 +7136,40 @@ fn emit_trustless_hem_stream(
 
         // Stage 0c: `w_bb` (`1` base col, public child witness roots `w_bb_p2_root` & `w_bb_cs_pin4`!)
         asm.load(14, &CANOPY_KEY_WBB, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
-        asm.fiber_acc(6, false, false, true, 14, 13, 1, q.map_or(&dummy_w2, |x| &x.w_bb_words));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 6,
+                is_ext4: false,
+                reset_acc: false,
+                use_cs_leaf: true,
+                key_reg: 14,
+                eta_reg: 13,
+                num_cols: 1,
+            },
+            q.map_or(&dummy_w2, |x| &x.w_bb_words),
+        );
         asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.w_bb_p2_sibs));
         asm.load(R_Y, &stmt.w_bb_p2_root, true);
         asm.assert_eq(R_X, R_Y);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
         asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.w_bb_cs_sibs));
         asm.load(R_Y, &stmt.w_bb_cs_pin4(), true);
@@ -6376,24 +7177,78 @@ fn emit_trustless_hem_stream(
 
         // Stage 0d: `wit1` (`18` base cols -> `R_6`, `R_7`)
         asm.load(14, &CANOPY_KEY_WIT1, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
-        asm.fiber_acc(2, false, false, true, 14, 13, 18, q.map_or(&dummy_w36, |x| &x.wit1_words));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 2,
+                is_ext4: false,
+                reset_acc: false,
+                use_cs_leaf: true,
+                key_reg: 14,
+                eta_reg: 13,
+                num_cols: 18,
+            },
+            q.map_or(&dummy_w36, |x| &x.wit1_words),
+        );
         asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.wit1_p2_sibs));
         asm.assert_eq(R_X, 6);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
         asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.wit1_cs_sibs));
         asm.assert_eq(R_X, 7);
 
         // Stage 0e: `wit2` (`9` Ext4 cols -> `R_8`, `R_9`)
         asm.load(14, &CANOPY_KEY_WIT2, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
-        asm.fiber_acc(3, true, false, true, 14, 13, 9, q.map_or(&dummy_w72, |x| &x.wit2_words));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 3,
+                is_ext4: true,
+                reset_acc: false,
+                use_cs_leaf: true,
+                key_reg: 14,
+                eta_reg: 13,
+                num_cols: 9,
+            },
+            q.map_or(&dummy_w72, |x| &x.wit2_words),
+        );
         asm.merkle(14, f0, q.map_or(&dummy_sib14_p2, |x| &x.wit2_p2_sibs));
         asm.assert_eq(R_X, 8);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 14);
         asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib14_cs, |x| &x.wit2_cs_sibs));
         asm.assert_eq(R_X, 9);
@@ -6403,15 +7258,35 @@ fn emit_trustless_hem_stream(
 
         // Stages 1, 2, 3 (`k = 3, 3, 2`, `log_n_cur = 14, 11, 8`, `round_start = 1, 4, 7`, roots in `R_10, R_11, R_12`):
         for (s_idx, &(fk, log_n_cur, rnd_st, root_reg)) in
-            [(3u8, 14u8, 1u8, 10u8), (3, 11, 4, 11), (2, 8, 7, 12)].iter().enumerate()
+            [(3u8, 14u8, 1u8, 10u8), (3, 11, 4, 11), (2, 8, 7, 12)]
+                .iter()
+                .enumerate()
         {
-            let default_fib = if fk == 3 { dummy_fib8_t1.as_slice() } else { dummy_fib4_t1.as_slice() };
+            let default_fib = if fk == 3 {
+                dummy_fib8_t1.as_slice()
+            } else {
+                dummy_fib4_t1.as_slice()
+            };
             let (fi, fib, sibs) = match q {
-                Some(x) => (x.stage_fibers[s_idx].0, x.stage_fibers[s_idx].1.as_slice(), x.stage_fibers[s_idx].2.as_slice()),
+                Some(x) => (
+                    x.stage_fibers[s_idx].0,
+                    x.stage_fibers[s_idx].1.as_slice(),
+                    x.stage_fibers[s_idx].2.as_slice(),
+                ),
                 None => (0u32, default_fib, dummy_sibs_t1[s_idx].as_slice()),
             };
             asm.load(14, &t1_s_keys[s_idx], true);
-            asm.bf_fold_fiber(fk, log_n_cur, 14, rnd_st, R_A, R_A, fib);
+            asm.bf_fold_fiber(
+                HvmFoldFiberCfg {
+                    fold_k: fk,
+                    log_n_cur,
+                    key_reg: 14,
+                    round_start: rnd_st,
+                    expected_reg: R_A,
+                    dst_reg: R_A,
+                },
+                fib,
+            );
             asm.merkle(14, fi, sibs);
             asm.assert_eq(R_X, root_reg);
         }
@@ -6489,7 +7364,10 @@ fn emit_trustless_hem_stream(
     // Absorb `m_rng16(z_rng)` (`R_13`) and `h_rng_tab(z_rng)` (`R_14`), verify exact `G_rng(z_rng) == R_A`:
     // `G_rng(z) = eq(tau_rng, z) * (h_rng_tab(z) * (beta_16 - id(z)) - m_rng16(z)) + alpha_rng * h_rng_tab(z)`!
     let (m_ev_w, h_ev_w) = match proof {
-        Some(p) => (p.t2_evals_2[0].to_u64_limbs(), p.t2_evals_2[1].to_u64_limbs()),
+        Some(p) => (
+            p.t2_evals_2[0].to_u64_limbs(),
+            p.t2_evals_2[1].to_u64_limbs(),
+        ),
         None => (zero4, zero4),
     };
     asm.absorb_limbs_proof(b"T2_EV_M", &m_ev_w, R_X, 0);
@@ -6498,15 +7376,15 @@ fn emit_trustless_hem_stream(
     emit_copy_reg(&mut asm, 14, R_X);
 
     emit_squeeze_from_ckpt(&mut asm, R_X, 12, b"LU_BETA_16", 0); // `beta_16` from `ch_logup_ckpt`
-    asm.bf_eval_public_mle_z(HEM_RNG16_VARS as u8, 0, R_Y);      // `id(z_rng)`
-    asm.esub(R_X, R_X, R_Y);                                     // `beta_16 - id(z_rng)`
-    asm.emul(R_X, 14, R_X);                                      // `h_rng * (beta_16 - id)`
-    asm.esub(R_X, R_X, 13);                                      // `- m_rng16`
-    asm.bf_eval_eq_tau_z(HEM_RNG16_VARS as u8, R_Y);             // `eq(tau_rng, z_rng)`
-    asm.emul(R_X, R_X, R_Y);                                     // `eq * (...)`
+    asm.bf_eval_public_mle_z(HEM_RNG16_VARS as u8, 0, R_Y); // `id(z_rng)`
+    asm.esub(R_X, R_X, R_Y); // `beta_16 - id(z_rng)`
+    asm.emul(R_X, 14, R_X); // `h_rng * (beta_16 - id)`
+    asm.esub(R_X, R_X, 13); // `- m_rng16`
+    asm.bf_eval_eq_tau_z(HEM_RNG16_VARS as u8, R_Y); // `eq(tau_rng, z_rng)`
+    asm.emul(R_X, R_X, R_Y); // `eq * (...)`
     emit_squeeze_from_ckpt(&mut asm, R_Y, 11, b"SC_ALPHA_RNG", 0); // `alpha_rng` from `ch_sc_ckpt`
-    asm.emul(R_Y, R_Y, 14);                                      // `alpha_rng * h_rng`
-    asm.eadd(R_X, R_X, R_Y);                                     // `G_rng(z_rng)`
+    asm.emul(R_Y, R_Y, 14); // `alpha_rng * h_rng`
+    asm.eadd(R_X, R_X, R_Y); // `G_rng(z_rng)`
     asm.assert_eq(R_A, R_X);
 
     // Table 2 Lockstep `UD-100` BaseFold Opening (`N_rng = 65536`, `stage_ks = &[3, 3, 3, 3]` -> `final_poly[8]`):
@@ -6518,7 +7396,7 @@ fn emit_trustless_hem_stream(
     asm.squeeze_ext4(R_B, b"T2_BF_ETA", 0);
     emit_copy_reg(&mut asm, 15, R_B); // `R_15 = eta_2`
     asm.emul(R_A, 13, 15);
-    asm.eadd(R_A, R_A, 14);           // `Y_2 = m_rng(z) * eta_2 + h_rng(z)`
+    asm.eadd(R_A, R_A, 14); // `Y_2 = m_rng(z) * eta_2 + h_rng(z)`
 
     emit_lockstep_basefold_sumcheck(
         &mut asm,
@@ -6532,16 +7410,46 @@ fn emit_trustless_hem_stream(
 
     // `16`-bit PoW #2 (`H1` fix: single nonce read hashed ONCE directly into `R_CH`, checked on `R_CH`,
     // and immediately used as Table 2 query seed — zero decoupled second read!):
-    let t2_pow_w = proof.map_or([0u64; 2], |p| [p.t2_pow_nonce & 0xFFFF_FFFF, p.t2_pow_nonce >> 32]);
-    asm.hash(R_CH, Some(R_CH), P2_DOMAIN_FS_POW_T2, &[], &t2_pow_w, 0, 0);
+    let t2_pow_w = proof.map_or([0u64; 2], |p| {
+        [p.t2_pow_nonce & 0xFFFF_FFFF, p.t2_pow_nonce >> 32]
+    });
+    asm.hash(HvmHashOp {
+        dst: R_CH,
+        cap_reg: Some(R_CH),
+        domain: P2_DOMAIN_FS_POW_T2,
+        imm: &[],
+        proof: &t2_pow_w,
+        latch: 0,
+        skip: 0,
+    });
     asm.assert_pow(R_CH, UD100_POW_BITS);
 
     // Execute `122` Transcript-Bound Dual-Canopy Query Chains on Table 2 (`N_rng = 65536`, `depth_0 = 18`):
     let t2_s_keys: [[u64; 4]; 4] = [
-        [T2_BF_KEY_SEED ^ 1, 0x4341_4E50_0000_0000, 0x4246_5354_0000_0000, P2_IV],
-        [T2_BF_KEY_SEED ^ 2, 0x4341_4E50_0000_0001, 0x4246_5354_0000_0003, P2_IV],
-        [T2_BF_KEY_SEED ^ 3, 0x4341_4E50_0000_0002, 0x4246_5354_0000_0006, P2_IV],
-        [T2_BF_KEY_SEED ^ 4, 0x4341_4E50_0000_0003, 0x4246_5354_0000_0009, P2_IV],
+        [
+            T2_BF_KEY_SEED ^ 1,
+            0x4341_4E50_0000_0000,
+            0x4246_5354_0000_0000,
+            P2_IV,
+        ],
+        [
+            T2_BF_KEY_SEED ^ 2,
+            0x4341_4E50_0000_0001,
+            0x4246_5354_0000_0003,
+            P2_IV,
+        ],
+        [
+            T2_BF_KEY_SEED ^ 3,
+            0x4341_4E50_0000_0002,
+            0x4246_5354_0000_0006,
+            P2_IV,
+        ],
+        [
+            T2_BF_KEY_SEED ^ 4,
+            0x4341_4E50_0000_0003,
+            0x4246_5354_0000_0009,
+            P2_IV,
+        ],
     ];
     let dummy_sib18_p2 = vec![zero4; 18];
     let dummy_sib18_cs = vec![[0u8; 32]; 18];
@@ -6562,24 +7470,78 @@ fn emit_trustless_hem_stream(
 
         // Stage 0a: `m_rng16` (`1` base col -> `R_6`, `R_7`)
         asm.load(14, &CANOPY_KEY_MRNG, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 18);
-        asm.fiber_acc(4, false, true, true, 14, 15, 1, q.map_or(&dummy_w2, |x| &x.mrng_words));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 4,
+                is_ext4: false,
+                reset_acc: true,
+                use_cs_leaf: true,
+                key_reg: 14,
+                eta_reg: 15,
+                num_cols: 1,
+            },
+            q.map_or(&dummy_w2, |x| &x.mrng_words),
+        );
         asm.merkle(14, f0, q.map_or(&dummy_sib18_p2, |x| &x.mrng_p2_sibs));
         asm.assert_eq(R_X, 6);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 18);
         asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib18_cs, |x| &x.mrng_cs_sibs));
         asm.assert_eq(R_X, 7);
 
         // Stage 0b: `h_rng_tab` (`1` Ext4 col -> `R_8`, `R_9`)
         asm.load(14, &CANOPY_KEY_HRNG, true);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 18);
-        asm.fiber_acc(5, true, false, true, 14, 15, 1, q.map_or(&dummy_w8, |x| &x.hrng_words));
+        asm.fiber_acc(
+            HvmFiberAccCfg {
+                stage_id: 5,
+                is_ext4: true,
+                reset_acc: false,
+                use_cs_leaf: true,
+                key_reg: 14,
+                eta_reg: 15,
+                num_cols: 1,
+            },
+            q.map_or(&dummy_w8, |x| &x.hrng_words),
+        );
         asm.merkle(14, f0, q.map_or(&dummy_sib18_p2, |x| &x.hrng_p2_sibs));
         asm.assert_eq(R_X, 8);
-        asm.hash(R_T0, Some(R_CH), P2_DOMAIN_FS_SQUEEZE_IDX, &qlab, &[], 0, 0);
+        asm.hash(HvmHashOp {
+            dst: R_T0,
+            cap_reg: Some(R_CH),
+            domain: P2_DOMAIN_FS_SQUEEZE_IDX,
+            imm: &qlab,
+            proof: &[],
+            latch: 0,
+            skip: 0,
+        });
         asm.bind_idx(R_T0, 0, 18);
         asm.cshake_merkle_bound(f0, q.map_or(&dummy_sib18_cs, |x| &x.hrng_cs_sibs));
         asm.assert_eq(R_X, 9);
@@ -6589,7 +7551,9 @@ fn emit_trustless_hem_stream(
 
         // Stages 1, 2, 3, 4 (each 8-ary `k=3`, `log_n_cur = 18, 15, 12, 9`, `round_start = 1, 4, 7, 10`, roots `R_10..R_13`):
         for (s_idx, &(log_n_cur, rnd_st, root_reg)) in
-            [(18u8, 1u8, 10u8), (15, 4, 11), (12, 7, 12), (9, 10, 13)].iter().enumerate()
+            [(18u8, 1u8, 10u8), (15, 4, 11), (12, 7, 12), (9, 10, 13)]
+                .iter()
+                .enumerate()
         {
             let (fi, fib, sibs) = match q {
                 Some(x) => (
@@ -6600,7 +7564,17 @@ fn emit_trustless_hem_stream(
                 None => (0u32, dummy_fib8.as_slice(), dummy_sibs_t2[s_idx].as_slice()),
             };
             asm.load(14, &t2_s_keys[s_idx], true);
-            asm.bf_fold_fiber(3, log_n_cur, 14, rnd_st, R_A, R_A, fib);
+            asm.bf_fold_fiber(
+                HvmFoldFiberCfg {
+                    fold_k: 3,
+                    log_n_cur,
+                    key_reg: 14,
+                    round_start: rnd_st,
+                    expected_reg: R_A,
+                    dst_reg: R_A,
+                },
+                fib,
+            );
             asm.merkle(14, fi, sibs);
             asm.assert_eq(R_X, root_reg);
         }
@@ -6617,7 +7591,9 @@ fn emit_trustless_hem_stream(
 /// **L1 Memory Scoping Note:** Host/setup derivation here allocates the assembler buffer to hash the
 /// canonical program; embedded streaming verification (`Dregg180StreamVm::new_unkeyed_pinned_program`)
 /// runs in `size_of::<Dregg180StreamVm>() = 3,632 B <= 16,384 B` static RAM with **0 heap allocations**.
-pub fn compute_expected_trustless_program_hash(stmt: &TrustlessHemPublicStatement) -> Result<[u64; 4], String> {
+pub fn compute_expected_trustless_program_hash(
+    stmt: &TrustlessHemPublicStatement,
+) -> Result<[u64; 4], String> {
     stmt.validate_canonical()?;
     let canon_vk = canonical_trustless_vk(stmt.bb_num_rounds)?;
     let asm = emit_trustless_hem_stream(stmt, &canon_vk.layout, None);
@@ -6653,7 +7629,8 @@ pub fn verify_trustless_dregg180_hem_stream(
     if stmt.w_bb_p2_root != expected.w_bb_p2_root || stmt.w_bb_cs_root != expected.w_bb_cs_root {
         return Err("statement W_bb Canopy roots != verifier expected W_bb roots".into());
     }
-    if stmt.bytes_p2_root != expected.bytes_p2_root || stmt.bytes_cs_root != expected.bytes_cs_root {
+    if stmt.bytes_p2_root != expected.bytes_p2_root || stmt.bytes_cs_root != expected.bytes_cs_root
+    {
         return Err("statement payload Canopy roots != verifier expected payload roots".into());
     }
     let expected_hash = compute_expected_trustless_program_hash(stmt)?;
@@ -6752,14 +7729,14 @@ pub fn prove_trustless_hem_with_wbb_override(
     // --------------------------------------------------------------------------------------------
     let mut ch = stmt.transcript_ch_before_pass1();
     let mut bb_raw_chals = Vec::with_capacity(m);
-    for rnd in 0..m {
-        for k in 0..4 {
+    for rnd_poly in &bb_round_polys {
+        for (k, coeff) in rnd_poly.iter().enumerate() {
             let mut lab = *b"BB_SC_G0";
             lab[7] = b'0' + (k as u8);
-            let limbs4 = bb_round_polys[rnd][k].0.map(|x| x as u64);
+            let limbs4 = coeff.0.map(|x| x as u64);
             ch = fs_absorb_limbs_local(ch, &lab, &limbs4);
         }
-        let raw_ext = fs_squeeze_ext4_local(ch, b"BB_SC_RAW_R", rnd as u64);
+        let raw_ext = fs_squeeze_ext4_local(ch, b"BB_SC_RAW_R", bb_raw_chals.len() as u64);
         bb_raw_chals.push(raw_ext.to_u64_limbs());
     }
 
@@ -6791,11 +7768,21 @@ pub fn prove_trustless_hem_with_wbb_override(
     set_r_honest(2, 11, &mut r_vals, &mut d_vals);
     set_r_honest(3, BABYBEAR_PRIME_U64 - 1, &mut r_vals, &mut d_vals);
     for l in 0..4 {
-        set_r_honest(4 + l, stmt.bb_initial_claim.0[l] as u64, &mut r_vals, &mut d_vals);
+        set_r_honest(
+            4 + l,
+            stmt.bb_initial_claim.0[l] as u64,
+            &mut r_vals,
+            &mut d_vals,
+        );
     }
     for j in 0..m {
         for l in 0..4 {
-            set_r_honest(8 + 4 * j + l, stmt.bb_tau[j].0[l] as u64, &mut r_vals, &mut d_vals);
+            set_r_honest(
+                8 + 4 * j + l,
+                stmt.bb_tau[j].0[l] as u64,
+                &mut r_vals,
+                &mut d_vals,
+            );
         }
     }
     let n_bb = 1usize << m;
@@ -6804,14 +7791,18 @@ pub fn prove_trustless_hem_with_wbb_override(
         set_r_honest(row, witness_wbb_col[row].0, &mut r_vals, &mut d_vals);
     }
     for rnd in 0..m {
-        for k in 0..4 {
+        for (k, poly_k) in bb_round_polys[rnd].iter().enumerate() {
             for l in 0..4 {
-                set_r_honest(layout.g_rows[rnd][k][l], bb_round_polys[rnd][k].0[l] as u64, &mut r_vals, &mut d_vals);
+                set_r_honest(
+                    layout.g_rows[rnd][k][l],
+                    poly_k.0[l] as u64,
+                    &mut r_vals,
+                    &mut d_vals,
+                );
             }
         }
-        for l in 0..4 {
+        for (l, &raw) in bb_raw_chals[rnd].iter().enumerate() {
             let row = layout.fs_rows[rnd][l];
-            let raw = bb_raw_chals[rnd][l];
             let q_full = raw / BABYBEAR_PRIME_U64;
             let rem = raw % BABYBEAR_PRIME_U64;
             if q_full > BABYBEAR_FS_Q_SAFE {
@@ -6875,13 +7866,24 @@ pub fn prove_trustless_hem_with_wbb_override(
                 r_vals[row] = BABYBEAR_PRIME_U64;
                 d_vals[row] = 0;
                 let mac_lhs = Goldilocks(va) * Goldilocks(vb) + Goldilocks(vc);
-                let mac_rhs = Goldilocks(q_mac) * Goldilocks(BABYBEAR_PRIME_U64) + Goldilocks(r_vals[row]);
-                assert_eq!(mac_lhs, mac_rhs, "M3 invariant: ExactPbbAlias MUST leave MAC residual == 0");
-                let slack_res = Goldilocks(r_vals[row]) + Goldilocks(d_vals[row]) - Goldilocks(BABYBEAR_PRIME_U64 - 1);
-                assert_ne!(slack_res, Goldilocks::ZERO, "M3 invariant: ExactPbbAlias MUST make canonical slack != 0");
+                let mac_rhs =
+                    Goldilocks(q_mac) * Goldilocks(BABYBEAR_PRIME_U64) + Goldilocks(r_vals[row]);
+                assert_eq!(
+                    mac_lhs, mac_rhs,
+                    "M3 invariant: ExactPbbAlias MUST leave MAC residual == 0"
+                );
+                let slack_res = Goldilocks(r_vals[row]) + Goldilocks(d_vals[row])
+                    - Goldilocks(BABYBEAR_PRIME_U64 - 1);
+                assert_ne!(
+                    slack_res,
+                    Goldilocks::ZERO,
+                    "M3 invariant: ExactPbbAlias MUST make canonical slack != 0"
+                );
                 exact_pbb_injected = true;
             } else {
-                if tamper == TrustlessHemTamper::WrongBabyBearQuotient && row == layout.first_mac_row {
+                if tamper == TrustlessHemTamper::WrongBabyBearQuotient
+                    && row == layout.first_mac_row
+                {
                     q_mac = q_mac.wrapping_add(1);
                 }
                 q_vals[row] = q_mac;
@@ -6902,7 +7904,10 @@ pub fn prove_trustless_hem_with_wbb_override(
         return Err("NonCanonicalBabyBearAliasGtPbb found no eligible MAC row".into());
     }
     if tamper == TrustlessHemTamper::NonCanonicalBabyBearExactPbbAlias && !exact_pbb_injected {
-        return Err("NonCanonicalBabyBearExactPbbAlias requires a MAC row with q_mac >= 1 and r_mac == 0".into());
+        return Err(
+            "NonCanonicalBabyBearExactPbbAlias requires a MAC row with q_mac >= 1 and r_mac == 0"
+                .into(),
+        );
     }
 
     // Wiring multiplicities `m_wire[j]` = count of reads of `(j, r[j])` across non-FS `a`, all `b`, all `c`:
@@ -6926,7 +7931,8 @@ pub fn prove_trustless_hem_with_wbb_override(
         dfa_b_slack[t] = Goldilocks(255u64.saturating_sub(payload_comm.padded_bytes[t].0));
         dfa_s[t] = q_cur;
         let mut q_nxt = no_sk_dash_step_4state(q_cur, byte_u8);
-        if tamper == TrustlessHemTamper::ForgedDfaTransitionBypass && q_cur == 2 && byte_u8 == b'-' {
+        if tamper == TrustlessHemTamper::ForgedDfaTransitionBypass && q_cur == 2 && byte_u8 == b'-'
+        {
             // Untrusted prover lies `(2, '-') -> 0` instead of sink `3`!
             q_nxt = 0;
         }
@@ -6943,7 +7949,10 @@ pub fn prove_trustless_hem_with_wbb_override(
     }
     let true_s_terminal = dfa_s_next[HEM_EXEC_ROWS - 1];
     if tamper == TrustlessHemTamper::None && true_s_terminal >= 3 {
-        return Err("honest prover refused: payload contains forbidden \"sk-\" (DFA reached sink state 3)".into());
+        return Err(
+            "honest prover refused: payload contains forbidden \"sk-\" (DFA reached sink state 3)"
+                .into(),
+        );
     }
     let claimed_s_terminal: u8 = if tamper == TrustlessHemTamper::ForgedDfaTerminalState {
         0 // lie that terminal state is 0 even though `dfa_s_next[1023] == 3`!
@@ -7015,7 +8024,12 @@ pub fn prove_trustless_hem_with_wbb_override(
 
     // Commit Phase-1 witness tables under dual Canopy (`Poseidon2-12` + `cSHAKE256`):
     let wit1_canopy = Stage0MatrixCanopy::commit_base(2, &wit1_cols, UD100_BLOWUP, CANOPY_KEY_WIT1);
-    let mrng_canopy = Stage0MatrixCanopy::commit_base(4, &[mrng_col.clone()], UD100_BLOWUP, CANOPY_KEY_MRNG);
+    let mrng_canopy = Stage0MatrixCanopy::commit_base(
+        4,
+        std::slice::from_ref(&mrng_col),
+        UD100_BLOWUP,
+        CANOPY_KEY_MRNG,
+    );
     let wit1_p2_root = wit1_canopy.p2_root();
     let wit1_cs_pin4 = wit1_canopy.cshake_root_pin4();
     let mrng_p2_root = mrng_canopy.p2_root();
@@ -7055,19 +8069,25 @@ pub fn prove_trustless_hem_with_wbb_override(
     // instead of silently computing `inv(0) = 0`.
     let checked_inv = |d: GoldilocksExt4, label: &str| -> Result<GoldilocksExt4, String> {
         if d == GoldilocksExt4::ZERO {
-            return Err(format!("LogUp exceptional zero-denominator pole hit at {label}"));
+            return Err(format!(
+                "LogUp exceptional zero-denominator pole hit at {label}"
+            ));
         }
         Ok(d.inv())
     };
 
     for t in 0..HEM_EXEC_ROWS {
-        let r_t = GoldilocksExt4::from_base(wit1_cols[3][t] + wit1_cols[4][t] * Goldilocks(1u64 << 16));
-        let dw_a = beta_w - (GoldilocksExt4::from_base(src_a[t]) + gamma_w.scale_base(wit1_cols[0][t]));
-        let dw_b = beta_w - (GoldilocksExt4::from_base(src_b[t]) + gamma_w.scale_base(wit1_cols[1][t]));
+        let r_t =
+            GoldilocksExt4::from_base(wit1_cols[3][t] + wit1_cols[4][t] * Goldilocks(1u64 << 16));
+        let dw_a =
+            beta_w - (GoldilocksExt4::from_base(src_a[t]) + gamma_w.scale_base(wit1_cols[0][t]));
+        let dw_b =
+            beta_w - (GoldilocksExt4::from_base(src_b[t]) + gamma_w.scale_base(wit1_cols[1][t]));
         let n_wa = GoldilocksExt4::ONE - GoldilocksExt4::from_base(sel_fs[t]);
         h_w01[t] = (n_wa * dw_b + dw_a) * checked_inv(dw_a * dw_b, "h_w01")?;
 
-        let dw_c = beta_w - (GoldilocksExt4::from_base(src_c[t]) + gamma_w.scale_base(wit1_cols[2][t]));
+        let dw_c =
+            beta_w - (GoldilocksExt4::from_base(src_c[t]) + gamma_w.scale_base(wit1_cols[2][t]));
         let dw_r = beta_w - (GoldilocksExt4::from_base(Goldilocks(t as u64)) + gamma_w * r_t);
         let mw = GoldilocksExt4::from_base(wit1_cols[13][t]);
         h_w2r[t] = (dw_r - mw * dw_c) * checked_inv(dw_c * dw_r, "h_w2r")?;
@@ -7087,9 +8107,18 @@ pub fn prove_trustless_hem_with_wbb_override(
             - (GoldilocksExt4::from_base(Goldilocks((t + 1) as u64))
                 + gamma_sh.scale_base(wit1_cols[15][t]));
         let ds_r = beta_sh
-            - (GoldilocksExt4::from_base(Goldilocks(t as u64)) + gamma_sh.scale_base(wit1_cols[14][t]));
-        let nl = if t + 1 == HEM_EXEC_ROWS { GoldilocksExt4::ZERO } else { GoldilocksExt4::ONE };
-        let nr = if t == 0 { GoldilocksExt4::ZERO } else { GoldilocksExt4::ONE };
+            - (GoldilocksExt4::from_base(Goldilocks(t as u64))
+                + gamma_sh.scale_base(wit1_cols[14][t]));
+        let nl = if t + 1 == HEM_EXEC_ROWS {
+            GoldilocksExt4::ZERO
+        } else {
+            GoldilocksExt4::ONE
+        };
+        let nr = if t == 0 {
+            GoldilocksExt4::ZERO
+        } else {
+            GoldilocksExt4::ONE
+        };
         h_sh[t] = (nl * ds_r - nr * ds_l) * checked_inv(ds_l * ds_r, "h_sh")?;
 
         let pair_inv = |x0: Goldilocks, x1: Goldilocks| -> Result<GoldilocksExt4, String> {
@@ -7111,7 +8140,9 @@ pub fn prove_trustless_hem_with_wbb_override(
         .map(|u| -> Result<GoldilocksExt4, String> {
             let denom = beta_16 - GoldilocksExt4::from_base(Goldilocks(u as u64));
             if denom == GoldilocksExt4::ZERO {
-                return Err(format!("LogUp exceptional zero-denominator pole at Table 2 row {u}"));
+                return Err(format!(
+                    "LogUp exceptional zero-denominator pole at Table 2 row {u}"
+                ));
             }
             Ok(denom.inv().scale_base(mrng_col[u]))
         })
@@ -7121,7 +8152,12 @@ pub fn prove_trustless_hem_with_wbb_override(
         h_w01, h_w2r, h_dfa, h_sh, h_rng0, h_rng1, h_rng2, h_rng3, h_rng4,
     ];
     let wit2_canopy = Stage0MatrixCanopy::commit_ext4(3, &wit2_cols, UD100_BLOWUP, CANOPY_KEY_WIT2);
-    let hrng_canopy = Stage0MatrixCanopy::commit_ext4(5, &[h_rng_tab.clone()], UD100_BLOWUP, CANOPY_KEY_HRNG);
+    let hrng_canopy = Stage0MatrixCanopy::commit_ext4(
+        5,
+        std::slice::from_ref(&h_rng_tab),
+        UD100_BLOWUP,
+        CANOPY_KEY_HRNG,
+    );
     let wit2_p2_root = wit2_canopy.p2_root();
     let wit2_cs_pin4 = wit2_canopy.cshake_root_pin4();
     let hrng_p2_root = hrng_canopy.p2_root();
@@ -7158,8 +8194,20 @@ pub fn prove_trustless_hem_with_wbb_override(
     for col in &layout.vk_cols {
         cols37.push(col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
     }
-    cols37.push(payload_comm.padded_bytes.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
-    cols37.push(w_bb_comm.w_bb_col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
+    cols37.push(
+        payload_comm
+            .padded_bytes
+            .iter()
+            .map(|&x| GoldilocksExt4::from_base(x))
+            .collect(),
+    );
+    cols37.push(
+        w_bb_comm
+            .w_bb_col
+            .iter()
+            .map(|&x| GoldilocksExt4::from_base(x))
+            .collect(),
+    );
     for col in &wit1_cols {
         cols37.push(col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect());
     }
@@ -7233,20 +8281,25 @@ pub fn prove_trustless_hem_with_wbb_override(
             let mut out = [GoldilocksExt4::ZERO; 5];
             for p in 0..5 {
                 out[p] = eval_g_exec_point(
-                    &pts_v[p], e_tau[p], e_idx[p], e_rb[p], e_rq[p], e_f0[p], e_fl[p], e_pr[p], e_pa[p],
-                    &exec_ch,
+                    &pts_v[p], e_tau[p], e_idx[p], e_rb[p], e_rq[p], e_f0[p], e_fl[p], e_pr[p],
+                    e_pa[p], &exec_ch,
                 );
             }
             out
         };
         let s_pts = if half >= 256 {
-            (0..half)
-                .into_par_iter()
-                .map(eval_t1_pair)
-                .reduce(
-                    || [GoldilocksExt4::ZERO; 5],
-                    |a, b| [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3], a[4] + b[4]],
-                )
+            (0..half).into_par_iter().map(eval_t1_pair).reduce(
+                || [GoldilocksExt4::ZERO; 5],
+                |a, b| {
+                    [
+                        a[0] + b[0],
+                        a[1] + b[1],
+                        a[2] + b[2],
+                        a[3] + b[3],
+                        a[4] + b[4],
+                    ]
+                },
+            )
         } else {
             let mut acc = [GoldilocksExt4::ZERO; 5];
             for i in 0..half {
@@ -7283,8 +8336,8 @@ pub fn prove_trustless_hem_with_wbb_override(
             }
             out
         };
-        for c in 0..37 {
-            cols37[c] = fold_vec(&cols37[c]);
+        for col in &mut cols37 {
+            *col = fold_vec(col);
         }
         eq_tau_t = fold_vec(&eq_tau_t);
         idx_t = fold_vec(&idx_t);
@@ -7321,7 +8374,14 @@ pub fn prove_trustless_hem_with_wbb_override(
         f1_poly[t] = acc;
     }
 
-    let mut t1_bf = prove_lockstep_basefold(f1_poly, &z_exec, T1_STAGE_KS, T1_BF_KEY_SEED, b"T1_BF", &mut ch);
+    let mut t1_bf = prove_lockstep_basefold(
+        f1_poly,
+        &z_exec,
+        T1_STAGE_KS,
+        T1_BF_KEY_SEED,
+        b"T1_BF",
+        &mut ch,
+    );
     let (t1_pow_nonce, ch_after_t1_pow) = grind_p2_pow(P2_DOMAIN_FS_POW_T1, ch, UD100_POW_BITS);
     ch = ch_after_t1_pow;
 
@@ -7336,7 +8396,8 @@ pub fn prove_trustless_hem_with_wbb_override(
             let st = &t1_bf.stages[s_idx];
             let fi = cur_idx & ((1usize << st.log_fibers) - 1);
             let mut fib = st.fibers[fi].clone();
-            if tamper == TrustlessHemTamper::TamperedStage1BaseFoldFiber && q_idx == 0 && s_idx == 0 {
+            if tamper == TrustlessHemTamper::TamperedStage1BaseFoldFiber && q_idx == 0 && s_idx == 0
+            {
                 fib[0] = fib[0] + GoldilocksExt4::ONE;
             }
             stage_fibers.push((fi as u32, fib, st.p2_siblings(fi)));
@@ -7379,7 +8440,10 @@ pub fn prove_trustless_hem_with_wbb_override(
     let mut id_r: Vec<GoldilocksExt4> = (0..HEM_RNG16_ROWS)
         .map(|u| GoldilocksExt4::from_base(Goldilocks(u as u64)))
         .collect();
-    let mut m_r: Vec<GoldilocksExt4> = mrng_col.iter().map(|&x| GoldilocksExt4::from_base(x)).collect();
+    let mut m_r: Vec<GoldilocksExt4> = mrng_col
+        .iter()
+        .map(|&x| GoldilocksExt4::from_base(x))
+        .collect();
     let mut h_r: Vec<GoldilocksExt4> = h_rng_tab.clone();
 
     let mut t2_sc_rounds = Vec::with_capacity(HEM_RNG16_VARS);
@@ -7397,18 +8461,16 @@ pub fn prove_trustless_hem_with_wbb_override(
             let pts_h = [h0, h1, h0 - (h1 - h0), h1 + (h1 - h0)];
             let mut out = [GoldilocksExt4::ZERO; 4];
             for p in 0..4 {
-                out[p] = pts_e[p] * (pts_h[p] * (beta_16 - pts_id[p]) - pts_m[p]) + alpha_rng * pts_h[p];
+                out[p] =
+                    pts_e[p] * (pts_h[p] * (beta_16 - pts_id[p]) - pts_m[p]) + alpha_rng * pts_h[p];
             }
             out
         };
         let s_pts = if half >= 1024 {
-            (0..half)
-                .into_par_iter()
-                .map(eval_pair)
-                .reduce(
-                    || [GoldilocksExt4::ZERO; 4],
-                    |a, b| [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]],
-                )
+            (0..half).into_par_iter().map(eval_pair).reduce(
+                || [GoldilocksExt4::ZERO; 4],
+                |a, b| [a[0] + b[0], a[1] + b[1], a[2] + b[2], a[3] + b[3]],
+            )
         } else {
             let mut acc = [GoldilocksExt4::ZERO; 4];
             for i in 0..half {
@@ -7423,7 +8485,8 @@ pub fn prove_trustless_hem_with_wbb_override(
         let c0 = s_pts[0];
         let c2 = (s_pts[1] + s_pts[2]).scale_base(inv2_gl) - c0;
         let o1 = (s_pts[1] - s_pts[2]).scale_base(inv2_gl);
-        let c3 = (s_pts[3] - c0 - c2.scale_base(four_gl) - o1.scale_base(two_gl)).scale_base(inv6_gl);
+        let c3 =
+            (s_pts[3] - c0 - c2.scale_base(four_gl) - o1.scale_base(two_gl)).scale_base(inv6_gl);
         t2_sc_rounds.push([c0, c2, c3]);
 
         ch = fs_absorb_limbs_local(ch, b"T2_SC_C0", &c0.to_u64_limbs());
@@ -7439,7 +8502,9 @@ pub fn prove_trustless_hem_with_wbb_override(
                     .map(|i| v[2 * i] + z_j * (v[2 * i + 1] - v[2 * i]))
                     .collect()
             } else {
-                (0..half).map(|i| v[2 * i] + z_j * (v[2 * i + 1] - v[2 * i])).collect()
+                (0..half)
+                    .map(|i| v[2 * i] + z_j * (v[2 * i + 1] - v[2 * i]))
+                    .collect()
             }
         };
         eq_tau_r = fold_par(&eq_tau_r);
@@ -7458,7 +8523,14 @@ pub fn prove_trustless_hem_with_wbb_override(
         .map(|u| eta_2.scale_base(mrng_col[u]) + h_rng_tab[u])
         .collect();
 
-    let t2_bf = prove_lockstep_basefold(f2_poly, &z_rng, T2_STAGE_KS, T2_BF_KEY_SEED, b"T2_BF", &mut ch);
+    let t2_bf = prove_lockstep_basefold(
+        f2_poly,
+        &z_rng,
+        T2_STAGE_KS,
+        T2_BF_KEY_SEED,
+        b"T2_BF",
+        &mut ch,
+    );
     let (t2_pow_nonce, ch_after_t2_pow) = grind_p2_pow(P2_DOMAIN_FS_POW_T2, ch, UD100_POW_BITS);
     ch = ch_after_t2_pow;
 

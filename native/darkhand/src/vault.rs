@@ -11,6 +11,7 @@
 //!     `dl-vault|<name>|<role>`: a file opens only under its own seat's, epoch's key and in its own role.
 //!   - `destroy` invalidates the kernel key (KEYCTL_INVALIDATE, which removes it at once whatever else links it) and
 //!     zeroes the in-memory copy; after it, no key the seat or its uid holds opens the files, wherever their blocks are.
+//!
 //! Two seats on one box under one uid (the development layouts on bb2) can read each other's K; one custodian per
 //! machine (or per uid) is the deployment.
 use ring::aead::{Aad, LessSafeKey, Nonce, UnboundKey, CHACHA20_POLY1305};
@@ -39,7 +40,10 @@ impl Drop for Vault {
 
 /// The keyring name of seat `seat`'s file key at `epoch` (fpr: its TLS certificate's sha256 hex; 16 hex are used).
 pub fn key_name(model: &str, seat: usize, epoch: u64, fpr: &str) -> String {
-    format!("dl-vault:{model}:{seat}:{epoch}:{}", &fpr[..fpr.len().min(16)])
+    format!(
+        "dl-vault:{model}:{seat}:{epoch}:{}",
+        &fpr[..fpr.len().min(16)]
+    )
 }
 
 #[cfg(target_os = "linux")]
@@ -58,14 +62,41 @@ mod kr {
 
     /// The uid's persistent keyring, linked into this process's keyring (so its keys are possessed).
     pub fn persistent() -> Result<i64, String> {
-        let r = unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_GET_PERSISTENT, -1 as libc::c_long, KEY_SPEC_PROCESS_KEYRING) };
-        if r < 0 { Err(err("keyctl get_persistent")) } else { Ok(r) }
+        let r = unsafe {
+            libc::syscall(
+                libc::SYS_keyctl,
+                KEYCTL_GET_PERSISTENT,
+                -1 as libc::c_long,
+                KEY_SPEC_PROCESS_KEYRING,
+            )
+        };
+        if r < 0 {
+            Err(err("keyctl get_persistent"))
+        } else {
+            Ok(r)
+        }
     }
 
     pub fn add(name: &str, payload: &[u8], ring: i64) -> Result<i64, String> {
-        let (t, d) = (CString::new("user").unwrap(), CString::new(name).map_err(|e| e.to_string())?);
-        let r = unsafe { libc::syscall(libc::SYS_add_key, t.as_ptr(), d.as_ptr(), payload.as_ptr(), payload.len(), ring as libc::c_long) };
-        if r < 0 { Err(err("add_key")) } else { Ok(r) }
+        let (t, d) = (
+            CString::new("user").unwrap(),
+            CString::new(name).map_err(|e| e.to_string())?,
+        );
+        let r = unsafe {
+            libc::syscall(
+                libc::SYS_add_key,
+                t.as_ptr(),
+                d.as_ptr(),
+                payload.as_ptr(),
+                payload.len(),
+                ring as libc::c_long,
+            )
+        };
+        if r < 0 {
+            Err(err("add_key"))
+        } else {
+            Ok(r)
+        }
     }
 
     pub fn search(name: &str, ring: i64) -> Option<i64> {
@@ -74,28 +105,80 @@ mod kr {
 
     /// The search with its errno: ENOKEY (none), EKEYEXPIRED (it timed out), EKEYREVOKED.
     pub fn search_err(name: &str, ring: i64) -> Result<i64, std::io::Error> {
-        let (t, d) = (CString::new("user").unwrap(), CString::new(name).map_err(|_| std::io::Error::from_raw_os_error(libc::EINVAL))?);
-        let r = unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_SEARCH, ring as libc::c_long, t.as_ptr(), d.as_ptr(), 0 as libc::c_long) };
-        if r < 0 { Err(std::io::Error::last_os_error()) } else { Ok(r) }
+        let (t, d) = (
+            CString::new("user").unwrap(),
+            CString::new(name).map_err(|_| std::io::Error::from_raw_os_error(libc::EINVAL))?,
+        );
+        let r = unsafe {
+            libc::syscall(
+                libc::SYS_keyctl,
+                KEYCTL_SEARCH,
+                ring as libc::c_long,
+                t.as_ptr(),
+                d.as_ptr(),
+                0 as libc::c_long,
+            )
+        };
+        if r < 0 {
+            Err(std::io::Error::last_os_error())
+        } else {
+            Ok(r)
+        }
     }
 
     pub fn set_timeout(serial: i64, secs: u32) -> Result<(), String> {
-        let r = unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_SET_TIMEOUT, serial as libc::c_long, secs as libc::c_long) };
-        if r < 0 { Err(err("keyctl set_timeout")) } else { Ok(()) }
+        let r = unsafe {
+            libc::syscall(
+                libc::SYS_keyctl,
+                KEYCTL_SET_TIMEOUT,
+                serial as libc::c_long,
+                secs as libc::c_long,
+            )
+        };
+        if r < 0 {
+            Err(err("keyctl set_timeout"))
+        } else {
+            Ok(())
+        }
     }
 
     pub fn expiry_secs() -> Option<u64> {
-        std::fs::read_to_string("/proc/sys/kernel/keys/persistent_keyring_expiry").ok()?.trim().parse().ok()
+        std::fs::read_to_string("/proc/sys/kernel/keys/persistent_keyring_expiry")
+            .ok()?
+            .trim()
+            .parse()
+            .ok()
     }
 
     pub fn read(serial: i64, out: &mut [u8; 32]) -> Result<(), String> {
-        let r = unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_READ, serial as libc::c_long, out.as_mut_ptr(), 32usize) };
-        if r != 32 { Err(if r < 0 { err("keyctl read") } else { format!("keyctl read: {r} bytes, not 32") }) } else { Ok(()) }
+        let r = unsafe {
+            libc::syscall(
+                libc::SYS_keyctl,
+                KEYCTL_READ,
+                serial as libc::c_long,
+                out.as_mut_ptr(),
+                32usize,
+            )
+        };
+        if r != 32 {
+            Err(if r < 0 {
+                err("keyctl read")
+            } else {
+                format!("keyctl read: {r} bytes, not 32")
+            })
+        } else {
+            Ok(())
+        }
     }
 
     pub fn invalidate(serial: i64) -> Result<(), String> {
-        let r = unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_INVALIDATE, serial as libc::c_long) };
-        if r < 0 { Err(err("keyctl invalidate")) } else { Ok(()) }
+        let r =
+            unsafe { libc::syscall(libc::SYS_keyctl, KEYCTL_INVALIDATE, serial as libc::c_long) };
+        if r < 0 {
+            Err(err("keyctl invalidate"))
+        } else {
+            Ok(())
+        }
     }
 }
 
@@ -129,7 +212,10 @@ mod kr {
 
 /// Whether a file key of this name is in the uid's persistent keyring (the post-erasure check: false).
 pub fn present(name: &str) -> bool {
-    kr::persistent().ok().and_then(|r| kr::search(name, r)).is_some()
+    kr::persistent()
+        .ok()
+        .and_then(|r| kr::search(name, r))
+        .is_some()
 }
 
 impl Vault {
@@ -141,13 +227,19 @@ impl Vault {
         let serial = if keyring {
             let r = kr::persistent()?;
             if kr::search(name, r).is_some() {
-                return Err(format!("vault {name}: a file key of this name exists already"));
+                return Err(format!(
+                    "vault {name}: a file key of this name exists already"
+                ));
             }
             Some(kr::add(name, &key[..], r)?)
         } else {
             None
         };
-        Ok(Vault { name: name.to_string(), key, serial })
+        Ok(Vault {
+            name: name.to_string(),
+            key,
+            serial,
+        })
     }
 
     /// The file key from the persistent keyring (a restarted process: `serve --resume`).
@@ -160,12 +252,20 @@ impl Vault {
         })?;
         let mut key = Box::new([0u8; 32]);
         kr::read(s, &mut key)?;
-        Ok(Vault { name: name.to_string(), key, serial: Some(s) })
+        Ok(Vault {
+            name: name.to_string(),
+            key,
+            serial: Some(s),
+        })
     }
 
     /// A vault of a given key, in memory only (the post-erasure attempt with the zero key; tests).
     pub fn with_key(name: &str, key: [u8; 32]) -> Vault {
-        Vault { name: name.to_string(), key: Box::new(key), serial: None }
+        Vault {
+            name: name.to_string(),
+            key: Box::new(key),
+            serial: None,
+        }
     }
 
     /// Reset the persistent keyring's expiry timer (KEYCTL_GET_PERSISTENT resets it on every call). `seal_to` (every
@@ -199,7 +299,9 @@ impl Vault {
     }
 
     fn aead(&self) -> Box<LessSafeKey> {
-        Box::new(LessSafeKey::new(UnboundKey::new(&CHACHA20_POLY1305, &self.key[..]).expect("32-byte key")))
+        Box::new(LessSafeKey::new(
+            UnboundKey::new(&CHACHA20_POLY1305, &self.key[..]).expect("32-byte key"),
+        ))
     }
 
     fn aad(&self, role: &str) -> Vec<u8> {
@@ -210,7 +312,14 @@ impl Vault {
     pub fn seal(&self, role: &str, mut plain: Vec<u8>) -> Vec<u8> {
         let mut nonce = [0u8; NONCE];
         getrandom::getrandom(&mut nonce).expect("os rng");
-        let tag = self.aead().seal_in_place_separate_tag(Nonce::assume_unique_for_key(nonce), Aad::from(self.aad(role)), &mut plain).expect("seal");
+        let tag = self
+            .aead()
+            .seal_in_place_separate_tag(
+                Nonce::assume_unique_for_key(nonce),
+                Aad::from(self.aad(role)),
+                &mut plain,
+            )
+            .expect("seal");
         let mut out = Vec::with_capacity(8 + NONCE + plain.len() + TAG);
         out.extend_from_slice(MAGIC);
         out.extend_from_slice(&nonce);
@@ -225,7 +334,16 @@ impl Vault {
             return Err("vault: not a sealed file".into());
         }
         let nonce: [u8; NONCE] = blob[8..8 + NONCE].try_into().unwrap();
-        let n = self.aead().open_within(Nonce::assume_unique_for_key(nonce), Aad::from(self.aad(role)), &mut blob, 8 + NONCE..).map_err(|_| "vault: the file does not open under this key".to_string())?.len();
+        let n = self
+            .aead()
+            .open_within(
+                Nonce::assume_unique_for_key(nonce),
+                Aad::from(self.aad(role)),
+                &mut blob,
+                8 + NONCE..,
+            )
+            .map_err(|_| "vault: the file does not open under this key".to_string())?
+            .len();
         blob.truncate(n);
         Ok(blob)
     }
@@ -244,7 +362,10 @@ impl Vault {
     }
 
     pub fn open_file(&self, path: &Path, role: &str) -> Result<Vec<u8>, String> {
-        self.open(role, std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?)
+        self.open(
+            role,
+            std::fs::read(path).map_err(|e| format!("{}: {e}", path.display()))?,
+        )
     }
 
     /// Erase: invalidate the kernel key and zero the in-memory copy. Returns the report: whether it was in the

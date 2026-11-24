@@ -9,6 +9,7 @@ use crate::ext4::{
     ByteCursor, CShakeTranscript, Ext4, P, P_U32,
 };
 use rayon::prelude::*;
+use std::ops::{Add, Mul, Neg, Sub};
 
 // ===========================================================================
 // §1. `124`-Bit `Ext4` `Gruen` `{0, ∞}` Mode-2 `EinSumcheck` (`0` Prover Inversions)
@@ -256,56 +257,54 @@ pub fn verify_gruen_einsum_mode2_ext4(
     let mut sigma = proof.claim;
     let mut challenges = Vec::with_capacity(m);
 
-    for i in 0..m {
-        if i < proof.mu_s {
-            let r = z_s[i];
-            if r.is_zero() {
-                match proof.rounds[i] {
-                    GruenRoundExt4Msg::ZeroEqFallback { q0, q_inf, q1 } => {
-                        if q0 != sigma {
-                            return Err(format!("Gruen ZeroEqFallback q0 != sigma at round {i}"));
-                        }
-                        tr.absorb_ext4(b"gruen_q0", q0);
-                        tr.absorb_ext4(b"gruen_qinf", q_inf);
-                        tr.absorb_ext4(b"gruen_q1_fb", q1);
-                        let ch = tr.squeeze_ext4(b"gruen_ch_s", true);
-                        challenges.push(ch);
-                        sigma = eval_quad_zero_one_inf_ext4(q0, q1, q_inf, ch);
+    for (i, &r) in z_s.iter().enumerate() {
+        if r.is_zero() {
+            match proof.rounds[i] {
+                GruenRoundExt4Msg::ZeroEqFallback { q0, q_inf, q1 } => {
+                    if q0 != sigma {
+                        return Err(format!("Gruen ZeroEqFallback q0 != sigma at round {i}"));
                     }
-                    GruenRoundExt4Msg::TwoPoint { .. } => {
-                        return Err(format!("expected ZeroEqFallback at round {i}"))
-                    }
+                    tr.absorb_ext4(b"gruen_q0", q0);
+                    tr.absorb_ext4(b"gruen_qinf", q_inf);
+                    tr.absorb_ext4(b"gruen_q1_fb", q1);
+                    let ch = tr.squeeze_ext4(b"gruen_ch_s", true);
+                    challenges.push(ch);
+                    sigma = eval_quad_zero_one_inf_ext4(q0, q1, q_inf, ch);
                 }
-            } else {
-                match proof.rounds[i] {
-                    GruenRoundExt4Msg::TwoPoint { q0, q_inf } => {
-                        tr.absorb_ext4(b"gruen_q0", q0);
-                        tr.absorb_ext4(b"gruen_qinf", q_inf);
-                        let ch = tr.squeeze_ext4(b"gruen_ch_s", true);
-                        challenges.push(ch);
-                        let r_inv = r.inv().ok_or_else(|| "nonzero r failed inv".to_string())?;
-                        let l0_q0 = Ext4::ONE.sub(r).mul(q0);
-                        let q1 = r_inv.mul(sigma.sub(l0_q0));
-                        sigma = eval_quad_zero_one_inf_ext4(q0, q1, q_inf, ch);
-                    }
-                    GruenRoundExt4Msg::ZeroEqFallback { .. } => {
-                        return Err(format!("unexpected ZeroEqFallback at round {i}"))
-                    }
+                GruenRoundExt4Msg::TwoPoint { .. } => {
+                    return Err(format!("expected ZeroEqFallback at round {i}"))
                 }
             }
         } else {
             match proof.rounds[i] {
                 GruenRoundExt4Msg::TwoPoint { q0, q_inf } => {
-                    tr.absorb_ext4(b"gruen_s_q0", q0);
-                    tr.absorb_ext4(b"gruen_s_qinf", q_inf);
-                    let ch = tr.squeeze_ext4(b"gruen_ch_k", true);
+                    tr.absorb_ext4(b"gruen_q0", q0);
+                    tr.absorb_ext4(b"gruen_qinf", q_inf);
+                    let ch = tr.squeeze_ext4(b"gruen_ch_s", true);
                     challenges.push(ch);
-                    let q1 = sigma.sub(q0);
+                    let r_inv = r.inv().ok_or_else(|| "nonzero r failed inv".to_string())?;
+                    let l0_q0 = Ext4::ONE.sub(r).mul(q0);
+                    let q1 = r_inv.mul(sigma.sub(l0_q0));
                     sigma = eval_quad_zero_one_inf_ext4(q0, q1, q_inf, ch);
                 }
                 GruenRoundExt4Msg::ZeroEqFallback { .. } => {
-                    return Err(format!("unexpected ZeroEqFallback in S phase round {i}"))
+                    return Err(format!("unexpected ZeroEqFallback at round {i}"))
                 }
+            }
+        }
+    }
+    for (i, &round) in proof.rounds.iter().enumerate().skip(proof.mu_s) {
+        match round {
+            GruenRoundExt4Msg::TwoPoint { q0, q_inf } => {
+                tr.absorb_ext4(b"gruen_s_q0", q0);
+                tr.absorb_ext4(b"gruen_s_qinf", q_inf);
+                let ch = tr.squeeze_ext4(b"gruen_ch_k", true);
+                challenges.push(ch);
+                let q1 = sigma.sub(q0);
+                sigma = eval_quad_zero_one_inf_ext4(q0, q1, q_inf, ch);
+            }
+            GruenRoundExt4Msg::ZeroEqFallback { .. } => {
+                return Err(format!("unexpected ZeroEqFallback in S phase round {i}"))
             }
         }
     }
@@ -330,14 +329,13 @@ pub fn eval_upper_or_diag_indicator_mle(pt_i: &[Ext4], pt_j: &[Ext4]) -> Ext4 {
     assert_eq!(pt_i.len(), pt_j.len());
     let eq_i = build_eq_table_lsb_ext4(pt_i);
     let eq_j = build_eq_table_lsb_ext4(pt_j);
-    let c = eq_i.len();
     let mut acc = Ext4::ZERO;
-    for i in 0..c {
+    for (i, &eq_iv) in eq_i.iter().enumerate() {
         let mut row_j = Ext4::ZERO;
-        for j in i..c {
-            row_j = row_j.add(eq_j[j]);
+        for &eq_jv in &eq_j[i..] {
+            row_j = row_j.add(eq_jv);
         }
-        acc = acc.add(eq_i[i].mul(row_j));
+        acc = acc.add(eq_iv.mul(row_j));
     }
     acc
 }
@@ -795,7 +793,9 @@ pub fn verify_d1b_range_ext4(
 
         for (r_idx, msg) in lyr.rounds.iter().enumerate() {
             if msg.p0.add(msg.p1) != sigma {
-                return Err(format!("D1b cubic sumcheck failed at step {step} round {r_idx}"));
+                return Err(format!(
+                    "D1b cubic sumcheck failed at step {step} round {r_idx}"
+                ));
             }
             tr.absorb_ext4(b"d1b_c0", msg.p0);
             tr.absorb_ext4(b"d1b_c1", msg.p1);
@@ -985,11 +985,14 @@ pub fn prove_d1b_public_table_ext4(
                 let dqr = qr1.sub(qr0);
                 let qr2 = qr0.add(two.mul(dqr));
 
-                p0_acc = p0_acc.add(e0.mul(pl0.mul(qr0).add(pr0.mul(ql0)).add(eta.mul(ql0.mul(qr0)))));
-                p1_acc = p1_acc.add(e1.mul(pl1.mul(qr1).add(pr1.mul(ql1)).add(eta.mul(ql1.mul(qr1)))));
-                p2_acc = p2_acc.add(e2.mul(pl2.mul(qr2).add(pr2.mul(ql2)).add(eta.mul(ql2.mul(qr2)))));
-                pinf_acc = pinf_acc
-                    .add(de.mul(dpl.mul(dqr).add(dpr.mul(dql)).add(eta.mul(dql.mul(dqr)))));
+                p0_acc =
+                    p0_acc.add(e0.mul(pl0.mul(qr0).add(pr0.mul(ql0)).add(eta.mul(ql0.mul(qr0)))));
+                p1_acc =
+                    p1_acc.add(e1.mul(pl1.mul(qr1).add(pr1.mul(ql1)).add(eta.mul(ql1.mul(qr1)))));
+                p2_acc =
+                    p2_acc.add(e2.mul(pl2.mul(qr2).add(pr2.mul(ql2)).add(eta.mul(ql2.mul(qr2)))));
+                pinf_acc =
+                    pinf_acc.add(de.mul(dpl.mul(dqr).add(dpr.mul(dql)).add(eta.mul(dql.mul(dqr)))));
             }
             let msg = CubicExt4RoundMsg {
                 p0: p0_acc,
@@ -1122,8 +1125,7 @@ pub fn verify_d1b_public_table_ext4(
     let q_tab = alpha.sub(pub_tab_eval);
     let q_wit = alpha.sub(proof.rem_leaf_eval);
 
-    let expected_p = eq_lin_ext4(z_side, Ext4::ZERO)
-        .add(eq_lin_ext4(z_side, Ext4::ONE).mul(p_tab));
+    let expected_p = eq_lin_ext4(z_side, Ext4::ZERO).add(eq_lin_ext4(z_side, Ext4::ONE).mul(p_tab));
     let expected_q = eq_lin_ext4(z_side, Ext4::ZERO)
         .mul(q_wit)
         .add(eq_lin_ext4(z_side, Ext4::ONE).mul(q_tab));
@@ -1291,36 +1293,34 @@ pub fn prove_mxfp4_delayed_bjk_horner_ext4(
 
     // Step 2: Collapse `M[k, b] = sum_j E_jk[j, k] · Q[j, k, b]` via 7-bucket 0-mul E2M1 Horner in `rayon` parallel over `k`!
     let mut m_kb = vec![Ext4::ZERO; k_len * 32];
-    m_kb.par_chunks_mut(32)
-        .enumerate()
-        .for_each(|(k, m_row)| {
-            let mut buckets = [[Ext4::ZERO; 8]; 32];
-            for j in 0..j_len {
-                let ejk = e_jk[j * k_len + k];
-                let q_blk = &q_nibbles[(j * k_len + k) * 32..(j * k_len + k + 1) * 32];
-                for b in 0..32 {
-                    let nib = q_blk[b];
-                    let mag = (nib & 7) as usize;
-                    if mag != 0 {
-                        if (nib & 8) == 0 {
-                            buckets[b][mag] = buckets[b][mag].add(ejk);
-                        } else {
-                            buckets[b][mag] = buckets[b][mag].sub(ejk);
-                        }
+    m_kb.par_chunks_mut(32).enumerate().for_each(|(k, m_row)| {
+        let mut buckets = [[Ext4::ZERO; 8]; 32];
+        for j in 0..j_len {
+            let ejk = e_jk[j * k_len + k];
+            let q_blk = &q_nibbles[(j * k_len + k) * 32..(j * k_len + k + 1) * 32];
+            for b in 0..32 {
+                let nib = q_blk[b];
+                let mag = (nib & 7) as usize;
+                if mag != 0 {
+                    if (nib & 8) == 0 {
+                        buckets[b][mag] = buckets[b][mag].add(ejk);
+                    } else {
+                        buckets[b][mag] = buckets[b][mag].sub(ejk);
                     }
                 }
             }
-            for b in 0..32 {
-                let bk = &buckets[b];
-                let c8 = bk[6].add(bk[7]);
-                let c4 = bk[4].add(bk[5]).add(bk[7]);
-                let c2 = bk[2].add(bk[3]).add(bk[5]);
-                let c1 = bk[1].add(bk[3]);
-                let d8 = c8.add(c8).add(c4);
-                let d4 = d8.add(d8).add(c2);
-                m_row[b] = d4.add(d4).add(c1);
-            }
-        });
+        }
+        for b in 0..32 {
+            let bk = &buckets[b];
+            let c8 = bk[6].add(bk[7]);
+            let c4 = bk[4].add(bk[5]).add(bk[7]);
+            let c2 = bk[2].add(bk[3]).add(bk[5]);
+            let c1 = bk[1].add(bk[3]);
+            let d8 = c8.add(c8).add(c4);
+            let d4 = d8.add(d8).add(c2);
+            m_row[b] = d4.add(d4).add(c1);
+        }
+    });
     drop(e_jk);
 
     let mut claim = Ext4::ZERO;
@@ -1384,8 +1384,7 @@ pub fn prove_mxfp4_delayed_bjk_horner_ext4(
         let mut qinf_by_j = vec![Ext4::ZERO; rem_j];
         let mut q1_by_j = vec![Ext4::ZERO; rem_j];
 
-        for k in 0..k_len {
-            let xk = x5[k];
+        for (k, &xk) in x5.iter().enumerate() {
             let base = k * stride_k;
             for jr in 0..rem_j {
                 let idx0 = base + 2 * jr;
@@ -1513,21 +1512,19 @@ pub fn verify_mxfp4_delayed_bjk_horner_ext4(
 
     let mut sigma = proof.claim;
     let mut chals_b = [Ext4::ZERO; 5];
-    for r in 0..5 {
-        let [q0, q_inf] = proof.b_rounds[r];
+    for (&[q0, q_inf], dst) in proof.b_rounds.iter().zip(chals_b.iter_mut()) {
         tr.absorb_ext4(b"mxfp4_b_q0", q0);
         tr.absorb_ext4(b"mxfp4_b_qinf", q_inf);
         let ch = tr.squeeze_ext4(b"mxfp4_ch_b", true);
-        chals_b[r] = ch;
+        *dst = ch;
         let q1 = sigma.sub(q0);
         sigma = eval_quad_zero_one_inf_ext4(q0, q1, q_inf, ch);
     }
 
     let mut chals_j = Vec::with_capacity(proof.log_j);
-    for u in 0..proof.log_j {
-        let r = r_j[u];
+    for (u, (&r, &j_round)) in r_j.iter().zip(proof.j_rounds.iter()).enumerate() {
         if r.is_zero() {
-            match proof.j_rounds[u] {
+            match j_round {
                 GruenRoundExt4Msg::ZeroEqFallback { q0, q_inf, q1 } => {
                     if q0 != sigma {
                         return Err(format!("MXFP4 j-round {u} ZeroEqFallback q0 != sigma"));
@@ -1600,7 +1597,9 @@ mod tests {
         // 1. Test D1b range proof on 2^10 witnesses in [0, 2^6)
         let m_wit = 10usize;
         let m_tab = 6usize;
-        let rem: Vec<u32> = (0..(1usize << m_wit)).map(|i| (i * 13 + 7) as u32 & 63).collect();
+        let rem: Vec<u32> = (0..(1usize << m_wit))
+            .map(|i| (i * 13 + 7) as u32 & 63)
+            .collect();
         let mult = compute_d1b_multiplicities(&rem, m_tab).unwrap();
 
         let mut p_tr = CShakeTranscript::new(b"d1b-test");
@@ -1616,8 +1615,12 @@ mod tests {
         let k_len = 1usize << log_k;
         let mut rng_tr = CShakeTranscript::new(b"mxfp4-gen");
         let x_ri = rng_tr.squeeze_ext4_vec(b"x", k_len * 32, true);
-        let q_nibbles: Vec<u8> = (0..(j_len * k_len * 32)).map(|i| ((i * 7 + 3) & 15) as u8).collect();
-        let s_scale: Vec<u32> = (0..(j_len * k_len)).map(|i| ((i * 29 + 1) % 1024) as u32).collect();
+        let q_nibbles: Vec<u8> = (0..(j_len * k_len * 32))
+            .map(|i| ((i * 7 + 3) & 15) as u8)
+            .collect();
+        let s_scale: Vec<u32> = (0..(j_len * k_len))
+            .map(|i| ((i * 29 + 1) % 1024) as u32)
+            .collect();
         let mut r_j = rng_tr.squeeze_ext4_vec(b"rj", log_j, true);
         r_j[1] = Ext4::ZERO; // Force interior ZeroEqFallback!
 
@@ -1626,8 +1629,8 @@ mod tests {
             &x_ri, &q_nibbles, &s_scale, log_j, log_k, &r_j, &mut p_tr2,
         );
         let mut v_tr2 = CShakeTranscript::new(b"mxfp4-test");
-        let ver_solved =
-            verify_mxfp4_delayed_bjk_horner_ext4(mpf.claim, &r_j, &mpf, &mut v_tr2).expect("mxfp4 verify");
+        let ver_solved = verify_mxfp4_delayed_bjk_horner_ext4(mpf.claim, &r_j, &mpf, &mut v_tr2)
+            .expect("mxfp4 verify");
         assert_eq!(solved.chals_b, ver_solved.chals_b);
 
         // Verify terminal Q̂(c_b, c_j, c_k) matches `to_bb_table_lsb_bjk` layout!

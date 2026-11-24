@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use sha3::digest::{ExtendableOutput, Update, XofReader};
 use sha3::{CShake256, CShake256Core};
 use std::fs::File;
+use std::ops::{Add, Mul, Neg, Sub};
 
 /// BabyBear prime `p = 15 * 2^27 + 1 = 2013265921` (`two_adicity = 27`).
 pub const P: u64 = 2013265921;
@@ -113,36 +114,6 @@ impl Ext4 {
         self.0[0] < P_U32 && self.0[1] < P_U32 && self.0[2] < P_U32 && self.0[3] < P_U32
     }
 
-    #[inline(always)]
-    pub fn add(self, rhs: Self) -> Self {
-        Self([
-            badd(self.0[0], rhs.0[0]),
-            badd(self.0[1], rhs.0[1]),
-            badd(self.0[2], rhs.0[2]),
-            badd(self.0[3], rhs.0[3]),
-        ])
-    }
-
-    #[inline(always)]
-    pub fn sub(self, rhs: Self) -> Self {
-        Self([
-            bsub(self.0[0], rhs.0[0]),
-            bsub(self.0[1], rhs.0[1]),
-            bsub(self.0[2], rhs.0[2]),
-            bsub(self.0[3], rhs.0[3]),
-        ])
-    }
-
-    #[inline(always)]
-    pub fn neg(self) -> Self {
-        Self([
-            bneg(self.0[0]),
-            bneg(self.0[1]),
-            bneg(self.0[2]),
-            bneg(self.0[3]),
-        ])
-    }
-
     /// Basefield scalar times `Ext4` (`4` BabyBear multiplications).
     #[inline(always)]
     pub fn scale_bb(self, c: u32) -> Self {
@@ -154,42 +125,9 @@ impl Ext4 {
         ])
     }
 
-    /// Quadratic-over-quadratic Karatsuba multiplication (`9` BabyBear multiplications):
-    /// `K_2 = F_p[u]/(u^2 - 11)`, `Ext4 = K_2[X]/(X^2 - u)` with `A_0 = (a0, a2), A_1 = (a1, a3)`.
-    #[inline]
-    pub fn mul(self, rhs: Self) -> Self {
-        #[inline(always)]
-        fn k2_mul(x: [u32; 2], y: [u32; 2]) -> [u32; 2] {
-            let m0 = bmul(x[0], y[0]);
-            let m1 = bmul(x[1], y[1]);
-            let m2 = bmul(badd(x[0], x[1]), badd(y[0], y[1]));
-            let c0 = badd(m0, bmul(W_EXT4, m1));
-            let c1 = bsub(m2, badd(m0, m1));
-            [c0, c1]
-        }
-
-        let a0 = [self.0[0], self.0[2]];
-        let a1 = [self.0[1], self.0[3]];
-        let b0 = [rhs.0[0], rhs.0[2]];
-        let b1 = [rhs.0[1], rhs.0[3]];
-
-        let p0 = k2_mul(a0, b0);
-        let p1 = k2_mul(a1, b1);
-        let a_sum = [badd(a0[0], a1[0]), badd(a0[1], a1[1])];
-        let b_sum = [badd(b0[0], b1[0]), badd(b0[1], b1[1])];
-        let p_sum = k2_mul(a_sum, b_sum);
-        let odd = [
-            bsub(p_sum[0], badd(p0[0], p1[0])),
-            bsub(p_sum[1], badd(p0[1], p1[1])),
-        ];
-        // `u * p1 = (11 * p1[1], p1[0])`
-        let even = [badd(p0[0], bmul(W_EXT4, p1[1])), badd(p0[1], p1[0])];
-        Self([even[0], odd[0], even[1], odd[1]])
-    }
-
     #[inline]
     pub fn sq(self) -> Self {
-        self.mul(self)
+        self * self
     }
 
     ///Kum-norm tower inversion in `F_p[X]/(X^4 - 11)` using **1 single BabyBear inversion**.
@@ -254,6 +192,85 @@ impl Ext4 {
             c[i] = v;
         }
         Ok(Self(c))
+    }
+}
+
+impl Add for Ext4 {
+    type Output = Self;
+
+    #[inline(always)]
+    fn add(self, rhs: Self) -> Self {
+        Self([
+            badd(self.0[0], rhs.0[0]),
+            badd(self.0[1], rhs.0[1]),
+            badd(self.0[2], rhs.0[2]),
+            badd(self.0[3], rhs.0[3]),
+        ])
+    }
+}
+
+impl Sub for Ext4 {
+    type Output = Self;
+
+    #[inline(always)]
+    fn sub(self, rhs: Self) -> Self {
+        Self([
+            bsub(self.0[0], rhs.0[0]),
+            bsub(self.0[1], rhs.0[1]),
+            bsub(self.0[2], rhs.0[2]),
+            bsub(self.0[3], rhs.0[3]),
+        ])
+    }
+}
+
+impl Neg for Ext4 {
+    type Output = Self;
+
+    #[inline(always)]
+    fn neg(self) -> Self {
+        Self([
+            bneg(self.0[0]),
+            bneg(self.0[1]),
+            bneg(self.0[2]),
+            bneg(self.0[3]),
+        ])
+    }
+}
+
+impl Mul for Ext4 {
+    type Output = Self;
+
+    /// Quadratic-over-quadratic Karatsuba multiplication (`9` BabyBear multiplications):
+    /// `K_2 = F_p[u]/(u^2 - 11)`, `Ext4 = K_2[X]/(X^2 - u)` with `A_0 = (a0, a2), A_1 = (a1, a3)`.
+    #[inline]
+    fn mul(self, rhs: Self) -> Self {
+        #[inline(always)]
+        fn k2_mul(x: [u32; 2], y: [u32; 2]) -> [u32; 2] {
+            let m0 = bmul(x[0], y[0]);
+            let m1 = bmul(x[1], y[1]);
+            let m2 = bmul(badd(x[0], x[1]), badd(y[0], y[1]));
+            let c0 = badd(m0, bmul(W_EXT4, m1));
+            let c1 = bsub(m2, badd(m0, m1));
+            [c0, c1]
+        }
+
+        let a0 = [self.0[0], self.0[2]];
+        let a1 = [self.0[1], self.0[3]];
+        let b0 = [rhs.0[0], rhs.0[2]];
+        let b1 = [rhs.0[1], rhs.0[3]];
+
+        let p0 = k2_mul(a0, b0);
+        let p1 = k2_mul(a1, b1);
+        let a_sum = [badd(a0[0], a1[0]), badd(a0[1], a1[1])];
+        let b_sum = [badd(b0[0], b1[0]), badd(b0[1], b1[1])];
+        let p_sum = k2_mul(a_sum, b_sum);
+        let odd = [
+            bsub(p_sum[0], badd(p0[0], p1[0])),
+            bsub(p_sum[1], badd(p0[1], p1[1])),
+        ];
+        // `u * p1 = (11 * p1[1], p1[0])`
+        let even = [badd(p0[0], bmul(W_EXT4, p1[1])), badd(p0[1], p1[0])];
+        Self([even[0], odd[0], even[1], odd[1]])
     }
 }
 
@@ -559,7 +576,13 @@ pub struct MerkleSinglePath {
     pub siblings: Vec<[u8; 32]>,
 }
 
-pub fn merkle_node_cshake(domain: &[u8], level: u8, idx: u32, left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
+pub fn merkle_node_cshake(
+    domain: &[u8],
+    level: u8,
+    idx: u32,
+    left: &[u8; 32],
+    right: &[u8; 32],
+) -> [u8; 32] {
     let mut buf = [0u8; 1 + 4 + 64];
     buf[0] = level;
     buf[1..5].copy_from_slice(&idx.to_le_bytes());
@@ -575,7 +598,9 @@ pub fn merkle_root_cshake(domain: &[u8], leaves: &[[u8; 32]]) -> [u8; 32] {
     while cur.len() > 1 {
         let mut next = Vec::with_capacity(cur.len() / 2);
         for (idx, pair) in cur.chunks_exact(2).enumerate() {
-            next.push(merkle_node_cshake(domain, level, idx as u32, &pair[0], &pair[1]));
+            next.push(merkle_node_cshake(
+                domain, level, idx as u32, &pair[0], &pair[1],
+            ));
         }
         cur = next;
         level += 1;
@@ -583,7 +608,11 @@ pub fn merkle_root_cshake(domain: &[u8], leaves: &[[u8; 32]]) -> [u8; 32] {
     cur[0]
 }
 
-pub fn merkle_open_single_cshake(domain: &[u8], leaves: &[[u8; 32]], index: usize) -> MerkleSinglePath {
+pub fn merkle_open_single_cshake(
+    domain: &[u8],
+    leaves: &[[u8; 32]],
+    index: usize,
+) -> MerkleSinglePath {
     assert!(!leaves.is_empty() && leaves.len().is_power_of_two() && index < leaves.len());
     let leaf = leaves[index];
     let mut cur = leaves.to_vec();
@@ -594,7 +623,13 @@ pub fn merkle_open_single_cshake(domain: &[u8], leaves: &[[u8; 32]], index: usiz
         siblings.push(cur[idx ^ 1]);
         let mut next = Vec::with_capacity(cur.len() / 2);
         for (p_idx, pair) in cur.chunks_exact(2).enumerate() {
-            next.push(merkle_node_cshake(domain, level, p_idx as u32, &pair[0], &pair[1]));
+            next.push(merkle_node_cshake(
+                domain,
+                level,
+                p_idx as u32,
+                &pair[0],
+                &pair[1],
+            ));
         }
         cur = next;
         idx >>= 1;
@@ -738,7 +773,12 @@ impl CShakeTranscript {
     }
 
     /// Squeeze `count` distinct sorted indices in `[0, domain_size)` (`domain_size` a power of two).
-    pub fn squeeze_distinct_indices(&mut self, label: &[u8], domain_size: usize, count: usize) -> Vec<usize> {
+    pub fn squeeze_distinct_indices(
+        &mut self,
+        label: &[u8],
+        domain_size: usize,
+        count: usize,
+    ) -> Vec<usize> {
         assert!(domain_size.is_power_of_two() && count <= domain_size);
         let mask = domain_size - 1;
         let mut reader = self.xof_reader(label);

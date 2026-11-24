@@ -12,9 +12,9 @@ use darkvfhe::rns_hoist::HoistedEngine;
 use darkvfhe::succinct_pcs::{Ext3, Ext3Field, PcsRng, PcsTranscript, SlotLinearClaim};
 use darkvfhe::whir_pcs::{
     commit_persistent_whir_grid, eval_poly_ext3, prove_hoisted_whir, verify_gmask61_rounds,
-    verify_hoisted_whir_bundle, verify_hoisted_whir_bytes, verify_whir_pcs61, GMask61,
-    GMaskSpec61, HoistedWhirBundle, HoistedWhirPcsPayload, WhirCommittedPcs61, WhirOpeningBundle61,
-    WhirShape61, WHIR_BLOWUP, WHIR_T_QUERIES_128,
+    verify_hoisted_whir_bundle, verify_hoisted_whir_bytes, verify_whir_pcs61, GMask61, GMaskSpec61,
+    HoistedWhirBundle, HoistedWhirPcsPayload, WhirCommittedPcs61, WhirOpeningBundle61, WhirShape61,
+    WHIR_BLOWUP, WHIR_T_QUERIES_128,
 };
 use darkvfhe::{FastPrime61, HoistedParams};
 use rayon::prelude::*;
@@ -38,17 +38,24 @@ fn gaussian_rank_ext3(ef: &Ext3Field, mut mat: Vec<Vec<Ext3>>) -> usize {
         };
         mat.swap(rank, piv);
         let inv_p = ef.inv(mat[rank][col]);
-        for c in col..cols {
-            mat[rank][c] = ef.mul(mat[rank][c], inv_p);
+        for cell in &mut mat[rank][col..cols] {
+            *cell = ef.mul(*cell, inv_p);
         }
         for r in 0..rows {
             if r == rank || mat[r][col] == [0, 0, 0] {
                 continue;
             }
             let factor = mat[r][col];
-            for c in col..cols {
-                let sub = ef.mul(factor, mat[rank][c]);
-                mat[r][c] = ef.sub(mat[r][c], sub);
+            let (row_r, row_rank) = if r < rank {
+                let (head, tail) = mat.split_at_mut(rank);
+                (&mut head[r], &tail[0])
+            } else {
+                let (head, tail) = mat.split_at_mut(r);
+                (&mut tail[0], &head[rank])
+            };
+            for (dst, &src) in row_r[col..cols].iter_mut().zip(&row_rank[col..cols]) {
+                let sub = ef.mul(factor, src);
+                *dst = ef.sub(*dst, sub);
             }
         }
         rank += 1;
@@ -99,8 +106,8 @@ fn test_gmask61_algebraic_rank_and_statistical_hvzk_indistinguishability() {
                 // (`rp[1]` is deterministically pinned by `rp(0) + rp(1) == prev_claim`!).
                 j_mat[row_off][var_idx] = rp[0];
                 row_off += 1;
-                for k in 2..=deg {
-                    j_mat[row_off][var_idx] = rp[k];
+                for &val in &rp[2..=deg] {
+                    j_mat[row_off][var_idx] = val;
                     row_off += 1;
                 }
             }
@@ -123,9 +130,9 @@ fn test_gmask61_algebraic_rank_and_statistical_hvzk_indistinguishability() {
 
     let mut f_dense = vec![0u64; n];
     let mut running_sum = 0u64;
-    for i in 0..(n - 1) {
+    for (i, slot) in f_dense.iter_mut().enumerate().take(n - 1) {
         let v = ((i as u64 + 1) * 777_777_777_777) % fp.p;
-        f_dense[i] = v;
+        *slot = v;
         running_sum = fp.add(running_sum, v);
     }
     f_dense[n - 1] = fp.sub(target_sum, running_sum);
@@ -250,14 +257,7 @@ fn test_gmask61_algebraic_rank_and_statistical_hvzk_indistinguishability() {
             assert_eq!(ef.add(f_at_r, ef.mul(rho, g_at_r)), term_v);
 
             verify_whir_pcs61(
-                &fp,
-                &pcs.shape,
-                &pcs.root,
-                log_n,
-                &v_fams,
-                &claims,
-                &ctx,
-                &bundle,
+                &fp, &pcs.shape, &pcs.root, log_n, &v_fams, &claims, &ctx, &bundle,
             )
             .expect("standalone WhirPcs61 + GMask61 opening must verify");
 
@@ -335,8 +335,8 @@ fn test_whir_gmask_six_adversarial_attacks_rejected() {
 
     let mk_ct = |key: &mut OwnKey, seed: usize| -> Ct {
         let mut m = vec![0u64; params.n];
-        for j in 0..32 {
-            m[j] = ((seed * 7 + j * 3 + 1) as u64) % 13;
+        for (j, slot) in m.iter_mut().take(32).enumerate() {
+            *slot = ((seed * 7 + j * 3 + 1) as u64) % 13;
         }
         key.encrypt_exact(&m)
     };
@@ -441,7 +441,11 @@ fn test_whir_gmask_six_adversarial_attacks_rejected() {
     let atk3c = mutate_single(&mut |w| {
         w.proof.header.m_eval[2] = fp0.add(w.proof.header.m_eval[2], 1);
     });
-    for (lbl, atk) in [("gmask_sum", atk3a), ("z_gm_masks", atk3b), ("m_eval", atk3c)] {
+    for (lbl, atk) in [
+        ("gmask_sum", atk3a),
+        ("z_gm_masks", atk3b),
+        ("m_eval", atk3c),
+    ] {
         assert!(
             verify_hoisted_whir_bytes(
                 &params,
@@ -469,13 +473,33 @@ fn test_whir_gmask_six_adversarial_attacks_rejected() {
         w.proof.final_poly[0][0] = fp0.add(w.proof.final_poly[0][0], 1);
     });
     assert!(
-        verify_hoisted_whir_bundle(&params, &ha, &hb, &hout, Some(&a_grid), None, &b_vec, &out_cts, &atk4a)
-            .is_err(),
+        verify_hoisted_whir_bundle(
+            &params,
+            &ha,
+            &hb,
+            &hout,
+            Some(&a_grid),
+            None,
+            &b_vec,
+            &out_cts,
+            &atk4a
+        )
+        .is_err(),
         "Attack 4a (tampered folded coset fiber) must be rejected!"
     );
     assert!(
-        verify_hoisted_whir_bundle(&params, &ha, &hb, &hout, Some(&a_grid), None, &b_vec, &out_cts, &atk4b)
-            .is_err(),
+        verify_hoisted_whir_bundle(
+            &params,
+            &ha,
+            &hb,
+            &hout,
+            Some(&a_grid),
+            None,
+            &b_vec,
+            &out_cts,
+            &atk4b
+        )
+        .is_err(),
         "Attack 4b (tampered WHIR final_poly) must be rejected!"
     );
 
@@ -489,7 +513,11 @@ fn test_whir_gmask_six_adversarial_attacks_rejected() {
     let atk5c = mutate_single(&mut |w| {
         w.proof.fold_rounds[0].siblings[0][3] ^= 0x04;
     });
-    for (lbl, atk) in [("s0_sibling", atk5a), ("s0_salt", atk5b), ("fold_sibling", atk5c)] {
+    for (lbl, atk) in [
+        ("s0_sibling", atk5a),
+        ("s0_salt", atk5b),
+        ("fold_sibling", atk5c),
+    ] {
         assert!(
             verify_hoisted_whir_bytes(
                 &params,
@@ -518,13 +546,33 @@ fn test_whir_gmask_six_adversarial_attacks_rejected() {
     let bad_hout: Vec<[u8; 32]> = bad_outs.iter().map(ct3_handle).collect();
 
     assert!(
-        verify_hoisted_whir_bundle(&params, &ha, &hb, &hout, Some(&a_grid), None, &b_vec, &out_cts, &atk6a)
-            .is_err(),
+        verify_hoisted_whir_bundle(
+            &params,
+            &ha,
+            &hb,
+            &hout,
+            Some(&a_grid),
+            None,
+            &b_vec,
+            &out_cts,
+            &atk6a
+        )
+        .is_err(),
         "Attack 6a (forged p0_poly_evals) must be rejected!"
     );
     assert!(
-        verify_hoisted_whir_bundle(&params, &ha, &hb, &hout, Some(&a_grid), None, &b_vec, &out_cts, &atk6b)
-            .is_err(),
+        verify_hoisted_whir_bundle(
+            &params,
+            &ha,
+            &hb,
+            &hout,
+            Some(&a_grid),
+            None,
+            &b_vec,
+            &out_cts,
+            &atk6b
+        )
+        .is_err(),
         "Attack 6b (forged p17_poly_subsums) must be rejected!"
     );
     assert!(
@@ -646,8 +694,8 @@ fn gen_cts_parallel(
         .map(|idx| {
             let mut key = OwnKey::new(engine.rns_q.clone(), seed_base + idx as u64);
             let mut m = vec![0u64; params.n];
-            for j in 0..64 {
-                m[j] = ((idx * 11 + j * 5 + 3) as u64) % 17;
+            for (j, slot) in m.iter_mut().take(64).enumerate() {
+                *slot = ((idx * 11 + j * 5 + 3) as u64) % 17;
             }
             key.encrypt_exact(&m)
         })
@@ -713,8 +761,10 @@ fn test_hoisted_whir_n8192_scaling_d64_to_d4096() {
         let old_len = bytes_old.len();
         let hout_old: Vec<[u8; 32]> = out_old.par_iter().map(ct3_handle).collect();
         let dec_old = HoistedSuccinctBundle::from_bytes(&bytes_old, &params).unwrap();
-        verify_hoisted_succinct_bundle(&params, &ha, &hb, &hout_old, None, &b_vec, &out_old, &dec_old)
-            .expect("verify old succinct bundle");
+        verify_hoisted_succinct_bundle(
+            &params, &ha, &hb, &hout_old, None, &b_vec, &out_old, &dec_old,
+        )
+        .expect("verify old succinct bundle");
         drop(dec_old);
         drop(bytes_old);
         drop(out_old);
@@ -738,7 +788,10 @@ fn test_hoisted_whir_n8192_scaling_d64_to_d4096() {
         let prv_whir_ms = t1.elapsed().as_secs_f64() * 1e3;
         let bytes_whir = bun_whir.to_bytes();
         let hout_whir: Vec<[u8; 32]> = out_whir.par_iter().map(ct3_handle).collect();
-        assert_eq!(hout_old, hout_whir, "ciphertext output handles must match bit-for-bit!");
+        assert_eq!(
+            hout_old, hout_whir,
+            "ciphertext output handles must match bit-for-bit!"
+        );
 
         let mut vfy_whir_ms = f64::INFINITY;
         for _ in 0..3 {
@@ -799,7 +852,11 @@ fn test_hoisted_whir_n8192_scaling_d64_to_d4096() {
                 &np_bytes,
             )
             .expect("verify non-persistent HoistedWhirBundle");
-            format!(" (SinglePCS={:.1}KiB, {:.1}x)", np_bytes.len() as f64 / 1024.0, old_kib / (np_bytes.len() as f64 / 1024.0))
+            format!(
+                " (SinglePCS={:.1}KiB, {:.1}x)",
+                np_bytes.len() as f64 / 1024.0,
+                old_kib / (np_bytes.len() as f64 / 1024.0)
+            )
         } else {
             String::new()
         };

@@ -19,7 +19,9 @@ impl PyRandom {
         let mut mt = Box::new([0u32; NN]);
         mt[0] = s;
         for i in 1..NN {
-            mt[i] = 1812433253u32.wrapping_mul(mt[i - 1] ^ (mt[i - 1] >> 30)).wrapping_add(i as u32);
+            mt[i] = 1812433253u32
+                .wrapping_mul(mt[i - 1] ^ (mt[i - 1] >> 30))
+                .wrapping_add(i as u32);
         }
         PyRandom { mt, idx: NN }
     }
@@ -49,7 +51,8 @@ impl PyRandom {
         }
         k = NN - 1;
         while k > 0 {
-            mt[i] = (mt[i] ^ (mt[i - 1] ^ (mt[i - 1] >> 30)).wrapping_mul(1566083941)).wrapping_sub(i as u32);
+            mt[i] = (mt[i] ^ (mt[i - 1] ^ (mt[i - 1] >> 30)).wrapping_mul(1566083941))
+                .wrapping_sub(i as u32);
             i += 1;
             if i >= NN {
                 mt[0] = mt[NN - 1];
@@ -155,7 +158,7 @@ impl PyRandom {
 
     /// getrandbits(k) for any k, as little-endian u64 limbs (ceil(k/64) of them, at least one).
     pub fn getrandbits_limbs(&mut self, k: u32) -> Vec<u64> {
-        let nl = ((k as usize) + 63) / 64;
+        let nl = (k as usize).div_ceil(64);
         let mut out = vec![0u64; nl.max(1)];
         if k <= 32 {
             out[0] = self.getrandbits_u64(k);
@@ -363,5 +366,7 @@ fn sub_arr<const W: usize>(a: &[u64; W], b: &[u64; W]) -> [u64; W] {
 }
 
 pub fn to_u32s(l: &[u64]) -> Vec<u32> {
-    l.iter().flat_map(|&x| [x as u32, (x >> 32) as u32]).collect()
+    l.iter()
+        .flat_map(|&x| [x as u32, (x >> 32) as u32])
+        .collect()
 }

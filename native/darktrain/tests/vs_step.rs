@@ -19,13 +19,29 @@ fn same(c: &Cfg, w1: &[i64], w2: &[i64], xs: &[(Vec<i64>, Vec<i64>)]) -> bool {
 #[test]
 fn random_dense_cases() {
     for (d, rnd) in [(16usize, false), (64, false), (64, true)] {
-        let mut c = Cfg { d, hid: d, reps: 1, s1a: 5, s1b: 5, s2: 4, s3: 8, rnd3: rnd, ..Default::default() };
+        let mut c = Cfg {
+            d,
+            hid: d,
+            reps: 1,
+            s1a: 5,
+            s1b: 5,
+            s2: 4,
+            s3: 8,
+            rnd3: rnd,
+            ..Default::default()
+        };
         c.tile = 0;
         let mut r = PyRandom::from_u64(d as u64 + rnd as u64);
         let w1: Vec<i64> = (0..d * d).map(|_| r.randint_i64(-7, 7)).collect();
         let w2: Vec<i64> = (0..d * d).map(|_| r.randint_i64(-7, 7)).collect();
-        let xs: Vec<(Vec<i64>, Vec<i64>)> =
-            (0..5).map(|_| ((0..d).map(|_| r.randint_i64(-7, 7)).collect(), (0..d).map(|_| r.randint_i64(-7, 7)).collect())).collect();
+        let xs: Vec<(Vec<i64>, Vec<i64>)> = (0..5)
+            .map(|_| {
+                (
+                    (0..d).map(|_| r.randint_i64(-7, 7)).collect(),
+                    (0..d).map(|_| r.randint_i64(-7, 7)).collect(),
+                )
+            })
+            .collect();
         assert!(same(&c, &w1, &w2, &xs), "d = {d}");
         // negative control: a different program (s3 + 1) gives different weights, so the comparison can fail
         let mut w1b = w1.clone();
@@ -45,10 +61,20 @@ fn random_dense_cases() {
 
 #[test]
 fn mnist_cases_d1024() {
-    let c = Cfg { d: 1024, hid: 1024, s1a: 11, s1b: 11, a1: 64, a2: 4, ..Default::default() };
+    let c = Cfg {
+        d: 1024,
+        hid: 1024,
+        s1a: 11,
+        s1b: 11,
+        a1: 64,
+        a2: 4,
+        ..Default::default()
+    };
     let m = data::load(std::path::Path::new(&c.data)).unwrap();
     let (w1, w2) = init(&c);
-    let xs: Vec<_> = (0..4).map(|k| encode(&c, m.train.image(k), m.train.lab[k])).collect();
+    let xs: Vec<_> = (0..4)
+        .map(|k| encode(&c, m.train.image(k), m.train.lab[k]))
+        .collect();
     assert!(same(&c, &w1, &w2, &xs));
 }
 
@@ -63,7 +89,11 @@ fn order_is_python_shuffle() {
 /// Plain::step_prog (step_spec under GEN6) on MNIST steps at d = 4096 from the genesis init.
 #[test]
 fn genesis_is_gen6_and_fast_step_equals_darkstep() {
-    let g = std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/../../research/dark_learning_2026_11_06/train_genesis_gen6.json")).unwrap();
+    let g = std::fs::read_to_string(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/../../research/dark_learning_2026_11_06/train_genesis_gen6.json"
+    ))
+    .unwrap();
     let c: Cfg = serde_json::from_str(&g).unwrap();
     assert_eq!(c.program().unwrap(), darkstep::step::Program::GEN6);
     let m = data::load(std::path::Path::new(&c.data)).unwrap();
@@ -72,10 +102,15 @@ fn genesis_is_gen6_and_fast_step_equals_darkstep() {
     let (mut w1, mut w2) = init(&c);
     let ord = order(c.seed_order, m.train.n);
     let mut bd = Bounds::default();
-    for s in 0..2 {
-        let (x, y) = encode(&c, m.train.image(ord[s]), m.train.lab[ord[s]]);
+    for (s, &idx) in ord.iter().take(2).enumerate() {
+        let (x, y) = encode(&c, m.train.image(idx), m.train.lab[idx]);
         let rows = |w: &[i64]| -> Vec<Vec<i64>> { w.chunks(d).map(|r| r.to_vec()).collect() };
-        let pl = darkstep::step::Plain { w1: rows(&w1), w2: rows(&w2), x: x.clone(), y: y.clone() };
+        let pl = darkstep::step::Plain {
+            w1: rows(&w1),
+            w2: rows(&w2),
+            x: x.clone(),
+            y: y.clone(),
+        };
         let (e1, e2) = pl.step_prog(&darkstep::step::Program::GEN6).unwrap();
         fast_step(&c, &mut w1, &mut w2, &x, &y, &mut bd);
         assert!(rows(&w1) == e1 && rows(&w2) == e2, "step {s}");

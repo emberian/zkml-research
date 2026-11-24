@@ -14,17 +14,28 @@ pub fn custodian_message(sp: &StepParams, tx: &Transactions) -> Vec<[u64; 3]> {
 }
 
 /// Step `j` of a chunk of `steps`.
-pub fn custodian_message_step(sp: &StepParams, tx: &Transactions, j: usize, steps: usize) -> Vec<[u64; 3]> {
+pub fn custodian_message_step(
+    sp: &StepParams,
+    tx: &Transactions,
+    j: usize,
+    steps: usize,
+) -> Vec<[u64; 3]> {
     custodian_message_in_chunk(&vec![*sp; steps], tx, j)
 }
 
 /// Step `j` of a chunk whose steps are `chunk`.
-pub fn custodian_message_in_chunk(chunk: &[StepParams], tx: &Transactions, j: usize) -> Vec<[u64; 3]> {
+pub fn custodian_message_in_chunk(
+    chunk: &[StepParams],
+    tx: &Transactions,
+    j: usize,
+) -> Vec<[u64; 3]> {
     let one = Plan::of(&chunk[j]).n_in;
     let o = crate::schedule::offsets(chunk, j).0;
     let sec = crate::schedule::plan_of_steps(chunk).sections();
     let (base, _, m) = sec.input;
-    (o..o + one).map(|k| [0, 1, 2].map(|c| tx.share(base + c * m + k).0)).collect()
+    (o..o + one)
+        .map(|k| [0, 1, 2].map(|c| tx.share(base + c * m + k).0))
+        .collect()
 }
 
 pub fn write_message(w: &mut impl std::io::Write, msg: &[[u64; 3]]) -> std::io::Result<()> {
@@ -48,7 +59,9 @@ pub fn read_message(bytes: &[u8]) -> Result<Vec<[u64; 3]>, String> {
         return Err("owner message length mismatch".into());
     }
     let u = |o: usize| u64::from_le_bytes(bytes[o..o + 8].try_into().unwrap());
-    Ok((0..n).map(|k| [0, 1, 2].map(|c| u(16 + 24 * k + 8 * c))).collect())
+    Ok((0..n)
+        .map(|k| [0, 1, 2].map(|c| u(16 + 24 * k + 8 * c)))
+        .collect())
 }
 
 /// The owner reconstructs, checks a b = c for every tuple, and returns the masks r = a.

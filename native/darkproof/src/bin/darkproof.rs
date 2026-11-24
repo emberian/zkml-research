@@ -14,14 +14,29 @@ fn sha(b: &[u8]) -> String {
 }
 
 fn first_diff(a: &[u8], b: &[u8]) -> Option<usize> {
-    (0..a.len().min(b.len())).find(|&i| a[i] != b[i]).or(if a.len() != b.len() { Some(a.len().min(b.len())) } else { None })
+    (0..a.len().min(b.len()))
+        .find(|&i| a[i] != b[i])
+        .or(if a.len() != b.len() {
+            Some(a.len().min(b.len()))
+        } else {
+            None
+        })
 }
 
 fn roots_of(v: &Value) -> BTreeMap<String, Vec<[u8; 32]>> {
     v.as_object()
         .unwrap()
         .iter()
-        .map(|(k, a)| (k.clone(), a.as_array().unwrap().iter().map(|h| unhex32(h.as_str().unwrap()).unwrap()).collect()))
+        .map(|(k, a)| {
+            (
+                k.clone(),
+                a.as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|h| unhex32(h.as_str().unwrap()).unwrap())
+                    .collect(),
+            )
+        })
         .collect()
 }
 
@@ -33,7 +48,11 @@ fn main() {
         darkproof::heap::start();
     }
     let args: Vec<String> = std::env::args().collect();
-    if matches!(args.get(1).map(|s| s.as_str()), Some("check" | "rows" | "ds-check" | "rel-check" | "ext-rows" | "e-rows")) && !cfg!(feature = "test-det") {
+    if matches!(
+        args.get(1).map(|s| s.as_str()),
+        Some("check" | "rows" | "ds-check" | "rel-check" | "ext-rows" | "e-rows")
+    ) && !cfg!(feature = "test-det")
+    {
         eprintln!("bit-exact checks need the deterministic hook: build with --features test-det");
         std::process::exit(2);
     }
@@ -55,7 +74,12 @@ fn main() {
         #[cfg(feature = "tcp")]
         Some("ds-bench") => ds_bench(args[2].parse().unwrap(), &args[3]),
         #[cfg(feature = "tcp")]
-        Some("ds-chain") => ds_chain(args[2].parse().unwrap(), &args[3], args[4].parse().unwrap(), args[5].parse().unwrap()),
+        Some("ds-chain") => ds_chain(
+            args[2].parse().unwrap(),
+            &args[3],
+            args[4].parse().unwrap(),
+            args[5].parse().unwrap(),
+        ),
         _ => eprintln!("usage: darkproof check VECDIR TAG"),
     }
 }
@@ -65,9 +89,14 @@ fn main() {
 /// coset domain, and the before/after comparison).
 fn profile(name: &str) -> Profile {
     // vectors made before the coset domain (DP_DOMAIN=int) or before bundle cut A (DP_SPLIT=square)
-    let name = match (std::env::var("DP_DOMAIN").as_deref(), std::env::var("DP_SPLIT").as_deref()) {
+    let name = match (
+        std::env::var("DP_DOMAIN").as_deref(),
+        std::env::var("DP_SPLIT").as_deref(),
+    ) {
         (Ok("int"), _) if !name.ends_with("-int") => format!("{name}-int"),
-        (_, Ok("square")) if !name.ends_with("-sq") && !name.ends_with("-int") => format!("{name}-sq"),
+        (_, Ok("square")) if !name.ends_with("-sq") && !name.ends_with("-int") => {
+            format!("{name}-sq")
+        }
         _ => name.to_string(),
     };
     Profile::by_name(&name).unwrap_or_else(|| panic!("no profile {name}"))
@@ -78,57 +107,123 @@ fn program_of(meta: &Value, d: usize) -> darkproof::step::StepParams {
         None => darkproof::step::StepParams::for_width(d),
         Some(p) => {
             let w = darkproof::step::StepParams::for_width(d);
-            let f = |k: &str, dflt: u32| p.get(k).and_then(|v| v.as_u64()).map(|v| v as u32).unwrap_or(dflt);
+            let f = |k: &str, dflt: u32| {
+                p.get(k)
+                    .and_then(|v| v.as_u64())
+                    .map(|v| v as u32)
+                    .unwrap_or(dflt)
+            };
             let g = |k: &str, dflt: i64| p.get(k).and_then(|v| v.as_i64()).unwrap_or(dflt);
-            darkproof::step::StepParams { s1: f("S1", w.s1), k1: f("K1", w.k1), s2: f("S2", w.s2), k2: f("K2", w.k2), s3: f("S3", w.s3), k3: f("K3", w.k3), he: p["he"].as_bool().unwrap_or(false), rc: p["RC"].as_bool().unwrap_or(false), r3: g("R3", 0), t_lo: g("T_LO", -128), lb: p["LB"].as_bool().unwrap_or(false), rs: p["RS"].as_bool().unwrap_or(false), xt: p["XT"].as_bool().unwrap_or(false), pg: p.get("PG").map(|h| {
-                let b = h.as_str().expect("PG hex");
-                let v: Vec<u8> = (0..32).map(|k| u8::from_str_radix(&b[2 * k..2 * k + 2], 16).expect("PG hex")).collect();
-                v.try_into().unwrap()
-            }) }
+            darkproof::step::StepParams {
+                s1: f("S1", w.s1),
+                k1: f("K1", w.k1),
+                s2: f("S2", w.s2),
+                k2: f("K2", w.k2),
+                s3: f("S3", w.s3),
+                k3: f("K3", w.k3),
+                he: p["he"].as_bool().unwrap_or(false),
+                rc: p["RC"].as_bool().unwrap_or(false),
+                r3: g("R3", 0),
+                t_lo: g("T_LO", -128),
+                lb: p["LB"].as_bool().unwrap_or(false),
+                rs: p["RS"].as_bool().unwrap_or(false),
+                xt: p["XT"].as_bool().unwrap_or(false),
+                pg: p.get("PG").map(|h| {
+                    let b = h.as_str().expect("PG hex");
+                    let v: Vec<u8> = (0..32)
+                        .map(|k| u8::from_str_radix(&b[2 * k..2 * k + 2], 16).expect("PG hex"))
+                        .collect();
+                    v.try_into().unwrap()
+                }),
+            }
         }
     }
 }
 
 /// TAG e.g. demo_d4 (the harness's pw bundles) or demo_d4_he (the deployed step's chain he1, he2, ...).
 fn check(dir: &Path, tag: &str) {
-    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    let meta: Value =
+        serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap())
+            .unwrap();
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
     let prm = program_of(&meta, meta["d"].as_u64().unwrap() as usize);
     let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
-    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: true, transport: darkproof::net::transport_from_env(), prm: Some(prm) };
+    let opts = BundleOpts {
+        pr: &pr,
+        lp: &lp,
+        tables: &tables,
+        det,
+        spine_attack: None,
+        fs_public_attack: false,
+        diagnose: true,
+        transport: darkproof::net::transport_from_env(),
+        prm: Some(prm),
+    };
     let mut ok_all = true;
     let groots = roots_of(&meta["genesis_roots"]);
     let mut carry = None;
     if let Some(h) = prm.pg {
-        // public genesis: the cfg the program pins, its W committed with public coins by every custodian; those
-        // roots must be the vectors' genesis roots
-        use sha2::{Digest, Sha256};
-        let cfg = std::fs::read(meta["pg_cfg"].as_str().expect("PG vectors carry pg_cfg")).unwrap();
-        assert_eq!(<[u8; 32]>::from(Sha256::digest(&cfg)), h, "pg_cfg is not the cfg the program pins");
-        let (d, w1, w2) = darkproof::run::public_weights(&cfg).unwrap();
-        let parts: Vec<_> = (0..3).map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3)).collect();
-        let eq = parts[0].1 == groots;
-        println!("{tag} public genesis: native public commitment of the cfg's W {} the Python genesis roots", if eq { "EQUALS" } else { "DIFFERS FROM" });
-        ok_all &= eq;
-        carry = Some(parts.into_iter().map(|p| p.0).collect());
+        #[cfg(feature = "tcp")]
+        {
+            // public genesis: the cfg the program pins, its W committed with public coins by every custodian; those
+            // roots must be the vectors' genesis roots
+            use sha2::{Digest, Sha256};
+            let cfg =
+                std::fs::read(meta["pg_cfg"].as_str().expect("PG vectors carry pg_cfg")).unwrap();
+            assert_eq!(
+                <[u8; 32]>::from(Sha256::digest(&cfg)),
+                h,
+                "pg_cfg is not the cfg the program pins"
+            );
+            let (d, w1, w2) = darkproof::run::public_weights(&cfg).unwrap();
+            let parts: Vec<_> = (0..3)
+                .map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3))
+                .collect();
+            let eq = parts[0].1 == groots;
+            println!("{tag} public genesis: native public commitment of the cfg's W {} the Python genesis roots", if eq { "EQUALS" } else { "DIFFERS FROM" });
+            ok_all &= eq;
+            carry = Some(parts.into_iter().map(|p| p.0).collect());
+        }
+        #[cfg(not(feature = "tcp"))]
+        {
+            let _ = h;
+            panic!("public genesis vectors require --features tcp");
+        }
     }
     let mut parent = groots.clone();
     // DEFER: the previous step's pending claims, prover side (per party) and ledger side
     let mut dfr: Option<Vec<darkproof::defer::DeferIn>> = None;
     let mut pend: Option<darkproof::defer::Pending> = None;
-    let mut names: Vec<String> =
-        meta["bundles"].as_object().unwrap().keys().filter(|k| k.starts_with("pw") || k.starts_with("he")).cloned().collect();
+    let mut names: Vec<String> = meta["bundles"]
+        .as_object()
+        .unwrap()
+        .keys()
+        .filter(|k| k.starts_with("pw") || k.starts_with("he"))
+        .cloned()
+        .collect();
     names.sort();
     for name in names.iter().map(|s| s.as_str()) {
         let b = &meta["bundles"][name];
         let c = b["ctx"].as_array().unwrap();
-        let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+        let ctx = Ctx::new(
+            c[0].as_str().unwrap(),
+            c[1].as_u64().unwrap(),
+            c[2].as_u64().unwrap(),
+        );
         let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
         let pyb = std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap();
-        let out = darkproof::witness::make_bundle_d(&opts, w.clone(), &ctx, carry.take(), None, dfr.take()).expect("prove");
+        let out = darkproof::witness::make_bundle_d(
+            &opts,
+            w.clone(),
+            &ctx,
+            carry.take(),
+            None,
+            dfr.take(),
+        )
+        .expect("prove");
         if let Some(g) = &out.genesis_roots {
             assert_eq!(g, &groots, "genesis roots differ");
         }
@@ -146,19 +241,54 @@ fn check(dir: &Path, tag: &str) {
             out.middle_violates
         );
         let t = std::time::Instant::now();
-        let v = wire::verify_step_d(&pr, &lp, &pyb, &ctx, &parent, &tables, w.d, prm, None, 0, pend.as_ref());
+        let v = wire::verify_step_d(
+            &pr,
+            &lp,
+            &pyb,
+            &ctx,
+            &parent,
+            &tables,
+            w.d,
+            prm,
+            None,
+            0,
+            pend.as_ref(),
+        );
         println!(
             "  native verify of the python bundle: {:?} ({:.2}s){}",
             v.as_ref().map(|_| "accept"),
             t.elapsed().as_secs_f64(),
-            if pr.defer { if pend.is_some() { ", discharging the parent's pending claims" } else { ", the parent final" } } else { "" }
+            if pr.defer {
+                if pend.is_some() {
+                    ", discharging the parent's pending claims"
+                } else {
+                    ", the parent final"
+                }
+            } else {
+                ""
+            }
         );
         ok_all &= v.is_ok();
         let mut bad = pyb.clone();
         let pos = bad.len() / 2;
         bad[pos] ^= 1;
-        let v2 = wire::verify_step_d(&pr, &lp, &bad, &ctx, &parent, &tables, w.d, prm, None, 0, pend.as_ref());
-        println!("  native verify, one flipped byte at {pos}: {:?}", v2.as_ref().map(|_| "accept"));
+        let v2 = wire::verify_step_d(
+            &pr,
+            &lp,
+            &bad,
+            &ctx,
+            &parent,
+            &tables,
+            w.d,
+            prm,
+            None,
+            0,
+            pend.as_ref(),
+        );
+        println!(
+            "  native verify, one flipped byte at {pos}: {:?}",
+            v2.as_ref().map(|_| "accept")
+        );
         ok_all &= v2.is_err();
         std::fs::write(dir.join(format!("{tag}_{name}.native.bin")), &out.blob).unwrap();
         if let Ok(a) = v {
@@ -167,34 +297,96 @@ fn check(dir: &Path, tag: &str) {
         }
         carry = Some(out.child);
         if pr.defer {
-            dfr = Some(out.deferred.into_iter().map(|d| d.expect("DEFER: a step leaves pending claims")).collect());
+            dfr = Some(
+                out.deferred
+                    .into_iter()
+                    .map(|d| d.expect("DEFER: a step leaves pending claims"))
+                    .collect(),
+            );
         }
     }
     if let Some(b) = meta["bundles"].get("si1") {
         let xy = &meta["si_xy"];
-        let v = |k: &str| xy[k].as_array().unwrap().iter().map(|x| x.as_u64().unwrap()).collect::<Vec<u64>>();
+        let v = |k: &str| {
+            xy[k]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|x| x.as_u64().unwrap())
+                .collect::<Vec<u64>>()
+        };
         let mut owner = darkproof::owner::Owner::new(pr.owner_h, Some((0u8..32).collect()), None);
-        assert_eq!(darkproof::h::hex(&owner.pk), b["owner_pk"].as_str().unwrap(), "owner public key differs");
+        assert_eq!(
+            darkproof::h::hex(&owner.pk),
+            b["owner_pk"].as_str().unwrap(),
+            "owner public key differs"
+        );
         let ctx = Ctx::new("mind-0", 0, 1);
         let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
         let pyb = std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap();
-        let out = make_bundle(&opts, w.clone(), &ctx, None, Some(darkproof::witness::OwnerIn { owner: &mut owner, x: v("x"), y: v("y") })).unwrap();
+        let out = make_bundle(
+            &opts,
+            w.clone(),
+            &ctx,
+            None,
+            Some(darkproof::witness::OwnerIn {
+                owner: &mut owner,
+                x: v("x"),
+                y: v("y"),
+            }),
+        )
+        .unwrap();
         let eq = out.blob == pyb;
         ok_all &= eq;
         println!(
             "{tag} si1 (owner-signed): native {} bytes sha256 {} | python {} bytes sha256 {} | {}",
-            out.blob.len(), &sha(&out.blob)[..16], pyb.len(), &sha(&pyb)[..16],
-            if eq { "EQUAL".to_string() } else { format!("DIFFER at offset {:?}", first_diff(&out.blob, &pyb)) }
+            out.blob.len(),
+            &sha(&out.blob)[..16],
+            pyb.len(),
+            &sha(&pyb)[..16],
+            if eq {
+                "EQUAL".to_string()
+            } else {
+                format!("DIFFER at offset {:?}", first_diff(&out.blob, &pyb))
+            }
         );
         let groots = roots_of(&meta["si_genesis_roots"]);
-        let v1 = wire::verify_step(&pr, &lp, &pyb, &ctx, &groots, &tables, w.d, darkproof::step::StepParams::for_width(w.d), Some(&owner.pk), 0);
-        println!("  native verify of the python bundle: {:?}", v1.as_ref().map(|_| "accept"));
+        let v1 = wire::verify_step(
+            &pr,
+            &lp,
+            &pyb,
+            &ctx,
+            &groots,
+            &tables,
+            w.d,
+            darkproof::step::StepParams::for_width(w.d),
+            Some(&owner.pk),
+            0,
+        );
+        println!(
+            "  native verify of the python bundle: {:?}",
+            v1.as_ref().map(|_| "accept")
+        );
         ok_all &= v1.is_ok();
         let mut bad = pyb.clone();
         let l = bad.len();
         bad[l - 100] ^= 1;
-        let v2 = wire::verify_step(&pr, &lp, &bad, &ctx, &groots, &tables, w.d, darkproof::step::StepParams::for_width(w.d), Some(&owner.pk), 0);
-        println!("  native verify, one flipped signature byte: {:?}", v2.as_ref().map(|_| "accept"));
+        let v2 = wire::verify_step(
+            &pr,
+            &lp,
+            &bad,
+            &ctx,
+            &groots,
+            &tables,
+            w.d,
+            darkproof::step::StepParams::for_width(w.d),
+            Some(&owner.pk),
+            0,
+        );
+        println!(
+            "  native verify, one flipped signature byte: {:?}",
+            v2.as_ref().map(|_| "accept")
+        );
         ok_all &= v2.is_err();
         std::fs::write(dir.join(format!("{tag}_si1.native.bin")), &out.blob).unwrap();
     }
@@ -208,16 +400,23 @@ fn check(dir: &Path, tag: &str) {
 /// same bundle; the native verifier accepts it chained from the genesis roots; a tape triple off by one at one
 /// custodian aborts the proof (MAC check).
 fn run_check(dir: &Path, tag: &str) {
-    use darkproof::run::{n_had, prove_step, tape_triples, PartyStep};
+    use darkproof::run::{prove_step, PartyStep};
     use darkproof::spdz::{Dealer, Triple};
-    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    let meta: Value =
+        serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap())
+            .unwrap();
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
     let d = meta["d"].as_u64().unwrap() as usize;
     let prm = program_of(&meta, d);
     let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
-    let mut names: Vec<String> = meta["bundles"].as_object().unwrap().keys().cloned().collect();
+    let mut names: Vec<String> = meta["bundles"]
+        .as_object()
+        .unwrap()
+        .keys()
+        .cloned()
+        .collect();
     names.sort();
     let mut parent = roots_of(&meta["genesis_roots"]);
     let mut carry: Vec<Option<BTreeMap<String, darkproof::pcs::PcsParty>>> = vec![None, None, None];
@@ -225,52 +424,69 @@ fn run_check(dir: &Path, tag: &str) {
     for (k, name) in names.iter().enumerate() {
         let b = &meta["bundles"][name.as_str()];
         let c = b["ctx"].as_array().unwrap();
-        let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+        let ctx = Ctx::new(
+            c[0].as_str().unwrap(),
+            c[1].as_u64().unwrap(),
+            c[2].as_u64().unwrap(),
+        );
         let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
         let nt = darkproof::run::step_section(&lp, d, prm, prm.carried(ctx.step), &tables);
         // the custodians' tapes: authenticated triples under the step's alpha (stand-in for MASCOT)
-        let mut tdl = Dealer::from_state(&pycompat::PyRandom::from_u64(1000 + k as u64).state(), w.alpha_sh.clone());
-        let mut tapes: Vec<Vec<Triple>> = vec![Vec::with_capacity(nt); 3];
+        let mut tdl = Dealer::from_state(
+            &pycompat::PyRandom::from_u64(1000 + k as u64).state(),
+            w.alpha_sh.clone(),
+        );
+        let mut tapes: Vec<Vec<Triple>> = (0..3).map(|_| Vec::with_capacity(nt)).collect();
         for _ in 0..nt {
             let av = tdl.rng.randrange_u64(darkproof::field::p());
             let bv = tdl.rng.randrange_u64(darkproof::field::p());
-            let (a, b2, cc) = (tdl.auth_all(av), tdl.auth_all(bv), tdl.auth_all(darkproof::field::mul(av, bv)));
+            let (a, b2, cc) = (
+                tdl.auth_all(av),
+                tdl.auth_all(bv),
+                tdl.auth_all(darkproof::field::mul(av, bv)),
+            );
             for i in 0..3 {
                 tapes[i].push((a[i], b2[i], cc[i]));
             }
         }
-        let run = |tapes: Vec<Vec<Triple>>, carry: Vec<Option<BTreeMap<String, darkproof::pcs::PcsParty>>>| {
-            let nets = darkproof::net::Nets::new(darkproof::net::transport_from_env(), 3);
-            let t0 = std::time::Instant::now();
-            let outs: Vec<Result<darkproof::run::StepProof, String>> = std::thread::scope(|s| {
-                let hs: Vec<_> = tapes
-                    .into_iter()
-                    .zip(carry)
-                    .enumerate()
-                    .map(|(i, (tp, cy))| {
-                        let (nets, w, pr, lp, tables, ctx) = (&nets, &w, &pr, &lp, &tables, &ctx);
-                        s.spawn(move || {
-                            let mut net = nets.take(i);
-                            let st = PartyStep {
-                                i,
-                                n: 3,
-                                d,
-                                alpha_i: w.alpha_sh[i],
-                                wires: w.wires[i].clone(),
-                                public: w.public.clone(),
-                                atoms: w.atoms[i].clone(),
-                                triples: tp,
-                                det: darkproof::rng::Det(None),
-                                ignore_range: false,
-                            };
-                            prove_step(pr, lp, tables, prm, &mut *net, ctx, st, cy)
-                        })
-                    })
-                    .collect();
-                hs.into_iter().map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into()))).collect()
-            });
-            (outs, t0.elapsed().as_secs_f64())
-        };
+        let run =
+            |tapes: Vec<Vec<Triple>>,
+             carry: Vec<Option<BTreeMap<String, darkproof::pcs::PcsParty>>>| {
+                let nets = darkproof::net::Nets::new(darkproof::net::transport_from_env(), 3);
+                let t0 = std::time::Instant::now();
+                let outs: Vec<Result<darkproof::run::StepProof, String>> =
+                    std::thread::scope(|s| {
+                        let hs: Vec<_> = tapes
+                            .into_iter()
+                            .zip(carry)
+                            .enumerate()
+                            .map(|(i, (tp, cy))| {
+                                let (nets, w, pr, lp, tables, ctx) =
+                                    (&nets, &w, &pr, &lp, &tables, &ctx);
+                                s.spawn(move || {
+                                    let mut net = nets.take(i);
+                                    let st = PartyStep {
+                                        i,
+                                        n: 3,
+                                        d,
+                                        alpha_i: w.alpha_sh[i],
+                                        wires: w.wires[i].clone(),
+                                        public: w.public.clone(),
+                                        atoms: w.atoms[i].clone(),
+                                        triples: tp,
+                                        det: darkproof::rng::Det(None),
+                                        ignore_range: false,
+                                    };
+                                    prove_step(pr, lp, tables, prm, &mut *net, ctx, st, cy)
+                                })
+                            })
+                            .collect();
+                        hs.into_iter()
+                            .map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into())))
+                            .collect()
+                    });
+                (outs, t0.elapsed().as_secs_f64())
+            };
         // negative controls first (on clones of the carry), at custodian 1's first middle triple:
         //   c's value share off by one (a wrong product: its MAC is untouched, the proof's constraints catch it)
         //   a's value share off by one (the opened e is not the authenticated one: the MAC check aborts)
@@ -278,15 +494,28 @@ fn run_check(dir: &Path, tag: &str) {
         for (what, slot) in [("c", 2usize), ("a", 0usize)] {
             let mut bad = tapes.clone();
             let t = &mut bad[1][jb];
-            let sh = match slot { 0 => &mut t.0, _ => &mut t.2 };
+            let sh = match slot {
+                0 => &mut t.0,
+                _ => &mut t.2,
+            };
             sh.0 = darkproof::field::add(sh.0, 1);
-            let cl = carry.iter().map(|c| c.as_ref().map(|m| m.iter().map(|(k, p)| (k.clone(), darkproof::witness::clone_pcs(p))).collect())).collect();
+            let cl = carry
+                .iter()
+                .map(|c| {
+                    c.as_ref().map(|m| {
+                        m.iter()
+                            .map(|(k, p)| (k.clone(), darkproof::witness::clone_pcs(p)))
+                            .collect()
+                    })
+                })
+                .collect();
             let (bo, _) = run(bad, cl);
             let verdict = match &bo[0] {
                 Err(e) => format!("REFUSED in proving ({e})"),
                 Ok(p) => {
                     let gp = p.genesis_roots.clone().unwrap_or_else(|| parent.clone());
-                    match wire::verify_step(&pr, &lp, &p.blob, &ctx, &gp, &tables, d, prm, None, 0) {
+                    match wire::verify_step(&pr, &lp, &p.blob, &ctx, &gp, &tables, d, prm, None, 0)
+                    {
                         Err(e) => format!("REFUSED by the verifier ({e})"),
                         Ok(_) => "ACCEPTED".into(),
                     }
@@ -302,7 +531,10 @@ fn run_check(dir: &Path, tag: &str) {
             let p2 = o2.into_iter().next().unwrap().expect("second proof");
             let g2 = p2.genesis_roots.clone().unwrap();
             let v2 = wire::verify_step(&pr, &lp, &p2.blob, &ctx, &g2, &tables, d, prm, None, 0);
-            let differ = match &outs[0] { Ok(p1) => p1.blob != p2.blob, Err(_) => false };
+            let differ = match &outs[0] {
+                Ok(p1) => p1.blob != p2.blob,
+                Err(_) => false,
+            };
             println!("{tag} {name}: a second production proof of the same witness: bytes differ {differ}, verifies {:?}", v2.as_ref().map(|_| "accept"));
             ok_all &= differ && v2.is_ok();
         }
@@ -321,7 +553,18 @@ fn run_check(dir: &Path, tag: &str) {
             parent = g.clone();
         }
         let t = std::time::Instant::now();
-        let v = wire::verify_step(&pr, &lp, &parts[0].blob, &ctx, &parent, &tables, d, prm, None, 0);
+        let v = wire::verify_step(
+            &pr,
+            &lp,
+            &parts[0].blob,
+            &ctx,
+            &parent,
+            &tables,
+            d,
+            prm,
+            None,
+            0,
+        );
         println!(
             "{tag} {name}: {} triples per tape; prove {:.2}s; {} bytes; parties agree: {}; sent per party {} elements; verify {:?} ({:.2}s)",
             nt, secs, parts[0].blob.len(), same, parts[0].sent, v.as_ref().map(|_| "accept"), t.elapsed().as_secs_f64()
@@ -330,7 +573,14 @@ fn run_check(dir: &Path, tag: &str) {
         parent = v.map(|a| a.child).unwrap_or(parent);
         carry = parts.into_iter().map(|p| Some(p.child)).collect();
     }
-    println!("{}", if ok_all { "RUN-CHECK PASS" } else { "RUN-CHECK FAIL" });
+    println!(
+        "{}",
+        if ok_all {
+            "RUN-CHECK PASS"
+        } else {
+            "RUN-CHECK FAIL"
+        }
+    );
     std::process::exit(if ok_all { 0 } else { 1 });
 }
 
@@ -350,13 +600,31 @@ fn ds_he(i: usize, pf: &darkstep::node::Prof, net: &darkstep::net::Net) -> darks
         .iter()
         .map(|b| {
             let v = bytes_to_u64s(b);
-            darkstep::bfv::PubKey { pk0_ntt: v[..ln].to_vec(), pk1_ntt: v[ln..].to_vec() }
+            darkstep::bfv::PubKey {
+                pk0_ntt: v[..ln].to_vec(),
+                pk1_ntt: v[ln..].to_vec(),
+            }
         })
         .collect();
     darkstep::he::He {
-        rns, key, pks, f_bits: pf.f_bits, mv_seed: darkstep::node::MV_SEED, ou_seed: darkstep::node::OU_SEED,
-        mv_calls: 0, ou_calls: 0, context: ("model".into(), 0, 0), he_send: 0, he_return: 0, ou_send: 0,
-        ou_return: 0, ou_commit: 0, cts_sent: 0, cts_returned: 0, attack: None, gate: None,
+        rns,
+        key,
+        pks,
+        f_bits: pf.f_bits,
+        mv_seed: darkstep::node::MV_SEED,
+        ou_seed: darkstep::node::OU_SEED,
+        mv_calls: 0,
+        ou_calls: 0,
+        context: ("model".into(), 0, 0),
+        he_send: 0,
+        he_return: 0,
+        ou_send: 0,
+        ou_return: 0,
+        ou_commit: 0,
+        cts_sent: 0,
+        cts_returned: 0,
+        attack: None,
+        gate: None,
     }
 }
 
@@ -366,55 +634,112 @@ fn ds_he(i: usize, pf: &darkstep::node::Prof, net: &darkstep::net::Net) -> darks
 /// is StepParams::for_width(D).deployed() unless DP_PROGRAM='{"S1":..,"R3":..,"T_LO":..}' says otherwise.
 #[cfg(feature = "tcp")]
 fn ds_bench(d: usize, prof: &str) {
-    use darkproof::run::{from_darkstep, n_had, prove_step, tape_triples, TcpRef};
+    use darkproof::run::{from_darkstep, prove_step, TcpRef};
     use std::sync::Arc;
     let pr = profile(prof);
     let p = wire::he_field(&pr).unwrap();
     darkproof::field::set_p(p);
     let lp = pr.ligero();
     let prm = match std::env::var("DP_PROGRAM") {
-        Ok(j) => program_of(&serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }), d).deployed(),
+        Ok(j) => program_of(
+            &serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }),
+            d,
+        )
+        .deployed(),
         Err(_) => darkproof::step::StepParams::for_width(d).deployed(),
     };
     let tables = darkproof::step::tables_for(prm.t_lo);
-    let pf = darkstep::node::prof(&[pr.he.0.to_string(), pr.he.1.to_string(), pr.he.2.to_string(), d.to_string()]);
+    let pf = darkstep::node::prof(&[
+        pr.he.0.to_string(),
+        pr.he.1.to_string(),
+        pr.he.2.to_string(),
+        d.to_string(),
+    ]);
     assert_eq!(pf.t, p);
-    let pg = darkstep::step::Program { s1: prm.s1, k1: prm.k1, s2: prm.s2, k2: prm.k2, s3: prm.s3, k3: prm.k3, r3: prm.r3, t_lo: prm.t_lo, xmax: 7, wmax: None, check_k: false };
+    let pg = darkstep::step::Program {
+        s1: prm.s1,
+        k1: prm.k1,
+        s2: prm.s2,
+        k2: prm.k2,
+        s3: prm.s3,
+        k3: prm.k3,
+        r3: prm.r3,
+        t_lo: prm.t_lo,
+        xmax: 7,
+        wmax: None,
+        check_k: false,
+    };
     let t0 = std::time::Instant::now();
     let nt = darkproof::run::step_section(&lp, d, prm, false, &tables);
     let plain = darkstep::step::inputs(d);
-    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_xt(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs, prm.xt);
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_xt(
+        p,
+        d,
+        darkstep::node::DEALER_SEED,
+        darkstep::node::OWNER_SEED,
+        &plain.flat_mod(p),
+        true,
+        &pg,
+        prm.rs,
+        prm.xt,
+    );
     darkstep::tape::deal_proof_section(&mut dl, nt);
     let tapes = dl.tapes;
-    println!("d={d} profile={prof} program={prm:?} proof-section triples {nt}; dealing {:.1}s", t0.elapsed().as_secs_f64());
-    let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    println!(
+        "d={d} profile={prof} program={prm:?} proof-section triples {nt}; dealing {:.1}s",
+        t0.elapsed().as_secs_f64()
+    );
+    let ls: Vec<std::net::TcpListener> = (0..3)
+        .map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap())
+        .collect();
     let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
     let cs = Arc::new(cs);
-    let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(4);
-    let outs: Vec<(f64, f64, Vec<u8>, u64, BTreeMap<String, Vec<[u8; 32]>>)> = std::thread::scope(|s| {
+    let threads = std::env::var("DS_THREADS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(4);
+    type StepRowOut = (f64, f64, Vec<u8>, u64, BTreeMap<String, Vec<[u8; 32]>>);
+    let outs: Vec<StepRowOut> = std::thread::scope(|s| {
         let hs: Vec<_> = ls
             .into_iter()
             .zip(tapes)
             .enumerate()
             .map(|(i, (l, tape))| {
-                let (addrs, cs, pf, pr, lp, tables, pg) = (&addrs, cs.clone(), &pf, &pr, &lp, &tables, &pg);
+                let (addrs, cs, pf, pr, lp, tables, pg) =
+                    (&addrs, cs.clone(), &pf, &pr, &lp, &tables, &pg);
                 s.spawn(move || {
                     darkproof::heap::set_who(i);
-                    darkproof::heap::transfer(3, i, tape.tags.capacity() + 8 * (tape.sh.capacity() + tape.mac.capacity()));
+                    darkproof::heap::transfer(
+                        3,
+                        i,
+                        tape.tags.capacity() + 8 * (tape.sh.capacity() + tape.mac.capacity()),
+                    );
                     let net = darkstep::net::Net::connect(i, l, addrs);
                     let mut he = ds_he(i, pf, &net);
                     let tab = pg.tables(pf.t);
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
                     pt.xt = prm.xt;
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
+                    let pool = rayon::ThreadPoolBuilder::new()
+                        .num_threads(threads)
+                        .start_handler(move |_| darkproof::heap::set_who(i))
+                        .build()
+                        .unwrap();
                     let t = std::time::Instant::now();
-                    let out = pool.install(|| darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)).expect("darkstep step");
+                    let out = pool
+                        .install(|| {
+                            darkstep::step::run_step_prog(&mut pt, &mut he, &cs, d, &tab, pg)
+                        })
+                        .expect("darkstep step");
                     let step_s = t.elapsed().as_secs_f64();
-                    let st = from_darkstep(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Det::off()).expect("record");
+                    let st =
+                        from_darkstep(i, d, &out.record, &out.w1n, &out.w2n, &pt.tape, Det::off())
+                            .expect("record");
                     drop(out);
                     let mut tn = TcpRef(&pt.net);
                     let ctx = Ctx::new("mind-0", 0, 1);
-                    let sp = pool.install(|| prove_step(pr, lp, tables, prm, &mut tn, &ctx, st, None)).expect("prove");
+                    let sp = pool
+                        .install(|| prove_step(pr, lp, tables, prm, &mut tn, &ctx, st, None))
+                        .expect("prove");
                     (step_s, sp.secs, sp.blob, sp.sent, sp.genesis_roots.unwrap())
                 })
             })
@@ -423,12 +748,37 @@ fn ds_bench(d: usize, prof: &str) {
     });
     let agree = outs.iter().all(|o| o.2 == outs[0].2);
     for (i, o) in outs.iter().enumerate() {
-        println!("party {i}: step {:.1}s, prove {:.1}s, proof sent {} elements ({:.1} MB)", o.0, o.1, o.3, o.3 as f64 * 8.0 / 1e6);
+        println!(
+            "party {i}: step {:.1}s, prove {:.1}s, proof sent {} elements ({:.1} MB)",
+            o.0,
+            o.1,
+            o.3,
+            o.3 as f64 * 8.0 / 1e6
+        );
     }
-    println!("bundle {} bytes; parties agree {agree}; peak RSS {:.2} GB", outs[0].2.len(), peak_rss_gb());
+    println!(
+        "bundle {} bytes; parties agree {agree}; peak RSS {:.2} GB",
+        outs[0].2.len(),
+        peak_rss_gb()
+    );
     let t = std::time::Instant::now();
-    let v = wire::verify_step(&pr, &lp, &outs[0].2, &Ctx::new("mind-0", 0, 1), &outs[0].4, &tables, d, prm, None, 0);
-    println!("verify {:.1}s {:?}", t.elapsed().as_secs_f64(), v.as_ref().map(|_| "accept"));
+    let v = wire::verify_step(
+        &pr,
+        &lp,
+        &outs[0].2,
+        &Ctx::new("mind-0", 0, 1),
+        &outs[0].4,
+        &tables,
+        d,
+        prm,
+        None,
+        0,
+    );
+    println!(
+        "verify {:.1}s {:?}",
+        t.elapsed().as_secs_f64(),
+        v.as_ref().map(|_| "accept")
+    );
     println!("bench rows");
 }
 
@@ -441,19 +791,25 @@ fn ds_bench(d: usize, prof: &str) {
 /// model's strict argmax.
 #[cfg(feature = "tcp")]
 fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
-    use darkproof::run::{deal_release, from_darkstep_n, plain_count, prove_step, Policy, TcpRef};
+    use darkproof::run::{deal_release, from_darkstep_n, plain_count, Policy, TcpRef};
     use std::sync::Arc;
     let pr = profile(prof);
     let p = wire::he_field(&pr).unwrap();
     darkproof::field::set_p(p);
     let lp = pr.ligero();
     let prm = match std::env::var("DP_PROGRAM") {
-        Ok(j) => program_of(&serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }), d).deployed(),
+        Ok(j) => program_of(
+            &serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }),
+            d,
+        )
+        .deployed(),
         Err(_) => darkproof::step::StepParams::for_width(d).deployed(),
     };
     // PUBLIC GENESIS (DP_PG_CFG=<darktrain cfg json>): W = darktrain::init(cfg) enters custody as a public constant,
     // committed with public coins; every step is the carried program
-    let pg_cfg: Option<Vec<u8>> = std::env::var("DP_PG_CFG").ok().map(|f| std::fs::read(f).expect("DP_PG_CFG"));
+    let pg_cfg: Option<Vec<u8>> = std::env::var("DP_PG_CFG")
+        .ok()
+        .map(|f| std::fs::read(f).expect("DP_PG_CFG"));
     let mut prm = prm;
     if let Some(c) = &pg_cfg {
         use sha2::{Digest, Sha256};
@@ -465,8 +821,25 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         (w1, w2)
     });
     let tables = darkproof::step::tables_for(prm.t_lo);
-    let pf = darkstep::node::prof(&[pr.he.0.to_string(), pr.he.1.to_string(), pr.he.2.to_string(), d.to_string()]);
-    let pg = darkstep::step::Program { s1: prm.s1, k1: prm.k1, s2: prm.s2, k2: prm.k2, s3: prm.s3, k3: prm.k3, r3: prm.r3, t_lo: prm.t_lo, xmax: 7, wmax: None, check_k: false };
+    let pf = darkstep::node::prof(&[
+        pr.he.0.to_string(),
+        pr.he.1.to_string(),
+        pr.he.2.to_string(),
+        d.to_string(),
+    ]);
+    let pg = darkstep::step::Program {
+        s1: prm.s1,
+        k1: prm.k1,
+        s2: prm.s2,
+        k2: prm.k2,
+        s3: prm.s3,
+        k3: prm.k3,
+        r3: prm.r3,
+        t_lo: prm.t_lo,
+        xmax: 7,
+        wmax: None,
+        check_k: false,
+    };
     let ncls = d.min(10);
     let kc = 10;
     // the public test set
@@ -475,9 +848,23 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     // past the release's proved interval at small d)
     // DP_XWIDE=<max> (TEST: a negative control): x in [0, max], outside the program's domain (z1 leaves its proved
     // interval once max |W1 x| does); RC refuses to prove the release
-    let wide: Option<u64> = std::env::var("DP_XWIDE").ok().map(|v| v.parse().expect("DP_XWIDE=<max>"));
-    let xi: Vec<Vec<i64>> = (0..d).map(|_| (0..m).map(|_| match wide { Some(w) => xr.randrange_u64(w + 1) as i64, None => xr.randrange_u64(15) as i64 - 7 }).collect()).collect();
-    let x: Vec<u64> = (0..d).flat_map(|k| (0..m).map(move |t| (k, t))).map(|(k, t)| darkproof::field::from_i64(xi[k][t])).collect();
+    let wide: Option<u64> = std::env::var("DP_XWIDE")
+        .ok()
+        .map(|v| v.parse().expect("DP_XWIDE=<max>"));
+    let xi: Vec<Vec<i64>> = (0..d)
+        .map(|_| {
+            (0..m)
+                .map(|_| match wide {
+                    Some(w) => xr.randrange_u64(w + 1) as i64,
+                    None => xr.randrange_u64(15) as i64 - 7,
+                })
+                .collect()
+        })
+        .collect();
+    let x: Vec<u64> = (0..d)
+        .flat_map(|k| (0..m).map(move |t| (k, t)))
+        .map(|(k, t)| darkproof::field::from_i64(xi[k][t]))
+        .collect();
     // one test dealer for the run
     let t0 = std::time::Instant::now();
     let mut dl = darkstep::tape::Dealer::new(p, 3, darkstep::node::DEALER_SEED);
@@ -509,34 +896,66 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     let mut css = Vec::new();
     let mut nts = Vec::new();
     for k in 0..steps {
-        let inp = if k == 0 && pgw.is_none() { genesis.clone() } else { xy.clone() };
-        css.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, d, &inp, &pg));
+        let inp = if k == 0 && pgw.is_none() {
+            genesis.clone()
+        } else {
+            xy.clone()
+        };
+        css.push(darkstep::tape::deal_one_step(
+            &mut dl, &mut owner, d, &inp, &pg,
+        ));
         let nt = darkproof::run::step_section(&lp, d, prm, prm.carried(k as u64 + 1), &tables);
         darkstep::tape::deal_proof_section(&mut dl, nt);
         nts.push(nt);
     }
     // DP_NO_RELEASE: the steps alone (no release section dealt, the run ends after the ledger accepts the steps)
     let no_release = std::env::var_os("DP_NO_RELEASE").is_some();
-    let pol0 = Policy { x: x.clone(), labels: vec![0; m], ncls, kc, ignore_range: false };
+    let pol0 = Policy {
+        x: x.clone(),
+        labels: vec![0; m],
+        ncls,
+        kc,
+        ignore_range: false,
+    };
     if !no_release {
-        deal_release(&mut dl, d, m, ncls, prm, kc, &lp, &tables, &pol0);
+        deal_release(
+            &mut dl,
+            darkproof::run::ReleaseSpec {
+                d,
+                m,
+                ncls,
+                prm,
+                kc,
+            },
+            &lp,
+            &tables,
+            &pol0,
+        );
     }
     let mut tapes = dl.tapes;
     println!("d={d} profile={prof} steps={steps} M={m} program={prm:?}; dealing {:.1}s, tape {} entries per party", t0.elapsed().as_secs_f64(), tapes[0].len());
     // DP_TAPE_DIR: each custodian's tape goes through a file, as dl-custodian runs the release: all but the release's
     // proof section loaded, that section streamed into the prover (run::load_release_tape, release_custodian_src)
-    let rts: Vec<std::sync::Mutex<Option<darkproof::run::ReleaseTape>>> = (0..3).map(|_| std::sync::Mutex::new(None)).collect();
+    let rts: Vec<std::sync::Mutex<Option<darkproof::run::ReleaseTape>>> =
+        (0..3).map(|_| std::sync::Mutex::new(None)).collect();
     if let Some(dir) = std::env::var("DP_TAPE_DIR").ok().filter(|v| !v.is_empty()) {
         let nrt0 = darkproof::run::release_section(&lp, d, m, prm, &pol0);
         for (i, t) in tapes.iter_mut().enumerate() {
             let path = Path::new(&dir).join(format!("release_{i}.tape"));
-            t.write_to(&mut std::io::BufWriter::new(std::fs::File::create(&path).unwrap())).unwrap();
+            t.write_to(&mut std::io::BufWriter::new(
+                std::fs::File::create(&path).unwrap(),
+            ))
+            .unwrap();
             if i == 1 && std::env::var_os("DP_TAPE_FLIP").is_some() {
                 // CONTROL: custodian 1's file has one proof-section share off by one (its a of triple 10)
                 use std::io::{Read, Seek, SeekFrom, Write};
                 let n = t.len();
                 let at = (24 + n + 8 * (n - 3 * nrt0 + 30)) as u64;
-                let mut f = std::fs::OpenOptions::new().read(true).write(true).open(&path).unwrap();
+                let mut f = std::fs::OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .open(&path)
+                    .unwrap();
                 let mut b = [0u8; 8];
                 f.seek(SeekFrom::Start(at)).unwrap();
                 f.read_exact(&mut b).unwrap();
@@ -549,17 +968,35 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             *t = pre;
             *rts[i].lock().unwrap() = Some(rt);
         }
-        println!("tapes through {dir}: {} entries loaded, proof section {nrt0} triples streamed", tapes[0].len());
+        println!(
+            "tapes through {dir}: {} entries loaded, proof section {nrt0} triples streamed",
+            tapes[0].len()
+        );
     }
-    let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    let ls: Vec<std::net::TcpListener> = (0..3)
+        .map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap())
+        .collect();
     let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
     let css = Arc::new(css);
-    let threads = std::env::var("DS_THREADS").ok().and_then(|s| s.parse().ok()).unwrap_or(4);
+    let threads = std::env::var("DS_THREADS")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(4);
     type Carry = BTreeMap<String, darkproof::pcs::PcsParty>;
     type DS = Vec<Vec<darkstep::party::Sh>>;
+    type RootsMap = Option<BTreeMap<String, Vec<[u8; 32]>>>;
+    type ChainPart = (
+        darkstep::party::Party,
+        Carry,
+        DS,
+        DS,
+        Vec<Vec<u8>>,
+        RootsMap,
+    );
+    type ChainState = (Option<Carry>, Option<(DS, DS)>, Vec<Vec<u8>>, RootsMap);
     let model = "mind-0";
     // phase 1: the steps and their proofs
-    let mut parts: Vec<(darkstep::party::Party, Carry, DS, DS, Vec<Vec<u8>>, Option<BTreeMap<String, Vec<[u8; 32]>>>)> = std::thread::scope(|s| {
+    let mut parts: Vec<ChainPart> = std::thread::scope(|s| {
         let hs: Vec<_> = ls
             .into_iter()
             .zip(tapes)
@@ -575,7 +1012,7 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                     let mut pt = darkstep::party::Party::new(i, pf.t, net, tape);
                     pt.xt = prm.xt;
                     let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
-                    let (mut carry, mut head, mut blobs, mut groots): (Option<Carry>, Option<(DS, DS)>, Vec<Vec<u8>>, _) = (None, None, Vec::new(), None);
+                    let (mut carry, mut head, mut blobs, mut groots): ChainState = (None, None, Vec::new(), None);
                     if let Some((w1, w2)) = pgw {
                         let (c, roots) = darkproof::run::public_genesis(pr, d, i, w1, w2, 3);
                         let sh = |w: &[i64]| -> DS {
@@ -655,11 +1092,26 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     std::fs::create_dir_all(&dir).unwrap();
     let lpath = dir.join("mind-0.ledger");
     let cust = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<String>>();
-    let mut lg = darkproof::ledger::Ledger::open(&lpath, model, &pr, Some(darkproof::ledger::Genesis { d, program: prm, owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: parts[0].5.clone().unwrap() })).unwrap();
+    let mut lg = darkproof::ledger::Ledger::open(
+        &lpath,
+        model,
+        &pr,
+        Some(darkproof::ledger::Genesis {
+            d,
+            program: prm,
+            owner_pk: None,
+            custodians: cust(&["c0", "c1", "c2"]),
+            roots: parts[0].5.clone().unwrap(),
+        }),
+    )
+    .unwrap();
     let mut ok_all = parts.iter().all(|p| p.4 == parts[0].4);
     if let (Some(cfg), Some((w1, _))) = (&pg_cfg, &pgw) {
         // public genesis: refused before the check, with another cfg, and with roots that are not the cfg's W
-        let r0 = match parts[0].4.first() { Some(b) => lg.accept(&lp, b, &tables).map(|_| ()), None => Err("no step (STEPS = 0: the release from the public genesis)".to_string()) };
+        let r0 = match parts[0].4.first() {
+            Some(b) => lg.accept(&lp, b, &tables).map(|_| ()),
+            None => Err("no step (STEPS = 0: the release from the public genesis)".to_string()),
+        };
         println!("public genesis: step 1 before the cfg check: {r0:?}");
         let mut other = cfg.clone();
         other.push(b'\n');
@@ -669,19 +1121,39 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         w1b[0] += 1;
         let forged = darkproof::run::public_genesis_roots(&pr, d, &w1b, &vec![0; d * d], 3);
         let fpath = dir.join("forged.ledger");
-        let mut fl = darkproof::ledger::Ledger::open(&fpath, model, &pr, Some(darkproof::ledger::Genesis { d, program: prm, owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: forged })).unwrap();
+        let mut fl = darkproof::ledger::Ledger::open(
+            &fpath,
+            model,
+            &pr,
+            Some(darkproof::ledger::Genesis {
+                d,
+                program: prm,
+                owner_pk: None,
+                custodians: cust(&["c0", "c1", "c2"]),
+                roots: forged,
+            }),
+        )
+        .unwrap();
         let r2 = fl.check_public_genesis(cfg);
         println!("public genesis: roots of another W under the pinned cfg: {r2:?}");
         let t = std::time::Instant::now();
         let r3 = lg.check_public_genesis(cfg);
-        println!("public genesis: the pinned cfg: {r3:?} ({:.1}s)", t.elapsed().as_secs_f64());
+        println!(
+            "public genesis: the pinned cfg: {r3:?} ({:.1}s)",
+            t.elapsed().as_secs_f64()
+        );
         ok_all &= r0.is_err() && r1.is_err() && r2.is_err() && r3.is_ok();
     }
     let parts_blobs = parts[0].4.clone();
     for (k, b) in parts[0].4.iter().enumerate() {
         let t = std::time::Instant::now();
         let r = lg.accept(&lp, b, &tables);
-        println!("ledger accepts step {}: {:?} ({:.1}s)", k + 1, r, t.elapsed().as_secs_f64());
+        println!(
+            "ledger accepts step {}: {:?} ({:.1}s)",
+            k + 1,
+            r,
+            t.elapsed().as_secs_f64()
+        );
         ok_all &= r.is_ok();
     }
     if no_release {
@@ -696,7 +1168,14 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             std::fs::copy(&lpath, sv.join("mind-0.ledger")).unwrap();
             println!("saved the ledger and its bundles to {}", sv.display());
         }
-        println!("{}", if ok_all { "DS-CHAIN STEPS PASS" } else { "DS-CHAIN STEPS FAIL" });
+        println!(
+            "{}",
+            if ok_all {
+                "DS-CHAIN STEPS PASS"
+            } else {
+                "DS-CHAIN STEPS FAIL"
+            }
+        );
         std::process::exit(if ok_all { 0 } else { 1 });
     }
     if w2scale.is_some() {
@@ -704,20 +1183,44 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         let (w1, w2, xv, yv) = (&plain.w1, &plain.w2, &plain.x, &plain.y);
         let sigf = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
         let dsigf = |u: i64| if (-28..32).contains(&u) { 1 } else { 0 };
-        let z1: Vec<i64> = (0..d).map(|j| (0..d).map(|k| w1[j][k] * xv[k]).sum()).collect();
+        let z1: Vec<i64> = (0..d)
+            .map(|j| (0..d).map(|k| w1[j][k] * xv[k]).sum())
+            .collect();
         let u1: Vec<i64> = z1.iter().map(|z| z >> prm.s1).collect();
         let h: Vec<i64> = u1.iter().map(|&u| sigf(u)).collect();
         let g1: Vec<i64> = u1.iter().map(|&u| dsigf(u)).collect();
-        let z2: Vec<i64> = (0..d).map(|j| (0..d).map(|k| w2[j][k] * h[k]).sum()).collect();
+        let z2: Vec<i64> = (0..d)
+            .map(|j| (0..d).map(|k| w2[j][k] * h[k]).sum())
+            .collect();
         let e: Vec<i64> = (0..d).map(|j| (z2[j] >> prm.s1) - yv[j]).collect();
         let d2: Vec<i64> = e.iter().map(|v| v >> prm.s2).collect();
-        let b: Vec<i64> = (0..d).map(|k| (0..d).map(|j| w2[j][k] * d2[j]).sum()).collect();
+        let b: Vec<i64> = (0..d)
+            .map(|k| (0..d).map(|j| w2[j][k] * d2[j]).sum())
+            .collect();
         let d1: Vec<i64> = (0..d).map(|k| (b[k] * g1[k] + prm.r3) >> prm.s3).collect();
-        let w2n: Vec<Vec<i64>> = (0..d).map(|j| (0..d).map(|k| w2[j][k] - d2[j] * h[k]).collect()).collect();
-        let w1n: Vec<Vec<i64>> = (0..d).map(|j| (0..d).map(|k| w1[j][k] - d1[j] * xv[k]).collect()).collect();
+        let w2n: Vec<Vec<i64>> = (0..d)
+            .map(|j| (0..d).map(|k| w2[j][k] - d2[j] * h[k]).collect())
+            .collect();
+        let w1n: Vec<Vec<i64>> = (0..d)
+            .map(|j| (0..d).map(|k| w1[j][k] - d1[j] * xv[k]).collect())
+            .collect();
         let mx = |v: &[i64]| v.iter().map(|x| x.abs()).max().unwrap();
         fn rev(ms: [&Vec<Vec<darkstep::party::Sh>>; 3], d: usize, p: u64) -> Vec<Vec<i64>> {
-            (0..d).map(|r| (0..d).map(|c| { let v = (0..3).fold(0u64, |a, i| darkproof::field::add(a, ms[i][r][c].s)); if v > p / 2 { v as i64 - p as i64 } else { v as i64 } }).collect()).collect()
+            (0..d)
+                .map(|r| {
+                    (0..d)
+                        .map(|c| {
+                            let v =
+                                (0..3).fold(0u64, |a, i| darkproof::field::add(a, ms[i][r][c].s));
+                            if v > p / 2 {
+                                v as i64 - p as i64
+                            } else {
+                                v as i64
+                            }
+                        })
+                        .collect()
+                })
+                .collect()
         }
         let hw1 = rev([&parts[0].2, &parts[1].2, &parts[2].2], d, p);
         let hw2 = rev([&parts[0].3, &parts[1].3, &parts[2].3], d, p);
@@ -727,19 +1230,48 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             (0..d).map(|k| (b[k] * g1[k] + prm.r3).abs()).max().unwrap(), prm.k3,
             u1.iter().all(|&u| u >= prm.t_lo && u < prm.t_lo + 256)
         );
-        println!("BOUND CONTROL: the custodians' W1n equals the integer spec's: {}; W2n: {}", hw1 == w1n, hw2 == w2n);
-        println!("{}", if ok_all { "BOUND CONTROL: the ledger ACCEPTED the out-of-bound step" } else { "BOUND CONTROL: refused" });
+        println!(
+            "BOUND CONTROL: the custodians' W1n equals the integer spec's: {}; W2n: {}",
+            hw1 == w1n,
+            hw2 == w2n
+        );
+        println!(
+            "{}",
+            if ok_all {
+                "BOUND CONTROL: the ledger ACCEPTED the out-of-bound step"
+            } else {
+                "BOUND CONTROL: refused"
+            }
+        );
         std::process::exit(0);
     }
     // the plaintext twin on the revealed head (TEST ONLY)
     fn rev(ms: [&Vec<Vec<darkstep::party::Sh>>; 3], d: usize, p: u64) -> Vec<Vec<i64>> {
-        (0..d).map(|r| (0..d).map(|c| { let v = (0..3).fold(0u64, |a, i| darkproof::field::add(a, ms[i][r][c].s)); if v > p / 2 { v as i64 - p as i64 } else { v as i64 } }).collect()).collect()
+        (0..d)
+            .map(|r| {
+                (0..d)
+                    .map(|c| {
+                        let v = (0..3).fold(0u64, |a, i| darkproof::field::add(a, ms[i][r][c].s));
+                        if v > p / 2 {
+                            v as i64 - p as i64
+                        } else {
+                            v as i64
+                        }
+                    })
+                    .collect()
+            })
+            .collect()
     }
     let hw1 = rev([&parts[0].2, &parts[1].2, &parts[2].2], d, p);
     let hw2 = rev([&parts[0].3, &parts[1].3, &parts[2].3], d, p);
     {
         // the head against the plaintext twin's chain (step_spec under the same program, `steps` steps on the same x, y)
-        let mut tw = darkstep::step::Plain { w1: plain.w1.clone(), w2: plain.w2.clone(), x: plain.x.clone(), y: plain.y.clone() };
+        let mut tw = darkstep::step::Plain {
+            w1: plain.w1.clone(),
+            w2: plain.w2.clone(),
+            x: plain.x.clone(),
+            y: plain.y.clone(),
+        };
         let mut twin_ok = true;
         for _ in 0..steps {
             match tw.step_prog(&pg) {
@@ -755,34 +1287,72 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
             }
         }
         let eq = twin_ok && tw.w1 == hw1 && tw.w2 == hw2;
-        println!("head weights after {steps} steps vs the plaintext twin's chain: {}", if eq { "EQUAL" } else { "DIFFER" });
+        println!(
+            "head weights after {steps} steps vs the plaintext twin's chain: {}",
+            if eq { "EQUAL" } else { "DIFFER" }
+        );
         ok_all &= eq;
     }
     let sig = |u: i64| (u.div_euclid(4)).clamp(-7, 7);
     let mut lr = pycompat::PyRandom::from_u64(78);
     let labels: Vec<usize> = (0..m)
         .map(|t| {
-            let h: Vec<i64> = (0..d).map(|j| sig((0..d).map(|k| hw1[j][k] * xi[k][t]).sum::<i64>() >> prm.s1)).collect();
-            let o: Vec<i64> = (0..ncls).map(|c| (0..d).map(|k| hw2[c][k] * h[k]).sum::<i64>() >> prm.s1).collect();
+            let h: Vec<i64> = (0..d)
+                .map(|j| sig((0..d).map(|k| hw1[j][k] * xi[k][t]).sum::<i64>() >> prm.s1))
+                .collect();
+            let o: Vec<i64> = (0..ncls)
+                .map(|c| (0..d).map(|k| hw2[c][k] * h[k]).sum::<i64>() >> prm.s1)
+                .collect();
             let r = lr.randrange_u64(ncls as u64) as usize;
-            if t % 2 == 0 { (0..ncls).max_by_key(|&c| (o[c], std::cmp::Reverse(c))).unwrap() } else { r }
+            if t % 2 == 0 {
+                (0..ncls)
+                    .max_by_key(|&c| (o[c], std::cmp::Reverse(c)))
+                    .unwrap()
+            } else {
+                r
+            }
         })
         .collect();
-    let pol = Policy { x, labels, ncls, kc, ignore_range: std::env::var_os("DP_IGNORE_RANGE").is_some() };
+    let pol = Policy {
+        x,
+        labels,
+        ncls,
+        kc,
+        ignore_range: std::env::var_os("DP_IGNORE_RANGE").is_some(),
+    };
     // DP_MNIST=<mnist dir> (with DP_PG_CFG): the run's release policy, t10k 0..M-1 under the cfg's encoder
     let (pol, xi) = match std::env::var("DP_MNIST") {
         Ok(dir) => {
-            let mut q = darkproof::run::mnist_policy(pg_cfg.as_ref().expect("DP_MNIST needs DP_PG_CFG"), Path::new(&dir), m).unwrap();
+            let mut q = darkproof::run::mnist_policy(
+                pg_cfg.as_ref().expect("DP_MNIST needs DP_PG_CFG"),
+                Path::new(&dir),
+                m,
+            )
+            .unwrap();
             q.ignore_range = pol.ignore_range;
-            let sg = |v: u64| if v > p / 2 { v as i64 - p as i64 } else { v as i64 };
-            let xq: Vec<Vec<i64>> = (0..d).map(|k| (0..m).map(|t| sg(q.x[k * m + t])).collect()).collect();
-            println!("release policy: t10k 0..{} (labels {:?}...)", m - 1, &q.labels[..m.min(8)]);
+            let sg = |v: u64| {
+                if v > p / 2 {
+                    v as i64 - p as i64
+                } else {
+                    v as i64
+                }
+            };
+            let xq: Vec<Vec<i64>> = (0..d)
+                .map(|k| (0..m).map(|t| sg(q.x[k * m + t])).collect())
+                .collect();
+            println!(
+                "release policy: t10k 0..{} (labels {:?}...)",
+                m - 1,
+                &q.labels[..m.min(8)]
+            );
             (q, xq)
         }
         Err(_) => (pol, xi),
     };
     let cp = plain_count(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc);
-    for (nm, lo, hi, a, b, out) in darkproof::run::plain_bounds(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc) {
+    for (nm, lo, hi, a, b, out) in
+        darkproof::run::plain_bounds(&hw1, &hw2, &xi, &pol.labels, prm, ncls, kc)
+    {
         println!("plaintext twin: release truncation {nm}: inputs in [{lo}, {hi}], proved interval [{a}, {}), {out} outside", a + (1i64 << b));
     }
     let nrt = darkproof::run::release_section(&lp, d, m, prm, &pol);
@@ -794,29 +1364,46 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
     if std::env::var_os("DP_CLOSE").is_some() {
         // a halted run (cut E): every custodian proves the head's closing proof over its darkstep net (run::close_custodian)
         let ctx = Ctx::new(model, 0, steps as u64);
-        let pd = pend.clone().expect("DP_CLOSE: the head is not pending (a DEFER profile?)");
+        let pd = pend
+            .clone()
+            .expect("DP_CLOSE: the head is not pending (a DEFER profile?)");
         let outs: Vec<Result<darkproof::run::CloseOut, String>> = std::thread::scope(|s| {
             let hs: Vec<_> = parts
                 .drain(..)
                 .map(|(pt, carry, _, _, _, _)| {
                     let (pr, lp, ctx, pd) = (&pr, &lp, &ctx, &pd);
-                    s.spawn(move || darkproof::run::close_custodian(pr, lp, &pt.net, pt.i, 3, ctx, carry, pd, d))
+                    s.spawn(move || {
+                        darkproof::run::close_custodian(pr, lp, &pt.net, pt.i, 3, ctx, carry, pd, d)
+                    })
                 })
                 .collect();
             hs.into_iter().map(|h| h.join().unwrap()).collect()
         });
         let blobs: Vec<Vec<u8>> = outs.into_iter().map(|o| o.expect("close").blob).collect();
         let agree = blobs.iter().all(|b| b == &blobs[0]);
-        println!("closing proof: {} bytes; parties agree {agree}", blobs[0].len());
+        println!(
+            "closing proof: {} bytes; parties agree {agree}",
+            blobs[0].len()
+        );
         let r = lg.close(&lp, &blobs[0]);
-        println!("ledger accepts the closing proof: {r:?}; status {:?}", lg.status);
+        println!(
+            "ledger accepts the closing proof: {r:?}; status {:?}",
+            lg.status
+        );
         let r2 = lg.close(&lp, &blobs[0]);
         println!("a second close: {r2:?}");
         let r3 = lg.release(&lp, &parts_blob_dummy(), &pol);
         println!("a release after the close: {r3:?}");
         ok_all &= agree && r.is_ok() && r2.is_err() && r3.is_err();
         println!("ledger file: {}", lpath.display());
-        println!("{}", if ok_all { "DS-CHAIN CLOSE PASS" } else { "DS-CHAIN CLOSE FAIL" });
+        println!(
+            "{}",
+            if ok_all {
+                "DS-CHAIN CLOSE PASS"
+            } else {
+                "DS-CHAIN CLOSE FAIL"
+            }
+        );
         std::process::exit(if ok_all { 0 } else { 1 });
     }
     // phase 2: the release
@@ -829,9 +1416,30 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
                 s.spawn(move || {
                     let i = pt.i;
                     darkproof::heap::set_who(i);
-                    let pool = rayon::ThreadPoolBuilder::new().num_threads(threads).start_handler(move |_| darkproof::heap::set_who(i)).build().unwrap();
+                    let pool = rayon::ThreadPoolBuilder::new()
+                        .num_threads(threads)
+                        .start_handler(move |_| darkproof::heap::set_who(i))
+                        .build()
+                        .unwrap();
                     let rt = rts[i].lock().unwrap().take();
-                    let o = pool.install(|| darkproof::run::release_custodian_src(pr, lp, prm, &mut pt, &w1n, &w2n, pol, ctx, carry, None, pend.as_ref(), rt)).expect("release");
+                    let o = pool
+                        .install(|| {
+                            darkproof::run::release_custodian_src(
+                                pr,
+                                lp,
+                                prm,
+                                &mut pt,
+                                &w1n,
+                                &w2n,
+                                pol,
+                                ctx,
+                                carry,
+                                None,
+                                pend.as_ref(),
+                                rt,
+                            )
+                        })
+                        .expect("release");
                     assert_eq!(o.triples, nrt);
                     (o.c, o.blob, o.mpc_secs, o.prove_secs)
                 })
@@ -840,22 +1448,46 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         hs.into_iter().map(|h| h.join().unwrap()).collect()
     });
     let agree = outs.iter().all(|o| o.1 == outs[0].1 && o.0 == outs[0].0);
-    println!("release: MPC {:.1}s, proof {:.1}s, bundle {} bytes; parties agree {agree}; opened C = {}", outs[0].2, outs[0].3, outs[0].1.len(), outs[0].0);
+    println!(
+        "release: MPC {:.1}s, proof {:.1}s, bundle {} bytes; parties agree {agree}; opened C = {}",
+        outs[0].2,
+        outs[0].3,
+        outs[0].1.len(),
+        outs[0].0
+    );
     let t = std::time::Instant::now();
     let r = match (std::env::var("DP_MNIST"), &pg_cfg) {
         // the policy bound to the owner's encoder (Ledger::release_checked): first a policy with one x entry changed
         (Ok(dir), Some(cfg)) => {
-            let mut bad = Policy { x: pol.x.clone(), labels: pol.labels.clone(), ..pol };
+            let mut bad = Policy {
+                x: pol.x.clone(),
+                labels: pol.labels.clone(),
+                ..pol
+            };
             bad.x[0] = darkproof::field::add(bad.x[0], 1);
             let rb = lg.release_checked(&lp, &outs[0].1, &bad, cfg, Path::new(&dir));
             println!("a release whose policy has one x entry changed: {rb:?}");
-            ok_all &= rb.as_ref().is_err_and(|e| e.contains("not the pinned cfg's encoding"));
+            ok_all &= rb
+                .as_ref()
+                .is_err_and(|e| e.contains("not the pinned cfg's encoding"));
             lg.release_checked(&lp, &outs[0].1, &pol, cfg, Path::new(&dir))
         }
         _ => lg.release(&lp, &outs[0].1, &pol),
     };
-    println!("ledger accepts the release: {:?} ({:.1}s); plaintext twin C = {cp}{}", r, t.elapsed().as_secs_f64(), if pr.defer { format!("; status {:?}", lg.status) } else { String::new() });
-    ok_all &= agree && r.as_ref().map(|x| x.1 == cp && x.1 == outs[0].0).unwrap_or(false);
+    println!(
+        "ledger accepts the release: {:?} ({:.1}s); plaintext twin C = {cp}{}",
+        r,
+        t.elapsed().as_secs_f64(),
+        if pr.defer {
+            format!("; status {:?}", lg.status)
+        } else {
+            String::new()
+        }
+    );
+    ok_all &= agree
+        && r.as_ref()
+            .map(|x| x.1 == cp && x.1 == outs[0].0)
+            .unwrap_or(false);
     let r2 = lg.accept(&lp, &parts_blob_dummy(), &tables);
     println!("a step after the release: {:?}", r2);
     ok_all &= r2.is_err();
@@ -874,7 +1506,14 @@ fn ds_chain(d: usize, prof: &str, steps: usize, m: usize) {
         println!("saved the ledger and its bundles to {}", sv.display());
     }
     println!("ledger file: {}", lpath.display());
-    println!("{}", if ok_all { "DS-CHAIN PASS" } else { "DS-CHAIN FAIL" });
+    println!(
+        "{}",
+        if ok_all {
+            "DS-CHAIN PASS"
+        } else {
+            "DS-CHAIN FAIL"
+        }
+    );
     std::process::exit(if ok_all { 0 } else { 1 });
 }
 
@@ -887,7 +1526,11 @@ fn parts_blob_dummy() -> Vec<u8> {
 fn peak_rss_gb() -> f64 {
     std::fs::read_to_string("/proc/self/status")
         .ok()
-        .and_then(|s| s.lines().find(|l| l.starts_with("VmHWM")).map(|l| l.split_whitespace().nth(1).unwrap().parse::<f64>().unwrap() / 1e6))
+        .and_then(|s| {
+            s.lines()
+                .find(|l| l.starts_with("VmHWM"))
+                .map(|l| l.split_whitespace().nth(1).unwrap().parse::<f64>().unwrap() / 1e6)
+        })
         .unwrap_or(f64::NAN)
 }
 
@@ -897,9 +1540,11 @@ fn peak_rss_gb() -> f64 {
 /// mode the bundle must equal the Python bundle byte for byte. TAG e.g. demo_d4_he (its he1).
 #[cfg(feature = "tcp")]
 fn ds_check(dir: &Path, tag: &str) {
-    use darkproof::run::{from_darkstep, n_had, prove_step, TcpRef};
+    use darkproof::run::{from_darkstep, prove_step, TcpRef};
     use std::sync::Arc;
-    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    let meta: Value =
+        serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap())
+            .unwrap();
     let p = meta["p"].as_u64().unwrap();
     darkproof::field::set_p(p);
     let d = meta["d"].as_u64().unwrap() as usize;
@@ -909,9 +1554,20 @@ fn ds_check(dir: &Path, tag: &str) {
     let tables = darkproof::step::tables_for(prm.t_lo);
     // the darkstep program: GEN6 when the shifts are GEN6's (its inputs_for), else the harness's
     let g6 = darkstep::step::Program::GEN6;
-    let pg = if (prm.s1, prm.k1, prm.s2, prm.k2, prm.s3, prm.k3, prm.r3) == (g6.s1, g6.k1, g6.s2, g6.k2, g6.s3, g6.k3, g6.r3) { g6 } else { darkstep::step::Program::HARNESS };
+    let pg = if (prm.s1, prm.k1, prm.s2, prm.k2, prm.s3, prm.k3, prm.r3)
+        == (g6.s1, g6.k1, g6.s2, g6.k2, g6.s3, g6.k3, g6.r3)
+    {
+        g6
+    } else {
+        darkstep::step::Program::HARNESS
+    };
     let he = &meta["he"];
-    let pf = darkstep::node::prof(&[he["N"].to_string(), he["L"].to_string(), he["F"].to_string(), d.to_string()]);
+    let pf = darkstep::node::prof(&[
+        he["N"].to_string(),
+        he["L"].to_string(),
+        he["F"].to_string(),
+        d.to_string(),
+    ]);
     assert_eq!(pf.t, p, "darkstep's plaintext modulus differs");
     let b1 = &meta["bundles"]["he1"];
     let w = Witness::load(&dir.join(b1["witness"].as_str().unwrap()));
@@ -920,12 +1576,30 @@ fn ds_check(dir: &Path, tag: &str) {
     let ctx = Ctx::new("mind-0", 0, 1);
     let zeros = vec![0u64; prm.transcript_len(d, false)];
     let rec0 = darkproof::step::replay(&zeros, d, prm, &tables, false).unwrap();
-    let nb = darkproof::spine::beaver_count_e(d, lp.ext) + rec0.proof_products() + darkproof::middle::beaver_count_e(rec0.had.len(), lp.ext);
-    let plain = if pg == darkstep::step::Program::HARNESS { darkstep::step::inputs(d) } else { darkstep::step::inputs_for(d, &pg) };
-    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_xt(p, d, darkstep::node::DEALER_SEED, darkstep::node::OWNER_SEED, &plain.flat_mod(p), true, &pg, prm.rs, prm.xt);
+    let nb = darkproof::spine::beaver_count_e(d, lp.ext)
+        + rec0.proof_products()
+        + darkproof::middle::beaver_count_e(rec0.had.len(), lp.ext);
+    let plain = if pg == darkstep::step::Program::HARNESS {
+        darkstep::step::inputs(d)
+    } else {
+        darkstep::step::inputs_for(d, &pg)
+    };
+    let (cs, mut dl) = darkstep::tape::deal_step_dealer_prog_xt(
+        p,
+        d,
+        darkstep::node::DEALER_SEED,
+        darkstep::node::OWNER_SEED,
+        &plain.flat_mod(p),
+        true,
+        &pg,
+        prm.rs,
+        prm.xt,
+    );
     darkstep::tape::deal_proof_section(&mut dl, nb);
     let tapes = dl.tapes;
-    let ls: Vec<std::net::TcpListener> = (0..3).map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    let ls: Vec<std::net::TcpListener> = (0..3)
+        .map(|_| std::net::TcpListener::bind("127.0.0.1:0").unwrap())
+        .collect();
     let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
     let cs = Arc::new(cs);
     let outs: Vec<(bool, Vec<u8>)> = std::thread::scope(|s| {
@@ -988,27 +1662,53 @@ fn ds_check(dir: &Path, tag: &str) {
 fn rel_check(dir: &Path, tag: &str) {
     use darkproof::run::{PartyRelease, Policy};
     use darkproof::spdz::{Dealer, Triple};
-    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    let meta: Value =
+        serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap())
+            .unwrap();
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
     let d = meta["d"].as_u64().unwrap() as usize;
     let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
-    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: det.clone(), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: None };
+    let opts = BundleOpts {
+        pr: &pr,
+        lp: &lp,
+        tables: &tables,
+        det: det.clone(),
+        spine_attack: None,
+        fs_public_attack: false,
+        diagnose: false,
+        transport: darkproof::net::transport_from_env(),
+        prm: None,
+    };
     let mut carry = None;
     // DEFER: pw2 discharges pw1's claims; the release discharges pw2's
     let mut dfr: Option<Vec<darkproof::defer::DeferIn>> = None;
     for name in ["pw1", "pw2"] {
         let b = &meta["bundles"][name];
         let c = b["ctx"].as_array().unwrap();
-        let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+        let ctx = Ctx::new(
+            c[0].as_str().unwrap(),
+            c[1].as_u64().unwrap(),
+            c[2].as_u64().unwrap(),
+        );
         let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
-        let out = darkproof::witness::make_bundle_d(&opts, w, &ctx, carry.take(), None, dfr.take()).expect("prove");
-        assert_eq!(out.blob, std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap(), "{name} differs");
+        let out = darkproof::witness::make_bundle_d(&opts, w, &ctx, carry.take(), None, dfr.take())
+            .expect("prove");
+        assert_eq!(
+            out.blob,
+            std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap(),
+            "{name} differs"
+        );
         carry = Some(out.child);
         if pr.defer {
-            dfr = Some(out.deferred.into_iter().map(|d| d.expect("DEFER: a step leaves pending claims")).collect());
+            dfr = Some(
+                out.deferred
+                    .into_iter()
+                    .map(|d| d.expect("DEFER: a step leaves pending claims"))
+                    .collect(),
+            );
         }
     }
     let pend = dfr.as_ref().map(|v| darkproof::defer::pending_of(v));
@@ -1018,31 +1718,64 @@ fn rel_check(dir: &Path, tag: &str) {
     };
     let rm = &meta["release"];
     let c = rm["ctx"].as_array().unwrap();
-    let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+    let ctx = Ctx::new(
+        c[0].as_str().unwrap(),
+        c[1].as_u64().unwrap(),
+        c[2].as_u64().unwrap(),
+    );
     let wpath = dir.join(rm["witness"].as_str().unwrap());
     let w = Witness::load(&wpath);
     let raw: Value = serde_json::from_slice(&std::fs::read(&wpath).unwrap()).unwrap();
     let m = raw["M"].as_u64().unwrap() as usize;
     let ncls = raw["ncls"].as_u64().unwrap() as usize;
     let xm = raw["X"].as_array().unwrap();
-    let x: Vec<u64> = (0..d).flat_map(|k| (0..m).map(move |t| (k, t))).map(|(k, t)| darkproof::field::from_i64(xm[k][t].as_i64().unwrap())).collect();
-    let labels: Vec<usize> = raw["labels"].as_array().unwrap().iter().map(|v| v.as_u64().unwrap() as usize).collect();
-    let pol = Policy { x, labels, ncls, kc: 10, ignore_range: false };
-    let prm = darkproof::step::StepParams { rc: rm["rc"].as_bool().unwrap_or(false), lb: rm["lb"].as_bool().unwrap_or(false), rs: rm["rs"].as_bool().unwrap_or(false), ..darkproof::step::StepParams::HARNESS };
-    let rec = darkproof::step::replay_release(&w.public, d, m, prm, &pol.x, &pol.labels, ncls, 10).expect("replay");
+    let x: Vec<u64> = (0..d)
+        .flat_map(|k| (0..m).map(move |t| (k, t)))
+        .map(|(k, t)| darkproof::field::from_i64(xm[k][t].as_i64().unwrap()))
+        .collect();
+    let labels: Vec<usize> = raw["labels"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|v| v.as_u64().unwrap() as usize)
+        .collect();
+    let pol = Policy {
+        x,
+        labels,
+        ncls,
+        kc: 10,
+        ignore_range: false,
+    };
+    let prm = darkproof::step::StepParams {
+        rc: rm["rc"].as_bool().unwrap_or(false),
+        lb: rm["lb"].as_bool().unwrap_or(false),
+        rs: rm["rs"].as_bool().unwrap_or(false),
+        ..darkproof::step::StepParams::HARNESS
+    };
+    let rec = darkproof::step::replay_release(&w.public, d, m, prm, &pol.x, &pol.labels, ncls, 10)
+        .expect("replay");
     let nb = rec.proof_products() + darkproof::middle::beaver_count_e(rec.had.len(), lp.ext);
     let mut dl = Dealer::from_state(&w.dealer_state, w.alpha_sh.clone());
-    let mut tapes: Vec<Vec<Triple>> = vec![Vec::with_capacity(nb); 3];
+    let mut tapes: Vec<Vec<Triple>> = (0..3).map(|_| Vec::with_capacity(nb)).collect();
     for _ in 0..nb {
         let av = dl.rng.randrange_u64(darkproof::field::p());
         let bv = dl.rng.randrange_u64(darkproof::field::p());
-        let (a, b2, cc) = (dl.auth_all(av), dl.auth_all(bv), dl.auth_all(darkproof::field::mul(av, bv)));
+        let (a, b2, cc) = (
+            dl.auth_all(av),
+            dl.auth_all(bv),
+            dl.auth_all(darkproof::field::mul(av, bv)),
+        );
         for i in 0..3 {
             tapes[i].push((a[i], b2[i], cc[i]));
         }
     }
     let ext = |name: &str, i: usize| -> Vec<darkproof::spdz::Sh> {
-        raw["ext"][name].as_array().unwrap().iter().map(|e| (e[i][0].as_u64().unwrap(), e[i][1].as_u64().unwrap())).collect()
+        raw["ext"][name]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|e| (e[i][0].as_u64().unwrap(), e[i][1].as_u64().unwrap()))
+            .collect()
     };
     let nets = darkproof::net::Nets::new(darkproof::net::transport_from_env(), 3);
     let heads = carry.unwrap();
@@ -1052,7 +1785,8 @@ fn rel_check(dir: &Path, tag: &str) {
             .zip(heads)
             .enumerate()
             .map(|(i, (tp, hd))| {
-                let (nets, w, pr, lp, ctx, pol, det) = (&nets, &w, &pr, &lp, &ctx, &pol, det.clone());
+                let (nets, w, pr, lp, ctx, pol, det) =
+                    (&nets, &w, &pr, &lp, &ctx, &pol, det.clone());
                 let df = dfr_i[i].take();
                 let mut wires = BTreeMap::new();
                 wires.insert("W1".to_string(), w.wires[i]["W1"].clone());
@@ -1061,14 +1795,30 @@ fn rel_check(dir: &Path, tag: &str) {
                 wires.insert("h".to_string(), ext("h", i));
                 s.spawn(move || {
                     let mut net = nets.take(i);
-                    let st = PartyRelease { i, n: 3, d, alpha_i: w.alpha_sh[i], wires, public: w.public.clone(), atoms: w.atoms[i].clone(), triples: tp, det, tape_file: None };
+                    let st = PartyRelease {
+                        i,
+                        n: 3,
+                        d,
+                        alpha_i: w.alpha_sh[i],
+                        wires,
+                        public: w.public.clone(),
+                        atoms: w.atoms[i].clone(),
+                        triples: tp,
+                        det,
+                        tape_file: None,
+                    };
                     darkproof::run::prove_release_d(pr, lp, prm, &mut *net, ctx, pol, st, hd, df)
                 })
             })
             .collect();
-        hs.into_iter().map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into()))).collect()
+        hs.into_iter()
+            .map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into())))
+            .collect()
     });
-    let blobs: Vec<Vec<u8>> = outs.into_iter().map(|o| o.expect("release proof").0).collect();
+    let blobs: Vec<Vec<u8>> = outs
+        .into_iter()
+        .map(|o| o.expect("release proof").0)
+        .collect();
     let pyb = std::fs::read(dir.join(rm["blob"].as_str().unwrap())).unwrap();
     let eq = blobs[0] == pyb;
     let agree = blobs.iter().all(|b| b == &blobs[0]);
@@ -1079,13 +1829,46 @@ fn rel_check(dir: &Path, tag: &str) {
     );
     std::fs::write(dir.join(format!("{tag}_rel.native.bin")), &blobs[0]).unwrap();
     let heads_r = roots_of(&rm["head_roots"]);
-    let v = wire::verify_release_d(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
-    println!("  native verify of the python release: {:?} (C = {} in the harness)", v, rm["C"]);
-    let mut ok = eq && agree && v.as_ref().map(|r| r.1 == rm["C"].as_u64().unwrap()).unwrap_or(false);
+    let v = wire::verify_release_d(
+        &pr,
+        &lp,
+        &pyb,
+        &ctx,
+        &heads_r,
+        &pol.x,
+        &pol.labels,
+        prm,
+        ncls,
+        d,
+        10,
+        pend.as_ref(),
+    );
+    println!(
+        "  native verify of the python release: {:?} (C = {} in the harness)",
+        v, rm["C"]
+    );
+    let mut ok = eq
+        && agree
+        && v.as_ref()
+            .map(|r| r.1 == rm["C"].as_u64().unwrap())
+            .unwrap_or(false);
     let mut bad = pyb.clone();
     let pos = bad.len() / 2;
     bad[pos] ^= 1;
-    let v2 = wire::verify_release_d(&pr, &lp, &bad, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
+    let v2 = wire::verify_release_d(
+        &pr,
+        &lp,
+        &bad,
+        &ctx,
+        &heads_r,
+        &pol.x,
+        &pol.labels,
+        prm,
+        ncls,
+        d,
+        10,
+        pend.as_ref(),
+    );
     println!("  one flipped byte at {pos}: {:?}", v2);
     ok &= v2.is_err();
     // the count's field element (the transcript's last value) claims one more correct example
@@ -1093,20 +1876,73 @@ fn rel_check(dir: &Path, tag: &str) {
     let mut lie = pyb.clone();
     let cv = u64::from_be_bytes(lie[off..off + 8].try_into().unwrap());
     lie[off..off + 8].copy_from_slice(&(cv + 1).to_be_bytes());
-    let v3 = wire::verify_release_d(&pr, &lp, &lie, &ctx, &heads_r, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
-    println!("  the released count raised by one (C = {}): {:?}", cv + 1, v3);
+    let v3 = wire::verify_release_d(
+        &pr,
+        &lp,
+        &lie,
+        &ctx,
+        &heads_r,
+        &pol.x,
+        &pol.labels,
+        prm,
+        ncls,
+        d,
+        10,
+        pend.as_ref(),
+    );
+    println!(
+        "  the released count raised by one (C = {}): {:?}",
+        cv + 1,
+        v3
+    );
     ok &= v3.is_err();
     let mut other = pol.labels.clone();
     other[0] = (other[0] + 1) % ncls;
-    let v4 = wire::verify_release_d(&pr, &lp, &pyb, &ctx, &heads_r, &pol.x, &other, prm, ncls, d, 10, pend.as_ref());
+    let v4 = wire::verify_release_d(
+        &pr,
+        &lp,
+        &pyb,
+        &ctx,
+        &heads_r,
+        &pol.x,
+        &other,
+        prm,
+        ncls,
+        d,
+        10,
+        pend.as_ref(),
+    );
     println!("  verified against another label set: {:?}", v4);
     ok &= v4.is_err();
     let mut wrong_head = heads_r.clone();
     wrong_head.insert("W1".into(), roots_of(&meta["genesis_roots"])["W1"].clone());
-    let v5 = wire::verify_release_d(&pr, &lp, &pyb, &ctx, &wrong_head, &pol.x, &pol.labels, prm, ncls, d, 10, pend.as_ref());
-    println!("  verified against the genesis W1 instead of the head's: {:?}", v5);
+    let v5 = wire::verify_release_d(
+        &pr,
+        &lp,
+        &pyb,
+        &ctx,
+        &wrong_head,
+        &pol.x,
+        &pol.labels,
+        prm,
+        ncls,
+        d,
+        10,
+        pend.as_ref(),
+    );
+    println!(
+        "  verified against the genesis W1 instead of the head's: {:?}",
+        v5
+    );
     ok &= v5.is_err();
-    println!("{}", if ok { "REL-CHECK PASS" } else { "REL-CHECK FAIL" });
+    println!(
+        "{}",
+        if ok {
+            "REL-CHECK PASS"
+        } else {
+            "REL-CHECK FAIL"
+        }
+    );
     std::process::exit(if ok { 0 } else { 1 });
 }
 
@@ -1116,7 +1952,11 @@ fn counts(d: usize, prof: &str) {
     darkproof::field::set_p(wire::he_field(&pr).unwrap());
     let lp = pr.ligero();
     let prm = match std::env::var("DP_PROGRAM") {
-        Ok(j) => program_of(&serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }), d).deployed(),
+        Ok(j) => program_of(
+            &serde_json::json!({ "program": serde_json::from_str::<Value>(&j).unwrap() }),
+            d,
+        )
+        .deployed(),
         Err(_) => darkproof::step::StepParams::for_width(d).deployed(),
     };
     let tables = darkproof::step::tables_for(prm.t_lo);
@@ -1124,24 +1964,41 @@ fn counts(d: usize, prof: &str) {
         let zeros = vec![0u64; prm.transcript_len(d, carried)];
         let rec = darkproof::step::replay(&zeros, d, prm, &tables, carried).unwrap();
         let nh = rec.had.len();
-        let lig = darkproof::ligero::LigParty::tape_triples(&lp, darkproof::spine::lig_scalars(lp.ext), 1) + darkproof::ligero::LigParty::tape_triples(&lp, darkproof::middle::lig_scalars(lp.ext), 1);
+        let lig = darkproof::ligero::LigParty::tape_triples(
+            &lp,
+            darkproof::spine::lig_scalars(lp.ext),
+            1,
+        ) + darkproof::ligero::LigParty::tape_triples(
+            &lp,
+            darkproof::middle::lig_scalars(lp.ext),
+            1,
+        );
         let gen5 = 4 * (nh.next_power_of_two() - 1);
         println!(
             "step (carried {carried}) {prm:?}: hadamard rows {nh} (range rows included), atoms {}, spine Beaver {}, range products {}, lookup products {}, zerocheck {} (gen 5 method: {gen5}), Ligero (unauthenticated) {lig}; section total {}",
             rec.n_prep(), darkproof::spine::beaver_count_e(d, lp.ext), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count_e(nh, lp.ext), darkproof::run::step_section(&lp, d, prm, carried, &tables)
         );
     }
-    let m: usize = std::env::var("DP_RELEASE_M").ok().and_then(|v| v.parse().ok()).unwrap_or(64);
-    let pol = darkproof::run::Policy { x: vec![0; d * m], labels: vec![0; m], ncls: 10, kc: 10, ignore_range: false };
+    let m: usize = std::env::var("DP_RELEASE_M")
+        .ok()
+        .and_then(|v| v.parse().ok())
+        .unwrap_or(64);
+    let pol = darkproof::run::Policy {
+        x: vec![0; d * m],
+        labels: vec![0; m],
+        ncls: 10,
+        kc: 10,
+        ignore_range: false,
+    };
     let zeros = vec![0u64; wire::release_len(d, m, prm, 10, 10)];
-    let rec = darkproof::step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, 10, 10).unwrap();
+    let rec =
+        darkproof::step::replay_release(&zeros, d, m, prm, &pol.x, &pol.labels, 10, 10).unwrap();
     let nh = rec.had.len();
     println!(
         "release M = {m}: hadamard rows {nh}, atoms {}, range products {}, lookup products {}, zerocheck {} (gen 5 method: {}), section total {}",
         rec.n_prep(), rec.range_products(), rec.lookup_products(), darkproof::middle::beaver_count_e(nh, lp.ext), 4 * (nh.next_power_of_two() - 1), darkproof::run::release_section(&lp, d, m, prm, &pol)
     );
 }
-
 
 /// Cut E (DEFER) natively on a demo-x2de / ledger-x2de public-genesis chain (TAG: he1, he2 and Python's closing
 /// proof, darkproof_vectors.py ... he with defer_ledger): the closing proof's bytes against Python's; the native
@@ -1153,7 +2010,9 @@ fn e_rows(dir: &Path, tag: &str) {
     use darkproof::ledger::{Genesis, Ledger};
     use darkproof::witness::make_bundle_d;
     use sha2::{Digest, Sha256};
-    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    let meta: Value =
+        serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap())
+            .unwrap();
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
     let d = meta["d"].as_u64().unwrap() as usize;
     let prm = program_of(&meta, d);
@@ -1162,30 +2021,88 @@ fn e_rows(dir: &Path, tag: &str) {
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
-    let mut opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: det.clone(), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: Some(prm) };
+    let mut opts = BundleOpts {
+        pr: &pr,
+        lp: &lp,
+        tables: &tables,
+        det: det.clone(),
+        spine_attack: None,
+        fs_public_attack: false,
+        diagnose: false,
+        transport: darkproof::net::transport_from_env(),
+        prm: Some(prm),
+    };
     let cfg = std::fs::read(meta["pg_cfg"].as_str().expect("a PG vector set")).unwrap();
-    assert_eq!(<[u8; 32]>::from(Sha256::digest(&cfg)), prm.pg.unwrap(), "pg_cfg is not the cfg the program pins");
+    assert_eq!(
+        <[u8; 32]>::from(Sha256::digest(&cfg)),
+        prm.pg.unwrap(),
+        "pg_cfg is not the cfg the program pins"
+    );
     let (_, w1, w2) = darkproof::run::public_weights(&cfg).unwrap();
-    let genesis = || -> Vec<BTreeMap<String, darkproof::pcs::PcsParty>> { (0..3).map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3).0).collect() };
+    let genesis = || -> Vec<BTreeMap<String, darkproof::pcs::PcsParty>> {
+        (0..3)
+            .map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3).0)
+            .collect()
+    };
     let groots = roots_of(&meta["genesis_roots"]);
     let bundle = |name: &str| -> (Ctx, Witness, Vec<u8>) {
         let b = &meta["bundles"][name];
         let c = b["ctx"].as_array().unwrap();
-        let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
-        (ctx, Witness::load(&dir.join(b["witness"].as_str().unwrap())), std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap())
+        let ctx = Ctx::new(
+            c[0].as_str().unwrap(),
+            c[1].as_u64().unwrap(),
+            c[2].as_u64().unwrap(),
+        );
+        (
+            ctx,
+            Witness::load(&dir.join(b["witness"].as_str().unwrap())),
+            std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap(),
+        )
     };
     let (ctx1, wt1, pyb1) = bundle("he1");
     let (ctx2, wt2, pyb2) = bundle("he2");
     let mut ok = true;
     let mut row = |what: &str, r: Result<String, String>, want_accept: bool| {
-        println!("{:74} {:8} {}", what, if r.is_ok() { "accept" } else { "REFUSED" }, match &r { Ok(s) => s.clone(), Err(e) => e.clone() });
+        println!(
+            "{:74} {:8} {}",
+            what,
+            if r.is_ok() { "accept" } else { "REFUSED" },
+            match &r {
+                Ok(s) => s.clone(),
+                Err(e) => e.clone(),
+            }
+        );
         ok &= r.is_ok() == want_accept;
     };
-    let b1 = make_bundle_d(&opts, wt1.clone(), &ctx1, Some(genesis()), None, None).expect("prove he1");
-    let d1: Vec<darkproof::defer::DeferIn> = b1.deferred.iter().map(|x| x.clone().unwrap()).collect();
-    let b2 = make_bundle_d(&opts, wt2.clone(), &ctx2, Some(b1.child), None, Some(d1.clone())).expect("prove he2");
-    let same = |a: &[u8], b: &[u8]| if a == b { Ok(format!("EQUAL to Python ({} B, sha256 {})", a.len(), &sha(a)[..16])) } else { Err(format!("DIFFER at {:?}", first_diff(a, b))) };
-    row("he1 (the parent final: public genesis)", same(&b1.blob, &pyb1), true);
+    let b1 =
+        make_bundle_d(&opts, wt1.clone(), &ctx1, Some(genesis()), None, None).expect("prove he1");
+    let d1: Vec<darkproof::defer::DeferIn> =
+        b1.deferred.iter().map(|x| x.clone().unwrap()).collect();
+    let b2 = make_bundle_d(
+        &opts,
+        wt2.clone(),
+        &ctx2,
+        Some(b1.child),
+        None,
+        Some(d1.clone()),
+    )
+    .expect("prove he2");
+    let same = |a: &[u8], b: &[u8]| {
+        if a == b {
+            Ok(format!(
+                "EQUAL to Python ({} B, sha256 {})",
+                a.len(),
+                &sha(a)[..16]
+            ))
+        } else {
+            Err(format!("DIFFER at {:?}", first_diff(a, b)))
+        }
+    };
+    row(
+        "he1 (the parent final: public genesis)",
+        same(&b1.blob, &pyb1),
+        true,
+    );
     row("he2 (discharges he1's claims)", same(&b2.blob, &pyb2), true);
     // the closing proof of the halted head (he2): every custodian over the in-memory transport
     let nets = darkproof::net::Nets::new(darkproof::net::transport_from_env(), 3);
@@ -1196,56 +2113,129 @@ fn e_rows(dir: &Path, tag: &str) {
                 let (hd, df) = (&b2.child[i], b2.deferred[i].as_ref().unwrap());
                 s.spawn(move || {
                     let mut net = nets.take(i);
-                    darkproof::defer::prove_close(pr, lp, i, 3, &mut *net, ctx2, hd, df, det).map(|p| wire::encode_close(pr, ctx2, d, 3, &p))
+                    darkproof::defer::prove_close(pr, lp, i, 3, &mut *net, ctx2, hd, df, det)
+                        .map(|p| wire::encode_close(pr, ctx2, d, 3, &p))
                 })
             })
             .collect();
-        hs.into_iter().map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into()))).collect()
+        hs.into_iter()
+            .map(|h| h.join().unwrap_or_else(|_| Err("party panicked".into())))
+            .collect()
     });
     let cblob = blobs[0].clone().expect("closing proof");
     let agree = blobs.iter().all(|b| b.as_ref().ok() == Some(&cblob));
     let pyc = std::fs::read(dir.join(meta["close"]["blob"].as_str().unwrap())).unwrap();
-    row(&format!("closing proof of the head (step 2), parties agree: {agree}"), same(&cblob, &pyc), true);
+    row(
+        &format!("closing proof of the head (step 2), parties agree: {agree}"),
+        same(&cblob, &pyc),
+        true,
+    );
     std::fs::write(dir.join(format!("{tag}_close.native.bin")), &cblob).unwrap();
     // the ledger: statuses, the close and its refusals
     let tmp = std::env::temp_dir().join(format!("dl-e-rows-{}", std::process::id()));
     std::fs::create_dir_all(&tmp).unwrap();
     let cust = vec!["c0".to_string(), "c1".to_string(), "c2".to_string()];
-    let gen = || Genesis { d, program: prm, owner_pk: None, custodians: cust.clone(), roots: groots.clone() };
+    let gen = || Genesis {
+        d,
+        program: prm,
+        owner_pk: None,
+        custodians: cust.clone(),
+        roots: groots.clone(),
+    };
     let lpath = tmp.join("mind-0.ledger");
     let mut lg = Ledger::open(&lpath, "mind-0", &pr, Some(gen())).unwrap();
     let st = |lg: &Ledger| format!("{:?}", lg.status);
-    row("ledger: the pinned public-genesis cfg", lg.check_public_genesis(&cfg).map(|_| String::new()), true);
-    row("ledger: he1 (Python's bytes)", lg.accept(&lp, &pyb1, &tables).map(|_| st(&lg)), true);
-    row("ledger: he2 (Python's bytes), discharging he1", lg.accept(&lp, &pyb2, &tables).map(|_| st(&lg)), true);
-    row("ledger: a release-free rotation of the pending head", lg.rotate(&cust, &groots, b"x").map(|_| String::new()), false);
+    row(
+        "ledger: the pinned public-genesis cfg",
+        lg.check_public_genesis(&cfg).map(|_| String::new()),
+        true,
+    );
+    row(
+        "ledger: he1 (Python's bytes)",
+        lg.accept(&lp, &pyb1, &tables).map(|_| st(&lg)),
+        true,
+    );
+    row(
+        "ledger: he2 (Python's bytes), discharging he1",
+        lg.accept(&lp, &pyb2, &tables).map(|_| st(&lg)),
+        true,
+    );
+    row(
+        "ledger: a release-free rotation of the pending head",
+        lg.rotate(&cust, &groots, b"x").map(|_| String::new()),
+        false,
+    );
     let mut bad = cblob.clone();
     let l = bad.len();
     bad[l - 40] ^= 1;
-    row("ledger: a flipped byte in the closing proof", lg.close(&lp, &bad).map(|_| String::new()), false);
-    row("ledger: the closing proof (native bytes)", lg.close(&lp, &cblob).map(|_| st(&lg)), true);
-    row("ledger: a second close", lg.close(&lp, &cblob).map(|_| String::new()), false);
-    row("ledger: a step after the close", lg.accept(&lp, &pyb2, &tables).map(|_| String::new()), false);
-    row("ledger: reopened, the status replayed", Ledger::open(&lpath, "mind-0", &pr, None).map(|l| format!("{:?}, closed {}", l.status, l.closed)), true);
+    row(
+        "ledger: a flipped byte in the closing proof",
+        lg.close(&lp, &bad).map(|_| String::new()),
+        false,
+    );
+    row(
+        "ledger: the closing proof (native bytes)",
+        lg.close(&lp, &cblob).map(|_| st(&lg)),
+        true,
+    );
+    row(
+        "ledger: a second close",
+        lg.close(&lp, &cblob).map(|_| String::new()),
+        false,
+    );
+    row(
+        "ledger: a step after the close",
+        lg.accept(&lp, &pyb2, &tables).map(|_| String::new()),
+        false,
+    );
+    row(
+        "ledger: reopened, the status replayed",
+        Ledger::open(&lpath, "mind-0", &pr, None)
+            .map(|l| format!("{:?}, closed {}", l.status, l.closed)),
+        true,
+    );
     std::fs::copy(&lpath, dir.join(format!("{tag}.native.ledger"))).unwrap();
     // a step whose child violates the deferred claim: accepted pending, refused at its discharge
     opts.spine_attack = Some("forge_W1n");
-    let f1 = make_bundle_d(&opts, wt1.clone(), &ctx1, Some(genesis()), None, None).expect("prove the forged he1");
+    let f1 = make_bundle_d(&opts, wt1.clone(), &ctx1, Some(genesis()), None, None)
+        .expect("prove the forged he1");
     opts.spine_attack = None;
-    let fd: Vec<darkproof::defer::DeferIn> = f1.deferred.iter().map(|x| x.clone().unwrap()).collect();
+    let fd: Vec<darkproof::defer::DeferIn> =
+        f1.deferred.iter().map(|x| x.clone().unwrap()).collect();
     let f2 = make_bundle_d(&opts, wt2.clone(), &ctx2, Some(f1.child), None, Some(fd));
     let fpath = tmp.join("forge.ledger");
     let mut fl = Ledger::open(&fpath, "mind-0", &pr, Some(gen())).unwrap();
     fl.check_public_genesis(&cfg).unwrap();
-    row("forge_W1n: step 1 (its child is not opened there)", fl.accept(&lp, &f1.blob, &tables).map(|_| st(&fl)), true);
+    row(
+        "forge_W1n: step 1 (its child is not opened there)",
+        fl.accept(&lp, &f1.blob, &tables).map(|_| st(&fl)),
+        true,
+    );
     match f2 {
-        Err(e) => row("forge_W1n: step 2, the discharge", Err(format!("in proving: {e}")), false),
-        Ok(f2) => row("forge_W1n: step 2, the discharge", fl.accept(&lp, &f2.blob, &tables).map(|_| st(&fl)), false),
+        Err(e) => row(
+            "forge_W1n: step 2, the discharge",
+            Err(format!("in proving: {e}")),
+            false,
+        ),
+        Ok(f2) => row(
+            "forge_W1n: step 2, the discharge",
+            fl.accept(&lp, &f2.blob, &tables).map(|_| st(&fl)),
+            false,
+        ),
     }
-    println!("{:74} {:8} {}", "forge_W1n: the ledger's status after the refusal", "", st(&Ledger::open(&fpath, "mind-0", &pr, None).unwrap()));
+    println!(
+        "{:74} {:8} {}",
+        "forge_W1n: the ledger's status after the refusal",
+        "",
+        st(&Ledger::open(&fpath, "mind-0", &pr, None).unwrap())
+    );
     // a second opening of a W (step 2 retried on the W it already opened)
     let again = make_bundle_d(&opts, wt2.clone(), &ctx2, Some(b2.carried), None, Some(d1));
-    row("a second opening of a W (step 2 retried)", again.map(|_| String::new()), false);
+    row(
+        "a second opening of a W (step 2 retried)",
+        again.map(|_| String::new()),
+        false,
+    );
     let _ = std::fs::remove_dir_all(&tmp);
     println!("{}", if ok { "E-ROWS PASS" } else { "E-ROWS FAIL" });
     std::process::exit(if ok { 0 } else { 1 });
@@ -1261,30 +2251,59 @@ fn e_rows(dir: &Path, tag: &str) {
 fn ext_rows(dir: &Path, tag: &str, dir1: &Path, tag1: &str) {
     use darkproof::ledger::{jparams, Genesis, Ledger};
     use sha2::{Digest, Sha256};
-    let load = |dir: &Path, tag: &str| -> Value { serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap() };
+    let load = |dir: &Path, tag: &str| -> Value {
+        serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap())
+            .unwrap()
+    };
     let meta = load(dir, tag);
     let meta1 = load(dir1, tag1);
     darkproof::field::set_p(meta["p"].as_u64().unwrap());
-    assert_eq!(meta["p"], meta1["p"], "the two vector sets are over different fields");
+    assert_eq!(
+        meta["p"], meta1["p"],
+        "the two vector sets are over different fields"
+    );
     let d = meta["d"].as_u64().unwrap() as usize;
     let prm = program_of(&meta, d);
     let pr = profile(meta["profile"].as_str().unwrap());
     let pr1 = profile(meta1["profile"].as_str().unwrap());
-    assert!(pr.ext == 2 && pr1.ext == 1, "TAG must be an EXT = 2 set, TAG1 an EXT = 1 set");
+    assert!(
+        pr.ext == 2 && pr1.ext == 1,
+        "TAG must be an EXT = 2 set, TAG1 an EXT = 1 set"
+    );
     let (lp, lp1) = (pr.ligero(), pr1.ligero());
     let tables = darkproof::step::tables();
     let det = Det(Some(meta["seed"].as_str().unwrap().to_string()));
-    let mut opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: Some(prm) };
+    let mut opts = BundleOpts {
+        pr: &pr,
+        lp: &lp,
+        tables: &tables,
+        det,
+        spine_attack: None,
+        fs_public_attack: false,
+        diagnose: false,
+        transport: darkproof::net::transport_from_env(),
+        prm: Some(prm),
+    };
     let cfg = std::fs::read(meta["pg_cfg"].as_str().expect("a PG vector set")).unwrap();
-    assert_eq!(<[u8; 32]>::from(Sha256::digest(&cfg)), prm.pg.unwrap(), "pg_cfg is not the cfg the program pins");
+    assert_eq!(
+        <[u8; 32]>::from(Sha256::digest(&cfg)),
+        prm.pg.unwrap(),
+        "pg_cfg is not the cfg the program pins"
+    );
     let (dw, w1, w2) = darkproof::run::public_weights(&cfg).unwrap();
     assert_eq!(dw, d);
-    let carry: Vec<_> = (0..3).map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3).0).collect();
+    let carry: Vec<_> = (0..3)
+        .map(|i| darkproof::run::public_genesis(&pr, d, i, &w1, &w2, 3).0)
+        .collect();
     let groots = roots_of(&meta["genesis_roots"]);
     let groots1 = roots_of(&meta1["genesis_roots"]);
     let b = &meta["bundles"]["he1"];
     let c = b["ctx"].as_array().unwrap();
-    let ctx = Ctx::new(c[0].as_str().unwrap(), c[1].as_u64().unwrap(), c[2].as_u64().unwrap());
+    let ctx = Ctx::new(
+        c[0].as_str().unwrap(),
+        c[1].as_u64().unwrap(),
+        c[2].as_u64().unwrap(),
+    );
     let w = Witness::load(&dir.join(b["witness"].as_str().unwrap()));
     let pyb = std::fs::read(dir.join(b["blob"].as_str().unwrap())).unwrap();
     let b1 = &meta1["bundles"]["he1"];
@@ -1294,20 +2313,51 @@ fn ext_rows(dir: &Path, tag: &str, dir1: &Path, tag1: &str) {
     let mut ok = true;
     let mut row = |what: &str, r: Result<(), String>, want_accept: bool| {
         let good = r.is_ok() == want_accept;
-        println!("{:78} {:8} {}", what, if r.is_ok() { "accept" } else { "REFUSED" }, match &r { Ok(_) => String::new(), Err(e) => e.clone() });
+        println!(
+            "{:78} {:8} {}",
+            what,
+            if r.is_ok() { "accept" } else { "REFUSED" },
+            match &r {
+                Ok(_) => String::new(),
+                Err(e) => e.clone(),
+            }
+        );
         ok &= good;
     };
-    let vs = |pr: &Profile, lp: &darkproof::ligero::LigParams, blob: &[u8], roots: &BTreeMap<String, Vec<[u8; 32]>>, d: usize, prm| {
+    let vs = |pr: &Profile,
+              lp: &darkproof::ligero::LigParams,
+              blob: &[u8],
+              roots: &BTreeMap<String, Vec<[u8; 32]>>,
+              d: usize,
+              prm| {
         wire::verify_step(pr, lp, blob, &ctx, roots, &tables, d, prm, None, 0).map(|_| ())
     };
-    row("honest he1 (the Python bundle)", vs(&pr, &lp, &pyb, &groots, d, prm), true);
+    row(
+        "honest he1 (the Python bundle)",
+        vs(&pr, &lp, &pyb, &groots, d, prm),
+        true,
+    );
     // a forged sumcheck: z1's committed shares off at one entry, the hidden rounds shifted to the forged claim
     opts.spine_attack = Some("forge_sumcheck");
-    let forged = darkproof::witness::make_bundle(&opts, w.clone(), &ctx, Some(darkproof::witness::clone_carry(&carry)), None);
+    let forged = darkproof::witness::make_bundle(
+        &opts,
+        w.clone(),
+        &ctx,
+        Some(darkproof::witness::clone_carry(&carry)),
+        None,
+    );
     opts.spine_attack = None;
     match forged {
-        Err(e) => row("forged sumcheck (z1 off by one, rounds shifted to the forged claim)", Err(format!("in proving: {e}")), false),
-        Ok(fb) => row("forged sumcheck (z1 off by one, rounds shifted to the forged claim)", vs(&pr, &lp, &fb.blob, &groots, d, prm), false),
+        Err(e) => row(
+            "forged sumcheck (z1 off by one, rounds shifted to the forged claim)",
+            Err(format!("in proving: {e}")),
+            false,
+        ),
+        Ok(fb) => row(
+            "forged sumcheck (z1 off by one, rounds shifted to the forged claim)",
+            vs(&pr, &lp, &fb.blob, &groots, d, prm),
+            false,
+        ),
     }
     // splices of the spine section of the Python bundle
     let ml = u16::from_be_bytes(pyb[8..10].try_into().unwrap()) as usize;
@@ -1327,33 +2377,78 @@ fn ext_rows(dir: &Path, tag: &str, dir1: &Path, tag1: &str) {
         out
     };
     let same = splice(&sp) == pyb;
-    row("control: the decoded spine re-encoded is the Python bundle", if same { vs(&pr, &lp, &splice(&sp), &groots, d, prm) } else { Err("re-encoding differs".into()) }, true);
+    row(
+        "control: the decoded spine re-encoded is the Python bundle",
+        if same {
+            vs(&pr, &lp, &splice(&sp), &groots, d, prm)
+        } else {
+            Err("re-encoding differs".into())
+        },
+        true,
+    );
     let plus1 = |x: &mut u64| *x = darkproof::field::add(*x, 1);
     let mut t = sp.clone();
     plus1(&mut t.ligero.more[0].0[0]);
-    row("spine Ligero message w1 (the u-part of w) + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    row(
+        "spine Ligero message w1 (the u-part of w) + 1",
+        vs(&pr, &lp, &splice(&t), &groots, d, prm),
+        false,
+    );
     let mut t = sp.clone();
     plus1(&mut t.ligero.more[0].2[3]);
-    row("spine Ligero message pq1 (the u-part of pq) + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    row(
+        "spine Ligero message pq1 (the u-part of pq) + 1",
+        vs(&pr, &lp, &splice(&t), &groots, d, prm),
+        false,
+    );
     let wn = darkproof::spine::shapes(&pr, d, true, false)["W1n"].w;
     let mut t = sp.clone();
     plus1(&mut t.prox.get_mut("W1n").unwrap()[0][wn]);
-    row("PCS proximity row of W1n, custodian 0, u-part entry 0 + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    row(
+        "PCS proximity row of W1n, custodian 0, u-part entry 0 + 1",
+        vs(&pr, &lp, &splice(&t), &groots, d, prm),
+        false,
+    );
     let mut t = sp.clone();
     plus1(&mut t.prox.get_mut("W1n").unwrap()[0][0]);
-    row("PCS proximity row of W1n, custodian 0, base entry 0 + 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+    row(
+        "PCS proximity row of W1n, custodian 0, base entry 0 + 1",
+        vs(&pr, &lp, &splice(&t), &groots, d, prm),
+        false,
+    );
     // cut D (ZKSC "mask"): the opened rounds (cosnark_ext_rows.py's D rows)
     let prx = profile(pr.name.trim_end_matches('d'));
     if pr.mask {
         for (att, what) in [
-            ("forge_W1n", "forged W1n (custodian 0's committed share off by one)"),
-            ("forge_z1", "forged z1 (custodian 0's committed share off by one)"),
-            ("forge_round", "forged round message (z2 round 1: +5 at X = 0, -5 at X = 1, sum kept)"),
-            ("forge_G", "G not the committed g's sum (custodian 0's G share of z2 + 1)"),
-            ("bad_share", "one custodian's broadcast share off by one (b, round 0, X = 0)"),
+            (
+                "forge_W1n",
+                "forged W1n (custodian 0's committed share off by one)",
+            ),
+            (
+                "forge_z1",
+                "forged z1 (custodian 0's committed share off by one)",
+            ),
+            (
+                "forge_round",
+                "forged round message (z2 round 1: +5 at X = 0, -5 at X = 1, sum kept)",
+            ),
+            (
+                "forge_G",
+                "G not the committed g's sum (custodian 0's G share of z2 + 1)",
+            ),
+            (
+                "bad_share",
+                "one custodian's broadcast share off by one (b, round 0, X = 0)",
+            ),
         ] {
             opts.spine_attack = Some(att);
-            let fb = darkproof::witness::make_bundle(&opts, w.clone(), &ctx, Some(darkproof::witness::clone_carry(&carry)), None);
+            let fb = darkproof::witness::make_bundle(
+                &opts,
+                w.clone(),
+                &ctx,
+                Some(darkproof::witness::clone_carry(&carry)),
+                None,
+            );
             opts.spine_attack = None;
             match fb {
                 Err(e) => row(what, Err(format!("in proving: {e}")), false),
@@ -1362,40 +2457,122 @@ fn ext_rows(dir: &Path, tag: &str, dir1: &Path, tag1: &str) {
         }
         let mut t = sp.clone();
         plus1(&mut t.rounds.get_mut("z1").unwrap()[1][0]);
-        row("opened round message (z1, round 1) + 1 in the bundle", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+        row(
+            "opened round message (z1, round 1) + 1 in the bundle",
+            vs(&pr, &lp, &splice(&t), &groots, d, prm),
+            false,
+        );
         let mut t = sp.clone();
         {
             let m = &mut t.rounds.get_mut("bg").unwrap()[0];
             plus1(&mut m[0]);
             m[2] = darkproof::field::sub(m[2], 1);
         }
-        row("opened round message (bg, round 0): +1 at X = 0, -1 at X = 1", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+        row(
+            "opened round message (bg, round 0): +1 at X = 0, -1 at X = 1",
+            vs(&pr, &lp, &splice(&t), &groots, d, prm),
+            false,
+        );
         let mut t = sp.clone();
         plus1(&mut t.g_open[0]);
-        row("opened G (z1) + 1 in the bundle", vs(&pr, &lp, &splice(&t), &groots, d, prm), false);
+        row(
+            "opened G (z1) + 1 in the bundle",
+            vs(&pr, &lp, &splice(&t), &groots, d, prm),
+            false,
+        );
         let lpx = prx.ligero();
-        row(&format!("the {} bundle verified under {} (hidden rounds)", pr.name, prx.name), vs(&prx, &lpx, &pyb, &groots, d, prm), false);
+        row(
+            &format!(
+                "the {} bundle verified under {} (hidden rounds)",
+                pr.name, prx.name
+            ),
+            vs(&prx, &lpx, &pyb, &groots, d, prm),
+            false,
+        );
     }
     // the profile is part of the statement
-    row("the EXT = 2 bundle verified under the EXT = 1 profile", vs(&pr1, &lp1, &pyb, &groots, d, prm), false);
-    row("the EXT = 1 bundle verified under the EXT = 2 profile", vs(&pr, &lp, &pyb1, &groots1, d1, prm1), false);
-    row("control: the EXT = 1 bundle under its own profile", vs(&pr1, &lp1, &pyb1, &groots1, d1, prm1), true);
+    row(
+        "the EXT = 2 bundle verified under the EXT = 1 profile",
+        vs(&pr1, &lp1, &pyb, &groots, d, prm),
+        false,
+    );
+    row(
+        "the EXT = 1 bundle verified under the EXT = 2 profile",
+        vs(&pr, &lp, &pyb1, &groots1, d1, prm1),
+        false,
+    );
+    row(
+        "control: the EXT = 1 bundle under its own profile",
+        vs(&pr1, &lp1, &pyb1, &groots1, d1, prm1),
+        true,
+    );
     // the ledger pins the profile (genesis "params"; "EXT" only when it is 2)
     let tmp = std::env::temp_dir().join(format!("dl-ext-rows-{}", std::process::id()));
     std::fs::create_dir_all(&tmp).unwrap();
     let cust = vec!["c0".to_string(), "c1".to_string(), "c2".to_string()];
     let p2 = tmp.join("x2.ledger");
-    let mut lg = Ledger::open(&p2, "mind-0", &pr, Some(Genesis { d, program: prm, owner_pk: None, custodians: cust.clone(), roots: groots.clone() })).unwrap();
+    let mut lg = Ledger::open(
+        &p2,
+        "mind-0",
+        &pr,
+        Some(Genesis {
+            d,
+            program: prm,
+            owner_pk: None,
+            custodians: cust.clone(),
+            roots: groots.clone(),
+        }),
+    )
+    .unwrap();
     println!("ledger genesis params under {}: {}", pr.name, jparams(&pr));
-    row("ledger (EXT = 2): the pinned public-genesis cfg", lg.check_public_genesis(&cfg), true);
-    row("ledger (EXT = 2): he1 accepted", lg.accept(&lp, &pyb, &tables), true);
-    row("ledger written under the EXT = 2 profile, reopened under it", Ledger::open(&p2, "mind-0", &pr, None).map(|_| ()), true);
-    row("ledger written under the EXT = 2 profile, reopened under the EXT = 1 one", Ledger::open(&p2, "mind-0", &pr1, None).map(|_| ()), false);
+    row(
+        "ledger (EXT = 2): the pinned public-genesis cfg",
+        lg.check_public_genesis(&cfg),
+        true,
+    );
+    row(
+        "ledger (EXT = 2): he1 accepted",
+        lg.accept(&lp, &pyb, &tables),
+        true,
+    );
+    row(
+        "ledger written under the EXT = 2 profile, reopened under it",
+        Ledger::open(&p2, "mind-0", &pr, None).map(|_| ()),
+        true,
+    );
+    row(
+        "ledger written under the EXT = 2 profile, reopened under the EXT = 1 one",
+        Ledger::open(&p2, "mind-0", &pr1, None).map(|_| ()),
+        false,
+    );
     let p1 = tmp.join("x1.ledger");
-    Ledger::open(&p1, "mind-0", &pr1, Some(Genesis { d: d1, program: prm1, owner_pk: None, custodians: cust, roots: groots1 })).unwrap();
-    row("ledger written under the EXT = 1 profile, reopened under the EXT = 2 one", Ledger::open(&p1, "mind-0", &pr, None).map(|_| ()), false);
+    Ledger::open(
+        &p1,
+        "mind-0",
+        &pr1,
+        Some(Genesis {
+            d: d1,
+            program: prm1,
+            owner_pk: None,
+            custodians: cust,
+            roots: groots1,
+        }),
+    )
+    .unwrap();
+    row(
+        "ledger written under the EXT = 1 profile, reopened under the EXT = 2 one",
+        Ledger::open(&p1, "mind-0", &pr, None).map(|_| ()),
+        false,
+    );
     if pr.mask {
-        row(&format!("ledger written under {}, reopened under {}", pr.name, prx.name), Ledger::open(&p2, "mind-0", &prx, None).map(|_| ()), false);
+        row(
+            &format!(
+                "ledger written under {}, reopened under {}",
+                pr.name, prx.name
+            ),
+            Ledger::open(&p2, "mind-0", &prx, None).map(|_| ()),
+            false,
+        );
     }
     let _ = std::fs::remove_dir_all(&tmp);
     println!("{}", if ok { "EXT-ROWS PASS" } else { "EXT-ROWS FAIL" });
@@ -1426,13 +2603,25 @@ fn rows(dir: &Path, tag: &str) {
     use darkproof::ledger::{Genesis, Ledger};
     use darkproof::owner::{det_seed, Owner};
     use darkproof::witness::{clone_carry, owner_commit, with_max_lives, OwnerIn};
-    let meta: Value = serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap()).unwrap();
+    let meta: Value =
+        serde_json::from_slice(&std::fs::read(dir.join(format!("{tag}_meta.json"))).unwrap())
+            .unwrap();
     let pr = profile(meta["profile"].as_str().unwrap());
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let seed = meta["seed"].as_str().unwrap().to_string();
     let det = Det(Some(seed.clone()));
-    let mut opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det, spine_attack: None, fs_public_attack: false, diagnose: true, transport: darkproof::net::transport_from_env(), prm: None };
+    let mut opts = BundleOpts {
+        pr: &pr,
+        lp: &lp,
+        tables: &tables,
+        det,
+        spine_attack: None,
+        fs_public_attack: false,
+        diagnose: true,
+        transport: darkproof::net::transport_from_env(),
+        prm: None,
+    };
     let model = "mind-0";
     let c = |e, s| Ctx::new(model, e, s);
     let tmp = std::env::temp_dir().join(format!("dl-native-ledger-{}", std::process::id()));
@@ -1440,7 +2629,11 @@ fn rows(dir: &Path, tag: &str) {
     let mut rows = Rows { out: vec![] };
     let cust = |a: &[&str]| a.iter().map(|s| s.to_string()).collect::<Vec<_>>();
     // ---------------------------------------------------------------- run_proofwire rows
-    let (w1, w2, w3) = (wit(dir, tag, "r_pw1"), wit(dir, tag, "r_pw2"), wit(dir, tag, "r_pw3"));
+    let (w1, w2, w3) = (
+        wit(dir, tag, "r_pw1"),
+        wit(dir, tag, "r_pw2"),
+        wit(dir, tag, "r_pw3"),
+    );
     let s1 = make_bundle(&opts, w1.clone(), &c(0, 1), None, None).unwrap();
     let groots = s1.genesis_roots.clone().unwrap();
     let child1 = s1.child;
@@ -1452,15 +2645,39 @@ fn rows(dir: &Path, tag: &str) {
     let child1 = with_max_lives(s3x.carried, pr.lives);
     let (b2b, b3) = (s2b.blob, s3x.blob);
     match make_bundle(&opts, w2.clone(), &c(0, 2), Some(child1), None) {
-        Ok(_) => rows.rec("honest custodians asked to open step 1's child a third time", Ok(())),
-        Err(e) => rows.rec("honest custodians asked to open step 1's child a third time", Err(e)),
+        Ok(_) => rows.rec(
+            "honest custodians asked to open step 1's child a third time",
+            Ok(()),
+        ),
+        Err(e) => rows.rec(
+            "honest custodians asked to open step 1's child a third time",
+            Err(e),
+        ),
     }
     let path = tmp.join("mind-0.ledger");
-    let mut lg = Ledger::open(&path, model, &pr, Some(Genesis { d: w1.d, program: darkproof::step::StepParams::for_width(w1.d), owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: groots.clone() })).unwrap();
+    let mut lg = Ledger::open(
+        &path,
+        model,
+        &pr,
+        Some(Genesis {
+            d: w1.d,
+            program: darkproof::step::StepParams::for_width(w1.d),
+            owner_pk: None,
+            custodians: cust(&["c0", "c1", "c2"]),
+            roots: groots.clone(),
+        }),
+    )
+    .unwrap();
     let hdr = 8 + 2 + model.len();
-    rows.rec("step 1, honest (parent = genesis record)", lg.accept(&lp, &b1, &tables));
+    rows.rec(
+        "step 1, honest (parent = genesis record)",
+        lg.accept(&lp, &b1, &tables),
+    );
     rows.rec("step 1 replayed", lg.accept(&lp, &b1, &tables));
-    rows.rec("step 2 truncated by one byte", lg.accept(&lp, &b2[..b2.len() - 1], &tables));
+    rows.rec(
+        "step 2 truncated by one byte",
+        lg.accept(&lp, &b2[..b2.len() - 1], &tables),
+    );
     let mut t = b2.clone();
     t.push(0);
     rows.rec("step 2 with one trailing byte", lg.accept(&lp, &t, &tables));
@@ -1468,7 +2685,10 @@ fn rows(dir: &Path, tag: &str) {
     let off = hdr + 16 + (13 + 4 * ld + 2) * 3 * 32;
     let mut t = b2.clone();
     t[off..off + 8].copy_from_slice(&darkproof::field::p().to_be_bytes());
-    rows.rec("step 2 with a non-canonical field element", lg.accept(&lp, &t, &tables));
+    rows.rec(
+        "step 2 with a non-canonical field element",
+        lg.accept(&lp, &t, &tables),
+    );
     for (what, pos) in [
         ("a byte in the header's model id", 10),
         ("a byte in a commitment root", hdr + 16 + 5),
@@ -1478,35 +2698,79 @@ fn rows(dir: &Path, tag: &str) {
     ] {
         let mut t = b2.clone();
         t[pos] ^= 1;
-        rows.rec(&format!("step 2 with {what} flipped"), lg.accept(&lp, &t, &tables));
+        rows.rec(
+            &format!("step 2 with {what} flipped"),
+            lg.accept(&lp, &t, &tables),
+        );
     }
     let mut t = b2[..10].to_vec();
     t.extend_from_slice(b"\xff\xfe\xfd\xfc\xfb\xfa");
     t.extend_from_slice(&b2[16..]);
-    rows.rec("step 2 with a model id that is not UTF-8", lg.accept(&lp, &t, &tables));
+    rows.rec(
+        "step 2 with a model id that is not UTF-8",
+        lg.accept(&lp, &t, &tables),
+    );
     let mut t = b3.clone();
     t[hdr + 4..hdr + 12].copy_from_slice(&2u64.to_be_bytes());
-    rows.rec("step 3's proof under a header patched to step 2", lg.accept(&lp, &t, &tables));
+    rows.rec(
+        "step 3's proof under a header patched to step 2",
+        lg.accept(&lp, &t, &tables),
+    );
     let mut t = b2[..8].to_vec();
     t.extend_from_slice(&6u16.to_be_bytes());
     t.extend_from_slice(b"mind-1");
     t.extend_from_slice(&b2[hdr..]);
-    rows.rec("step 2 claiming another model id", lg.accept(&lp, &t, &tables));
+    rows.rec(
+        "step 2 claiming another model id",
+        lg.accept(&lp, &t, &tables),
+    );
     // stale parent (§16): step 2 verified against the genesis roots instead of step 1's child
     rows.rec(
         "step 2 against a stale parent (genesis W, not step 1's child)",
-        wire::verify_step(&pr, &lp, &b2, &c(0, 2), &groots, &tables, w1.d, darkproof::step::StepParams::for_width(w1.d), None, 0).map(|_| ()),
+        wire::verify_step(
+            &pr,
+            &lp,
+            &b2,
+            &c(0, 2),
+            &groots,
+            &tables,
+            w1.d,
+            darkproof::step::StepParams::for_width(w1.d),
+            None,
+            0,
+        )
+        .map(|_| ()),
     );
     rows.rec("step 2, honest", lg.accept(&lp, &b2, &tables));
-    rows.rec("a second valid proof of step 2 (equivocation)", lg.accept(&lp, &b2b, &tables));
+    rows.rec(
+        "a second valid proof of step 2 (equivocation)",
+        lg.accept(&lp, &b2b, &tables),
+    );
     let lg2 = Ledger::open(&path, model, &pr, None).unwrap();
     let same = lg2.head() == lg.head();
-    println!("{:62} {:8} {:?}", "restart reconstructs the head", if same { "OK" } else { "FAIL" }, lg2.head().0);
-    rows.out.push(("restart reconstructs the head".into(), if same { "OK" } else { "FAIL" }.into(), format!("{:?}", lg2.head().0)));
+    println!(
+        "{:62} {:8} {:?}",
+        "restart reconstructs the head",
+        if same { "OK" } else { "FAIL" },
+        lg2.head().0
+    );
+    rows.out.push((
+        "restart reconstructs the head".into(),
+        if same { "OK" } else { "FAIL" }.into(),
+        format!("{:?}", lg2.head().0),
+    ));
     let s3 = make_bundle(&opts, w3.clone(), &c(1, 3), Some(s2.child), None).unwrap();
     let nc: BTreeMap<String, Vec<[u8; 32]>> = ["W1", "W2"]
         .iter()
-        .map(|k| (k.to_string(), owner_commit(&pr, &w2.plain(&format!("{k}n")), k, 3, &opts.det).iter().map(|c| c.root).collect()))
+        .map(|k| {
+            (
+                k.to_string(),
+                owner_commit(&pr, &w2.plain(&format!("{k}n")), k, 3, &opts.det)
+                    .iter()
+                    .map(|c| c.root)
+                    .collect(),
+            )
+        })
         .collect();
     let mut lg2 = lg2;
     rows.rec(
@@ -1515,7 +2779,19 @@ fn rows(dir: &Path, tag: &str) {
     );
     rows.rec(
         "the OLD committee's step 3 against the new committee's roots",
-        wire::verify_step(&pr, &lp, &s3.blob, &c(1, 3), &nc, &tables, w1.d, darkproof::step::StepParams::for_width(w1.d), None, 0).map(|_| ()),
+        wire::verify_step(
+            &pr,
+            &lp,
+            &s3.blob,
+            &c(1, 3),
+            &nc,
+            &tables,
+            w1.d,
+            darkproof::step::StepParams::for_width(w1.d),
+            None,
+            0,
+        )
+        .map(|_| ()),
     );
     let ledger_text = std::fs::read_to_string(&path).unwrap();
     std::fs::write(dir.join(format!("{tag}_native.ledger")), &ledger_text).unwrap();
@@ -1526,24 +2802,66 @@ fn rows(dir: &Path, tag: &str) {
         let b = make_bundle(&opts, w1.clone(), &c(0, 1), None, None).unwrap();
         opts.spine_attack = None;
         let p = tmp.join(format!("{att}.ledger"));
-        let mut l = Ledger::open(&p, model, &pr, Some(Genesis { d: w1.d, program: darkproof::step::StepParams::for_width(w1.d), owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: b.genesis_roots.clone().unwrap() })).unwrap();
+        let mut l = Ledger::open(
+            &p,
+            model,
+            &pr,
+            Some(Genesis {
+                d: w1.d,
+                program: darkproof::step::StepParams::for_width(w1.d),
+                owner_pk: None,
+                custodians: cust(&["c0", "c1", "c2"]),
+                roots: b.genesis_roots.clone().unwrap(),
+            }),
+        )
+        .unwrap();
         let r = l.accept(&lp, &b.blob, &tables);
-        rows.rec(&format!("spine forgery {att} (violates: {})", b.spine_violates.clone().unwrap_or_default()), r);
+        rows.rec(
+            &format!(
+                "spine forgery {att} (violates: {})",
+                b.spine_violates.clone().unwrap_or_default()
+            ),
+            r,
+        );
         std::fs::remove_file(&p).unwrap();
     }
     // ---------------------------------------------------------------- §16 middle forgeries
-    for nm in ["trunc", "lookup", "bad_triple", "nonboolean_bit", "mask_out_of_range"] {
+    for nm in [
+        "trunc",
+        "lookup",
+        "bad_triple",
+        "nonboolean_bit",
+        "mask_out_of_range",
+    ] {
         let w = wit(dir, tag, &format!("r_g_{nm}"));
         let b = make_bundle(&opts, w.clone(), &c(0, 1), None, None).unwrap();
         let p = tmp.join(format!("{nm}.ledger"));
-        let mut l = Ledger::open(&p, model, &pr, Some(Genesis { d: w.d, program: darkproof::step::StepParams::for_width(w.d), owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: b.genesis_roots.clone().unwrap() })).unwrap();
+        let mut l = Ledger::open(
+            &p,
+            model,
+            &pr,
+            Some(Genesis {
+                d: w.d,
+                program: darkproof::step::StepParams::for_width(w.d),
+                owner_pk: None,
+                custodians: cust(&["c0", "c1", "c2"]),
+                roots: b.genesis_roots.clone().unwrap(),
+            }),
+        )
+        .unwrap();
         let r = l.accept(&lp, &b.blob, &tables);
         let label = match nm {
             "trunc" => "forged trunc opening",
             "lookup" => "forged lookup opening",
             x => x,
         };
-        rows.rec(&format!("middle forgery: {label} (violates: {})", b.middle_violates.clone().unwrap_or_default()), r);
+        rows.rec(
+            &format!(
+                "middle forgery: {label} (violates: {})",
+                b.middle_violates.clone().unwrap_or_default()
+            ),
+            r,
+        );
         std::fs::remove_file(&p).unwrap();
     }
     // ---------------------------------------------------------------- §19 fs_public_falsifier
@@ -1554,15 +2872,32 @@ fn rows(dir: &Path, tag: &str) {
         let d = w1.d;
         let v = &mut wf.wires[0].get_mut("d1").unwrap()[0];
         v.0 = darkproof::field::add(v.0, DELTA);
-        for j in 0..d {
-            let v = &mut wf.wires[0].get_mut("W1n").unwrap()[j];
-            v.0 = darkproof::field::sub(v.0, darkproof::field::mul(DELTA, xs[j]));
+        for (v, &xj) in wf.wires[0]
+            .get_mut("W1n")
+            .unwrap()
+            .iter_mut()
+            .zip(&xs)
+            .take(d)
+        {
+            v.0 = darkproof::field::sub(v.0, darkproof::field::mul(DELTA, xj));
         }
         opts.fs_public_attack = true;
         let b = make_bundle(&opts, wf.clone(), &c(0, 1), None, None).unwrap();
         opts.fs_public_attack = false;
         let p = tmp.join("fs.ledger");
-        let mut l = Ledger::open(&p, model, &pr, Some(Genesis { d, program: darkproof::step::StepParams::for_width(d), owner_pk: None, custodians: cust(&["c0", "c1", "c2"]), roots: b.genesis_roots.clone().unwrap() })).unwrap();
+        let mut l = Ledger::open(
+            &p,
+            model,
+            &pr,
+            Some(Genesis {
+                d,
+                program: darkproof::step::StepParams::for_width(d),
+                owner_pk: None,
+                custodians: cust(&["c0", "c1", "c2"]),
+                roots: b.genesis_roots.clone().unwrap(),
+            }),
+        )
+        .unwrap();
         let r = l.accept(&lp, &b.blob, &tables);
         rows.rec(
             &format!(
@@ -1576,46 +2911,179 @@ fn rows(dir: &Path, tag: &str) {
     }
     // ---------------------------------------------------------------- signed-input rows
     let xy = &meta["rows_xy"];
-    let v = |k: &str| xy[k].as_array().unwrap().iter().map(|x| x.as_u64().unwrap()).collect::<Vec<u64>>();
+    let v = |k: &str| {
+        xy[k]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|x| x.as_u64().unwrap())
+            .collect::<Vec<u64>>()
+    };
     let (x1, y1, x2, y2, xb, yb) = (v("x1"), v("y1"), v("x2"), v("y2"), v("x_bad"), v("y_bad"));
     let h = pr.owner_h;
     let oseed = det_seed(&seed, 0);
     let mut owner = Owner::new(h, Some(oseed.clone()), None);
     let mut mallory = Owner::new(h, Some(det_seed(&seed, 1)), None);
-    let (ws1, ws2, wsa, wsb, wsr) =
-        (wit(dir, tag, "r_si1"), wit(dir, tag, "r_si2"), wit(dir, tag, "r_sa"), wit(dir, tag, "r_sb"), wit(dir, tag, "r_sr"));
-    let t1 = make_bundle(&opts, ws1.clone(), &c(0, 1), None, Some(OwnerIn { owner: &mut owner, x: x1.clone(), y: y1.clone() })).unwrap();
+    let (ws1, ws2, wsa, wsb, wsr) = (
+        wit(dir, tag, "r_si1"),
+        wit(dir, tag, "r_si2"),
+        wit(dir, tag, "r_sa"),
+        wit(dir, tag, "r_sb"),
+        wit(dir, tag, "r_sr"),
+    );
+    let t1 = make_bundle(
+        &opts,
+        ws1.clone(),
+        &c(0, 1),
+        None,
+        Some(OwnerIn {
+            owner: &mut owner,
+            x: x1.clone(),
+            y: y1.clone(),
+        }),
+    )
+    .unwrap();
     let sgen = t1.genesis_roots.clone().unwrap();
-    let t2 = make_bundle(&opts, ws2.clone(), &c(0, 2), Some(t1.child), Some(OwnerIn { owner: &mut owner, x: x2, y: y2 })).unwrap();
+    let t2 = make_bundle(
+        &opts,
+        ws2.clone(),
+        &c(0, 2),
+        Some(t1.child),
+        Some(OwnerIn {
+            owner: &mut owner,
+            x: x2,
+            y: y2,
+        }),
+    )
+    .unwrap();
     let mut gen = with_max_lives(t1.carried, 99);
     let schild = with_max_lives(t2.carried, 99);
-    let mut twin = || Owner::new(h, Some(oseed.clone()), None);
+    let twin = || Owner::new(h, Some(oseed.clone()), None);
     let mut tw = twin();
-    let sa = make_bundle(&opts, wsa.clone(), &c(0, 1), Some(clone_carry(&gen)), Some(OwnerIn { owner: &mut tw, x: x1.clone(), y: y1.clone() })).unwrap();
+    let sa = make_bundle(
+        &opts,
+        wsa.clone(),
+        &c(0, 1),
+        Some(clone_carry(&gen)),
+        Some(OwnerIn {
+            owner: &mut tw,
+            x: x1.clone(),
+            y: y1.clone(),
+        }),
+    )
+    .unwrap();
     gen = with_max_lives(sa.carried, 99);
     let mut tw = twin();
-    let sb = make_bundle(&opts, wsb.clone(), &c(0, 1), Some(clone_carry(&gen)), Some(OwnerIn { owner: &mut tw, x: x1.clone(), y: y1.clone() })).unwrap();
+    let sb = make_bundle(
+        &opts,
+        wsb.clone(),
+        &c(0, 1),
+        Some(clone_carry(&gen)),
+        Some(OwnerIn {
+            owner: &mut tw,
+            x: x1.clone(),
+            y: y1.clone(),
+        }),
+    )
+    .unwrap();
     gen = with_max_lives(sb.carried, 99);
-    let sc = make_bundle(&opts, wsa.clone(), &c(0, 1), Some(gen), Some(OwnerIn { owner: &mut mallory, x: xb.clone(), y: y1.clone() })).unwrap();
-    let old = make_bundle(&opts, wsr.clone(), &c(0, 1), Some(schild), Some(OwnerIn { owner: &mut owner, x: x1.clone(), y: y1.clone() })).unwrap();
+    let sc = make_bundle(
+        &opts,
+        wsa.clone(),
+        &c(0, 1),
+        Some(gen),
+        Some(OwnerIn {
+            owner: &mut mallory,
+            x: xb.clone(),
+            y: y1.clone(),
+        }),
+    )
+    .unwrap();
+    let old = make_bundle(
+        &opts,
+        wsr.clone(),
+        &c(0, 1),
+        Some(schild),
+        Some(OwnerIn {
+            owner: &mut owner,
+            x: x1.clone(),
+            y: y1.clone(),
+        }),
+    )
+    .unwrap();
     let mut fresh = Owner::new(h, Some(det_seed(&seed, 2)), None);
-    let new = make_bundle(&opts, wsr.clone(), &c(0, 2), Some(with_max_lives(old.carried, 99)), Some(OwnerIn { owner: &mut fresh, x: x1.clone(), y: y1 })).unwrap();
+    let new = make_bundle(
+        &opts,
+        wsr.clone(),
+        &c(0, 2),
+        Some(with_max_lives(old.carried, 99)),
+        Some(OwnerIn {
+            owner: &mut fresh,
+            x: x1.clone(),
+            y: y1,
+        }),
+    )
+    .unwrap();
     let l = darkproof::owner::sig_len(h);
     let mut sr = new.blob[..new.blob.len() - l].to_vec();
     sr.extend_from_slice(&old.blob[old.blob.len() - l..]);
     let _ = yb;
     let p = tmp.join("signed.ledger");
-    let mut lg = Ledger::open(&p, model, &pr, Some(Genesis { d: ws1.d, program: darkproof::step::StepParams::for_width(ws1.d), owner_pk: Some(owner.pk), custodians: cust(&["c0", "c1", "c2"]), roots: sgen })).unwrap();
-    rows.rec(&format!("custodians train on x' while presenting the owner's signed x (violates: {})", sa.spine_violates.clone().unwrap_or_default()), lg.accept(&lp, &sa.blob, &tables));
-    rows.rec(&format!("custodians train on y' while presenting the owner's signed y (violates: {})", sb.middle_violates.clone().unwrap_or_default()), lg.accept(&lp, &sb.blob, &tables));
-    rows.rec("custodians commit x' themselves and sign with their own key", lg.accept(&lp, &sc.blob, &tables));
-    rows.rec("step 1, honest, owner-signed", lg.accept(&lp, &t1.blob, &tables));
-    rows.rec("step 2 re-using the owner's step-1 signature (old batch, used leaf)", lg.accept(&lp, &sr, &tables));
-    rows.rec("step 2, honest, owner-signed", lg.accept(&lp, &t2.blob, &tables));
+    let mut lg = Ledger::open(
+        &p,
+        model,
+        &pr,
+        Some(Genesis {
+            d: ws1.d,
+            program: darkproof::step::StepParams::for_width(ws1.d),
+            owner_pk: Some(owner.pk),
+            custodians: cust(&["c0", "c1", "c2"]),
+            roots: sgen,
+        }),
+    )
+    .unwrap();
+    rows.rec(
+        &format!(
+            "custodians train on x' while presenting the owner's signed x (violates: {})",
+            sa.spine_violates.clone().unwrap_or_default()
+        ),
+        lg.accept(&lp, &sa.blob, &tables),
+    );
+    rows.rec(
+        &format!(
+            "custodians train on y' while presenting the owner's signed y (violates: {})",
+            sb.middle_violates.clone().unwrap_or_default()
+        ),
+        lg.accept(&lp, &sb.blob, &tables),
+    );
+    rows.rec(
+        "custodians commit x' themselves and sign with their own key",
+        lg.accept(&lp, &sc.blob, &tables),
+    );
+    rows.rec(
+        "step 1, honest, owner-signed",
+        lg.accept(&lp, &t1.blob, &tables),
+    );
+    rows.rec(
+        "step 2 re-using the owner's step-1 signature (old batch, used leaf)",
+        lg.accept(&lp, &sr, &tables),
+    );
+    rows.rec(
+        "step 2, honest, owner-signed",
+        lg.accept(&lp, &t2.blob, &tables),
+    );
     std::fs::remove_file(&p).unwrap();
     std::fs::remove_dir(&tmp).unwrap();
-    let js: Vec<Value> = rows.out.iter().map(|(a, b, c)| serde_json::json!({"row": a, "verdict": b, "by": c})).collect();
-    std::fs::write(dir.join(format!("{tag}_native_rows.json")), serde_json::to_string_pretty(&js).unwrap()).unwrap();
+    let js: Vec<Value> = rows
+        .out
+        .iter()
+        .map(|(a, b, c)| serde_json::json!({"row": a, "verdict": b, "by": c}))
+        .collect();
+    std::fs::write(
+        dir.join(format!("{tag}_native_rows.json")),
+        serde_json::to_string_pretty(&js).unwrap(),
+    )
+    .unwrap();
 }
 
 /// The native witness generator (live.rs) against the harness's dumped witness for step 1.
@@ -1623,23 +3091,50 @@ fn gen_check(dir: &Path, tag: &str) {
     let w = Witness::load(&dir.join(format!("{tag}_r_pw1.json")));
     let tables = darkproof::step::tables();
     let (w1, w2, x, y) = darkproof::live::harness_inputs(w.d);
-    let g = darkproof::live::run_step(&w1, &w2, &x, &y, w.d, darkproof::step::StepParams::for_width(w.d), &tables);
+    let g = darkproof::live::run_step(
+        &w1,
+        &w2,
+        &x,
+        &y,
+        w.d,
+        darkproof::step::StepParams::for_width(w.d),
+        &tables,
+    );
     let mut ok = true;
     let mut cmp = |what: &str, a: bool| {
         println!("  {what}: {}", if a { "holds" } else { "FAILS" });
         ok &= a;
     };
     cmp("public transcript equal", g.public == w.public);
-    cmp("middle atoms equal (every party's share and MAC share)", g.atoms == w.atoms);
-    cmp("dealer MT state after the step equal", g.dealer_state == w.dealer_state);
+    cmp(
+        "middle atoms equal (every party's share and MAC share)",
+        g.atoms == w.atoms,
+    );
+    cmp(
+        "dealer MT state after the step equal",
+        g.dealer_state == w.dealer_state,
+    );
     cmp("alpha shares equal", g.alpha_sh == w.alpha_sh);
     for k in w.wires[0].keys() {
-        cmp(&format!("wire {k} equal"), (0..w.n).all(|i| g.wires[i].get(k) == w.wires[i].get(k)));
+        cmp(
+            &format!("wire {k} equal"),
+            (0..w.n).all(|i| g.wires[i].get(k) == w.wires[i].get(k)),
+        );
     }
     let mut bad = g.atoms.clone();
     bad[0][1].0 ^= 1;
-    cmp("negative control: one flipped atom share compares unequal", bad != w.atoms);
-    println!("{}", if ok { "GEN-CHECK PASS" } else { "GEN-CHECK FAIL" });
+    cmp(
+        "negative control: one flipped atom share compares unequal",
+        bad != w.atoms,
+    );
+    println!(
+        "{}",
+        if ok {
+            "GEN-CHECK PASS"
+        } else {
+            "GEN-CHECK FAIL"
+        }
+    );
     std::process::exit(if ok { 0 } else { 1 });
 }
 
@@ -1655,9 +3150,17 @@ fn measure_spine(p: &darkproof::spine::SpineProof) -> (u64, u64, u64) {
             }
         }
     }
-    fe += p.prox.values().map(|v| v.iter().map(|u| u.len() as u64).sum::<u64>()).sum::<u64>();
+    fe += p
+        .prox
+        .values()
+        .map(|v| v.iter().map(|u| u.len() as u64).sum::<u64>())
+        .sum::<u64>();
     hs += p.roots.values().map(|v| v.len() as u64).sum::<u64>();
-    hs += p.round_roots.values().map(|v| v.iter().map(|r| r.len() as u64).sum::<u64>()).sum::<u64>();
+    hs += p
+        .round_roots
+        .values()
+        .map(|v| v.iter().map(|r| r.len() as u64).sum::<u64>())
+        .sum::<u64>();
     hs += (p.eval_roots.len() + p.mask_roots.len()) as u64;
     let (f2, h2) = measure_lig(&p.ligero);
     (fe + f2, hs + h2, idx)
@@ -1686,9 +3189,18 @@ fn measure_middle(p: &darkproof::middle::MiddleProof) -> (u64, u64, u64) {
             }
         }
     }
-    fe += p.prox.values().map(|v| v.iter().map(|u| u.len() as u64).sum::<u64>()).sum::<u64>();
+    fe += p
+        .prox
+        .values()
+        .map(|v| v.iter().map(|u| u.len() as u64).sum::<u64>())
+        .sum::<u64>();
     hs += p.roots.values().map(|v| v.len() as u64).sum::<u64>();
-    hs += p.zc_roots.iter().chain(p.lsc_roots.iter()).map(|r| r.len() as u64).sum::<u64>();
+    hs += p
+        .zc_roots
+        .iter()
+        .chain(p.lsc_roots.iter())
+        .map(|r| r.len() as u64)
+        .sum::<u64>();
     hs += (p.claims_root.len() + p.eval_roots.len() + p.mask_roots.len()) as u64;
     let (f2, h2) = measure_lig(&p.ligero);
     (fe + f2, hs + h2, idx)
@@ -1703,23 +3215,52 @@ fn bench(d: usize, prof: &str) {
     let lp = pr.ligero();
     let tables = darkproof::step::tables();
     let prm = StepParams::for_width(d);
-    let opts = BundleOpts { pr: &pr, lp: &lp, tables: &tables, det: Det(None), spine_attack: None, fs_public_attack: false, diagnose: false, transport: darkproof::net::transport_from_env(), prm: None };
+    let opts = BundleOpts {
+        pr: &pr,
+        lp: &lp,
+        tables: &tables,
+        det: Det(None),
+        spine_attack: None,
+        fs_public_attack: false,
+        diagnose: false,
+        transport: darkproof::net::transport_from_env(),
+        prm: None,
+    };
     let t = std::time::Instant::now();
     let (w1, w2, x, y) = live::harness_inputs(d);
     let wit1 = live::run_step(&w1, &w2, &x, &y, d, prm, &tables);
-    println!("d={d} profile={prof} params={prm:?} threads={}", rayon::current_num_threads());
-    println!("witness step 1: {:.1}s, public transcript {} values, middle atoms {}", t.elapsed().as_secs_f64(), wit1.public.len(), wit1.atoms[0].len());
+    println!(
+        "d={d} profile={prof} params={prm:?} threads={}",
+        rayon::current_num_threads()
+    );
+    println!(
+        "witness step 1: {:.1}s, public transcript {} values, middle atoms {}",
+        t.elapsed().as_secs_f64(),
+        wit1.public.len(),
+        wit1.atoms[0].len()
+    );
     let ctx1 = Ctx::new("mind-0", 0, 1);
     let w1n = wit1.plain("W1n");
     let w2n = wit1.plain("W2n");
-    let carry_w: Vec<(Vec<darkproof::spdz::Sh>, Vec<darkproof::spdz::Sh>)> =
-        wit1.wires.iter().map(|m| (m["W1n"].clone(), m["W2n"].clone())).collect();
+    let carry_w: Vec<(Vec<darkproof::spdz::Sh>, Vec<darkproof::spdz::Sh>)> = wit1
+        .wires
+        .iter()
+        .map(|m| (m["W1n"].clone(), m["W2n"].clone()))
+        .collect();
     let b1 = make_bundle(&opts, wit1, &ctx1, None, None).expect("prove 1");
     let groots = b1.genesis_roots.clone().unwrap();
-    println!("step 1 prove (3 custodian threads, incl. genesis commitment): {:.1}s, bundle {} bytes", b1.prove_secs, b1.blob.len());
+    println!(
+        "step 1 prove (3 custodian threads, incl. genesis commitment): {:.1}s, bundle {} bytes",
+        b1.prove_secs,
+        b1.blob.len()
+    );
     let t = std::time::Instant::now();
     let a1 = wire::verify_step(&pr, &lp, &b1.blob, &ctx1, &groots, &tables, d, prm, None, 0);
-    println!("step 1 verify: {:.1}s {:?}", t.elapsed().as_secs_f64(), a1.as_ref().map(|_| "accept"));
+    println!(
+        "step 1 verify: {:.1}s {:?}",
+        t.elapsed().as_secs_f64(),
+        a1.as_ref().map(|_| "accept")
+    );
     let t = std::time::Instant::now();
     let mut wit2 = live::run_step(&w1n, &w2n, &x, &y, d, prm, &tables);
     for (i, (a, b)) in carry_w.into_iter().enumerate() {
@@ -1730,15 +3271,48 @@ fn bench(d: usize, prof: &str) {
     let ctx2 = Ctx::new("mind-0", 0, 2);
     let public2 = wit2.public.clone();
     let b2 = make_bundle(&opts, wit2, &ctx2, Some(b1.child), None).expect("prove 2");
-    println!("step 2 prove (chained, W1/W2 carried): {:.1}s, bundle {} bytes", b2.prove_secs, b2.blob.len());
+    println!(
+        "step 2 prove (chained, W1/W2 carried): {:.1}s, bundle {} bytes",
+        b2.prove_secs,
+        b2.blob.len()
+    );
     let t = std::time::Instant::now();
-    let a2 = wire::verify_step(&pr, &lp, &b2.blob, &ctx2, &a1.as_ref().unwrap().child, &tables, d, prm, None, 0);
-    println!("step 2 verify: {:.1}s {:?}", t.elapsed().as_secs_f64(), a2.as_ref().map(|_| "accept"));
+    let a2 = wire::verify_step(
+        &pr,
+        &lp,
+        &b2.blob,
+        &ctx2,
+        &a1.as_ref().unwrap().child,
+        &tables,
+        d,
+        prm,
+        None,
+        0,
+    );
+    println!(
+        "step 2 verify: {:.1}s {:?}",
+        t.elapsed().as_secs_f64(),
+        a2.as_ref().map(|_| "accept")
+    );
     let mut bad = b2.blob.clone();
     let l = bad.len();
     bad[l / 3] ^= 1;
-    let a3 = wire::verify_step(&pr, &lp, &bad, &ctx2, &a1.as_ref().unwrap().child, &tables, d, prm, None, 0);
-    println!("step 2 with one flipped byte: {:?}", a3.as_ref().map(|_| "accept"));
+    let a3 = wire::verify_step(
+        &pr,
+        &lp,
+        &bad,
+        &ctx2,
+        &a1.as_ref().unwrap().child,
+        &tables,
+        d,
+        prm,
+        None,
+        0,
+    );
+    println!(
+        "step 2 with one flipped byte: {:?}",
+        a3.as_ref().map(|_| "accept")
+    );
     // sizes
     let mut r = 8 + 2 + 6 + 16;
     let blob = &b2.blob;
@@ -1759,19 +3333,31 @@ fn bench(d: usize, prof: &str) {
     let mid_off = 32 + spine_bytes + 4 + 8 * n_public;
     let mp = {
         let mut rr = darkproof::wire::R::new(&blob[mid_off..]);
-        darkproof::wire::read_middle(&mut rr, &pr, 3, d, rec.n_prep(), rec.had.len(), false).unwrap()
+        darkproof::wire::read_middle(&mut rr, &pr, 3, d, rec.n_prep(), rec.had.len(), false)
+            .unwrap()
     };
     let (sf, sh, si) = measure_spine(&sp);
     let (mf, mh, mi) = measure_middle(&mp);
     println!("spine: {spine_bytes} bytes; {sf} field elements, {sh} hashes, {si} indices; {:.1} Mbit (61 fe + 256 h)", (61 * sf + 256 * sh) as f64 / 1e6);
-    println!("middle: {} bytes; {} field elements (incl. {mi} indices), {mh} hashes; {:.1} Mbit", blob.len() - mid_off, mf + mi, (61 * (mf + mi) + 256 * mh) as f64 / 1e6);
+    println!(
+        "middle: {} bytes; {} field elements (incl. {mi} indices), {mh} hashes; {:.1} Mbit",
+        blob.len() - mid_off,
+        mf + mi,
+        (61 * (mf + mi) + 256 * mh) as f64 / 1e6
+    );
     println!("public transcript: {} bytes", 4 + 8 * n_public);
     if let Ok(st) = std::fs::read_to_string("/proc/self/status") {
         for l in st.lines().filter(|l| l.starts_with("VmHWM")) {
             println!("peak RSS {l}");
         }
     }
-    println!("bench rows: hadamard {} atoms {} spine stats {:?} middle stats {:?}", rec.had.len(), rec.n_prep(), b2.spine_stats, b2.middle_stats);
+    println!(
+        "bench rows: hadamard {} atoms {} spine stats {:?} middle stats {:?}",
+        rec.had.len(),
+        rec.n_prep(),
+        b2.spine_stats,
+        b2.middle_stats
+    );
 }
 
 /// One party's commitment to a random vector of length 2^m (production coins), timed; and a few opened columns
@@ -1780,7 +3366,9 @@ fn pcs_bench(m: usize, prof: &str) {
     let pr = profile(prof);
     darkproof::field::set_p(wire::he_field(&pr).unwrap());
     let mut r = pycompat::PyRandom::from_u64(5);
-    let v: Vec<u64> = (0..1usize << m).map(|_| r.randrange_u64(darkproof::field::p())).collect();
+    let v: Vec<u64> = (0..1usize << m)
+        .map(|_| r.randrange_u64(darkproof::field::p()))
+        .collect();
     let t = std::time::Instant::now();
     let c = darkproof::pcs::PcsParty::commit(&pr, &v, "bench", 0, &Det::off());
     let secs = t.elapsed().as_secs_f64();
@@ -1788,12 +3376,21 @@ fn pcs_bench(m: usize, prof: &str) {
     let mut ok = true;
     for j in [0, 1, s.npts / 3, s.npts - 1] {
         let pw = darkproof::poly::powers(s.dom.point(j), s.w);
-        let direct: Vec<u64> = (0..s.r).map(|rr| darkproof::field::dot(&c.ext[rr * s.w..(rr + 1) * s.w], &pw)).collect();
+        let direct: Vec<u64> = (0..s.r)
+            .map(|rr| darkproof::field::dot(&c.ext[rr * s.w..(rr + 1) * s.w], &pw))
+            .collect();
         ok &= direct == c.column(j);
     }
     let t = std::time::Instant::now();
     use rayon::prelude::*;
-    let _l: Vec<_> = (0..s.npts).into_par_iter().map(|j| darkproof::h::h_leaf(&c.salts[j], &c.column(j))).collect();
-    println!("  leaf hashing alone: {:.2}s ({} threads)", t.elapsed().as_secs_f64(), rayon::current_num_threads());
+    let _l: Vec<_> = (0..s.npts)
+        .into_par_iter()
+        .map(|j| darkproof::h::h_leaf(&c.salts[j], &c.column(j)))
+        .collect();
+    println!(
+        "  leaf hashing alone: {:.2}s ({} threads)",
+        t.elapsed().as_secs_f64(),
+        rayon::current_num_threads()
+    );
     println!("pcs-bench m={m} profile={} R={} W={} npts={} dom={:?}: commit {secs:.2}s, columns equal direct evaluation: {ok}", pr.name, s.r, s.w, s.npts, s.dom);
 }

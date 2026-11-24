@@ -13,9 +13,9 @@
 //!   and integer state drift vs monolithic 256-token execution while evicting past chunks from RAM.
 
 use crate::ext4::{
-    badd, bb_from_i64, bpow, build_eq_suffix_tables_ext4, build_eq_table_lsb_ext4,
-    cshake256_32, eq_lin_ext4, eq_mle_ext4, fold_ext4, mle_eval_bb_at_ext4, os_random_seed_32,
-    ByteCursor, CShakeRng, CShakeTranscript, Ext4, INV2_BB, P,
+    badd, bb_from_i64, bpow, build_eq_suffix_tables_ext4, build_eq_table_lsb_ext4, cshake256_32,
+    eq_lin_ext4, eq_mle_ext4, fold_ext4, mle_eval_bb_at_ext4, os_random_seed_32, ByteCursor,
+    CShakeRng, CShakeTranscript, Ext4, INV2_BB, P,
 };
 use crate::gruen_ext4::{
     compute_d1b_multiplicities, eval_upper_or_diag_indicator_mle, prove_d1b_range_ext4,
@@ -28,10 +28,12 @@ use crate::safetensors_mmap::{MmapSafetensors, Mxfp4Matrix, ACT_SCALE};
 use crate::whir_ext4::{
     eval_poly_ext4, open_whir_batch_ext4, pack_ext4_slice, prove_gmask_einsum_ext4,
     unpack_ext4_slice, verify_gmask_einsum_ext4, verify_whir_batch_ext4, BlindedEinSumExt4Proof,
-    GMaskExt4, GMaskSpecExt4, JointLinearClaimExt4, LinearTermExt4, WhirBatchOpeningProofExt4,
-    WhirCommittedMatrixExt4, WhirExt4MatrixShape, WHIR_EXT4_BLOWUP, WHIR_EXT4_T_QUERIES_100,
+    GMaskExt4, GMaskSpecExt4, GmaskEinSumParams, JointLinearClaimExt4, LinearTermExt4,
+    WhirBatchOpeningProofExt4, WhirCommittedMatrixExt4, WhirExt4MatrixShape, WHIR_EXT4_BLOWUP,
+    WHIR_EXT4_T_QUERIES_100,
 };
 use rayon::prelude::*;
+use std::ops::{Add, Mul, Neg, Sub};
 
 pub const JITT_H_V: usize = 16;
 pub const JITT_LOG_H: usize = 4;
@@ -86,15 +88,23 @@ impl GdnRecurrentState {
 
     pub fn from_int_hvk(s_int_hvk: Vec<i64>) -> Result<Self, String> {
         if s_int_hvk.len() != JITT_STATE_CELLS {
-            return Err(format!("expected {JITT_STATE_CELLS} state cells, got {}", s_int_hvk.len()));
+            return Err(format!(
+                "expected {JITT_STATE_CELLS} state cells, got {}",
+                s_int_hvk.len()
+            ));
         }
         for (idx, &v) in s_int_hvk.iter().enumerate() {
             if !(-JITT_S_LIMIT..JITT_S_LIMIT).contains(&v) {
-                return Err(format!("state cell {idx} = {v} outside [-{JITT_S_LIMIT}, {JITT_S_LIMIT})"));
+                return Err(format!(
+                    "state cell {idx} = {v} outside [-{JITT_S_LIMIT}, {JITT_S_LIMIT})"
+                ));
             }
         }
         let s_bb_hvk = s_int_hvk.iter().map(|&v| bb_from_i64(v)).collect();
-        Ok(Self { s_int_hvk, s_bb_hvk })
+        Ok(Self {
+            s_int_hvk,
+            s_bb_hvk,
+        })
     }
 
     #[inline]
@@ -130,21 +140,15 @@ impl SaltedGdnStateCommitment {
         });
         let mut limbs: [Vec<u32>; 4] = std::array::from_fn(|_| vec![0u32; 64]);
         for (i, m) in masks.iter().enumerate() {
-            for l in 0..4 {
-                limbs[l][i] = m.0[l];
+            for (limb_vec, &val) in limbs.iter_mut().zip(m.0.iter()) {
+                limb_vec[i] = val;
             }
         }
         let mut pcs_seed = [0u8; 32];
         mask_rng.fill_bytes(&mut pcs_seed);
         let whir_mat = WhirCommittedMatrixExt4::commit_with_shape(
             Self::expected_shape(),
-            &[
-                &state.s_bb_hvk,
-                &limbs[0],
-                &limbs[1],
-                &limbs[2],
-                &limbs[3],
-            ],
+            &[&state.s_bb_hvk, &limbs[0], &limbs[1], &limbs[2], &limbs[3]],
             Some(pcs_seed),
         );
         Self {
@@ -272,11 +276,12 @@ pub fn solve_stateful_gdn_wy_chunk64(
                 gamma_tail[i] = tail;
                 tail *= alpha_h[i];
             }
-            let gamma_int = ((JITT_M_WY as f32) * pref).round().clamp(0.0, JITT_M_WY as f32) as u16;
+            let gamma_int = ((JITT_M_WY as f32) * pref)
+                .round()
+                .clamp(0.0, JITT_M_WY as f32) as u16;
 
-            let clamp_op = |v: f32| -> i64 {
-                (v.round() as i64).clamp(-JITT_OP_LIMIT, JITT_OP_LIMIT - 1)
-            };
+            let clamp_op =
+                |v: f32| -> i64 { (v.round() as i64).clamp(-JITT_OP_LIMIT, JITT_OP_LIMIT - 1) };
             let clamp_s = |v: f32| -> i64 {
                 (v.round() as i64).clamp(-(JITT_S_LIMIT - 1024), JITT_S_LIMIT - 1024)
             };
@@ -289,8 +294,9 @@ pub fn solve_stateful_gdn_wy_chunk64(
                     for d in 0..JITT_D_K {
                         dot_kk += k_h[i * JITT_D_K + d] * k_h[j * JITT_D_K + d];
                     }
-                    l_mat[i * JITT_CHUNK_LEN + j] =
-                        clamp_op((JITT_M_WY as f32) * bi * cap_gamma[i * JITT_CHUNK_LEN + j] * dot_kk);
+                    l_mat[i * JITT_CHUNK_LEN + j] = clamp_op(
+                        (JITT_M_WY as f32) * bi * cap_gamma[i * JITT_CHUNK_LEN + j] * dot_kk,
+                    );
                 }
             }
 
@@ -302,11 +308,14 @@ pub fn solve_stateful_gdn_wy_chunk64(
                 let b_gp = bi * gamma_pfx[i];
                 let gt = gamma_tail[i];
                 for x in 0..JITT_D_K {
-                    k_dec[i * JITT_D_K + x] = clamp_op((JITT_M_WY as f32) * b_gp * k_h[i * JITT_D_K + x]);
-                    k_tail[i * JITT_D_K + x] = clamp_op((JITT_M_WY as f32) * gt * k_h[i * JITT_D_K + x]);
+                    k_dec[i * JITT_D_K + x] =
+                        clamp_op((JITT_M_WY as f32) * b_gp * k_h[i * JITT_D_K + x]);
+                    k_tail[i * JITT_D_K + x] =
+                        clamp_op((JITT_M_WY as f32) * gt * k_h[i * JITT_D_K + x]);
                 }
                 for d in 0..JITT_D_V {
-                    v_beta[i * JITT_D_V + d] = clamp_s((JITT_S_SCALE as f32) * bi * v_h[i * JITT_D_V + d]);
+                    v_beta[i * JITT_D_V + d] =
+                        clamp_s((JITT_S_SCALE as f32) * bi * v_h[i * JITT_D_V + d]);
                 }
             }
 
@@ -361,7 +370,8 @@ pub fn solve_stateful_gdn_wy_chunk64(
                         sum_ku += k_tail[i * JITT_D_K + i_k] * u_wy[i * JITT_D_V + j_v];
                     }
                     assert!(sum_ku.abs() < (P as i64) / 2);
-                    let s_prev = s_in.s_int_hvk[h + (j_v << JITT_LOG_H) + (i_k << (JITT_LOG_H + JITT_LOG_D))];
+                    let s_prev = s_in.s_int_hvk
+                        [h + (j_v << JITT_LOG_H) + (i_k << (JITT_LOG_H + JITT_LOG_D))];
                     let num = (gamma_int as i64) * s_prev + sum_ku + JITT_HALF_WY;
                     let sn = num.div_euclid(JITT_M_WY);
                     let rem_val = num.rem_euclid(JITT_M_WY) as u32;
@@ -380,7 +390,8 @@ pub fn solve_stateful_gdn_wy_chunk64(
                     let mut dot_qs = 0.0f32;
                     let base_s = h + (j_v << JITT_LOG_H);
                     for i_k in 0..JITT_D_K {
-                        let s_prev = s_in.s_int_hvk[base_s + (i_k << (JITT_LOG_H + JITT_LOG_D))] as f32;
+                        let s_prev =
+                            s_in.s_int_hvk[base_s + (i_k << (JITT_LOG_H + JITT_LOG_D))] as f32;
                         dot_qs += q_h[i * JITT_D_K + i_k] * s_prev;
                     }
                     y_h[i * JITT_D_V + j_v] = gp * dot_qs;
@@ -458,7 +469,8 @@ pub fn solve_stateful_gdn_wy_chunk64(
         r_wy_lsb_hiv,
         r_st_lsb_hvk,
         l_lsb_hij,
-        s_out: GdnRecurrentState::from_int_hvk(s_out_int).expect("wrap-free s_out_int in [-8192, 8192)"),
+        s_out: GdnRecurrentState::from_int_hvk(s_out_int)
+            .expect("wrap-free s_out_int in [-8192, 8192)"),
         y_out_f32,
     }
 }
@@ -599,19 +611,25 @@ impl StreamingGdnCarryReceipt {
     pub fn expected_online_shape() -> WhirExt4MatrixShape {
         WhirExt4MatrixShape::for_subtables(
             &[
-                JITT_HIV_VARS,   // 0: K_dec
-                JITT_HIV_VARS,   // 1: K_tail
-                JITT_HIV_VARS,   // 2: V_beta
-                JITT_HIV_VARS,   // 3: W_ks
-                JITT_HIV_VARS,   // 4: U_wy
-                JITT_HIV_VARS,   // 5: R_ks
-                JITT_HIV_VARS,   // 6: R_wy
-                JITT_STATE_VARS, // 7: R_st
-                JITT_STATE_VARS, // 8: d1b_mask_18
-                JITT_SLT_VARS,   // 9: L
+                JITT_HIV_VARS,     // 0: K_dec
+                JITT_HIV_VARS,     // 1: K_tail
+                JITT_HIV_VARS,     // 2: V_beta
+                JITT_HIV_VARS,     // 3: W_ks
+                JITT_HIV_VARS,     // 4: U_wy
+                JITT_HIV_VARS,     // 5: R_ks
+                JITT_HIV_VARS,     // 6: R_wy
+                JITT_STATE_VARS,   // 7: R_st
+                JITT_STATE_VARS,   // 8: d1b_mask_18
+                JITT_SLT_VARS,     // 9: L
                 JITT_D1B_TAB_VARS, // 10: mult_d16384
-                6, 6, 6, 6,      // 11..=14: online_masks[0..64]
-                8, 8, 8, 8,      // 15..=18: ext_gmask limbs
+                6,
+                6,
+                6,
+                6, // 11..=14: online_masks[0..64]
+                8,
+                8,
+                8,
+                8, // 15..=18: ext_gmask limbs
             ],
             true,
             WHIR_EXT4_BLOWUP,
@@ -725,7 +743,13 @@ fn mask_slot_terms_6(limb_subtables: [usize; 4], slot: usize, weight: Ext4) -> V
         Ext4([0, 0, 0, 1]),
     ];
     let pt: Vec<Ext4> = (0..6)
-        .map(|b| if ((slot >> b) & 1) == 1 { Ext4::ONE } else { Ext4::ZERO })
+        .map(|b| {
+            if ((slot >> b) & 1) == 1 {
+                Ext4::ONE
+            } else {
+                Ext4::ZERO
+            }
+        })
         .collect();
     (0..4)
         .map(|l| LinearTermExt4::PointEval {
@@ -737,7 +761,13 @@ fn mask_slot_terms_6(limb_subtables: [usize; 4], slot: usize, weight: Ext4) -> V
 }
 
 fn bits4_point(h: usize) -> [Ext4; 4] {
-    std::array::from_fn(|b| if ((h >> b) & 1) == 1 { Ext4::ONE } else { Ext4::ZERO })
+    std::array::from_fn(|b| {
+        if ((h >> b) & 1) == 1 {
+            Ext4::ONE
+        } else {
+            Ext4::ZERO
+        }
+    })
 }
 
 #[inline]
@@ -788,8 +818,7 @@ fn prove_claim_masked_gmask_einsum_ext4(
         let nk = 1usize << kappa;
         let stride_p = rem_h_pairs * 2;
         let (mut q0, mut q1, mut q2, mut q_inf) = (Ext4::ZERO, Ext4::ZERO, Ext4::ZERO, Ext4::ZERO);
-        for h_rem in 0..rem_h_pairs {
-            let w = suf[h_rem];
+        for (h_rem, &w) in suf.iter().enumerate() {
             let (mut s0, mut s1, mut s2, mut sinf) =
                 (Ext4::ZERO, Ext4::ZERO, Ext4::ZERO, Ext4::ZERO);
             for q in 0..nk {
@@ -813,12 +842,8 @@ fn prove_claim_masked_gmask_einsum_ext4(
         let eq1 = prefix_eq.mul(zu);
         let eq2 = prefix_eq.mul(zu.scale_bb(3).sub(Ext4::ONE));
         let eq_slope = prefix_eq.mul(zu.add(zu).sub(Ext4::ONE));
-        let mut unmasked = cubic_from_evals_local(
-            eq0.mul(q0),
-            eq1.mul(q1),
-            eq2.mul(q2),
-            eq_slope.mul(q_inf),
-        );
+        let mut unmasked =
+            cubic_from_evals_local(eq0.mul(q0), eq1.mul(q1), eq2.mul(q2), eq_slope.mul(q_inf));
         unmasked[0] = unmasked[0].add(cur_mask_shift);
         let bv = gmask.blind_round_poly(spec_name, u, &challenges, rho, &unmasked);
         let blinded = [bv[0], bv[1], bv[2], bv[3]];
@@ -972,7 +997,11 @@ fn assemble_d1b_online_claim(
         .add(w_sl[2])
         .add(w_sl[3])
         .scale_bb(JITT_S_LIMIT as u32)
-        .add(w_sl[4].add(w_sl[10].mul(w_q4[0])).scale_bb(JITT_OP_LIMIT as u32))
+        .add(
+            w_sl[4]
+                .add(w_sl[10].mul(w_q4[0]))
+                .scale_bb(JITT_OP_LIMIT as u32),
+        )
         .add(
             w_sl[5]
                 .add(w_sl[7])
@@ -1044,19 +1073,32 @@ fn assemble_d1b_online_claim(
     JointLinearClaimExt4 { terms, rhs }
 }
 
+/// Chunk identity and commitment header metadata for [`prove_streaming_gdn_carry_receipt`].
+#[derive(Clone, Copy, Debug)]
+pub struct StreamingGdnCarryMeta {
+    pub session_id: [u8; 32],
+    pub model_weight_root: [u8; 32],
+    pub layer_idx: u32,
+    pub chunk_idx: u32,
+    pub chunk_tok_commit: [u8; 32],
+}
+
 /// Prove a single chunk's stateful `S_c -> S_{c+1}` Gated-DeltaNet transition in `WhirExt4Pcs + GMaskExt4`.
 pub fn prove_streaming_gdn_carry_receipt(
-    session_id: [u8; 32],
-    model_weight_root: [u8; 32],
-    layer_idx: u32,
-    chunk_idx: u32,
-    chunk_tok_commit: [u8; 32],
+    meta: StreamingGdnCarryMeta,
     s_in_commit: &SaltedGdnStateCommitment,
     s_out_commit: &SaltedGdnStateCommitment,
     wit: &StatefulGdnCarryWitness,
     opt_seed: Option<[u8; 32]>,
 ) -> Result<StreamingGdnCarryReceipt, String> {
-    if &s_out_commit.state != &wit.s_out {
+    let StreamingGdnCarryMeta {
+        session_id,
+        model_weight_root,
+        layer_idx,
+        chunk_idx,
+        chunk_tok_commit,
+    } = meta;
+    if s_out_commit.state != wit.s_out {
         return Err("s_out_commit state does not match wit.s_out".into());
     }
     for &g in &wit.gamma_int_16 {
@@ -1080,13 +1122,12 @@ pub fn prove_streaming_gdn_carry_receipt(
     let mult_d16384 = compute_d1b_multiplicities(&virt_d16384, JITT_D1B_TAB_VARS)?;
 
     // Online `Ext4` masks `[M'_wy, M'_in_upd, M'_out_upd, M'_in_d1b, M'_out_d1b, M'_st_claim, ...]`:
-    let online_masks: [Ext4; 64] = std::array::from_fn(|_| {
-        Ext4([rng.next_bb(), rng.next_bb(), rng.next_bb(), rng.next_bb()])
-    });
+    let online_masks: [Ext4; 64] =
+        std::array::from_fn(|_| Ext4([rng.next_bb(), rng.next_bb(), rng.next_bb(), rng.next_bb()]));
     let mut online_mask_limbs: [Vec<u32>; 4] = std::array::from_fn(|_| vec![0u32; 64]);
     for (i, m) in online_masks.iter().enumerate() {
-        for l in 0..4 {
-            online_mask_limbs[l][i] = m.0[l];
+        for (limb_vec, &val) in online_mask_limbs.iter_mut().zip(m.0.iter()) {
+            limb_vec[i] = val;
         }
     }
 
@@ -1174,15 +1215,16 @@ pub fn prove_streaming_gdn_carry_receipt(
         for h in 0..JITT_H_V {
             let mut al = Ext4::ZERO;
             let base_k = h + (i_k << (JITT_LOG_H + JITT_LOG_C));
-            for i in 0..JITT_CHUNK_LEN {
-                al = al.add(eq_i_ks[i].scale_bb(wit.k_dec_lsb_hik[base_k + (i << JITT_LOG_H)]));
+            for (i, &eq_iv) in eq_i_ks.iter().enumerate() {
+                al = al.add(eq_iv.scale_bb(wit.k_dec_lsb_hik[base_k + (i << JITT_LOG_H)]));
             }
             left_hk[h + (i_k << JITT_LOG_H)] = al;
 
             let mut ar = Ext4::ZERO;
             let base_s = h + (i_k << (JITT_LOG_H + JITT_LOG_D));
-            for j_v in 0..JITT_D_V {
-                ar = ar.add(eq_v_ks[j_v].scale_bb(s_in_commit.state.s_bb_hvk[base_s + (j_v << JITT_LOG_H)]));
+            for (j_v, &eq_vv) in eq_v_ks.iter().enumerate() {
+                ar = ar
+                    .add(eq_vv.scale_bb(s_in_commit.state.s_bb_hvk[base_s + (j_v << JITT_LOG_H)]));
             }
             right_hk[h + (i_k << JITT_LOG_H)] = ar;
         }
@@ -1190,11 +1232,13 @@ pub fn prove_streaming_gdn_carry_receipt(
     let (ks_sc_prf, ks_rho, ks_chals, k_dec_at_r, s_in_at_r_ks, ks_term) = prove_gmask_einsum_ext4(
         &left_hk,
         &right_hk,
-        JITT_LOG_H,
-        JITT_LOG_D,
-        &z_h_ks,
-        &ext_gmask,
-        "ks_sc",
+        GmaskEinSumParams {
+            mu_s: JITT_LOG_H,
+            kappa: JITT_LOG_D,
+            z_s: &z_h_ks,
+            gmask: &ext_gmask,
+            spec_name: "ks_sc",
+        },
         &mut tr,
     );
     tr.absorb_ext4(b"ks_kdec_r", k_dec_at_r);
@@ -1227,15 +1271,17 @@ pub fn prove_streaming_gdn_carry_receipt(
         for h in 0..JITT_H_V {
             let mut al = Ext4::ZERO;
             let base_l = h + (j << (JITT_LOG_H + JITT_LOG_C));
-            for i in 0..JITT_CHUNK_LEN {
-                al = al.add(eq_i_wy[i].scale_bb(wit.l_lsb_hij[base_l + (i << JITT_LOG_H)]));
+            for (i, &eq_iv) in eq_i_wy.iter().enumerate() {
+                al = al.add(eq_iv.scale_bb(wit.l_lsb_hij[base_l + (i << JITT_LOG_H)]));
             }
             left_hj[h + (j << JITT_LOG_H)] = al;
 
             let mut ar = Ext4::ZERO;
             let base_u = h + (j << JITT_LOG_H);
-            for j_v in 0..JITT_D_V {
-                ar = ar.add(eq_v_wy[j_v].scale_bb(wit.u_wy_lsb_hiv[base_u + (j_v << (JITT_LOG_H + JITT_LOG_C))]));
+            for (j_v, &eq_vv) in eq_v_wy.iter().enumerate() {
+                ar = ar.add(
+                    eq_vv.scale_bb(wit.u_wy_lsb_hiv[base_u + (j_v << (JITT_LOG_H + JITT_LOG_C))]),
+                );
             }
             right_hj[h + (j << JITT_LOG_H)] = ar;
         }
@@ -1243,11 +1289,13 @@ pub fn prove_streaming_gdn_carry_receipt(
     let (wy_sc_prf, wy_rho, wy_chals, wy_l_at_r, wy_u_at_r, wy_term) = prove_gmask_einsum_ext4(
         &left_hj,
         &right_hj,
-        JITT_LOG_H,
-        JITT_LOG_C,
-        &z_h_wy,
-        &ext_gmask,
-        "wy_sc",
+        GmaskEinSumParams {
+            mu_s: JITT_LOG_H,
+            kappa: JITT_LOG_C,
+            z_s: &z_h_wy,
+            gmask: &ext_gmask,
+            spec_name: "wy_sc",
+        },
         &mut tr,
     );
     tr.absorb_ext4(b"wy_l_r", wy_l_at_r);
@@ -1266,8 +1314,18 @@ pub fn prove_streaming_gdn_carry_receipt(
             }
         }
     }
-    let (slt_sc_prf, slt_rho, slt_chals, _, _, slt_term) =
-        prove_gmask_einsum_ext4(&non_slt, &l_ext, JITT_SLT_VARS, 0, &z_slt, &ext_gmask, "slt_sc", &mut tr);
+    let (slt_sc_prf, slt_rho, slt_chals, _, _, slt_term) = prove_gmask_einsum_ext4(
+        &non_slt,
+        &l_ext,
+        GmaskEinSumParams {
+            mu_s: JITT_SLT_VARS,
+            kappa: 0,
+            z_s: &z_slt,
+            gmask: &ext_gmask,
+            spec_name: "slt_sc",
+        },
+        &mut tr,
+    );
 
     // --- Section C: `S_{c+1} = round((gamma_c · S_c + K_tail^T · U_wy) / 512)` (`TVD = 0` Dual Handoff) ---
     let z_h_st = tr.squeeze_ext4_vec(b"st_zh", JITT_LOG_H, true);
@@ -1284,16 +1342,17 @@ pub fn prove_streaming_gdn_carry_receipt(
     let eq_zk_st = build_eq_table_lsb_ext4(&z_k_st);
 
     let mut gamma_s_in_eval = Ext4::ZERO;
-    for h in 0..JITT_H_V {
-        let w_gh = eq_zh_st[h].scale_bb(wit.gamma_int_16[h] as u32);
+    for (h, &eq_hv) in eq_zh_st.iter().enumerate() {
+        let w_gh = eq_hv.scale_bb(wit.gamma_int_16[h] as u32);
         let mut s_vk = Ext4::ZERO;
-        for i_k in 0..JITT_D_K {
+        for (i_k, &eq_kv) in eq_zk_st.iter().enumerate() {
             let mut row_v = Ext4::ZERO;
             let base_s = h + (i_k << (JITT_LOG_H + JITT_LOG_D));
-            for j_v in 0..JITT_D_V {
-                row_v = row_v.add(eq_zv_st[j_v].scale_bb(s_in_commit.state.s_bb_hvk[base_s + (j_v << JITT_LOG_H)]));
+            for (j_v, &eq_vv) in eq_zv_st.iter().enumerate() {
+                row_v = row_v
+                    .add(eq_vv.scale_bb(s_in_commit.state.s_bb_hvk[base_s + (j_v << JITT_LOG_H)]));
             }
-            s_vk = s_vk.add(eq_zk_st[i_k].mul(row_v));
+            s_vk = s_vk.add(eq_kv.mul(row_v));
         }
         gamma_s_in_eval = gamma_s_in_eval.add(w_gh.mul(s_vk));
     }
@@ -1318,14 +1377,18 @@ pub fn prove_streaming_gdn_carry_receipt(
         for h in 0..JITT_H_V {
             let mut ak = Ext4::ZERO;
             let base_i = h + (i << JITT_LOG_H);
-            for i_k in 0..JITT_D_K {
-                ak = ak.add(eq_zk_st[i_k].scale_bb(wit.k_tail_lsb_hik[base_i + (i_k << (JITT_LOG_H + JITT_LOG_C))]));
+            for (i_k, &eq_kv) in eq_zk_st.iter().enumerate() {
+                ak = ak.add(
+                    eq_kv.scale_bb(wit.k_tail_lsb_hik[base_i + (i_k << (JITT_LOG_H + JITT_LOG_C))]),
+                );
             }
             left_hi_scaled[base_i] = alpha_upd.mul(ak);
 
             let mut au = Ext4::ZERO;
-            for j_v in 0..JITT_D_V {
-                au = au.add(eq_zv_st[j_v].scale_bb(wit.u_wy_lsb_hiv[base_i + (j_v << (JITT_LOG_H + JITT_LOG_C))]));
+            for (j_v, &eq_vv) in eq_zv_st.iter().enumerate() {
+                au = au.add(
+                    eq_vv.scale_bb(wit.u_wy_lsb_hiv[base_i + (j_v << (JITT_LOG_H + JITT_LOG_C))]),
+                );
             }
             right_hi[base_i] = au;
         }
@@ -1628,7 +1691,13 @@ fn build_all_jitt_whir_claims_inner(
         JointLinearClaimExt4::point_eval(6, z_hiv_wy, r_wy_eval),
         JointLinearClaimExt4::point_eval(9, l_wy_pt, wy_l_at_r),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &wy_ws, wy_gsum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &wy_wa, wy_rho, wy_term.sub(wy_unm)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &wy_wa,
+            wy_rho,
+            wy_term.sub(wy_unm),
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &slt_ws, slt_gsum),
         JointLinearClaimExt4::hvzk_terminal_weld(
             vec![LinearTermExt4::PointEval {
@@ -1683,7 +1752,7 @@ fn build_all_jitt_whir_claims_inner(
 
     let eq_zh_st = build_eq_table_lsb_ext4(z_h_st);
     let mut s_in_upd_terms = Vec::with_capacity(JITT_H_V + 4);
-    for h in 0..JITT_H_V {
+    for (h, &eq_hv) in eq_zh_st.iter().enumerate() {
         let mut pt_h = Vec::with_capacity(JITT_STATE_VARS);
         pt_h.extend_from_slice(&bits4_point(h));
         pt_h.extend_from_slice(z_v_st);
@@ -1691,7 +1760,7 @@ fn build_all_jitt_whir_claims_inner(
         s_in_upd_terms.push(LinearTermExt4::PointEval {
             subtable: 0,
             point: pt_h,
-            weight: alpha_upd.mul(eq_zh_st[h]).scale_bb(header.gamma_int_16[h] as u32),
+            weight: alpha_upd.mul(eq_hv).scale_bb(header.gamma_int_16[h] as u32),
         });
     }
     s_in_upd_terms.extend(mask_slot_terms_6(st_msk_ids, 3, Ext4::ONE));
@@ -1793,7 +1862,12 @@ pub fn verify_streaming_gdn_carry_receipt(prf: &StreamingGdnCarryReceipt) -> Res
     let z_h_wy = tr.squeeze_ext4_vec(b"wy_zh", JITT_LOG_H, true);
     let z_i_wy = tr.squeeze_ext4_vec(b"wy_zi", JITT_LOG_C, true);
     let z_v_wy = tr.squeeze_ext4_vec(b"wy_zv", JITT_LOG_D, true);
-    for e in [prf.v_beta_wy_eval, prf.w_ks_wy_eval, prf.u_wy_eval, prf.r_wy_eval] {
+    for e in [
+        prf.v_beta_wy_eval,
+        prf.w_ks_wy_eval,
+        prf.u_wy_eval,
+        prf.r_wy_eval,
+    ] {
         tr.absorb_ext4(b"wy_ev", e);
     }
     let claim_wy = prf
@@ -1815,8 +1889,14 @@ pub fn verify_streaming_gdn_carry_receipt(prf: &StreamingGdnCarryReceipt) -> Res
     tr.absorb_ext4(b"wy_u_r", prf.wy_u_at_r);
 
     let z_slt = tr.squeeze_ext4_vec(b"slt_z", JITT_SLT_VARS, true);
-    let (slt_rho, slt_chals, slt_term) =
-        verify_gmask_einsum_ext4(Ext4::ZERO, JITT_SLT_VARS, 0, &z_slt, &prf.slt_sc_prf, &mut tr)?;
+    let (slt_rho, slt_chals, slt_term) = verify_gmask_einsum_ext4(
+        Ext4::ZERO,
+        JITT_SLT_VARS,
+        0,
+        &z_slt,
+        &prf.slt_sc_prf,
+        &mut tr,
+    )?;
 
     // Replay Section C:
     let z_h_st = tr.squeeze_ext4_vec(b"st_zh", JITT_LOG_H, true);
@@ -1975,7 +2055,9 @@ impl WearableJittCarryVerifier {
             ));
         }
         if h.s_in_root != self.current_state_root {
-            return Err("IncomingStateRootMismatch (`S_init = 0` reset / rollback / splice refused)".into());
+            return Err(
+                "IncomingStateRootMismatch (`S_init = 0` reset / rollback / splice refused)".into(),
+            );
         }
         verify_streaming_gdn_carry_receipt(receipt)?;
         self.expected_chunk_idx = self
@@ -2063,20 +2145,41 @@ impl PreloadedQwen35JittModel {
             .map(|l| {
                 let pfx = format!("model.language_model.layers.{l}");
                 let (_, ln1_w) = mmap.read_f32(&format!("{pfx}.input_layernorm.weight"))?;
-                let (_, ln2_w) = mmap.read_f32(&format!("{pfx}.post_attention_layernorm.weight"))?;
-                let gate_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.mlp.gate_proj.weight"))?;
-                let up_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.mlp.up_proj.weight"))?;
-                let down_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.mlp.down_proj.weight"))?;
+                let (_, ln2_w) =
+                    mmap.read_f32(&format!("{pfx}.post_attention_layernorm.weight"))?;
+                let gate_mat =
+                    Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.mlp.gate_proj.weight"))?;
+                let up_mat =
+                    Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.mlp.up_proj.weight"))?;
+                let down_mat =
+                    Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.mlp.down_proj.weight"))?;
                 if (l % 4) != 3 {
                     Ok(PreloadedJittLayer::Gdn {
                         ln1_w,
                         ln2_w,
-                        qkv_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_qkv.weight"))?,
-                        z_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_z.weight"))?,
-                        b_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_b.weight"))?,
-                        a_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_a.weight"))?,
-                        out_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.out_proj.weight"))?,
-                        conv_w: mmap.read_f32(&format!("{pfx}.linear_attn.conv1d.weight"))?.1,
+                        qkv_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.linear_attn.in_proj_qkv.weight"),
+                        )?,
+                        z_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.linear_attn.in_proj_z.weight"),
+                        )?,
+                        b_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.linear_attn.in_proj_b.weight"),
+                        )?,
+                        a_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.linear_attn.in_proj_a.weight"),
+                        )?,
+                        out_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.linear_attn.out_proj.weight"),
+                        )?,
+                        conv_w: mmap
+                            .read_f32(&format!("{pfx}.linear_attn.conv1d.weight"))?
+                            .1,
                         a_log: mmap.read_f32(&format!("{pfx}.linear_attn.A_log"))?.1,
                         dt_bias: mmap.read_f32(&format!("{pfx}.linear_attn.dt_bias"))?.1,
                         norm_w: mmap.read_f32(&format!("{pfx}.linear_attn.norm.weight"))?.1,
@@ -2088,10 +2191,22 @@ impl PreloadedQwen35JittModel {
                     Ok(PreloadedJittLayer::Gqa {
                         ln1_w,
                         ln2_w,
-                        q_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.q_proj.weight"))?,
-                        k_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.k_proj.weight"))?,
-                        v_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.v_proj.weight"))?,
-                        o_mat: Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.o_proj.weight"))?,
+                        q_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.self_attn.q_proj.weight"),
+                        )?,
+                        k_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.self_attn.k_proj.weight"),
+                        )?,
+                        v_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.self_attn.v_proj.weight"),
+                        )?,
+                        o_mat: Mxfp4Matrix::from_safetensors(
+                            mmap,
+                            &format!("{pfx}.self_attn.o_proj.weight"),
+                        )?,
                         qn_w: mmap.read_f32(&format!("{pfx}.self_attn.q_norm.weight"))?.1,
                         kn_w: mmap.read_f32(&format!("{pfx}.self_attn.k_norm.weight"))?.1,
                         gate_mat,
@@ -2149,7 +2264,7 @@ pub fn execute_qwen35_monolithic_stateful(
     token_ids: &[u32],
 ) -> (Vec<f32>, Vec<GdnRecurrentState>) {
     let seq_len = token_ids.len();
-    assert!(seq_len > 0 && seq_len % JITT_CHUNK_LEN == 0);
+    assert!(seq_len > 0 && seq_len.is_multiple_of(JITT_CHUNK_LEN));
     let num_chunks = seq_len / JITT_CHUNK_LEN;
     let d_model = 1024usize;
     let d_ff = 3584usize;
@@ -2172,10 +2287,20 @@ pub fn execute_qwen35_monolithic_stateful(
     for lyr in &model.layers {
         let (ln1_w, ln2_w, gate_mat, up_mat, down_mat) = match lyr {
             PreloadedJittLayer::Gdn {
-                ln1_w, ln2_w, gate_mat, up_mat, down_mat, ..
+                ln1_w,
+                ln2_w,
+                gate_mat,
+                up_mat,
+                down_mat,
+                ..
             }
             | PreloadedJittLayer::Gqa {
-                ln1_w, ln2_w, gate_mat, up_mat, down_mat, ..
+                ln1_w,
+                ln2_w,
+                gate_mat,
+                up_mat,
+                down_mat,
+                ..
             } => (ln1_w, ln2_w, gate_mat, up_mat, down_mat),
         };
         let x_ln1_f32 = rmsnorm_zero_centered_f32(&h_f32, ln1_w, d_model, eps);
@@ -2228,15 +2353,20 @@ pub fn execute_qwen35_monolithic_stateful(
                     let mut beta_c = vec![0.0f32; JITT_CHUNK_LEN * 16];
                     for ti in 0..JITT_CHUNK_LEN {
                         let t = t0 + ti;
-                        q_c[ti * 2048..(ti + 1) * 2048].copy_from_slice(&conv_out[t * 6144..t * 6144 + 2048]);
-                        k_c[ti * 2048..(ti + 1) * 2048].copy_from_slice(&conv_out[t * 6144 + 2048..t * 6144 + 4096]);
-                        v_c[ti * 2048..(ti + 1) * 2048].copy_from_slice(&conv_out[t * 6144 + 4096..t * 6144 + 6144]);
+                        q_c[ti * 2048..(ti + 1) * 2048]
+                            .copy_from_slice(&conv_out[t * 6144..t * 6144 + 2048]);
+                        k_c[ti * 2048..(ti + 1) * 2048]
+                            .copy_from_slice(&conv_out[t * 6144 + 2048..t * 6144 + 4096]);
+                        v_c[ti * 2048..(ti + 1) * 2048]
+                            .copy_from_slice(&conv_out[t * 6144 + 4096..t * 6144 + 6144]);
                         for h in 0..16 {
                             beta_c[ti * 16 + h] = sigmoid_f32(b_f32[t * 16 + h]);
-                            g_c[ti * 16 + h] = -a_log[h].exp() * softplus_f32(a_f32[t * 16 + h] + dt_bias[h]);
+                            g_c[ti * 16 + h] =
+                                -a_log[h].exp() * softplus_f32(a_f32[t * 16 + h] + dt_bias[h]);
                         }
                     }
-                    let wit = solve_stateful_gdn_wy_chunk64(&q_c, &k_c, &v_c, &g_c, &beta_c, &s_cur);
+                    let wit =
+                        solve_stateful_gdn_wy_chunk64(&q_c, &k_c, &v_c, &g_c, &beta_c, &s_cur);
                     y_all[t0 * 2048..(t0 + JITT_CHUNK_LEN) * 2048].copy_from_slice(&wit.y_out_f32);
                     s_cur = wit.s_out;
                 }
@@ -2248,7 +2378,8 @@ pub fn execute_qwen35_monolithic_stateful(
                         let off = (t * 16 + h) * 128;
                         let ys = &y_all[off..off + 128];
                         let zs = &z_f32[off..off + 128];
-                        let inv_rms = 1.0 / (ys.iter().map(|&v| v * v).sum::<f32>() / 128.0 + eps).sqrt();
+                        let inv_rms =
+                            1.0 / (ys.iter().map(|&v| v * v).sum::<f32>() / 128.0 + eps).sqrt();
                         for d in 0..128 {
                             gated_f32[off + d] = norm_w[d] * (ys[d] * inv_rms) * silu_f32(zs[d]);
                         }
@@ -2260,7 +2391,13 @@ pub fn execute_qwen35_monolithic_stateful(
                 quantize_act_i16(&out_f32)
             }
             PreloadedJittLayer::Gqa {
-                q_mat, k_mat, v_mat, o_mat, qn_w, kn_w, ..
+                q_mat,
+                k_mat,
+                v_mat,
+                o_mat,
+                qn_w,
+                kn_w,
+                ..
             } => {
                 let qg_raw = eval_mxfp4_int_contraction(&x_ln1_i16, seq_len, d_model, q_mat);
                 let qg_f32 = dequant_y_raw_to_f32(&qg_raw, seq_len, 4096, q_mat.rows_pad);
@@ -2274,8 +2411,10 @@ pub fn execute_qwen35_monolithic_stateful(
                 for t in 0..seq_len {
                     for h in 0..8 {
                         let src = &qg_f32[(t * 8 + h) * 512..(t * 8 + h + 1) * 512];
-                        q_heads[(t * 8 + h) * 256..(t * 8 + h + 1) * 256].copy_from_slice(&src[..256]);
-                        gate_f32[(t * 8 + h) * 256..(t * 8 + h + 1) * 256].copy_from_slice(&src[256..]);
+                        q_heads[(t * 8 + h) * 256..(t * 8 + h + 1) * 256]
+                            .copy_from_slice(&src[..256]);
+                        gate_f32[(t * 8 + h) * 256..(t * 8 + h + 1) * 256]
+                            .copy_from_slice(&src[256..]);
                     }
                 }
                 let mut q_normed = rmsnorm_zero_centered_f32(&q_heads, qn_w, 256, eps);
@@ -2310,7 +2449,8 @@ pub fn execute_qwen35_monolithic_stateful(
                         let mut max_s = f32::NEG_INFINITY;
                         for tj in 0..=ti {
                             let kj = &k_normed[(tj * 2 + hk) * 256..(tj * 2 + hk + 1) * 256];
-                            let s = qi.iter().zip(kj.iter()).map(|(&a, &b)| a * b).sum::<f32>() * scale;
+                            let s =
+                                qi.iter().zip(kj.iter()).map(|(&a, &b)| a * b).sum::<f32>() * scale;
                             scores[tj] = s;
                             if s > max_s {
                                 max_s = s;
@@ -2482,10 +2622,20 @@ impl WearableJittStreamingSession {
         for (l, lyr) in model.layers.iter().enumerate() {
             let (ln1_w, ln2_w, gate_mat, up_mat, down_mat) = match lyr {
                 PreloadedJittLayer::Gdn {
-                    ln1_w, ln2_w, gate_mat, up_mat, down_mat, ..
+                    ln1_w,
+                    ln2_w,
+                    gate_mat,
+                    up_mat,
+                    down_mat,
+                    ..
                 }
                 | PreloadedJittLayer::Gqa {
-                    ln1_w, ln2_w, gate_mat, up_mat, down_mat, ..
+                    ln1_w,
+                    ln2_w,
+                    gate_mat,
+                    up_mat,
+                    down_mat,
+                    ..
                 } => (ln1_w, ln2_w, gate_mat, up_mat, down_mat),
             };
             let x_ln1_f32 = rmsnorm_zero_centered_f32(&h_f32, ln1_w, d_model, eps);
@@ -2504,13 +2654,18 @@ impl WearableJittStreamingSession {
                     norm_w,
                     ..
                 } => {
-                    let qkv_raw = eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, qkv_mat);
-                    let qkv_f32 = dequant_y_raw_to_f32(&qkv_raw, JITT_CHUNK_LEN, 6144, qkv_mat.rows_pad);
-                    let z_raw = eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, z_mat);
+                    let qkv_raw =
+                        eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, qkv_mat);
+                    let qkv_f32 =
+                        dequant_y_raw_to_f32(&qkv_raw, JITT_CHUNK_LEN, 6144, qkv_mat.rows_pad);
+                    let z_raw =
+                        eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, z_mat);
                     let z_f32 = dequant_y_raw_to_f32(&z_raw, JITT_CHUNK_LEN, 2048, z_mat.rows_pad);
-                    let b_raw = eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, b_mat);
+                    let b_raw =
+                        eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, b_mat);
                     let b_f32 = dequant_y_raw_to_f32(&b_raw, JITT_CHUNK_LEN, 16, b_mat.rows_pad);
-                    let a_raw = eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, a_mat);
+                    let a_raw =
+                        eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, a_mat);
                     let a_f32 = dequant_y_raw_to_f32(&a_raw, JITT_CHUNK_LEN, 16, a_mat.rows_pad);
 
                     let tail = &self.gdn_conv_tails[gdn_ord];
@@ -2530,8 +2685,9 @@ impl WearableJittStreamingSession {
                             conv_out[ti * 6144 + ch] = silu_f32(s);
                         }
                     }
-                    self.gdn_conv_tails[gdn_ord]
-                        .copy_from_slice(&qkv_f32[(JITT_CHUNK_LEN - 3) * 6144..JITT_CHUNK_LEN * 6144]);
+                    self.gdn_conv_tails[gdn_ord].copy_from_slice(
+                        &qkv_f32[(JITT_CHUNK_LEN - 3) * 6144..JITT_CHUNK_LEN * 6144],
+                    );
 
                     let mut q_c = vec![0.0f32; JITT_CHUNK_LEN * 2048];
                     let mut k_c = vec![0.0f32; JITT_CHUNK_LEN * 2048];
@@ -2539,12 +2695,16 @@ impl WearableJittStreamingSession {
                     let mut g_c = vec![0.0f32; JITT_CHUNK_LEN * 16];
                     let mut beta_c = vec![0.0f32; JITT_CHUNK_LEN * 16];
                     for ti in 0..JITT_CHUNK_LEN {
-                        q_c[ti * 2048..(ti + 1) * 2048].copy_from_slice(&conv_out[ti * 6144..ti * 6144 + 2048]);
-                        k_c[ti * 2048..(ti + 1) * 2048].copy_from_slice(&conv_out[ti * 6144 + 2048..ti * 6144 + 4096]);
-                        v_c[ti * 2048..(ti + 1) * 2048].copy_from_slice(&conv_out[ti * 6144 + 4096..ti * 6144 + 6144]);
+                        q_c[ti * 2048..(ti + 1) * 2048]
+                            .copy_from_slice(&conv_out[ti * 6144..ti * 6144 + 2048]);
+                        k_c[ti * 2048..(ti + 1) * 2048]
+                            .copy_from_slice(&conv_out[ti * 6144 + 2048..ti * 6144 + 4096]);
+                        v_c[ti * 2048..(ti + 1) * 2048]
+                            .copy_from_slice(&conv_out[ti * 6144 + 4096..ti * 6144 + 6144]);
                         for h in 0..16 {
                             beta_c[ti * 16 + h] = sigmoid_f32(b_f32[ti * 16 + h]);
-                            g_c[ti * 16 + h] = -a_log[h].exp() * softplus_f32(a_f32[ti * 16 + h] + dt_bias[h]);
+                            g_c[ti * 16 + h] =
+                                -a_log[h].exp() * softplus_f32(a_f32[ti * 16 + h] + dt_bias[h]);
                         }
                     }
 
@@ -2563,9 +2723,11 @@ impl WearableJittStreamingSession {
                             let off = (ti * 16 + h) * 128;
                             let ys = &wit.y_out_f32[off..off + 128];
                             let zs = &z_f32[off..off + 128];
-                            let inv_rms = 1.0 / (ys.iter().map(|&v| v * v).sum::<f32>() / 128.0 + eps).sqrt();
+                            let inv_rms =
+                                1.0 / (ys.iter().map(|&v| v * v).sum::<f32>() / 128.0 + eps).sqrt();
                             for d in 0..128 {
-                                gated_f32[off + d] = norm_w[d] * (ys[d] * inv_rms) * silu_f32(zs[d]);
+                                gated_f32[off + d] =
+                                    norm_w[d] * (ys[d] * inv_rms) * silu_f32(zs[d]);
                             }
                         }
                     }
@@ -2576,27 +2738,43 @@ impl WearableJittStreamingSession {
                     gdn_ord += 1;
 
                     let gated_i16 = quantize_act_i16(&gated_f32);
-                    let out_raw = eval_mxfp4_int_contraction(&gated_i16, JITT_CHUNK_LEN, 2048, out_mat);
-                    let out_f32 = dequant_y_raw_to_f32(&out_raw, JITT_CHUNK_LEN, d_model, out_mat.rows_pad);
+                    let out_raw =
+                        eval_mxfp4_int_contraction(&gated_i16, JITT_CHUNK_LEN, 2048, out_mat);
+                    let out_f32 =
+                        dequant_y_raw_to_f32(&out_raw, JITT_CHUNK_LEN, d_model, out_mat.rows_pad);
                     quantize_act_i16(&out_f32)
                 }
                 PreloadedJittLayer::Gqa {
-                    q_mat, k_mat, v_mat, o_mat, qn_w, kn_w, ..
+                    q_mat,
+                    k_mat,
+                    v_mat,
+                    o_mat,
+                    qn_w,
+                    kn_w,
+                    ..
                 } => {
-                    let qg_raw = eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, q_mat);
-                    let qg_f32 = dequant_y_raw_to_f32(&qg_raw, JITT_CHUNK_LEN, 4096, q_mat.rows_pad);
-                    let k_raw = eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, k_mat);
-                    let k_proj_f32 = dequant_y_raw_to_f32(&k_raw, JITT_CHUNK_LEN, 512, k_mat.rows_pad);
-                    let v_raw = eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, v_mat);
-                    let v_proj_f32 = dequant_y_raw_to_f32(&v_raw, JITT_CHUNK_LEN, 512, v_mat.rows_pad);
+                    let qg_raw =
+                        eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, q_mat);
+                    let qg_f32 =
+                        dequant_y_raw_to_f32(&qg_raw, JITT_CHUNK_LEN, 4096, q_mat.rows_pad);
+                    let k_raw =
+                        eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, k_mat);
+                    let k_proj_f32 =
+                        dequant_y_raw_to_f32(&k_raw, JITT_CHUNK_LEN, 512, k_mat.rows_pad);
+                    let v_raw =
+                        eval_mxfp4_int_contraction(&x_ln1_i16, JITT_CHUNK_LEN, d_model, v_mat);
+                    let v_proj_f32 =
+                        dequant_y_raw_to_f32(&v_raw, JITT_CHUNK_LEN, 512, v_mat.rows_pad);
 
                     let mut q_heads = vec![0.0f32; JITT_CHUNK_LEN * 8 * 256];
                     let mut gate_f32 = vec![0.0f32; JITT_CHUNK_LEN * 2048];
                     for ti in 0..JITT_CHUNK_LEN {
                         for h in 0..8 {
                             let src = &qg_f32[(ti * 8 + h) * 512..(ti * 8 + h + 1) * 512];
-                            q_heads[(ti * 8 + h) * 256..(ti * 8 + h + 1) * 256].copy_from_slice(&src[..256]);
-                            gate_f32[(ti * 8 + h) * 256..(ti * 8 + h + 1) * 256].copy_from_slice(&src[256..]);
+                            q_heads[(ti * 8 + h) * 256..(ti * 8 + h + 1) * 256]
+                                .copy_from_slice(&src[..256]);
+                            gate_f32[(ti * 8 + h) * 256..(ti * 8 + h + 1) * 256]
+                                .copy_from_slice(&src[256..]);
                         }
                     }
                     let mut q_normed = rmsnorm_zero_centered_f32(&q_heads, qn_w, 256, eps);
@@ -2606,7 +2784,8 @@ impl WearableJittStreamingSession {
                         let abs_t = abs_t0 + ti;
                         for pair in 0..32usize {
                             let freq = 1.0f32 / 10_000_000.0f32.powf((2 * pair) as f32 / 64.0);
-                            let (cs, sn) = ((abs_t as f32 * freq).cos(), (abs_t as f32 * freq).sin());
+                            let (cs, sn) =
+                                ((abs_t as f32 * freq).cos(), (abs_t as f32 * freq).sin());
                             for h in 0..8 {
                                 let base = (ti * 8 + h) * 256;
                                 let (x1, x2) = (q_normed[base + pair], q_normed[base + 32 + pair]);
@@ -2639,7 +2818,8 @@ impl WearableJittStreamingSession {
                             let mut max_s = f32::NEG_INFINITY;
                             for tj in 0..=abs_ti {
                                 let kj = &k_all[(tj * 2 + hk) * 256..(tj * 2 + hk + 1) * 256];
-                                let s = qi.iter().zip(kj.iter()).map(|(&a, &b)| a * b).sum::<f32>() * scale;
+                                let s = qi.iter().zip(kj.iter()).map(|(&a, &b)| a * b).sum::<f32>()
+                                    * scale;
                                 scores[tj] = s;
                                 if s > max_s {
                                     max_s = s;
@@ -2665,7 +2845,8 @@ impl WearableJittStreamingSession {
                     }
                     let attn_i16 = quantize_act_i16(&attn_out);
                     let o_raw = eval_mxfp4_int_contraction(&attn_i16, JITT_CHUNK_LEN, 2048, o_mat);
-                    let o_f32 = dequant_y_raw_to_f32(&o_raw, JITT_CHUNK_LEN, d_model, o_mat.rows_pad);
+                    let o_f32 =
+                        dequant_y_raw_to_f32(&o_raw, JITT_CHUNK_LEN, d_model, o_mat.rows_pad);
                     quantize_act_i16(&o_f32)
                 }
             };
@@ -2681,7 +2862,8 @@ impl WearableJittStreamingSession {
 
             let x_ln2_f32 = rmsnorm_zero_centered_f32(&h_mid_f32, ln2_w, d_model, eps);
             let x_ln2_i16 = quantize_act_i16(&x_ln2_f32);
-            let gate_raw = eval_mxfp4_int_contraction(&x_ln2_i16, JITT_CHUNK_LEN, d_model, gate_mat);
+            let gate_raw =
+                eval_mxfp4_int_contraction(&x_ln2_i16, JITT_CHUNK_LEN, d_model, gate_mat);
             let gate_f32 = dequant_y_raw_to_f32(&gate_raw, JITT_CHUNK_LEN, d_ff, gate_mat.rows_pad);
             let up_raw = eval_mxfp4_int_contraction(&x_ln2_i16, JITT_CHUNK_LEN, d_model, up_mat);
             let up_f32 = dequant_y_raw_to_f32(&up_raw, JITT_CHUNK_LEN, d_ff, up_mat.rows_pad);
@@ -2692,7 +2874,8 @@ impl WearableJittStreamingSession {
             }
             let swiglu_i16 = quantize_act_i16(&swiglu_f32);
             let down_raw = eval_mxfp4_int_contraction(&swiglu_i16, JITT_CHUNK_LEN, d_ff, down_mat);
-            let down_f32 = dequant_y_raw_to_f32(&down_raw, JITT_CHUNK_LEN, d_model, down_mat.rows_pad);
+            let down_f32 =
+                dequant_y_raw_to_f32(&down_raw, JITT_CHUNK_LEN, d_model, down_mat.rows_pad);
             let delta_mlp_i16 = quantize_act_i16(&down_f32);
 
             for i in 0..(JITT_CHUNK_LEN * d_model) {
@@ -2704,8 +2887,10 @@ impl WearableJittStreamingSession {
         }
 
         let chunk_final_h = rmsnorm_zero_centered_f32(&h_f32, &model.final_norm_w, d_model, eps);
-        let audited_wit = opt_audited_wit.ok_or_else(|| "missing audited GDN witness".to_string())?;
-        let tok_commit = compute_chunk_token_commitment(&self.session_id, self.chunk_idx, chunk_tokens_64);
+        let audited_wit =
+            opt_audited_wit.ok_or_else(|| "missing audited GDN witness".to_string())?;
+        let tok_commit =
+            compute_chunk_token_commitment(&self.session_id, self.chunk_idx, chunk_tokens_64);
 
         let next_commit_seed = opt_seed.map(|s| cshake256_32(b"QW35-JITT-NEXT-SC-V1", &s));
         let next_audited_commit =
@@ -2713,11 +2898,13 @@ impl WearableJittStreamingSession {
 
         let cur_idx = self.chunk_idx;
         let receipt = prove_streaming_gdn_carry_receipt(
-            self.session_id,
-            self.model_weight_root,
-            self.audited_layer as u32,
-            cur_idx,
-            tok_commit,
+            StreamingGdnCarryMeta {
+                session_id: self.session_id,
+                model_weight_root: self.model_weight_root,
+                layer_idx: self.audited_layer as u32,
+                chunk_idx: cur_idx,
+                chunk_tok_commit: tok_commit,
+            },
             &self.current_audited_commit,
             &next_audited_commit,
             &audited_wit,

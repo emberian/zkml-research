@@ -14,6 +14,7 @@ use qwen35audit::u1_audit::{
     derive_fiat_shamir_audited_gdn_layer, prove_padded_absence_zk, prove_u1_audit_bundle,
     redact_sk_secrets, verify_u1_audit_bundle_standalone, Qwen35U1AuditBundle,
 };
+use std::ops::Add;
 use std::path::Path;
 use std::time::Instant;
 
@@ -25,16 +26,20 @@ fn hex8(r: &[u8; 32]) -> String {
 fn default_real_64_token_prompt() -> Vec<u32> {
     vec![
         760, 6511, 314, 9338, 369, 11725, 13, 574, 279, 2578, 315, 3643, 1899, 264, 1515, 11, 584,
-        1165, 6722, 4888, 198, 750, 4658, 62, 1831, 7, 1318, 25, 1140, 58, 396, 990, 1657, 25,
-        396, 1447, 262, 2366, 11, 5944, 284, 220, 15, 11, 1181, 7, 1318, 8, 481, 220, 16, 198,
-        13824, 318, 257, 6396, 3989, 25, 366, 2380, 12, 13847, 12, 9999,
+        1165, 6722, 4888, 198, 750, 4658, 62, 1831, 7, 1318, 25, 1140, 58, 396, 990, 1657, 25, 396,
+        1447, 262, 2366, 11, 5944, 284, 220, 15, 11, 1181, 7, 1318, 8, 481, 220, 16, 198, 13824,
+        318, 257, 6396, 3989, 25, 366, 2380, 12, 13847, 12, 9999,
     ]
 }
 
 fn main() -> Result<(), String> {
     println!("==========================================================================================");
-    println!("  qwen35audit — Real Pretrained Qwen3.5-0.8B (24L) & Qwen3.8-Flash-Next (48H) ZK-Audit");
-    println!("  Field: BabyBear (p = 2013265921) -> Ext4 (X^4 - 11, 123.7b) | Hash/FS: NIST cSHAKE256");
+    println!(
+        "  qwen35audit — Real Pretrained Qwen3.5-0.8B (24L) & Qwen3.8-Flash-Next (48H) ZK-Audit"
+    );
+    println!(
+        "  Field: BabyBear (p = 2013265921) -> Ext4 (X^4 - 11, 123.7b) | Hash/FS: NIST cSHAKE256"
+    );
     println!("==========================================================================================");
 
     let shape_sample = PcsShape::new(18, PcsParams::default_zk(2));
@@ -188,8 +193,10 @@ fn main() -> Result<(), String> {
 
     // Attack 2: Mutating 1 GDN WY `UW` cell evaluation / opened column
     let mut bad_b2 = orig_bundle.clone();
-    bad_b2.layer_proof.uw_eval_at_z =
-        bad_b2.layer_proof.uw_eval_at_z.add(qwen35audit::ext4::Ext4::ONE);
+    bad_b2.layer_proof.uw_eval_at_z = bad_b2
+        .layer_proof
+        .uw_eval_at_z
+        .add(qwen35audit::ext4::Ext4::ONE);
     let res2 = verify_u1_audit_bundle_standalone(
         &registry.weight_root,
         &u1_online.boundary_roots,
@@ -203,8 +210,10 @@ fn main() -> Result<(), String> {
 
     // Attack 3: Mutating 1 boundary activation (`boundary_roots[vrf_layer + 1]` / `b_out_eval`)
     let mut bad_b3 = orig_bundle.clone();
-    bad_b3.layer_proof.b_out_eval =
-        bad_b3.layer_proof.b_out_eval.add(qwen35audit::ext4::Ext4::ONE);
+    bad_b3.layer_proof.b_out_eval = bad_b3
+        .layer_proof
+        .b_out_eval
+        .add(qwen35audit::ext4::Ext4::ONE);
     let res3 = verify_u1_audit_bundle_standalone(
         &registry.weight_root,
         &u1_online.boundary_roots,
@@ -243,7 +252,10 @@ fn main() -> Result<(), String> {
         Some(raw_completion),
         &proof_bytes,
     );
-    assert!(res5_prv.is_err() && res5_ver.is_err(), "Attack 5 must be rejected");
+    assert!(
+        res5_prv.is_err() && res5_ver.is_err(),
+        "Attack 5 must be rejected"
+    );
 
     println!(
         "[TEETH] 5/5 Planted Soundness Attacks Rejected:\n  [1] MXFP4 nibble swap -> {}\n  [2] GDN WY UW mutation -> {}\n  [3] Boundary activation tamper -> {}\n  [4] PCS Merkle column forgery -> {}\n  [5] Unredacted sk-proj-... leak -> {} / {}",

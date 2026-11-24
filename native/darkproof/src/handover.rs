@@ -3,18 +3,20 @@
 //! carried in its second life: mask block 1) and the new committee's fresh commitment (first life) are evaluated at
 //! one Fiat-Shamir point per matrix; a collaborative ZK Ligero among all n_old + n_new custodians proves, on hidden
 //! rows, evaluation consistency at both commitments' opened columns and W_old(r) = W_new(r).
+use crate::ext;
 use crate::field;
 use crate::h::{py_str_repr, Hash};
-use crate::ligero::{self, decode_openings, encode_openings, LigParams, LigParty, LigProof, LinSink, LinSystem};
+use crate::ligero::{
+    self, decode_openings, encode_openings, LigParams, LigParty, LigProof, LinSink, LinSystem,
+};
 use crate::net::{gather_hashes, Net};
 use crate::pcs::{self, colsums, Opening, PcsCols, PcsParty, Shape};
 use crate::rng::Det;
-use rayon::prelude::*;
-use crate::ext;
 use crate::spine::{log2, pcs_consistency_e, EvalsE};
 use crate::transcript::Transcript;
-use crate::wire::{r_ligero, r_pcs, r_prox_cols_e, R, PR};
+use crate::wire::{r_ligero, r_pcs, r_prox_cols_e, PR, R};
 use crate::Profile;
+use rayon::prelude::*;
 use std::collections::BTreeMap;
 
 pub const MAGIC: &[u8; 8] = b"DLHAND01";
@@ -76,8 +78,13 @@ pub struct HandoverProof {
 /// The public shapes (cosnark_zk.PubShape) of the old (second life) and new (first life) matrix commitments.
 pub fn shapes(pr: &Profile, d: usize) -> (BTreeMap<String, Shape>, BTreeMap<String, Shape>) {
     let m = 2 * log2(d);
-    let old_base = if pr.lives > 0 { pr.nmask / pr.lives } else { 0 };
-    let mk = |base| KINDS.iter().map(|k| (k.to_string(), Shape::new(pr, m, base))).collect();
+    let old_base = pr.nmask.checked_div(pr.lives).unwrap_or(0);
+    let mk = |base| {
+        KINDS
+            .iter()
+            .map(|k| (k.to_string(), Shape::new(pr, m, base)))
+            .collect()
+    };
     (mk(old_base), mk(0))
 }
 
@@ -88,7 +95,11 @@ pub fn nrows(pr: &Profile, d: usize) -> usize {
 }
 
 fn sizes_ok(d: usize, n_old: usize, n_new: usize) -> bool {
-    d >= 2 && d.is_power_of_two() && d < 1 << 16 && (1..=255).contains(&n_old) && (1..=255).contains(&n_new)
+    d >= 2
+        && d.is_power_of_two()
+        && d < 1 << 16
+        && (1..=255).contains(&n_old)
+        && (1..=255).contains(&n_new)
 }
 
 /// The byte length the schema fixes for this proof (handover.encode's output length). Under multiproofs it depends
@@ -109,12 +120,24 @@ pub fn byte_len(pr: &Profile, d: usize, p: &HandoverProof) -> usize {
             js.len() * (8 * sz + 32 * path_len)
         }
     };
-    let pcs_side = |nn: usize, sh: &BTreeMap<String, Shape>, cols: &BTreeMap<String, PcsCols>| -> usize {
-        sh.iter().map(|(k, s)| 32 * nn + 8 * nn * pr.ext * s.w + 4 * pr.t_cols + nn * tree(&cols[k].j, s.r, s.path_len())).sum::<usize>()
-    };
+    let pcs_side =
+        |nn: usize, sh: &BTreeMap<String, Shape>, cols: &BTreeMap<String, PcsCols>| -> usize {
+            sh.iter()
+                .map(|(k, s)| {
+                    32 * nn
+                        + 8 * nn * pr.ext * s.w
+                        + 4 * pr.t_cols
+                        + nn * tree(&cols[k].j, s.r, s.path_len())
+                })
+                .sum::<usize>()
+        };
     let (k, t) = (pr.k_l, pr.t_hide);
     let lg = crate::pcs::bitlen(pr.blow * (k + t) - 1) + 1;
-    let lj: Vec<usize> = if pr.multiproof { p.ligero.j.clone() } else { (0..pr.t_open).collect() };
+    let lj: Vec<usize> = if pr.multiproof {
+        p.ligero.j.clone()
+    } else {
+        (0..pr.t_open).collect()
+    };
     // the tests' messages w, q, pq once per component; the mask group has 3 EXT rows
     let lig = 8 * pr.ext * ((k + t) + (2 * k + t - 1) + (2 * (k + t) - 1))
         + if pr.multiproof { 4 * pr.t_open } else { 0 }
@@ -123,7 +146,13 @@ pub fn byte_len(pr: &Profile, d: usize, p: &HandoverProof) -> usize {
 }
 
 /// handover.decode: d, n_old and n_new come from the ledger; any deviation from the schema is a parse error.
-pub fn decode(pr: &Profile, blob: &[u8], d: usize, n_old: usize, n_new: usize) -> PR<HandoverProof> {
+pub fn decode(
+    pr: &Profile,
+    blob: &[u8],
+    d: usize,
+    n_old: usize,
+    n_new: usize,
+) -> PR<HandoverProof> {
     if pr.defer {
         return decode_defer(pr, blob, d, n_old, n_new, false);
     }
@@ -136,7 +165,12 @@ pub fn decode(pr: &Profile, blob: &[u8], d: usize, n_old: usize, n_new: usize) -
         return Err("bad magic".into());
     }
     let hdr = r.take(4)?;
-    if (u16::from_be_bytes([hdr[0], hdr[1]]) as usize, hdr[2] as usize, hdr[3] as usize) != (d, n_old, n_new) {
+    if (
+        u16::from_be_bytes([hdr[0], hdr[1]]) as usize,
+        hdr[2] as usize,
+        hdr[3] as usize,
+    ) != (d, n_old, n_new)
+    {
         return Err("width or committee sizes differ from the ledger's".into());
     }
     let n = n_old + n_new;
@@ -176,7 +210,14 @@ struct HandoverSys<const E: usize> {
 
 impl<const E: usize> LinSystem for HandoverSys<E> {
     fn emit(&self, sink: &mut dyn LinSink) {
-        pcs_consistency_e::<E>(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.urows);
+        pcs_consistency_e::<E>(
+            sink,
+            self.kl,
+            &self.ev,
+            &self.shapes,
+            &self.cols,
+            &self.urows,
+        );
         let nrr = ext::nr();
         let mut bufs: [Vec<(u32, u32, u64)>; E] = std::array::from_fn(|_| Vec::new());
         for (q, k) in KINDS.iter().enumerate() {
@@ -188,8 +229,13 @@ impl<const E: usize> LinSystem for HandoverSys<E> {
                 bb.clear();
             }
             // evar(U(e, c), coef): component 0 = coef_0 V_0 + NR coef_1 V_1, component 1 = coef_0 V_1 + coef_1 V_0
-            let mut put = |bufs: &mut [Vec<(u32, u32, u64)>; E], e: usize, c: usize, coef: [u64; E]| {
-                let cell = |kk: usize| (self.urows[e][kk * nr + c / self.kl] as u32, (c % self.kl) as u32);
+            let put = |bufs: &mut [Vec<(u32, u32, u64)>; E], e: usize, c: usize, coef: [u64; E]| {
+                let cell = |kk: usize| {
+                    (
+                        self.urows[e][kk * nr + c / self.kl] as u32,
+                        (c % self.kl) as u32,
+                    )
+                };
                 let mut push = |k: usize, kk: usize, v: u64| {
                     if v != 0 {
                         let (r, cc) = cell(kk);
@@ -205,9 +251,9 @@ impl<const E: usize> LinSystem for HandoverSys<E> {
                     push(1, 0, coef[1]);
                 }
             };
-            for c in 0..s.c {
-                put(&mut bufs, eo, c, b[c]);
-                put(&mut bufs, en, c, ext::neg(b[c]));
+            for (c, &bc) in b.iter().enumerate().take(s.c) {
+                put(&mut bufs, eo, c, bc);
+                put(&mut bufs, en, c, ext::neg(bc));
             }
             let label = format!("handover: old {k}(r) = new {k}(r)");
             for bb in bufs.iter() {
@@ -275,7 +321,10 @@ fn colsum_map(
     let mut cols = BTreeMap::new();
     for (side, sh, pc) in [("old", so, cols_old), ("new", sn, cols_new)] {
         for k in KINDS {
-            cols.insert(format!("{side} {k}"), (pc[k].j.clone(), colsums(&pc[k], sh[k].r)));
+            cols.insert(
+                format!("{side} {k}"),
+                (pc[k].j.clone(), colsums(&pc[k], sh[k].r)),
+            );
         }
     }
     cols
@@ -297,7 +346,10 @@ pub fn verify_proof(
         return Err("handover: old roots are not the ledger head's".into());
     }
     let (so, sn) = shapes(pr, d);
-    if KINDS.iter().any(|k| proof.old_roots[*k].len() != n_old || proof.new_roots[*k].len() != n_new) {
+    if KINDS
+        .iter()
+        .any(|k| proof.old_roots[*k].len() != n_old || proof.new_roots[*k].len() != n_new)
+    {
         return Err("handover: wrong committee sizes".into());
     }
     if lp.ext != pr.ext {
@@ -325,12 +377,28 @@ fn verify_proof_e<const E: usize>(
     let mut tr = transcript(ctx, &proof.old_roots, &proof.new_roots);
     let (ev, shv, urows, nxt) = schedule::<E>(&mut tr, pr, d, so, sn);
     tr.absorb(|h| {
-        h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
+        h.s("lig-evals")
+            .list_hx(&proof.eval_roots)
+            .list_hx(&proof.mask_roots);
     });
     let keys: Vec<String> = KINDS.iter().map(|k| k.to_string()).collect();
     for (side, nn, sh, roots, prox, pc) in [
-        ("old", n_old, so, &proof.old_roots, &proof.prox_old, &proof.cols_old),
-        ("new", n_new, sn, &proof.new_roots, &proof.prox_new, &proof.cols_new),
+        (
+            "old",
+            n_old,
+            so,
+            &proof.old_roots,
+            &proof.prox_old,
+            &proof.cols_old,
+        ),
+        (
+            "new",
+            n_new,
+            sn,
+            &proof.new_roots,
+            &proof.prox_new,
+            &proof.cols_new,
+        ),
     ] {
         let shs: Vec<Shape> = keys.iter().map(|k| sh[k].clone()).collect();
         let rts: Vec<Vec<Hash>> = keys.iter().map(|k| roots[k].clone()).collect();
@@ -340,8 +408,26 @@ fn verify_proof_e<const E: usize>(
             .map_err(|e| format!("handover ({side} committee): {e}"))?;
     }
     let cols = colsum_map(so, sn, &proof.cols_old, &proof.cols_new);
-    let sys = HandoverSys::<E> { kl: pr.k_l, ev, shapes: shv, cols, urows };
-    ligero::verify(lp, n_old + n_new, &[proof.eval_roots.clone()], &[nxt], &proof.mask_roots, &sys, &[], &proof.ligero, &mut tr)
+    let sys = HandoverSys::<E> {
+        kl: pr.k_l,
+        ev,
+        shapes: shv,
+        cols,
+        urows,
+    };
+    ligero::verify(
+        lp,
+        n_old + n_new,
+        &ligero::VerifyGroups {
+            group_roots: std::slice::from_ref(&proof.eval_roots),
+            group_sizes: &[nxt],
+            mask_roots: &proof.mask_roots,
+        },
+        &sys,
+        &[],
+        &proof.ligero,
+        &mut tr,
+    )
 }
 
 /// The untrusted-input verifier (handover.verify_bytes): bytes in; the new committee's roots out when it accepts.
@@ -415,7 +501,8 @@ pub fn prove(
     det: &Det,
 ) -> Result<HandoverProof, String> {
     if pr.defer {
-        return prove_defer(pr, lp, d, n_old, n_new, ctx, mine, None, None, net, det).map(|(p, _)| p);
+        return prove_defer(pr, lp, d, n_old, n_new, ctx, mine, None, None, net, det)
+            .map(|(p, _)| p);
     }
     let n = n_old + n_new;
     let g = net.me();
@@ -423,7 +510,9 @@ pub fn prove(
     let old = g < n_old;
     let (so, sn) = shapes(pr, d);
     for k in KINDS {
-        let c = mine.get_mut(k).ok_or("handover: missing own commitment part")?;
+        let c = mine
+            .get_mut(k)
+            .ok_or("handover: missing own commitment part")?;
         let want = if old { &so[k] } else { &sn[k] };
         c.shape.base = want.base;
         if &c.shape != want {
@@ -440,15 +529,23 @@ pub fn prove(
     // roots of every party's parts; the old committee's are the first n_old
     let all = gather_hashes(net, &[mine["W1"].root, mine["W2"].root]);
     let side_roots = |r: std::ops::Range<usize>| -> Roots {
-        KINDS.iter().enumerate().map(|(ki, k)| (k.to_string(), r.clone().map(|p| all[p][ki]).collect())).collect()
+        KINDS
+            .iter()
+            .enumerate()
+            .map(|(ki, k)| (k.to_string(), r.clone().map(|p| all[p][ki]).collect()))
+            .collect()
     };
     let (old_roots, new_roots) = (side_roots(0..n_old), side_roots(n_old..n));
     if lp.ext != pr.ext {
         return Err("handover: the Ligero's extension degree differs from the profile's".into());
     }
     match pr.ext {
-        1 => prove_e::<1>(pr, lp, d, n_old, n_new, ctx, mine, net, det, old_roots, new_roots, &so, &sn),
-        2 => prove_e::<2>(pr, lp, d, n_old, n_new, ctx, mine, net, det, old_roots, new_roots, &so, &sn),
+        1 => prove_e::<1>(
+            pr, lp, d, n_old, n_new, ctx, mine, net, det, old_roots, new_roots, &so, &sn,
+        ),
+        2 => prove_e::<2>(
+            pr, lp, d, n_old, n_new, ctx, mine, net, det, old_roots, new_roots, &so, &sn,
+        ),
         e => Err(format!("handover: extension degree {e} is not supported")),
     }
 }
@@ -499,10 +596,29 @@ fn prove_e<const E: usize>(
     let (prox_old, cols_old) = pcs_side::<E>(pr, mine, old, 0..n_old, &mut tr, net)?;
     let (prox_new, cols_new) = pcs_side::<E>(pr, mine, !old, n_old..n, &mut tr, net)?;
     let cols = colsum_map(so, sn, &cols_old, &cols_new);
-    let sys = HandoverSys::<E> { kl: pr.k_l, ev, shapes: shv, cols, urows };
+    let sys = HandoverSys::<E> {
+        kl: pr.k_l,
+        ev,
+        shapes: shv,
+        cols,
+        urows,
+    };
     let ligero = lg.prove(net, &mut tr, &sys, &[]);
-    Ok(HandoverProof { old_roots, new_roots, eval_roots, mask_roots, prox_old, cols_old, prox_new, cols_new, ligero, carry_roots: Roots::new() })
+    Ok(HandoverProof {
+        old_roots,
+        new_roots,
+        eval_roots,
+        mask_roots,
+        prox_old,
+        cols_old,
+        prox_new,
+        cols_new,
+        ligero,
+        carry_roots: Roots::new(),
+    })
 }
+
+type PcsSideOut = (BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>);
 
 /// cosnark.pcs_prove(part, [], tr, n_side) for one committee, run over the joint net: the committee's parties
 /// contribute, the others send nothing and follow the transcript.
@@ -513,13 +629,17 @@ fn pcs_side<const E: usize>(
     side: std::ops::Range<usize>,
     tr: &mut Transcript,
     net: &mut dyn Net,
-) -> Result<(BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>), String> {
+) -> Result<PcsSideOut, String> {
     let mut prox = BTreeMap::new();
     for k in KINDS {
         let s = mine[k].shape.clone();
         // F_{p^E} proximity weights: one row per custodian, its E components concatenated (cosnark.pcs_prove)
         let gam = s.prox_weights_e::<E>(ext::chal::<E>(tr, s.prox_len_e(E)));
-        let v = if member { mine[k].row_combo_e::<E>(&gam).concat() } else { Vec::new() };
+        let v = if member {
+            mine[k].row_combo_e::<E>(&gam).concat()
+        } else {
+            Vec::new()
+        };
         let all: Vec<Vec<u64>> = net.all_gather(v)[side.clone()].to_vec();
         tr.absorb(|h| {
             h.s("g").s(k).list2(&all);
@@ -530,12 +650,22 @@ fn pcs_side<const E: usize>(
     for k in KINDS {
         let npts = mine[k].shape.npts;
         if member {
-            mine.get_mut(k).unwrap().take_life(k, pr.lives).map_err(|e| format!("LifeExhausted: {}", e.0))?;
+            mine.get_mut(k)
+                .unwrap()
+                .take_life(k, pr.lives)
+                .map_err(|e| format!("LifeExhausted: {}", e.0))?;
         }
         let jj = tr.distinct_cols(pr.t_cols, npts);
-        let ops: Vec<Opening> = if member { jj.par_iter().map(|&j| mine[k].open(j)).collect() } else { Vec::new() };
+        let ops: Vec<Opening> = if member {
+            jj.par_iter().map(|&j| mine[k].open(j)).collect()
+        } else {
+            Vec::new()
+        };
         let all = net.all_gather(encode_openings(&[ops]));
-        let open = all[side.clone()].iter().map(|v| decode_openings(v).remove(0)).collect();
+        let open = all[side.clone()]
+            .iter()
+            .map(|v| decode_openings(v).remove(0))
+            .collect();
         cols.insert(k.to_string(), PcsCols { j: jj, open });
     }
     Ok((prox, cols))
@@ -547,17 +677,31 @@ fn pcs_side<const E: usize>(
 /// recover the stream and predict the subshares sent to the others. Production resharing is `reshare_os`.
 /// old_shares[i] = custodian i's share vector; returns (sub[i][j], new_shares[j]); with one stream for all
 /// (`rng.len() == 1`) the draws are in Python's order (random.Random(seed)).
-pub fn reshare(old_shares: &[Vec<u64>], n_new: usize, rng: &mut [pycompat::PyRandom]) -> (Vec<Vec<Vec<u64>>>, Vec<Vec<u64>>) {
+pub fn reshare(
+    old_shares: &[Vec<u64>],
+    n_new: usize,
+    rng: &mut [pycompat::PyRandom],
+) -> (Vec<Vec<Vec<u64>>>, Vec<Vec<u64>>) {
     let len = old_shares[0].len();
     let mut sub = Vec::with_capacity(old_shares.len());
     for (i, s) in old_shares.iter().enumerate() {
-        let r = if rng.len() == 1 { &mut rng[0] } else { &mut rng[i] };
-        let mut parts: Vec<Vec<u64>> = (0..n_new - 1).map(|_| (0..len).map(|_| r.randrange_u64(field::p())).collect()).collect();
-        let last = (0..len).map(|c| parts.iter().fold(s[c], |a, p| field::sub(a, p[c]))).collect();
+        let r = if rng.len() == 1 {
+            &mut rng[0]
+        } else {
+            &mut rng[i]
+        };
+        let mut parts: Vec<Vec<u64>> = (0..n_new - 1)
+            .map(|_| (0..len).map(|_| r.randrange_u64(field::p())).collect())
+            .collect();
+        let last = (0..len)
+            .map(|c| parts.iter().fold(s[c], |a, p| field::sub(a, p[c])))
+            .collect();
         parts.push(last);
         sub.push(parts);
     }
-    let new = (0..n_new).map(|j| combine(&sub.iter().map(|p| p[j].as_slice()).collect::<Vec<_>>())).collect();
+    let new = (0..n_new)
+        .map(|j| combine(&sub.iter().map(|p| p[j].as_slice()).collect::<Vec<_>>()))
+        .collect();
     (sub, new)
 }
 
@@ -566,7 +710,9 @@ pub fn reshare(old_shares: &[Vec<u64>], n_new: usize, rng: &mut [pycompat::PyRan
 pub fn reshare_os(share: &[u64], n_new: usize) -> Vec<Vec<u64>> {
     let p = field::p();
     let mut parts: Vec<Vec<u64>> = (0..n_new - 1).map(|_| os_field(share.len(), p)).collect();
-    let last = (0..share.len()).map(|c| parts.iter().fold(share[c], |a, q| field::sub(a, q[c]))).collect();
+    let last = (0..share.len())
+        .map(|c| parts.iter().fold(share[c], |a, q| field::sub(a, q[c])))
+        .collect();
     parts.push(last);
     parts
 }
@@ -584,14 +730,17 @@ pub fn os_field(n: usize, p: u64) -> Vec<u64> {
             }
         }
     }
-    buf.iter_mut().for_each(|b| unsafe { std::ptr::write_volatile(b, 0) });
+    buf.iter_mut()
+        .for_each(|b| unsafe { std::ptr::write_volatile(b, 0) });
     out
 }
 
 /// New custodian j's share: the sum of the subshares it received.
 pub fn combine(received: &[&[u64]]) -> Vec<u64> {
     let len = received[0].len();
-    (0..len).map(|c| received.iter().fold(0u64, |a, s| field::add(a, s[c]))).collect()
+    (0..len)
+        .map(|c| received.iter().fold(0u64, |a, s| field::add(a, s[c])))
+        .collect()
 }
 
 // ------------------------------------------------------------------------------------------------ cut E (DEFER)
@@ -606,17 +755,29 @@ pub const MAGIC_E: &[u8; 8] = b"DLHAND02";
 
 /// The cut E shapes: (old: W1, W2 [single life] and, for a pending head, c1p, c2p [second life]; new W1, W2 [single
 /// life, roots only]; new carries c1, c2 [first life]).
-pub fn shapes_defer(pr: &Profile, d: usize, pending: bool) -> (BTreeMap<String, Shape>, BTreeMap<String, Shape>, BTreeMap<String, Shape>) {
+pub fn shapes_defer(
+    pr: &Profile,
+    d: usize,
+    pending: bool,
+) -> (
+    BTreeMap<String, Shape>,
+    BTreeMap<String, Shape>,
+    BTreeMap<String, Shape>,
+) {
     let m = 2 * log2(d);
     let w = Shape::new(&pr.w_life(), m, 0);
-    let mut so: BTreeMap<String, Shape> = KINDS.iter().map(|k| (k.to_string(), w.clone())).collect();
+    let mut so: BTreeMap<String, Shape> =
+        KINDS.iter().map(|k| (k.to_string(), w.clone())).collect();
     if pending {
         for k in CARRY_IN {
             so.insert(k.to_string(), carry_shape(pr, true));
         }
     }
     let sn = KINDS.iter().map(|k| (k.to_string(), w.clone())).collect();
-    let sc = CARRY.iter().map(|k| (k.to_string(), carry_shape(pr, false))).collect();
+    let sc = CARRY
+        .iter()
+        .map(|k| (k.to_string(), carry_shape(pr, false)))
+        .collect();
     (so, sn, sc)
 }
 
@@ -637,7 +798,11 @@ fn devals<const E: usize>(r: &[Vec<[u64; E]>; 2], dpts: Option<&[Vec<[u64; E]>; 
     ev
 }
 
-fn dshape<'a>(key: &str, so: &'a BTreeMap<String, Shape>, sc: &'a BTreeMap<String, Shape>) -> &'a Shape {
+fn dshape<'a>(
+    key: &str,
+    so: &'a BTreeMap<String, Shape>,
+    sc: &'a BTreeMap<String, Shape>,
+) -> &'a Shape {
     let (side, k) = key.split_once(' ').unwrap();
     if side == "old" {
         &so[k]
@@ -677,11 +842,26 @@ struct DeferSys<const E: usize> {
 
 impl<const E: usize> LinSystem for DeferSys<E> {
     fn emit(&self, sink: &mut dyn LinSink) {
-        pcs_consistency_e::<E>(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.urows);
+        pcs_consistency_e::<E>(
+            sink,
+            self.kl,
+            &self.ev,
+            &self.shapes,
+            &self.cols,
+            &self.urows,
+        );
         let mut em = crate::spine::EEm::<E>::new(sink);
         for i in 0..self.ev.len() / 2 {
             let (ew, ec) = (2 * i, 2 * i + 1);
-            crate::spine::y_form(&mut em, &self.ev, &self.shapes, &self.urows, self.kl, ew, ext::one());
+            crate::spine::y_form(
+                &mut em,
+                &self.ev,
+                &self.shapes,
+                &self.urows,
+                self.kl,
+                ew,
+                ext::one(),
+            );
             let r0 = self.urows[ec][0];
             em.var(std::array::from_fn(|k| (r0, k)), ext::neg(ext::one()));
             let (wk, ck) = (&self.ev[ew].0[4..], &self.ev[ec].0);
@@ -696,7 +876,12 @@ impl<const E: usize> LinSystem for DeferSys<E> {
 }
 
 /// The transcript up to r: ctx, old W, the old carries (pending head), new W (handover._dkeys).
-fn transcript_defer(ctx: &HandoverCtx, old_roots: &Roots, new_roots: &Roots, pending: bool) -> Transcript {
+fn transcript_defer(
+    ctx: &HandoverCtx,
+    old_roots: &Roots,
+    new_roots: &Roots,
+    pending: bool,
+) -> Transcript {
     let mut tr = Transcript::new("handover");
     let cr = ctx.repr();
     tr.absorb(|h| {
@@ -741,7 +926,7 @@ fn pcs_side_defer<const E: usize>(
     side: std::ops::Range<usize>,
     tr: &mut Transcript,
     net: &mut dyn Net,
-) -> Result<(BTreeMap<String, Vec<Vec<u64>>>, BTreeMap<String, PcsCols>), String> {
+) -> Result<PcsSideOut, String> {
     let mut prox = BTreeMap::new();
     for (k, s) in sh {
         let gam = s.prox_weights_e::<E>(ext::chal::<E>(tr, s.prox_len_e(E)));
@@ -760,7 +945,8 @@ fn pcs_side_defer<const E: usize>(
         if let Some(m) = own.as_mut() {
             let c = m.get_mut(k).unwrap();
             let ml = c.max_lives;
-            c.take_life(k, ml).map_err(|e| format!("LifeExhausted: {}", e.0))?;
+            c.take_life(k, ml)
+                .map_err(|e| format!("LifeExhausted: {}", e.0))?;
         }
         let jj = tr.distinct_cols(pr.t_cols, s.npts);
         let ops: Vec<Opening> = match own.as_ref() {
@@ -768,7 +954,10 @@ fn pcs_side_defer<const E: usize>(
             None => Vec::new(),
         };
         let all = net.all_gather(encode_openings(&[ops]));
-        let open = all[side.clone()].iter().map(|v| decode_openings(v).remove(0)).collect();
+        let open = all[side.clone()]
+            .iter()
+            .map(|v| decode_openings(v).remove(0))
+            .collect();
         cols.insert(k.clone(), PcsCols { j: jj, open });
     }
     Ok((prox, cols))
@@ -797,8 +986,32 @@ pub fn prove_defer(
         return Err("handover: the Ligero's extension degree differs from the profile's".into());
     }
     match pr.ext {
-        1 => prove_defer_e::<1>(pr, lp, d, n_old, n_new, ctx, mine, pend, old_carries, net, det),
-        2 => prove_defer_e::<2>(pr, lp, d, n_old, n_new, ctx, mine, pend, old_carries, net, det),
+        1 => prove_defer_e::<1>(
+            pr,
+            lp,
+            d,
+            n_old,
+            n_new,
+            ctx,
+            mine,
+            pend,
+            old_carries,
+            net,
+            det,
+        ),
+        2 => prove_defer_e::<2>(
+            pr,
+            lp,
+            d,
+            n_old,
+            n_new,
+            ctx,
+            mine,
+            pend,
+            old_carries,
+            net,
+            det,
+        ),
         e => Err(format!("handover: extension degree {e} is not supported")),
     }
 }
@@ -822,9 +1035,11 @@ fn prove_defer_e<const E: usize>(
     assert_eq!(net.n(), n);
     let old = g < n_old;
     let pending = pend.is_some();
-    let (so, sn, sc) = shapes_defer(pr, d, pending);
+    let (so, _sn, sc) = shapes_defer(pr, d, pending);
     for k in KINDS {
-        let c = mine.get_mut(k).ok_or("handover: missing own commitment part")?;
+        let c = mine
+            .get_mut(k)
+            .ok_or("handover: missing own commitment part")?;
         c.shape.base = 0;
         if c.shape != so[k] {
             return Err("handover: own commitment part has the wrong shape".into());
@@ -834,18 +1049,26 @@ fn prove_defer_e<const E: usize>(
         }
     }
     if old && pending {
-        let oc = old_carries.as_mut().ok_or("handover: an old custodian of a pending head needs its carries")?;
+        let oc = old_carries
+            .as_mut()
+            .ok_or("handover: an old custodian of a pending head needs its carries")?;
         for k in CARRY_IN {
             let c = oc.get_mut(k).ok_or("handover: missing own carry")?;
             c.shape.base = c.shape.block; // the carry's second life
             if c.shape != so[k] || pend.unwrap().carry_roots[k].get(g) != Some(&c.root) {
-                return Err(format!("handover: own carry {k} is not the head's pending carry"));
+                return Err(format!(
+                    "handover: own carry {k} is not the head's pending carry"
+                ));
             }
         }
     }
     let all = gather_hashes(net, &[mine["W1"].root, mine["W2"].root]);
     let side_roots = |r: std::ops::Range<usize>| -> Roots {
-        KINDS.iter().enumerate().map(|(ki, k)| (k.to_string(), r.clone().map(|p| all[p][ki]).collect())).collect()
+        KINDS
+            .iter()
+            .enumerate()
+            .map(|(ki, k)| (k.to_string(), r.clone().map(|p| all[p][ki]).collect()))
+            .collect()
     };
     let (mut old_roots, new_roots) = (side_roots(0..n_old), side_roots(n_old..n));
     if let Some(p) = pend {
@@ -862,18 +1085,34 @@ fn prove_defer_e<const E: usize>(
             let (_, y) = mine[*k].eval_share_e::<E>(&r[q]);
             let mut v = y.to_vec();
             v.resize(1 << carry_m(E), 0);
-            my_carries.insert(CARRY[q].to_string(), PcsParty::commit(pr, &v, CARRY[q], g - n_old, det));
+            my_carries.insert(
+                CARRY[q].to_string(),
+                PcsParty::commit(pr, &v, CARRY[q], g - n_old, det),
+            );
         }
     }
-    let mc: Vec<Hash> = if old { vec![[0u8; 32]; 2] } else { CARRY.iter().map(|k| my_carries[*k].root).collect() };
+    let mc: Vec<Hash> = if old {
+        vec![[0u8; 32]; 2]
+    } else {
+        CARRY.iter().map(|k| my_carries[*k].root).collect()
+    };
     let allc = gather_hashes(net, &mc);
-    let carry_roots: Roots = CARRY.iter().enumerate().map(|(ci, k)| (k.to_string(), (n_old..n).map(|p| allc[p][ci]).collect())).collect();
+    let carry_roots: Roots = CARRY
+        .iter()
+        .enumerate()
+        .map(|(ci, k)| (k.to_string(), (n_old..n).map(|p| allc[p][ci]).collect()))
+        .collect();
     tr.absorb(|h| {
-        h.s("carry").list_hx(&carry_roots["c1"]).list_hx(&carry_roots["c2"]);
+        h.s("carry")
+            .list_hx(&carry_roots["c1"])
+            .list_hx(&carry_roots["c2"]);
     });
     let dp = pend.map(pend_points::<E>);
     let ev = devals::<E>(&r, dp.as_ref());
-    let shv: Vec<Shape> = ev.iter().map(|(k, _)| dshape(k, &so, &sc).clone()).collect();
+    let shv: Vec<Shape> = ev
+        .iter()
+        .map(|(k, _)| dshape(k, &so, &sc).clone())
+        .collect();
     let (urows, nr) = drows(pr, &shv, E);
     let seed_label = format!("(('handover',), {})", ctx.repr());
     let mut lg = LigParty::new(lp, g, n, &seed_label, det);
@@ -907,7 +1146,10 @@ fn prove_defer_e<const E: usize>(
     // the old side: its W and (pending) its carries, in one map (sorted keys: W1, W2, c1p, c2p)
     let mut old_own: Option<BTreeMap<String, PcsParty>> = None;
     if old {
-        let mut m: BTreeMap<String, PcsParty> = KINDS.iter().map(|k| (k.to_string(), mine.remove(*k).unwrap())).collect();
+        let mut m: BTreeMap<String, PcsParty> = KINDS
+            .iter()
+            .map(|k| (k.to_string(), mine.remove(*k).unwrap()))
+            .collect();
         if pending {
             let oc = old_carries.as_mut().unwrap();
             for k in CARRY_IN {
@@ -928,21 +1170,64 @@ fn prove_defer_e<const E: usize>(
         }
     }
     let (prox_old, cols_old) = res?;
-    let (prox_new, cols_new) = pcs_side_defer::<E>(pr, &sc, if old { None } else { Some(&mut my_carries) }, n_old..n, &mut tr, net)?;
+    let (prox_new, cols_new) = pcs_side_defer::<E>(
+        pr,
+        &sc,
+        if old { None } else { Some(&mut my_carries) },
+        n_old..n,
+        &mut tr,
+        net,
+    )?;
     let mut cols = BTreeMap::new();
     for (k, s) in &so {
-        cols.insert(format!("old {k}"), (cols_old[k].j.clone(), colsums(&cols_old[k], s.r)));
+        cols.insert(
+            format!("old {k}"),
+            (cols_old[k].j.clone(), colsums(&cols_old[k], s.r)),
+        );
     }
     for (k, s) in &sc {
-        cols.insert(format!("new {k}"), (cols_new[k].j.clone(), colsums(&cols_new[k], s.r)));
+        cols.insert(
+            format!("new {k}"),
+            (cols_new[k].j.clone(), colsums(&cols_new[k], s.r)),
+        );
     }
-    let sys = DeferSys::<E> { kl: pr.k_l, ev, shapes: shv, cols, urows };
+    let sys = DeferSys::<E> {
+        kl: pr.k_l,
+        ev,
+        shapes: shv,
+        cols,
+        urows,
+    };
     let ligero = lg.prove(net, &mut tr, &sys, &[]);
     let out = (!old).then(|| DeferIn {
-        points: [("W1".to_string(), flat(&r[0])), ("W2".to_string(), flat(&r[1]))].into_iter().collect(),
-        carries: [("c1p".to_string(), my_carries.remove("c1").unwrap()), ("c2p".to_string(), my_carries.remove("c2").unwrap())].into_iter().collect(),
+        points: [
+            ("W1".to_string(), flat(&r[0])),
+            ("W2".to_string(), flat(&r[1])),
+        ]
+        .into_iter()
+        .collect(),
+        carries: [
+            ("c1p".to_string(), my_carries.remove("c1").unwrap()),
+            ("c2p".to_string(), my_carries.remove("c2").unwrap()),
+        ]
+        .into_iter()
+        .collect(),
     });
-    Ok((HandoverProof { old_roots, new_roots, eval_roots, mask_roots, prox_old, cols_old, prox_new, cols_new, ligero, carry_roots }, out))
+    Ok((
+        HandoverProof {
+            old_roots,
+            new_roots,
+            eval_roots,
+            mask_roots,
+            prox_old,
+            cols_old,
+            prox_new,
+            cols_new,
+            ligero,
+            carry_roots,
+        },
+        out,
+    ))
 }
 
 /// handover.verify_defer on a parsed proof. Returns the new head's pending claims.
@@ -963,11 +1248,17 @@ pub fn verify_proof_defer(
     if !proof.old_roots.keys().eq(so.keys()) {
         return Err("handover: the proof names the wrong old commitments for this head".into());
     }
-    if KINDS.iter().any(|k| old_roots.get(*k) != Some(&proof.old_roots[*k])) {
+    if KINDS
+        .iter()
+        .any(|k| old_roots.get(*k) != Some(&proof.old_roots[*k]))
+    {
         return Err("handover: old roots are not the ledger head's".into());
     }
     if let Some(p) = pend {
-        if CARRY_IN.iter().any(|k| p.carry_roots.get(*k) != Some(&proof.old_roots[*k])) {
+        if CARRY_IN
+            .iter()
+            .any(|k| p.carry_roots.get(*k) != Some(&proof.old_roots[*k]))
+        {
             return Err("handover: the old carries are not the head's pending carries".into());
         }
     }
@@ -1004,38 +1295,97 @@ fn verify_defer_e<const E: usize>(
     let mut tr = transcript_defer(ctx, &proof.old_roots, &proof.new_roots, pend.is_some());
     let r = dpoints::<E>(&mut tr, d);
     tr.absorb(|h| {
-        h.s("carry").list_hx(&proof.carry_roots["c1"]).list_hx(&proof.carry_roots["c2"]);
+        h.s("carry")
+            .list_hx(&proof.carry_roots["c1"])
+            .list_hx(&proof.carry_roots["c2"]);
     });
     let dp = pend.map(pend_points::<E>);
     let ev = devals::<E>(&r, dp.as_ref());
     let shv: Vec<Shape> = ev.iter().map(|(k, _)| dshape(k, so, sc).clone()).collect();
     let (urows, nxt) = drows(pr, &shv, E);
     tr.absorb(|h| {
-        h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
+        h.s("lig-evals")
+            .list_hx(&proof.eval_roots)
+            .list_hx(&proof.mask_roots);
     });
     for (side, nn, sh, roots, prox, pc) in [
-        ("old", n_old, so, &proof.old_roots, &proof.prox_old, &proof.cols_old),
-        ("new", n_new, sc, &proof.carry_roots, &proof.prox_new, &proof.cols_new),
+        (
+            "old",
+            n_old,
+            so,
+            &proof.old_roots,
+            &proof.prox_old,
+            &proof.cols_old,
+        ),
+        (
+            "new",
+            n_new,
+            sc,
+            &proof.carry_roots,
+            &proof.prox_new,
+            &proof.cols_new,
+        ),
     ] {
         let keys: Vec<String> = sh.keys().cloned().collect();
         let shs: Vec<Shape> = keys.iter().map(|k| sh[k].clone()).collect();
         let rts: Vec<Vec<Hash>> = keys.iter().map(|k| roots[k].clone()).collect();
         let pxs: Vec<Vec<Vec<u64>>> = keys.iter().map(|k| prox[k].clone()).collect();
         let cls: Vec<PcsCols> = keys.iter().map(|k| pc[k].clone()).collect();
-        pcs::verify_e::<E>(pr, &keys, &shs, &rts, &pxs, &cls, &mut tr, nn).map_err(|e| format!("handover ({side} committee): {e}"))?;
+        pcs::verify_e::<E>(pr, &keys, &shs, &rts, &pxs, &cls, &mut tr, nn)
+            .map_err(|e| format!("handover ({side} committee): {e}"))?;
     }
     let mut cols = BTreeMap::new();
     for (k, s) in so {
-        cols.insert(format!("old {k}"), (proof.cols_old[k].j.clone(), colsums(&proof.cols_old[k], s.r)));
+        cols.insert(
+            format!("old {k}"),
+            (
+                proof.cols_old[k].j.clone(),
+                colsums(&proof.cols_old[k], s.r),
+            ),
+        );
     }
     for (k, s) in sc {
-        cols.insert(format!("new {k}"), (proof.cols_new[k].j.clone(), colsums(&proof.cols_new[k], s.r)));
+        cols.insert(
+            format!("new {k}"),
+            (
+                proof.cols_new[k].j.clone(),
+                colsums(&proof.cols_new[k], s.r),
+            ),
+        );
     }
-    let sys = DeferSys::<E> { kl: pr.k_l, ev, shapes: shv, cols, urows };
-    ligero::verify(lp, n_old + n_new, &[proof.eval_roots.clone()], &[nxt], &proof.mask_roots, &sys, &[], &proof.ligero, &mut tr)?;
+    let sys = DeferSys::<E> {
+        kl: pr.k_l,
+        ev,
+        shapes: shv,
+        cols,
+        urows,
+    };
+    ligero::verify(
+        lp,
+        n_old + n_new,
+        &ligero::VerifyGroups {
+            group_roots: std::slice::from_ref(&proof.eval_roots),
+            group_sizes: &[nxt],
+            mask_roots: &proof.mask_roots,
+        },
+        &sys,
+        &[],
+        &proof.ligero,
+        &mut tr,
+    )?;
     Ok(Pending {
-        points: [("W1".to_string(), flat(&r[0])), ("W2".to_string(), flat(&r[1]))].into_iter().collect(),
-        carry_roots: [("c1p".to_string(), proof.carry_roots["c1"].clone()), ("c2p".to_string(), proof.carry_roots["c2"].clone())].into_iter().collect(),
+        points: [
+            ("W1".to_string(), flat(&r[0])),
+            ("W2".to_string(), flat(&r[1])),
+        ]
+        .into_iter()
+        .collect(),
+        carry_roots: [
+            ("c1p".to_string(), proof.carry_roots["c1"].clone()),
+            ("c2p".to_string(), proof.carry_roots["c2"].clone()),
+        ]
+        .into_iter()
+        .collect(),
     })
 }
 
@@ -1054,7 +1404,8 @@ pub fn verify_defer(
     blob: &[u8],
 ) -> Result<(Roots, Pending), String> {
     let res = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        let proof = decode_defer(pr, blob, d, n_old, n_new, pend.is_some()).map_err(|e| format!("parse: {e}"))?;
+        let proof = decode_defer(pr, blob, d, n_old, n_new, pend.is_some())
+            .map_err(|e| format!("parse: {e}"))?;
         let p = verify_proof_defer(pr, lp, d, n_old, n_new, ctx, old_roots, pend, &proof)?;
         Ok((proof.new_roots, p))
     }));
@@ -1065,7 +1416,14 @@ pub fn verify_defer(
 }
 
 /// handover.decode under cut E (schema_defer). `pending` comes from the ledger.
-pub fn decode_defer(pr: &Profile, blob: &[u8], d: usize, n_old: usize, n_new: usize, pending: bool) -> PR<HandoverProof> {
+pub fn decode_defer(
+    pr: &Profile,
+    blob: &[u8],
+    d: usize,
+    n_old: usize,
+    n_new: usize,
+    pending: bool,
+) -> PR<HandoverProof> {
     if !sizes_ok(d, n_old, n_new) {
         return Err("committee sizes or width out of range".into());
     }
@@ -1075,7 +1433,12 @@ pub fn decode_defer(pr: &Profile, blob: &[u8], d: usize, n_old: usize, n_new: us
         return Err("bad magic".into());
     }
     let hdr = r.take(4)?;
-    if (u16::from_be_bytes([hdr[0], hdr[1]]) as usize, hdr[2] as usize, hdr[3] as usize) != (d, n_old, n_new) {
+    if (
+        u16::from_be_bytes([hdr[0], hdr[1]]) as usize,
+        hdr[2] as usize,
+        hdr[3] as usize,
+    ) != (d, n_old, n_new)
+    {
         return Err("width or committee sizes differ from the ledger's".into());
     }
     let n = n_old + n_new;
@@ -1138,14 +1501,30 @@ fn byte_len_defer(pr: &Profile, d: usize, p: &HandoverProof) -> usize {
             js.len() * (8 * sz + 32 * path_len)
         }
     };
-    let side = |nn: usize, sh: &BTreeMap<String, Shape>, cols: &BTreeMap<String, PcsCols>| -> usize {
-        sh.iter().map(|(k, s)| 32 * nn + 8 * nn * pr.ext * s.w + 4 * pr.t_cols + nn * tree(&cols[k].j, s.r, s.path_len())).sum::<usize>()
-    };
+    let side =
+        |nn: usize, sh: &BTreeMap<String, Shape>, cols: &BTreeMap<String, PcsCols>| -> usize {
+            sh.iter()
+                .map(|(k, s)| {
+                    32 * nn
+                        + 8 * nn * pr.ext * s.w
+                        + 4 * pr.t_cols
+                        + nn * tree(&cols[k].j, s.r, s.path_len())
+                })
+                .sum::<usize>()
+        };
     let (k, t) = (pr.k_l, pr.t_hide);
     let lg = crate::pcs::bitlen(pr.blow * (k + t) - 1) + 1;
-    let lj: Vec<usize> = if pr.multiproof { p.ligero.j.clone() } else { (0..pr.t_open).collect() };
+    let lj: Vec<usize> = if pr.multiproof {
+        p.ligero.j.clone()
+    } else {
+        (0..pr.t_open).collect()
+    };
     let lig = 8 * pr.ext * ((k + t) + (2 * k + t - 1) + (2 * (k + t) - 1))
         + if pr.multiproof { 4 * pr.t_open } else { 0 }
         + n * (tree(&lj, nrows_defer(pr, d, pending), lg) + tree(&lj, 3 * pr.ext, lg));
-    12 + side(n_old, &so, &p.cols_old) + 32 * n_new * KINDS.len() + side(n_new, &sc, &p.cols_new) + 2 * 32 * n + lig
+    12 + side(n_old, &so, &p.cols_old)
+        + 32 * n_new * KINDS.len()
+        + side(n_new, &sc, &p.cols_new)
+        + 2 * 32 * n
+        + lig
 }

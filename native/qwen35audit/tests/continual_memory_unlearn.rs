@@ -5,18 +5,20 @@
 //! and `Qwen3.8` (`H_v = 48 -> 64` head width).
 
 use qwen35audit::continual_memory::{
-    apply_continual_wy_episode, apply_rank_r_subspace_unlearning, build_gram_schmidt_subspace_basis,
-    canonical_three_episodes, evaluate_episode_recall, prove_continual_wy_update_zk,
-    prove_zk_unlearning_certificate, readout_snr_db_vs_counterfactual,
-    verify_continual_wy_update_zk, verify_zk_unlearning_certificate, ContinualEpisodeMmr,
-    FastWeightMemoryState, GramSchmidtSubspaceBasis, PreloadedQwen35Model, ProverVaultKey,
-    QwenBpeTokenizer, ZkContinualUpdateProof, ZkUnlearningCertificate, LIMB_RADIX, M_GS, S_BND_HALF,
-    TAU_ZERO, UHI_HALF, ULO_HALF,
+    apply_continual_wy_episode, apply_rank_r_subspace_unlearning,
+    build_gram_schmidt_subspace_basis, canonical_three_episodes, evaluate_episode_recall,
+    prove_continual_wy_update_zk, prove_zk_unlearning_certificate,
+    readout_snr_db_vs_counterfactual, verify_continual_wy_update_zk,
+    verify_zk_unlearning_certificate, ContinualEpisodeMmr, FastWeightMemoryState,
+    GramSchmidtSubspaceBasis, PreloadedQwen35Model, ProverVaultKey, QwenBpeTokenizer,
+    ZkContinualUpdateProof, ZkUnlearningCertificate, LIMB_RADIX, M_GS, S_BND_HALF, TAU_ZERO,
+    UHI_HALF, ULO_HALF,
 };
 use qwen35audit::ext4::{bb_from_i64, P};
 use qwen35audit::safetensors_mmap::{
     MmapSafetensors, QWEN35_SAFETENSORS_FILE, QWEN35_TOKENIZER_FILE,
 };
+use std::ops::Add;
 
 #[test]
 fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_planted_attacks() {
@@ -43,7 +45,10 @@ fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_plan
     let base_a = evaluate_episode_recall(&model, &s0, &ep_a, gain);
     let base_b = evaluate_episode_recall(&model, &s0, &ep_b, gain);
     let base_c = evaluate_episode_recall(&model, &s0, &ep_c, gain);
-    assert_eq!(base_b.recall_rate, 0.0, "S_0 must not know private Episode B facts");
+    assert_eq!(
+        base_b.recall_rate, 0.0,
+        "S_0 must not know private Episode B facts"
+    );
     assert_eq!(base_a.mean_readout_l2, 0.0);
     assert_eq!(base_c.mean_readout_l2, 0.0);
 
@@ -117,7 +122,10 @@ fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_plan
     let snr_c = readout_snr_db_vs_counterfactual(&unl_wit.s_unlearned, &s_counterfactual, &ep_c);
 
     let rel_res_b = rec_unl_b.mean_readout_l2 / rec3_b.mean_readout_l2;
-    assert_eq!(rec_unl_b.recall_rate, 0.0, "Episode B recall must drop to 0.000");
+    assert_eq!(
+        rec_unl_b.recall_rate, 0.0,
+        "Episode B recall must drop to 0.000"
+    );
     assert!(
         rel_res_b < 1e-4,
         "Episode B relative residual norm {rel_res_b:.3e} must be < 10^-4"
@@ -224,8 +232,16 @@ fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_plan
         "Attack 2a (partial rank-1 erase against forget_request_root) must be rejected"
     );
     assert!(
-        verify_zk_unlearning_certificate(&s3_root, &s_unl_root, &forget_req_b, Some(&mmr_root3), 1, 6, &cert_bytes)
-            .is_err(),
+        verify_zk_unlearning_certificate(
+            &s3_root,
+            &s_unl_root,
+            &forget_req_b,
+            Some(&mmr_root3),
+            1,
+            6,
+            &cert_bytes
+        )
+        .is_err(),
         "Attack 2b (head count h_v mismatch) must be rejected"
     );
 
@@ -253,8 +269,9 @@ fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_plan
         "Attack 3b: non-zero inactive U column rejected"
     );
     let mut bad_gram_cert = parsed_cert.clone();
-    bad_gram_cert.gram_shift_at_zg =
-        bad_gram_cert.gram_shift_at_zg.add(qwen35audit::ext4::Ext4::ONE);
+    bad_gram_cert.gram_shift_at_zg = bad_gram_cert
+        .gram_shift_at_zg
+        .add(qwen35audit::ext4::Ext4::ONE);
     assert!(
         verify_zk_unlearning_certificate(
             &s3_root,
@@ -347,7 +364,8 @@ fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_plan
     // Attack 6 (`#115` Item 1): Register orthogonal decoy `U = basis_a` when proving Episode B (`wit2`)!
     let mut decoy_mmr = ContinualEpisodeMmr::new();
     assert!(
-        prove_continual_wy_update_zk(&vault_key, &wit2, &basis_a, &nonce_b, &mut decoy_mmr).is_err(),
+        prove_continual_wy_update_zk(&vault_key, &wit2, &basis_a, &nonce_b, &mut decoy_mmr)
+            .is_err(),
         "Attack 6 (#115 Item 1): decoy orthogonal U != span(K) rejected at episode registration!"
     );
 
@@ -355,7 +373,8 @@ fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_plan
     let mut bad_wy_pf = ZkContinualUpdateProof::from_bytes(&up_pf2).unwrap();
     bad_wy_pf.l_at_zkk = qwen35audit::ext4::Ext4::ZERO;
     assert!(
-        verify_continual_wy_update_zk(&s1_root, &mmr_root2, &s2_root, &bad_wy_pf.to_bytes()).is_err(),
+        verify_continual_wy_update_zk(&s1_root, &mmr_root2, &s2_root, &bad_wy_pf.to_bytes())
+            .is_err(),
         "Attack 7 (#115 Item 2): forged L != round(K*K^T / M_wy) rejected by kk_gruen!"
     );
 
@@ -363,7 +382,8 @@ fn test_real_qwen35_and_qwen38_continual_learning_rank_r_unlearning_and_all_plan
     let mut bad_idx_pf = ZkContinualUpdateProof::from_bytes(&up_pf2).unwrap();
     bad_idx_pf.episode_idx = 0;
     assert!(
-        verify_continual_wy_update_zk(&s1_root, &mmr_root2, &s2_root, &bad_idx_pf.to_bytes()).is_err(),
+        verify_continual_wy_update_zk(&s1_root, &mmr_root2, &s2_root, &bad_idx_pf.to_bytes())
+            .is_err(),
         "Attack 8 (#115 Item 4): episode_idx != mmr_proof.leaf_index rejected!"
     );
 

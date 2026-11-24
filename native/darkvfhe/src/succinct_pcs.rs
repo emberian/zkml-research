@@ -95,7 +95,7 @@ impl Ext3Field {
         while !(b.len() == 1 && b[0] == 0) {
             let db = b.len() - 1;
             let inv_lb = fp.inv(b[db]);
-            while a.len() - 1 >= db && !(a.len() == 1 && a[0] == 0) {
+            while a.len() > db && !(a.len() == 1 && a[0] == 0) {
                 let da = a.len() - 1;
                 let coef = fp.mul(a[da], inv_lb);
                 let shift = da - db;
@@ -172,7 +172,8 @@ impl Ext3Field {
         // Reduce u^4 = c0*u + c1*u^2, then u^3 = c0 + c1*u:
         let d3_eff = d3;
         let r2 = fp.add(d2, fp.mul(d4, self.c1));
-        let r1 = fp.red128(d1 as u128 + d4 as u128 * self.c0 as u128 + d3_eff as u128 * self.c1 as u128);
+        let r1 =
+            fp.red128(d1 as u128 + d4 as u128 * self.c0 as u128 + d3_eff as u128 * self.c1 as u128);
         let r0 = fp.add(d0, fp.mul(d3_eff, self.c0));
         [r0, r1, r2]
     }
@@ -240,7 +241,7 @@ impl CosetDomain {
         for k in 1..=s {
             let t = npts.div_ceil(1usize << k);
             let cost = t * ((1usize << (k - 1)) * k as usize + w);
-            if best.map_or(true, |b| cost <= b.0) {
+            if best.is_none_or(|b| cost <= b.0) {
                 best = Some((cost, k, t));
             }
         }
@@ -279,7 +280,11 @@ pub fn radix2_ntt_natural(fp: &FastPrime61, a: &mut [u64], tw: &[u64]) {
     let n = a.len();
     let lg = n.trailing_zeros();
     for i in 0..n {
-        let r = if lg == 0 { 0 } else { i.reverse_bits() >> (usize::BITS - lg) };
+        let r = if lg == 0 {
+            0
+        } else {
+            i.reverse_bits() >> (usize::BITS - lg)
+        };
         if i < r {
             a.swap(i, r);
         }
@@ -360,7 +365,7 @@ impl PcsShape {
             }
             // Approximate proof words: 6 * w (u_prox + u_eval) + t_cols * r_total (columns) + 2 * (mr + mc) * 9 (sumcheck)
             let cost_words = 6 * w + t_cols * r_total + 9 * (mr + mc);
-            if best.map_or(true, |b| cost_words < b.0) {
+            if best.is_none_or(|b| cost_words < b.0) {
                 best = Some((cost_words, mr, mc));
             }
         }
@@ -368,13 +373,7 @@ impl PcsShape {
         Self::from_mr_mc(fp, mr, mc, t_cols, blow)
     }
 
-    pub fn from_mr_mc(
-        fp: &FastPrime61,
-        mr: usize,
-        mc: usize,
-        t_cols: usize,
-        blow: usize,
-    ) -> Self {
+    pub fn from_mr_mc(fp: &FastPrime61, mr: usize, mc: usize, t_cols: usize, blow: usize) -> Self {
         assert!(mr >= 3 && mc >= 4 && blow >= 2);
         let rd = 1usize << mr;
         let usable_rows = rd - NUM_ZK_DATA_ROWS;
@@ -440,9 +439,9 @@ impl PcsRng {
         // Mix monotonic timestamp + address jitter as defense-in-depth:
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_PCS_OS_RNG|");
-        h.update(&seed);
+        h.update(seed);
         h.update(
-            &(std::time::SystemTime::now()
+            (std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .map(|d| d.as_nanos())
                 .unwrap_or(0))
@@ -461,21 +460,19 @@ impl PcsRng {
     #[inline]
     pub fn next_block(&mut self) -> [u8; 32] {
         let mut h = Sha256::new();
-        h.update(&self.seed);
-        h.update(&self.ctr.to_le_bytes());
+        h.update(self.seed);
+        h.update(self.ctr.to_le_bytes());
         self.ctr += 1;
         h.finalize().into()
     }
 
     pub fn fill_fp_row(&mut self, fp: &FastPrime61, row_tag: u64, dst: &mut [u64]) {
-        let mut sub_ctr = 0u64;
-        for chunk in dst.chunks_mut(2) {
+        for (sub_ctr, chunk) in dst.chunks_mut(2).enumerate() {
             let mut h = Sha256::new();
             h.update(b"PCS_MASK_ROW|");
-            h.update(&self.seed);
-            h.update(&row_tag.to_le_bytes());
-            h.update(&sub_ctr.to_le_bytes());
-            sub_ctr += 1;
+            h.update(self.seed);
+            h.update(row_tag.to_le_bytes());
+            h.update((sub_ctr as u64).to_le_bytes());
             let d: [u8; 32] = h.finalize().into();
             let lo = u128::from_le_bytes(d[0..16].try_into().unwrap());
             chunk[0] = fp.red128(lo);
@@ -489,8 +486,8 @@ impl PcsRng {
     pub fn salt_for_col(&self, j: usize) -> [u8; 32] {
         let mut h = Sha256::new();
         h.update(b"PCS_COL_SALT|");
-        h.update(&self.seed);
-        h.update(&(j as u64).to_le_bytes());
+        h.update(self.seed);
+        h.update((j as u64).to_le_bytes());
         h.finalize().into()
     }
 }
@@ -499,7 +496,7 @@ impl PcsRng {
 pub fn hash_pcs_leaf(j: usize, salt: &[u8; 32], col: &[u64]) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_PCS_LEAF_V1|");
-    h.update(&(j as u32).to_le_bytes());
+    h.update((j as u32).to_le_bytes());
     h.update(salt);
     let mut raw = Vec::with_capacity(col.len() * 8);
     for &v in col {
@@ -513,7 +510,7 @@ pub fn hash_pcs_leaf(j: usize, salt: &[u8; 32], col: &[u64]) -> [u8; 32] {
 pub fn hash_pcs_pad(j: usize) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_PCS_PAD_V1|");
-    h.update(&(j as u32).to_le_bytes());
+    h.update((j as u32).to_le_bytes());
     h.finalize().into()
 }
 
@@ -578,10 +575,7 @@ pub fn prove_multiproof(
     let levels = tree.len() - 1;
     let chosen_salts: Vec<[u8; 32]> = js.iter().map(|&j| salts[j]).collect();
     let needed = multiproof_needed(js, levels);
-    let siblings: Vec<[u8; 32]> = needed
-        .into_iter()
-        .map(|(l, x)| tree[l][x ^ 1])
-        .collect();
+    let siblings: Vec<[u8; 32]> = needed.into_iter().map(|(l, x)| tree[l][x ^ 1]).collect();
     MerkleMultiproof {
         salts: chosen_salts,
         siblings,
@@ -614,8 +608,7 @@ pub fn verify_multiproof(
         .map(|i| hash_pcs_leaf(js[i], &mp.salts[i], &cols[i]))
         .collect();
 
-    let mut known: BTreeMap<usize, [u8; 32]> =
-        js.iter().copied().zip(leaf_hashes).collect();
+    let mut known: BTreeMap<usize, [u8; 32]> = js.iter().copied().zip(leaf_hashes).collect();
     let mut sib_iter = mp.siblings.iter();
     for _l in 0..tree_levels {
         let mut next = BTreeMap::new();
@@ -662,7 +655,7 @@ impl PcsTranscript {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_SUCCINCT_PCS_V1|");
         h.update(domain_tag.as_bytes());
-        h.update(&p.to_le_bytes());
+        h.update(p.to_le_bytes());
         h.update(root);
         h.update(context);
         PcsTranscript {
@@ -672,8 +665,8 @@ impl PcsTranscript {
 
     pub fn absorb_bytes(&mut self, data: &[u8]) {
         let mut h = Sha256::new();
-        h.update(&self.state);
-        h.update(&(data.len() as u64).to_le_bytes());
+        h.update(self.state);
+        h.update((data.len() as u64).to_le_bytes());
         h.update(data);
         self.state = h.finalize().into();
     }
@@ -684,29 +677,29 @@ impl PcsTranscript {
         buf[8..16].copy_from_slice(&x[1].to_le_bytes());
         buf[16..24].copy_from_slice(&x[2].to_le_bytes());
         let mut h = Sha256::new();
-        h.update(&self.state);
-        h.update(&buf);
+        h.update(self.state);
+        h.update(buf);
         self.state = h.finalize().into();
     }
 
     pub fn absorb_poly3(&mut self, tag: &str, poly: &[Ext3]) {
         let mut h = Sha256::new();
-        h.update(&self.state);
+        h.update(self.state);
         h.update(tag.as_bytes());
-        h.update(&(poly.len() as u64).to_le_bytes());
+        h.update((poly.len() as u64).to_le_bytes());
         for c in poly {
-            h.update(&c[0].to_le_bytes());
-            h.update(&c[1].to_le_bytes());
-            h.update(&c[2].to_le_bytes());
+            h.update(c[0].to_le_bytes());
+            h.update(c[1].to_le_bytes());
+            h.update(c[2].to_le_bytes());
         }
         self.state = h.finalize().into();
     }
 
     pub fn squeeze_fp(&mut self, fp: &FastPrime61, tag: u64) -> u64 {
         let mut h = Sha256::new();
-        h.update(&self.state);
+        h.update(self.state);
         h.update(b"FP|");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         self.state = out;
         fp.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -728,9 +721,9 @@ impl PcsTranscript {
         let mut ctr = 0u64;
         while out.len() < t_cols {
             let mut h = Sha256::new();
-            h.update(&self.state);
+            h.update(self.state);
             h.update(b"COLS|");
-            h.update(&ctr.to_le_bytes());
+            h.update(ctr.to_le_bytes());
             ctr += 1;
             let digest: [u8; 32] = h.finalize().into();
             for chunk in digest.chunks_exact(8) {
@@ -837,11 +830,7 @@ impl SuccinctPcsOpeningProof {
         }
         let mut sumcheck_rounds = Vec::with_capacity(n_sc);
         for _ in 0..n_sc {
-            sumcheck_rounds.push([
-                cur.read_ext3(p)?,
-                cur.read_ext3(p)?,
-                cur.read_ext3(p)?,
-            ]);
+            sumcheck_rounds.push([cur.read_ext3(p)?, cur.read_ext3(p)?, cur.read_ext3(p)?]);
         }
         let w_prox = cur.read_u32()? as usize;
         if w_prox > (1 << 22) {
@@ -948,13 +937,8 @@ impl CommittedMatrixPcs {
             "data exceeds usable_rows * C capacity"
         );
         let ef = Ext3Field::new(fp);
-        let (c, w, _rd, r_total, usable) = (
-            shape.c,
-            shape.w,
-            shape.rd,
-            shape.r_total,
-            shape.usable_rows,
-        );
+        let (c, w, _rd, r_total, usable) =
+            (shape.c, shape.w, shape.rd, shape.r_total, shape.usable_rows);
 
         let mut ext = vec![0u64; r_total * w];
         // Fill data rows 0..usable + random tail masks [c..w) in parallel using per-row keyed PRF:
@@ -1026,7 +1010,7 @@ impl CommittedMatrixPcs {
         let ef = &self.ef;
         let sh = &self.shape;
         let n_poly = 1usize << log_n;
-        assert!(log_n <= sh.mc && sh.c % n_poly == 0);
+        assert!(log_n <= sh.mc && sh.c.is_multiple_of(n_poly));
         let polys_per_row = sh.c / n_poly;
         let _total_slots = sh.rd * polys_per_row;
         let usable_slots = sh.usable_rows * polys_per_row;
@@ -1137,7 +1121,13 @@ impl CommittedMatrixPcs {
         let poly0 = if half0 >= 2048 {
             (0..half0).into_par_iter().map(eval_pair_r0).reduce(
                 || [ef.zero(), ef.zero(), ef.zero()],
-                |acc, x| [ef.add(acc[0], x[0]), ef.add(acc[1], x[1]), ef.add(acc[2], x[2])],
+                |acc, x| {
+                    [
+                        ef.add(acc[0], x[0]),
+                        ef.add(acc[1], x[1]),
+                        ef.add(acc[2], x[2]),
+                    ]
+                },
             )
         } else {
             let mut acc = [ef.zero(), ef.zero(), ef.zero()];
@@ -1196,7 +1186,13 @@ impl CommittedMatrixPcs {
             let poly = if half >= 2048 {
                 (0..half).into_par_iter().map(eval_pair).reduce(
                     || [ef.zero(), ef.zero(), ef.zero()],
-                    |acc, x| [ef.add(acc[0], x[0]), ef.add(acc[1], x[1]), ef.add(acc[2], x[2])],
+                    |acc, x| {
+                        [
+                            ef.add(acc[0], x[0]),
+                            ef.add(acc[1], x[1]),
+                            ef.add(acc[2], x[2]),
+                        ]
+                    },
                 )
             } else {
                 let mut acc = [ef.zero(), ef.zero(), ef.zero()];
@@ -1291,20 +1287,33 @@ impl CommittedMatrixPcs {
     }
 }
 
+/// Statement inputs for [`verify_slot_claims`].
+pub struct SlotClaimsQuery<'a> {
+    pub shape: &'a PcsShape,
+    pub root: &'a [u8; 32],
+    pub log_n: usize,
+    pub v_families: &'a [Vec<u64>],
+    pub claims: &'a [SlotLinearClaim],
+    pub context: &'a [u8; 32],
+}
+
 /// Standalone Succinct Verifier for `SuccinctPcsOpeningProof` (`0` access to secret witness!).
 pub fn verify_slot_claims(
     fp: &FastPrime61,
-    shape: &PcsShape,
-    root: &[u8; 32],
-    log_n: usize,
-    v_families: &[Vec<u64>],
-    claims: &[SlotLinearClaim],
-    context: &[u8; 32],
+    query: &SlotClaimsQuery<'_>,
     proof: &SuccinctPcsOpeningProof,
 ) -> Result<(), String> {
+    let SlotClaimsQuery {
+        shape,
+        root,
+        log_n,
+        v_families,
+        claims,
+        context,
+    } = *query;
     let ef = Ext3Field::new(*fp);
     let n_poly = 1usize << log_n;
-    if log_n > shape.mc || shape.c % n_poly != 0 {
+    if log_n > shape.mc || !shape.c.is_multiple_of(n_poly) {
         return Err("invalid log_n vs shape.mc".into());
     }
     let m_bits = shape.mc + shape.mr;
@@ -1344,7 +1353,9 @@ pub fn verify_slot_claims(
         let g0 = poly[0];
         let g1 = ef.add(poly[0], ef.add(poly[1], poly[2]));
         if ef.add(g0, g1) != running_claim {
-            return Err(format!("PCS sumcheck round {round} failed g(0)+g(1)==claim"));
+            return Err(format!(
+                "PCS sumcheck round {round} failed g(0)+g(1)==claim"
+            ));
         }
         tr.absorb_ext3(&poly[0]);
         tr.absorb_ext3(&poly[1]);
@@ -1394,10 +1405,10 @@ pub fn verify_slot_claims(
 
     let z_col = &z_challenges[..shape.mc];
     let eq_col = ef.build_eq_le(z_col);
-    let mut m_eval = ef.zero();
-    for c in 0..shape.c {
-        m_eval = ef.add(m_eval, ef.mul(proof.u_eval[c], eq_col[c]));
-    }
+    let m_eval = proof.u_eval[..shape.c]
+        .iter()
+        .zip(&eq_col)
+        .fold(ef.zero(), |acc, (&u, &eq)| ef.add(acc, ef.mul(u, eq)));
 
     if running_claim != ef.mul(a_eval, m_eval) {
         return Err("PCS terminal sumcheck check A~(z)*M~(z) == claim failed".into());
@@ -1539,7 +1550,11 @@ fn combine_rows_ext3(fp: &FastPrime61, ext: &[u64], w: usize, row_weights: &[Ext
     out
 }
 
-fn precompute_coset_tables(fp: &FastPrime61, dom: &CosetDomain, w: usize) -> (Vec<u64>, Vec<Vec<u64>>) {
+fn precompute_coset_tables(
+    fp: &FastPrime61,
+    dom: &CosetDomain,
+    w: usize,
+) -> (Vec<u64>, Vec<Vec<u64>>) {
     let n = 1usize << dom.k;
     let mut tw = Vec::with_capacity(n / 2);
     let mut cur = 1u64;
@@ -1655,8 +1670,8 @@ fn stream_coset_leaves(
         .map(|j| {
             let mut h = Sha256::new();
             h.update(b"DARKVFHE_PCS_LEAF_V1|");
-            h.update(&(j as u32).to_le_bytes());
-            h.update(&salts[j]);
+            h.update((j as u32).to_le_bytes());
+            h.update(salts[j]);
             h
         })
         .collect();
@@ -1666,11 +1681,14 @@ fn stream_coset_leaves(
         let rows = encode_rows_chunk(fp, shape, ext, r0, nb, &tw, &scale);
         hashers.par_iter_mut().enumerate().for_each(|(j, h)| {
             for dr in 0..nb {
-                h.update(&rows[dr * npts + j].to_le_bytes());
+                h.update(rows[dr * npts + j].to_le_bytes());
             }
         });
     }
-    hashers.into_par_iter().map(|h| h.finalize().into()).collect()
+    hashers
+        .into_par_iter()
+        .map(|h| h.finalize().into())
+        .collect()
 }
 
 fn stream_selected_columns(
@@ -1802,13 +1820,9 @@ mod tests {
         let v1: Vec<u64> = (0..n).map(|j| fp.pow(5, j as u64)).collect();
         let v_fams = vec![v0.clone(), v1.clone()];
 
-        let dot_slot = |slot: usize, vf: &[u64]| -> u64 {
-            fp.dot(&data[slot * n..(slot + 1) * n], vf)
-        };
-        let rhs0 = fp.add(
-            fp.mul(3, dot_slot(0, &v0)),
-            fp.mul(11, dot_slot(5, &v0)),
-        );
+        let dot_slot =
+            |slot: usize, vf: &[u64]| -> u64 { fp.dot(&data[slot * n..(slot + 1) * n], vf) };
+        let rhs0 = fp.add(fp.mul(3, dot_slot(0, &v0)), fp.mul(11, dot_slot(5, &v0)));
         let rhs1 = dot_slot(19, &v1);
 
         let claims = vec![
@@ -1824,31 +1838,69 @@ mod tests {
         let decoded = SuccinctPcsOpeningProof::from_bytes(&mut rdr, fp.p).expect("decode proof");
         assert!(rdr.is_eof());
 
-        verify_slot_claims(&fp, &pcs.shape, &pcs.root, log_n, &v_fams, &claims, &ctx, &decoded)
-            .expect("honest PCS proof must verify");
+        verify_slot_claims(
+            &fp,
+            &SlotClaimsQuery {
+                shape: &pcs.shape,
+                root: &pcs.root,
+                log_n,
+                v_families: &v_fams,
+                claims: &claims,
+                context: &ctx,
+            },
+            &decoded,
+        )
+        .expect("honest PCS proof must verify");
 
         // Falsifier 1: Mutate claimed evaluation by +1
         let mut bad_claims = claims.clone();
         bad_claims[1].rhs = fp.add(bad_claims[1].rhs, 1);
-        assert!(
-            verify_slot_claims(&fp, &pcs.shape, &pcs.root, log_n, &v_fams, &bad_claims, &ctx, &decoded)
-                .is_err()
-        );
+        assert!(verify_slot_claims(
+            &fp,
+            &SlotClaimsQuery {
+                shape: &pcs.shape,
+                root: &pcs.root,
+                log_n,
+                v_families: &v_fams,
+                claims: &bad_claims,
+                context: &ctx,
+            },
+            &decoded,
+        )
+        .is_err());
 
         // Falsifier 2: Forge 1 cell in opened column
         let mut bad_col = decoded.clone();
         bad_col.opened_cols[0][0] = fp.add(bad_col.opened_cols[0][0], 1);
-        assert!(
-            verify_slot_claims(&fp, &pcs.shape, &pcs.root, log_n, &v_fams, &claims, &ctx, &bad_col)
-                .is_err()
-        );
+        assert!(verify_slot_claims(
+            &fp,
+            &SlotClaimsQuery {
+                shape: &pcs.shape,
+                root: &pcs.root,
+                log_n,
+                v_families: &v_fams,
+                claims: &claims,
+                context: &ctx,
+            },
+            &bad_col,
+        )
+        .is_err());
 
         // Falsifier 3: Forge 1 Merkle sibling hash
         let mut bad_mp = decoded.clone();
         bad_mp.multiproof.siblings[0][0] ^= 1;
-        assert!(
-            verify_slot_claims(&fp, &pcs.shape, &pcs.root, log_n, &v_fams, &claims, &ctx, &bad_mp)
-                .is_err()
-        );
+        assert!(verify_slot_claims(
+            &fp,
+            &SlotClaimsQuery {
+                shape: &pcs.shape,
+                root: &pcs.root,
+                log_n,
+                v_families: &v_fams,
+                claims: &claims,
+                context: &ctx,
+            },
+            &bad_mp,
+        )
+        .is_err());
     }
 }

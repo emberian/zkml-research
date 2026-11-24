@@ -28,7 +28,10 @@ pub struct Key {
 
 impl Key {
     pub fn new(name: &str, key: &[u8; 32]) -> Key {
-        Key { name: name.to_string(), key: Box::new(*key) }
+        Key {
+            name: name.to_string(),
+            key: Box::new(*key),
+        }
     }
     pub fn name(&self) -> &str {
         &self.name
@@ -62,7 +65,11 @@ struct Geom {
 impl Geom {
     fn aad(&self, key: &Key, role: &str, b: u32) -> Vec<u8> {
         let id: String = self.id.iter().map(|x| format!("{x:02x}")).collect();
-        format!("dl-vault2|{}|{role}|{id}|{b}|{}|{}|{}", key.name, self.count, self.len, self.bs).into_bytes()
+        format!(
+            "dl-vault2|{}|{role}|{id}|{b}|{}|{}|{}",
+            key.name, self.count, self.len, self.bs
+        )
+        .into_bytes()
     }
     fn nonce(&self, b: u32) -> Nonce {
         let mut n = [0u8; 12];
@@ -109,7 +116,13 @@ impl<'k> Writer<'k> {
         Self::create_bs(path, key, role, len, BLOCK)
     }
     /// With another block size (tests: many blocks from a small file).
-    pub fn create_bs(path: &Path, key: &'k Key, role: &str, len: u64, bs: u32) -> std::io::Result<Writer<'k>> {
+    pub fn create_bs(
+        path: &Path,
+        key: &'k Key,
+        role: &str,
+        len: u64,
+        bs: u32,
+    ) -> std::io::Result<Writer<'k>> {
         let count = len.div_ceil(bs as u64);
         let count = u32::try_from(count).map_err(|_| std::io::Error::other("too many blocks"))?;
         let mut id = [0u8; 8];
@@ -126,7 +139,16 @@ impl<'k> Writer<'k> {
         let mut f = o.open(&tmp)?;
         f.write_all(&g.header())?;
         f.set_len(g.file_len())?;
-        Ok(Writer { key, role: role.to_string(), g, f, tmp, path: path.to_path_buf(), open: BTreeMap::new(), sealed: vec![false; count as usize] })
+        Ok(Writer {
+            key,
+            role: role.to_string(),
+            g,
+            f,
+            tmp,
+            path: path.to_path_buf(),
+            open: BTreeMap::new(),
+            sealed: vec![false; count as usize],
+        })
     }
 
     pub fn write_at(&mut self, mut off: u64, mut data: &[u8]) -> std::io::Result<()> {
@@ -145,7 +167,9 @@ impl<'k> Writer<'k> {
             e.0[o..o + k].copy_from_slice(&data[..k]);
             e.1 += k;
             if e.1 > pl {
-                return Err(std::io::Error::other(format!("block {b}: a byte written twice")));
+                return Err(std::io::Error::other(format!(
+                    "block {b}: a byte written twice"
+                )));
             }
             if e.1 == pl {
                 let (buf, _) = self.open.remove(&b).unwrap();
@@ -158,7 +182,15 @@ impl<'k> Writer<'k> {
     }
 
     fn seal_block(&mut self, b: u32, mut buf: Vec<u8>) -> std::io::Result<()> {
-        let tag = self.key.aead().seal_in_place_separate_tag(self.g.nonce(b), Aad::from(self.g.aad(self.key, &self.role, b)), &mut buf).map_err(|_| std::io::Error::other("seal"))?;
+        let tag = self
+            .key
+            .aead()
+            .seal_in_place_separate_tag(
+                self.g.nonce(b),
+                Aad::from(self.g.aad(self.key, &self.role, b)),
+                &mut buf,
+            )
+            .map_err(|_| std::io::Error::other("seal"))?;
         buf.extend_from_slice(tag.as_ref());
         self.f.seek(SeekFrom::Start(self.g.at(b)))?;
         self.f.write_all(&buf)?;
@@ -169,10 +201,12 @@ impl<'k> Writer<'k> {
     pub fn finish(mut self) -> std::io::Result<()> {
         if !self.open.is_empty() || self.sealed.iter().any(|s| !s) {
             let missing = self.sealed.iter().filter(|s| !**s).count();
-            for (_, (buf, _)) in self.open.iter_mut() {
+            for (buf, _) in self.open.values_mut() {
                 buf.iter_mut().for_each(|x| *x = 0);
             }
-            return Err(std::io::Error::other(format!("{missing} blocks not fully written")));
+            return Err(std::io::Error::other(format!(
+                "{missing} blocks not fully written"
+            )));
         }
         self.f.sync_all()?;
         std::fs::rename(&self.tmp, &self.path)
@@ -182,7 +216,10 @@ impl<'k> Writer<'k> {
 /// Is this file DLVAULT2?
 pub fn is_sealed(path: &Path) -> bool {
     let mut h = [0u8; 8];
-    std::fs::File::open(path).and_then(|mut f| f.read_exact(&mut h)).is_ok() && &h == MAGIC
+    std::fs::File::open(path)
+        .and_then(|mut f| f.read_exact(&mut h))
+        .is_ok()
+        && &h == MAGIC
 }
 
 /// Reads a DLVAULT2 file's plaintext with Read + Seek, opening one block at a time.
@@ -201,7 +238,10 @@ impl Reader {
         let mut h = [0u8; 32];
         f.read_exact(&mut h)?;
         if &h[..8] != MAGIC {
-            return Err(std::io::Error::other(format!("{}: not a DLVAULT2 file", path.display())));
+            return Err(std::io::Error::other(format!(
+                "{}: not a DLVAULT2 file",
+                path.display()
+            )));
         }
         let g = Geom {
             id: h[8..16].try_into().unwrap(),
@@ -210,13 +250,27 @@ impl Reader {
             count: u32::from_le_bytes(h[28..32].try_into().unwrap()),
         };
         if g.bs == 0 || g.len.div_ceil(g.bs as u64) != g.count as u64 {
-            return Err(std::io::Error::other(format!("{}: inconsistent header", path.display())));
+            return Err(std::io::Error::other(format!(
+                "{}: inconsistent header",
+                path.display()
+            )));
         }
         let fl = f.metadata()?.len();
         if fl != g.file_len() {
-            return Err(std::io::Error::other(format!("{}: {fl} bytes, a sealed file of this header has {} (truncated or extended)", path.display(), g.file_len())));
+            return Err(std::io::Error::other(format!(
+                "{}: {fl} bytes, a sealed file of this header has {} (truncated or extended)",
+                path.display(),
+                g.file_len()
+            )));
         }
-        let mut r = Reader { key, role: role.to_string(), g, f, pos: 0, cur: None };
+        let mut r = Reader {
+            key,
+            role: role.to_string(),
+            g,
+            f,
+            pos: 0,
+            cur: None,
+        };
         // the header's fields are authenticated by every block's AAD: open the first block now, so a file under
         // another key / role / header fails at open
         if r.g.count > 0 {
@@ -243,8 +297,16 @@ impl Reader {
         let n = self
             .key
             .aead()
-            .open_in_place(self.g.nonce(b), Aad::from(self.g.aad(&self.key, &self.role, b)), &mut buf)
-            .map_err(|_| std::io::Error::other(format!("block {b} does not open under this key, role and place")))?
+            .open_in_place(
+                self.g.nonce(b),
+                Aad::from(self.g.aad(&self.key, &self.role, b)),
+                &mut buf,
+            )
+            .map_err(|_| {
+                std::io::Error::other(format!(
+                    "block {b} does not open under this key, role and place"
+                ))
+            })?
             .len();
         buf.truncate(n);
         if let Some((_, old)) = self.cur.as_mut() {

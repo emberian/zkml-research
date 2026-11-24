@@ -2,8 +2,16 @@ use pycompat::{PyRandom, ReprHasher};
 use std::process::Command;
 
 fn py(code: &str) -> String {
-    let out = Command::new("python3").arg("-c").arg(code).output().expect("python3");
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    let out = Command::new("python3")
+        .arg("-c")
+        .arg(code)
+        .output()
+        .expect("python3");
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
     String::from_utf8(out.stdout).unwrap().trim().to_string()
 }
 
@@ -27,7 +35,11 @@ fn big_seed_and_wide_draws_match() {
     for _ in 0..50 {
         let (neg, mag) = r.randint_sym_pow2(175);
         let v = num_bigint::BigUint::from_slice(&pycompat::random::to_u32s(&mag));
-        got.push(if neg && v != num_bigint::BigUint::from(0u32) { format!("-{v}") } else { v.to_string() });
+        got.push(if neg && v != num_bigint::BigUint::from(0u32) {
+            format!("-{v}")
+        } else {
+            v.to_string()
+        });
     }
     for _ in 0..50 {
         got.push(r.ternary().to_string());
@@ -83,10 +95,17 @@ fn repr_hash_any_buffer_capacity() {
 fn from_state_continues_the_stream() {
     let want = py("import random\nr=random.Random(5)\nfor _ in range(1000): r.randrange(2**61)\nst=r.getstate()[1]\nprint(' '.join(map(str,st)))\nprint(' '.join(str(r.randrange(2305843009212399617)) for _ in range(1500)))");
     let mut lines = want.lines();
-    let st: Vec<u64> = lines.next().unwrap().split(' ').map(|x| x.parse().unwrap()).collect();
+    let st: Vec<u64> = lines
+        .next()
+        .unwrap()
+        .split(' ')
+        .map(|x| x.parse().unwrap())
+        .collect();
     let mut r = PyRandom::from_state(&st);
     assert_eq!(r.state(), st);
-    let got: Vec<String> = (0..1500).map(|_| r.randrange_u64(2305843009212399617).to_string()).collect();
+    let got: Vec<String> = (0..1500)
+        .map(|_| r.randrange_u64(2305843009212399617).to_string())
+        .collect();
     assert_eq!(got.join(" "), lines.next().unwrap());
     let mut a = PyRandom::from_u64(5);
     for _ in 0..1000 {
@@ -109,5 +128,8 @@ fn fixed_width_draws_equal_vec_draws() {
         let u2 = b.randbelow_arr::<5>(&q);
         assert_eq!(&u1[..], &u2[..u1.len()]);
     }
-    assert_ne!(a.genrand_u32(), PyRandom::from_str_seed("fixed").genrand_u32());
+    assert_ne!(
+        a.genrand_u32(),
+        PyRandom::from_str_seed("fixed").genrand_u32()
+    );
 }

@@ -18,7 +18,10 @@ pub fn carry_m(e: usize) -> usize {
 pub fn carry_shape(pr: &Profile, second: bool) -> Shape {
     let s = Shape::new(pr, carry_m(pr.ext), 0);
     let b = s.block;
-    Shape { base: if second { b } else { 0 }, ..s }
+    Shape {
+        base: if second { b } else { 0 },
+        ..s
+    }
 }
 
 /// A step's pending claims as the ledger and the verifier hold them (proofwire.deferred_of / pending_json): the
@@ -31,7 +34,10 @@ pub struct Pending {
 
 impl Pending {
     pub fn points_e<const E: usize>(&self, k: &str) -> Vec<[u64; E]> {
-        self.points[k].chunks(E).map(|c| std::array::from_fn(|i| c[i])).collect()
+        self.points[k]
+            .chunks(E)
+            .map(|c| std::array::from_fn(|i| c[i]))
+            .collect()
     }
 }
 
@@ -45,14 +51,28 @@ pub struct DeferIn {
 
 impl DeferIn {
     pub fn points_e<const E: usize>(&self, k: &str) -> Vec<[u64; E]> {
-        self.points[k].chunks(E).map(|c| std::array::from_fn(|i| c[i])).collect()
+        self.points[k]
+            .chunks(E)
+            .map(|c| std::array::from_fn(|i| c[i]))
+            .collect()
     }
 }
 
 /// The ledger's view of the custodians' DeferIns (every party's carry roots, in party order).
 pub fn pending_of(parts: &[DeferIn]) -> Pending {
-    let carry_roots = CARRY_IN.iter().map(|k| (k.to_string(), parts.iter().map(|d| d.carries[*k].root).collect())).collect();
-    Pending { points: parts[0].points.clone(), carry_roots }
+    let carry_roots = CARRY_IN
+        .iter()
+        .map(|k| {
+            (
+                k.to_string(),
+                parts.iter().map(|d| d.carries[*k].root).collect(),
+            )
+        })
+        .collect();
+    Pending {
+        points: parts[0].points.clone(),
+        carry_roots,
+    }
 }
 
 // ------------------------------------------------------------------------------------------------- closing proof
@@ -94,7 +114,12 @@ pub fn close_shapes(pr: &Profile, d: usize) -> BTreeMap<String, Shape> {
 /// cosnark_zk.close_evals: W1, W2 at the last step's points, then the carries (their single row).
 fn close_evals<const E: usize>(w1: Vec<[u64; E]>, w2: Vec<[u64; E]>) -> EvalsE<E> {
     let cpt = vec![ext::zero::<E>(); carry_m(E)];
-    vec![("W1".into(), w1), ("W2".into(), w2), ("c1p".into(), cpt.clone()), ("c2p".into(), cpt)]
+    vec![
+        ("W1".into(), w1),
+        ("W2".into(), w2),
+        ("c1p".into(), cpt.clone()),
+        ("c2p".into(), cpt),
+    ]
 }
 
 /// The u rows of the close evaluations, in order (E component blocks of ceil(W / K_L) rows each).
@@ -118,10 +143,25 @@ struct CloseSys<const E: usize> {
 
 impl<const E: usize> LinSystem for CloseSys<E> {
     fn emit(&self, sink: &mut dyn LinSink) {
-        spine::pcs_consistency_e(sink, self.kl, &self.ev, &self.shapes, &self.cols, &self.urows);
+        spine::pcs_consistency_e(
+            sink,
+            self.kl,
+            &self.ev,
+            &self.shapes,
+            &self.cols,
+            &self.urows,
+        );
         let mut em = EEm::<E>::new(sink);
         for i in 0..2 {
-            spine::y_form(&mut em, &self.ev, &self.shapes, &self.urows, self.kl, i, ext::one());
+            spine::y_form(
+                &mut em,
+                &self.ev,
+                &self.shapes,
+                &self.urows,
+                self.kl,
+                i,
+                ext::one(),
+            );
             let r0 = self.urows[2 + i][0];
             em.var(std::array::from_fn(|k| (r0, k)), ext::neg(ext::one()));
             em.done(&format!("closing: W{}(r_k) = c_k", i + 1), ext::zero());
@@ -131,7 +171,15 @@ impl<const E: usize> LinSystem for CloseSys<E> {
 
 /// The context tuple (model, epoch, step, "close") as the transcript absorbs it.
 fn close_ctx(h: &mut Py, c: &Ctx) {
-    h.raw(b"(").str_any(&c.model).raw(b", ").int(c.epoch).raw(b", ").int(c.step).raw(b", ").s("close").raw(b")");
+    h.raw(b"(")
+        .str_any(&c.model)
+        .raw(b", ")
+        .int(c.epoch)
+        .raw(b", ")
+        .int(c.step)
+        .raw(b", ")
+        .s("close")
+        .raw(b")");
 }
 
 /// cosnark_zk.prove_close for custodian i: head = this party's head W1, W2 commitments (the last step's children),
@@ -179,8 +227,17 @@ fn prove_close_g<const E: usize>(
     let keys: Vec<String> = com.keys().cloned().collect();
     let my: Vec<Hash> = keys.iter().map(|k| com[k].root).collect();
     let all = gather_hashes(net, &my);
-    let roots: BTreeMap<String, Vec<Hash>> = keys.iter().enumerate().map(|(ki, k)| (k.clone(), (0..n).map(|p| all[p][ki]).collect())).collect();
-    let seed = format!("(3, ({}, {}, {}, 'close'))", crate::h::py_str_repr(&ctx.model), ctx.epoch, ctx.step);
+    let roots: BTreeMap<String, Vec<Hash>> = keys
+        .iter()
+        .enumerate()
+        .map(|(ki, k)| (k.clone(), (0..n).map(|p| all[p][ki]).collect()))
+        .collect();
+    let seed = format!(
+        "(3, ({}, {}, {}, 'close'))",
+        crate::h::py_str_repr(&ctx.model),
+        ctx.epoch,
+        ctx.step
+    );
     let mut lg = LigParty::new(lp, i, n, &seed, det);
     let mut tr = Transcript::new("close-zk");
     tr.absorb(|h| {
@@ -193,7 +250,10 @@ fn prove_close_g<const E: usize>(
         });
     }
     let ev = close_evals::<E>(dfr.points_e::<E>("W1"), dfr.points_e::<E>("W2"));
-    let shp: BTreeMap<String, Shape> = com.iter().map(|(k, c)| (k.clone(), c.shape.clone())).collect();
+    let shp: BTreeMap<String, Shape> = com
+        .iter()
+        .map(|(k, c)| (k.clone(), c.shape.clone()))
+        .collect();
     let (urows, _) = close_rows(&shp, pr.k_l, E);
     for (k, pt) in &ev {
         let c = &com[k];
@@ -210,10 +270,26 @@ fn prove_close_g<const E: usize>(
         h.s("lig-evals").list_hx(&eval_roots).list_hx(&mask_roots);
     });
     let (prox, pcs_cols) = spine::pcs_prove_e::<E>(pr, &mut com, &mut tr, net, n)?;
-    let cols = pcs_cols.iter().map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r)))).collect();
-    let sys = CloseSys::<E> { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(), ev, cols, urows };
+    let cols = pcs_cols
+        .iter()
+        .map(|(k, c)| (k.clone(), (c.j.clone(), colsums(c, com[k].shape.r))))
+        .collect();
+    let sys = CloseSys::<E> {
+        kl: pr.k_l,
+        shapes: ev.iter().map(|(k, _)| shp[k].clone()).collect(),
+        ev,
+        cols,
+        urows,
+    };
     let ligero = lg.prove(net, &mut tr, &sys, &[]);
-    Ok(CloseProof { roots, eval_roots, mask_roots, prox, pcs_cols, ligero })
+    Ok(CloseProof {
+        roots,
+        eval_roots,
+        mask_roots,
+        prox,
+        pcs_cols,
+        ligero,
+    })
 }
 
 /// cosnark_zk.verify_close: public data only; head_roots (the head's W1, W2 roots) and the pending claims come from
@@ -252,7 +328,13 @@ fn verify_close_g<const E: usize>(
     if roots.keys().ne(sh.keys()) {
         return Err("closing proof names the wrong commitments".into());
     }
-    if ["W1", "W2"].iter().any(|k| head_roots.get(*k) != Some(&roots[*k])) || CARRY_IN.iter().any(|k| pend.carry_roots.get(*k) != Some(&roots[*k])) {
+    if ["W1", "W2"]
+        .iter()
+        .any(|k| head_roots.get(*k) != Some(&roots[*k]))
+        || CARRY_IN
+            .iter()
+            .any(|k| pend.carry_roots.get(*k) != Some(&roots[*k]))
+    {
         return Err("closing proof is not over the head's commitments and carries".into());
     }
     let mut tr = Transcript::new("close-zk");
@@ -268,7 +350,9 @@ fn verify_close_g<const E: usize>(
     let ev = close_evals::<E>(pend.points_e::<E>("W1"), pend.points_e::<E>("W2"));
     let (urows, nrows) = close_rows(&sh, pr.k_l, E);
     tr.absorb(|h| {
-        h.s("lig-evals").list_hx(&proof.eval_roots).list_hx(&proof.mask_roots);
+        h.s("lig-evals")
+            .list_hx(&proof.eval_roots)
+            .list_hx(&proof.mask_roots);
     });
     let keys: Vec<String> = sh.keys().cloned().collect();
     let shv: Vec<Shape> = sh.values().cloned().collect();
@@ -276,7 +360,36 @@ fn verify_close_g<const E: usize>(
     let proxv: Vec<Vec<Vec<u64>>> = keys.iter().map(|k| proof.prox[k].clone()).collect();
     let colv: Vec<PcsCols> = keys.iter().map(|k| proof.pcs_cols[k].clone()).collect();
     crate::pcs::verify_e::<E>(pr, &keys, &shv, &rootv, &proxv, &colv, &mut tr, n)?;
-    let cols = keys.iter().map(|k| (k.clone(), (proof.pcs_cols[k].j.clone(), colsums(&proof.pcs_cols[k], sh[k].r)))).collect();
-    let sys = CloseSys::<E> { kl: pr.k_l, shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(), ev, cols, urows };
-    ligero::verify(lp, n, &[proof.eval_roots.clone()], &[nrows], &proof.mask_roots, &sys, &[], &proof.ligero, &mut tr)
+    let cols = keys
+        .iter()
+        .map(|k| {
+            (
+                k.clone(),
+                (
+                    proof.pcs_cols[k].j.clone(),
+                    colsums(&proof.pcs_cols[k], sh[k].r),
+                ),
+            )
+        })
+        .collect();
+    let sys = CloseSys::<E> {
+        kl: pr.k_l,
+        shapes: ev.iter().map(|(k, _)| sh[k].clone()).collect(),
+        ev,
+        cols,
+        urows,
+    };
+    ligero::verify(
+        lp,
+        n,
+        &ligero::VerifyGroups {
+            group_roots: std::slice::from_ref(&proof.eval_roots),
+            group_sizes: &[nrows],
+            mask_roots: &proof.mask_roots,
+        },
+        &sys,
+        &[],
+        &proof.ligero,
+        &mut tr,
+    )
 }

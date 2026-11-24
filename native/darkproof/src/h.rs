@@ -24,8 +24,8 @@ pub fn unhex32(s: &str) -> Option<Hash> {
         return None;
     }
     let mut out = [0u8; 32];
-    for i in 0..32 {
-        out[i] = u8::from_str_radix(s.get(2 * i..2 * i + 2)?, 16).ok()?;
+    for (i, o) in out.iter_mut().enumerate() {
+        *o = u8::from_str_radix(s.get(2 * i..2 * i + 2)?, 16).ok()?;
     }
     Some(out)
 }
@@ -33,7 +33,11 @@ pub fn unhex32(s: &str) -> Option<Hash> {
 /// Python's repr() of a str (quote choice, escapes). ASCII is exact; non-ASCII characters are written as themselves
 /// except the C1 controls, NBSP and soft hyphen ([OPEN] full str.isprintable() table not ported).
 pub fn py_str_repr(s: &str) -> String {
-    let q = if s.contains('\'') && !s.contains('"') { '"' } else { '\'' };
+    let q = if s.contains('\'') && !s.contains('"') {
+        '"'
+    } else {
+        '\''
+    };
     let mut out = String::with_capacity(s.len() + 2);
     out.push(q);
     for ch in s.chars() {
@@ -46,7 +50,11 @@ pub fn py_str_repr(s: &str) -> String {
                 out.push('\\');
                 out.push(c);
             }
-            c if (c as u32) < 0x20 || c as u32 == 0x7f || (0x80..=0xa0).contains(&(c as u32)) || c as u32 == 0xad => {
+            c if (c as u32) < 0x20
+                || c as u32 == 0x7f
+                || (0x80..=0xa0).contains(&(c as u32))
+                || c as u32 == 0xad =>
+            {
                 out.push_str(&format!("\\x{:02x}", c as u32))
             }
             c => out.push(c),

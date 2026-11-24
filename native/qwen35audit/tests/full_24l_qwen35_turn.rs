@@ -127,21 +127,54 @@ fn test_full_24l_qwen35_end_to_end_turn_and_all_8_falsifiers() {
         non_canon.linear_point_evals[0].0[0] = P_U32;
         let err_nc = verify_full_24l_qwen35_receipt(&weights.model_root, &prompt_arr, &non_canon)
             .expect_err("non-canonical Ext4 limb must be rejected");
-        assert!(err_nc.contains("non-canonical"), "unexpected error: {err_nc}");
+        assert!(
+            err_nc.contains("non-canonical"),
+            "unexpected error: {err_nc}"
+        );
     }
 
     // 5. Exhaustive 10-Way Adversarial Layer-Tamper Falsifier Suite (freshly committed & re-proved, pinning exact rejection boundary!):
     let all_tampers: [(Full24LayerTamperKind, &str); 10] = [
-        (Full24LayerTamperKind::EmbedTokensHIn0, "PublicWeight row sumcheck round 0 failed"),
-        (Full24LayerTamperKind::Layer0GdnWyUwy, "BlindedEinSumExt4Proof round 0 failed"),
-        (Full24LayerTamperKind::Layer3GqaQkRopeSoftmax, "BlindedEinSumExt4Proof round 0 failed"),
-        (Full24LayerTamperKind::Layer11GqaOProj, "BlindedEinSumExt4Proof round 0 failed"),
-        (Full24LayerTamperKind::Layer14SwiGluSiluDownProj, "BlindedEinSumExt4Proof round 0 failed"),
-        (Full24LayerTamperKind::Layer14SwiGluMul, "BlindedEinSumExt4Proof round 0 failed"),
-        (Full24LayerTamperKind::Layer14SwiGluSiluLut, "D1b tuple terminal layer check failed"),
-        (Full24LayerTamperKind::CrossLayerSpliceL7ToL8, "WHIR matrix 2 row sumcheck round 0 failed"),
-        (Full24LayerTamperKind::Layer22RmsNormScale, "BlindedEinSumExt4Proof round 0 failed"),
-        (Full24LayerTamperKind::FinalLmHeadArgmaxToken, "lm_head greedy argmax dominance equation failed"),
+        (
+            Full24LayerTamperKind::EmbedTokensHIn0,
+            "PublicWeight row sumcheck round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::Layer0GdnWyUwy,
+            "BlindedEinSumExt4Proof round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::Layer3GqaQkRopeSoftmax,
+            "BlindedEinSumExt4Proof round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::Layer11GqaOProj,
+            "BlindedEinSumExt4Proof round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::Layer14SwiGluSiluDownProj,
+            "BlindedEinSumExt4Proof round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::Layer14SwiGluMul,
+            "BlindedEinSumExt4Proof round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::Layer14SwiGluSiluLut,
+            "D1b tuple terminal layer check failed",
+        ),
+        (
+            Full24LayerTamperKind::CrossLayerSpliceL7ToL8,
+            "WHIR matrix 2 row sumcheck round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::Layer22RmsNormScale,
+            "BlindedEinSumExt4Proof round 0 failed",
+        ),
+        (
+            Full24LayerTamperKind::FinalLmHeadArgmaxToken,
+            "lm_head greedy argmax dominance equation failed",
+        ),
     ];
 
     for (idx, &(kind, expected_err)) in all_tampers.iter().enumerate() {

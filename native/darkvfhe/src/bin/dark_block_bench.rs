@@ -17,9 +17,11 @@ use darkvfhe::dark_block::{
     cleartext_qwen_hybrid_block_step, derive_homomorphic_state_noise_budget,
     diagnostic_ct2_phase_noise_bits, params_n8192_homo, setup_threshold_cluster_with_rlk,
     EncryptedQwenHybridBlock, HomomorphicDarkGdnResident, HomomorphicUpdateStrategy,
-    QwenHybridWeights,
+    QwenHybridShape, QwenHybridWeights,
 };
-use darkvfhe::dark_gdn::{cleartext_gdn_step_mod_t, DarkGdnResident, ThreeCustodianCluster};
+use darkvfhe::dark_gdn::{
+    cleartext_gdn_step_mod_t, DarkGdnInitSpec, DarkGdnResident, ThreeCustodianCluster,
+};
 use darkvfhe::digits::LiftMode;
 use darkvfhe::logup_gkr::LogUpConfig;
 use darkvfhe::rns_hoist::HoistedEngine;
@@ -55,7 +57,10 @@ fn main() {
     let smudge_e = (1u128 << 111) - 1;
     for (name, p_ref) in [
         ("Wave-6 t_61 (2^61-1294335)", HoistedParams::n8192()),
-        ("Blum t_32 (4355803843, Q mod t = 730)", (*params_homo).clone()),
+        (
+            "Blum t_32 (4355803843, Q mod t = 730)",
+            (*params_homo).clone(),
+        ),
     ] {
         let summary = derive_homomorphic_state_noise_budget(&p_ref, smudge_e, 2, 4);
         println!(
@@ -92,19 +97,63 @@ fn main() {
     let t_mod = params_homo.t;
 
     let embed_table: Vec<Vec<u64>> = (0..vocab_size)
-        .map(|tok| (0..d_k).map(|i| ((tok * 13 + i * 7 + 1) as u64) % t_mod).collect())
+        .map(|tok| {
+            (0..d_k)
+                .map(|i| ((tok * 13 + i * 7 + 1) as u64) % t_mod)
+                .collect()
+        })
         .collect();
     let state_0: Vec<Vec<u64>> = (0..d_k)
-        .map(|i| (0..d_v).map(|j| ((i * 3 + j * 5 + 2) as u64) % 19).collect())
+        .map(|i| {
+            (0..d_v)
+                .map(|j| ((i * 3 + j * 5 + 2) as u64) % 19)
+                .collect()
+        })
         .collect();
     let w_q: Vec<Vec<u64>> = (0..d_k)
-        .map(|r| (0..d_k).map(|c| if r == c { 2 } else if (r + c) % 17 == 0 { 1 } else { 0 }).collect())
+        .map(|r| {
+            (0..d_k)
+                .map(|c| {
+                    if r == c {
+                        2
+                    } else if (r + c) % 17 == 0 {
+                        1
+                    } else {
+                        0
+                    }
+                })
+                .collect()
+        })
         .collect();
     let w_k: Vec<Vec<u64>> = (0..d_k)
-        .map(|r| (0..d_k).map(|c| if r == c { 3 } else if (r + 2 * c) % 19 == 0 { 1 } else { 0 }).collect())
+        .map(|r| {
+            (0..d_k)
+                .map(|c| {
+                    if r == c {
+                        3
+                    } else if (r + 2 * c) % 19 == 0 {
+                        1
+                    } else {
+                        0
+                    }
+                })
+                .collect()
+        })
         .collect();
     let w_v: Vec<Vec<u64>> = (0..d_v)
-        .map(|r| (0..d_k).map(|c| if r == c { 5 } else if (2 * r + c) % 23 == 0 { 1 } else { 0 }).collect())
+        .map(|r| {
+            (0..d_k)
+                .map(|c| {
+                    if r == c {
+                        5
+                    } else if (2 * r + c) % 23 == 0 {
+                        1
+                    } else {
+                        0
+                    }
+                })
+                .collect()
+        })
         .collect();
 
     let turns = [
@@ -133,13 +182,15 @@ fn main() {
             ThreeCustodianCluster::setup(params_homo.clone(), engine_homo.clone(), [0x5Au8; 32]);
         let mut res_w6 = DarkGdnResident::initialize(
             &mut cluster_w6,
-            &embed_table,
-            &state_0,
-            w_q.clone(),
-            w_k.clone(),
-            w_v.clone(),
-            LiftMode::ExactGarner15,
-            LogUpConfig::MonolithicC4,
+            DarkGdnInitSpec {
+                embed_table: &embed_table,
+                state_0: &state_0,
+                w_q: w_q.clone(),
+                w_k: w_k.clone(),
+                w_v: w_v.clone(),
+                mode: LiftMode::ExactGarner15,
+                logup_cfg: LogUpConfig::MonolithicC4,
+            },
         )
         .unwrap();
 
@@ -183,7 +234,9 @@ fn main() {
             wave6_total_ms_sum += tot_w6;
 
             let th = Instant::now();
-            let (y_hm, mh) = res_h.step_turn(&mut cluster_h, &rlk, idx, tok, a, b).unwrap();
+            let (y_hm, mh) = res_h
+                .step_turn(&mut cluster_h, &rlk, idx, tok, a, b)
+                .unwrap();
             let tot_hm = th.elapsed().as_secs_f64() * 1e3;
             assert_eq!(y_hm, y_want);
             s_ref = sn;
@@ -265,21 +318,30 @@ fn main() {
     // --------------------------------------------------------------------------------------------------
     println!("\n### 3. Full 3-Custodian Encrypted `Qwen3.8` Hybrid Block @ N = 8192 (`V=256, d=128, d_k=d_v=128, E=8 Top-2 SwiGLU MoE, d_ff=64`)");
     {
-        let (mut cluster_blk, rlk_blk) =
-            setup_threshold_cluster_with_rlk(params_homo.clone(), engine_homo.clone(), [0x77u8; 32])
-                .unwrap();
+        let (mut cluster_blk, rlk_blk) = setup_threshold_cluster_with_rlk(
+            params_homo.clone(),
+            engine_homo.clone(),
+            [0x77u8; 32],
+        )
+        .unwrap();
         let weights = QwenHybridWeights::sample_deterministic(
             fp_t,
-            256, // V
-            128, // d_model
-            128, // d_k
-            128, // d_v
-            8,   // E = 8 experts (`Top-2` active)
-            64,  // d_ff
+            QwenHybridShape {
+                vocab_size: 256,
+                d_model: 128,
+                d_k: 128,
+                d_v: 128,
+                num_experts: 8,
+                d_ff: 64,
+            },
             20261121,
         );
         let mut s_ref: Vec<Vec<u64>> = (0..128)
-            .map(|i| (0..128).map(|j| ((i * 5 + j * 3 + 1) as u64) % 23).collect())
+            .map(|i| {
+                (0..128)
+                    .map(|j| ((i * 5 + j * 3 + 1) as u64) % 23)
+                    .collect()
+            })
             .collect();
 
         let t_init = Instant::now();
@@ -304,7 +366,10 @@ fn main() {
                 .unwrap();
             let (h_ref, s_next, active_top2) =
                 cleartext_qwen_hybrid_block_step(fp_t, &weights, &s_ref, tok_id);
-            assert_eq!(h_enc, h_ref, "Hybrid block turn {turn_idx} mismatch vs cleartext!");
+            assert_eq!(
+                h_enc, h_ref,
+                "Hybrid block turn {turn_idx} mismatch vs cleartext!"
+            );
             s_ref = s_next;
 
             println!(

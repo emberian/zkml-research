@@ -22,19 +22,22 @@ use crate::gruen_ext4::{
     verify_d1b_public_table_ext4, verify_d1b_range_ext4, verify_mxfp4_delayed_bjk_horner_ext4,
     D1bRangeExt4Proof, Mxfp4DelayedBjkExt4Proof,
 };
-use crate::pcs_ext4::{open_pcs_claims, verify_pcs_claims, MleEvalClaim, PcsOpeningProof, PcsParams, PcsShape};
+use crate::pcs_ext4::{
+    open_pcs_claims, verify_pcs_claims, MleEvalClaim, PcsOpeningProof, PcsParams, PcsShape,
+};
 use crate::qwen35_layer::{eval_mxfp4_int_contraction, pad_mxfp4_cols_pow2, Qwen35TurnExecution};
 use crate::safetensors_mmap::{decode_e2m1_x2_bb, Mxfp4Matrix, Qwen35WeightRegistry, WY_SCALE};
 use crate::u1_audit::run_padded_complement_sk_dfa;
 use crate::whir_ext4::{
     build_collision_free_sk_dfa_table_4096, open_whir_batch_ext4, pack_ext4_slice,
     prove_gmask_einsum_ext4, unpack_ext4_slice, verify_gmask_einsum_ext4, verify_whir_batch_ext4,
-    BlindedEinSumExt4Proof, GMaskExt4, GMaskSpecExt4, JointLinearClaimExt4, LinearTermExt4,
-    PrecommittedWhirMxfp4, WhirBatchOpeningProofExt4, WhirCommittedMatrixExt4, WhirExt4MatrixShape,
-    WHIR_EXT4_BLOWUP, WHIR_EXT4_T_QUERIES_100,
+    BlindedEinSumExt4Proof, GMaskExt4, GMaskSpecExt4, GmaskEinSumParams, JointLinearClaimExt4,
+    LinearTermExt4, PrecommittedWhirMxfp4, WhirBatchOpeningProofExt4, WhirCommittedMatrixExt4,
+    WhirExt4MatrixShape, WHIR_EXT4_BLOWUP, WHIR_EXT4_T_QUERIES_100,
 };
 use rayon::prelude::*;
 use sha2::{Digest, Sha256};
+use std::ops::{Add, Mul, Neg, Sub};
 
 // ================================================================================================
 // §1. Zero-Dependency Pure-Rust `BLS12-381` Pairing + RFC 9380 `drand` `quicknet` Verifier + `WOTS+`
@@ -116,6 +119,7 @@ pub mod bls_drand {
     use super::{DrandQuicknetBeacon, DRAND_QUICKNET_DST, DRAND_QUICKNET_GROUP_PUBLIC_KEY};
     use crate::ext4::CShakeRng;
     use sha2::{Digest, Sha256};
+    use std::ops::Add;
 
     const BLS_X: u64 = 0xd201_0000_0001_0000;
     const BLS_X_IS_NEGATIVE: bool = true;
@@ -237,20 +241,8 @@ pub mod bls_drand {
         }
 
         #[inline(always)]
-        const fn montgomery_reduce(
-            t0: u64,
-            t1: u64,
-            t2: u64,
-            t3: u64,
-            t4: u64,
-            t5: u64,
-            t6: u64,
-            t7: u64,
-            t8: u64,
-            t9: u64,
-            t10: u64,
-            t11: u64,
-        ) -> Self {
+        const fn montgomery_reduce(t: [u64; 12]) -> Self {
+            let [t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11] = t;
             let k = t0.wrapping_mul(INV);
             let (_, carry) = mac(t0, k, MODULUS[0], 0);
             let (r1, carry) = mac(t1, k, MODULUS[1], carry);
@@ -352,7 +344,7 @@ pub mod bls_drand {
             let (t9, carry) = mac(t9, self.0[5], rhs.0[4], carry);
             let (t10, t11) = mac(t10, self.0[5], rhs.0[5], carry);
 
-            Self::montgomery_reduce(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11)
+            Self::montgomery_reduce([t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11])
         }
 
         #[inline]
@@ -405,9 +397,9 @@ pub mod bls_drand {
 
         pub fn from_bytes_be(bytes: &[u8; 48]) -> Option<Self> {
             let mut tmp = [0u64; 6];
-            for i in 0..6 {
+            for (i, slot) in tmp.iter_mut().enumerate() {
                 let st = (5 - i) * 8;
-                tmp[i] = u64::from_be_bytes(bytes[st..st + 8].try_into().unwrap());
+                *slot = u64::from_be_bytes(bytes[st..st + 8].try_into().unwrap());
             }
             let (_, borrow) = sbb(tmp[0], MODULUS[0], 0);
             let (_, borrow) = sbb(tmp[1], MODULUS[1], borrow);
@@ -422,9 +414,9 @@ pub mod bls_drand {
         }
 
         pub fn to_bytes_be(self) -> [u8; 48] {
-            let tmp = Self::montgomery_reduce(
+            let tmp = Self::montgomery_reduce([
                 self.0[0], self.0[1], self.0[2], self.0[3], self.0[4], self.0[5], 0, 0, 0, 0, 0, 0,
-            );
+            ]);
             let mut res = [0u8; 48];
             for i in 0..6 {
                 let st = (5 - i) * 8;
@@ -434,9 +426,9 @@ pub mod bls_drand {
         }
 
         pub fn lexicographically_largest(self) -> bool {
-            let tmp = Self::montgomery_reduce(
+            let tmp = Self::montgomery_reduce([
                 self.0[0], self.0[1], self.0[2], self.0[3], self.0[4], self.0[5], 0, 0, 0, 0, 0, 0,
-            );
+            ]);
             let (_, borrow) = sbb(tmp.0[0], 0xdcff_7fff_ffff_d556, 0);
             let (_, borrow) = sbb(tmp.0[1], 0x0f55_ffff_58a9_ffff, borrow);
             let (_, borrow) = sbb(tmp.0[2], 0xb398_6950_7b58_7b12, borrow);
@@ -447,9 +439,9 @@ pub mod bls_drand {
         }
 
         pub fn sgn0(self) -> bool {
-            let tmp = Self::montgomery_reduce(
+            let tmp = Self::montgomery_reduce([
                 self.0[0], self.0[1], self.0[2], self.0[3], self.0[4], self.0[5], 0, 0, 0, 0, 0, 0,
-            );
+            ]);
             (tmp.0[0] & 1) == 1
         }
 
@@ -771,8 +763,15 @@ pub mod bls_drand {
         }
 
         pub fn invert(self) -> Option<Self> {
-            let c0 = self.c0.square().sub(self.c1.mul(self.c2).mul_by_nonresidue());
-            let c1 = self.c2.square().mul_by_nonresidue().sub(self.c0.mul(self.c1));
+            let c0 = self
+                .c0
+                .square()
+                .sub(self.c1.mul(self.c2).mul_by_nonresidue());
+            let c1 = self
+                .c2
+                .square()
+                .mul_by_nonresidue()
+                .sub(self.c0.mul(self.c1));
             let c2 = self.c1.square().sub(self.c0.mul(self.c2));
             let tmp = self
                 .c1
@@ -1066,34 +1065,6 @@ pub mod bls_drand {
             }
         }
 
-        pub fn add(self, rhs: Self) -> Self {
-            let mul_3b = |a: Fp| -> Fp {
-                let a2 = a.add(a);
-                let a4 = a2.add(a2);
-                a4.add(a4).add(a4)
-            };
-            let t0 = self.x.mul(rhs.x);
-            let t1 = self.y.mul(rhs.y);
-            let t2 = self.z.mul(rhs.z);
-            let t3 = self.x.add(self.y).mul(rhs.x.add(rhs.y)).sub(t0.add(t1));
-            let t4 = self.y.add(self.z).mul(rhs.y.add(rhs.z)).sub(t1.add(t2));
-            let y3 = self.x.add(self.z).mul(rhs.x.add(rhs.z)).sub(t0.add(t2));
-            let x3 = t0.add(t0);
-            let t0 = x3.add(t0);
-            let t2 = mul_3b(t2);
-            let z3 = t1.add(t2);
-            let t1 = t1.sub(t2);
-            let y3 = mul_3b(y3);
-            let x3 = t3.mul(t1).sub(t4.mul(y3));
-            let y3 = t1.mul(z3).add(y3.mul(t0));
-            let z3 = z3.mul(t4).add(t0.mul(t3));
-            Self {
-                x: x3,
-                y: y3,
-                z: z3,
-            }
-        }
-
         pub fn mul_by_x(self) -> Self {
             let mut xself = Self::IDENTITY;
             let mut x = BLS_X >> 1;
@@ -1151,6 +1122,38 @@ pub mod bls_drand {
                 return false;
             }
             self.x.mul(other.z) == other.x.mul(self.z) && self.y.mul(other.z) == other.y.mul(self.z)
+        }
+    }
+
+    impl Add for G1Projective {
+        type Output = Self;
+
+        fn add(self, rhs: Self) -> Self {
+            let mul_3b = |a: Fp| -> Fp {
+                let a2 = a.add(a);
+                let a4 = a2.add(a2);
+                a4.add(a4).add(a4)
+            };
+            let t0 = self.x.mul(rhs.x);
+            let t1 = self.y.mul(rhs.y);
+            let t2 = self.z.mul(rhs.z);
+            let t3 = self.x.add(self.y).mul(rhs.x.add(rhs.y)).sub(t0.add(t1));
+            let t4 = self.y.add(self.z).mul(rhs.y.add(rhs.z)).sub(t1.add(t2));
+            let y3 = self.x.add(self.z).mul(rhs.x.add(rhs.z)).sub(t0.add(t2));
+            let x3 = t0.add(t0);
+            let t0 = x3.add(t0);
+            let t2 = mul_3b(t2);
+            let z3 = t1.add(t2);
+            let t1 = t1.sub(t2);
+            let y3 = mul_3b(y3);
+            let x3 = t3.mul(t1).sub(t4.mul(y3));
+            let y3 = t1.mul(z3).add(y3.mul(t0));
+            let z3 = z3.mul(t4).add(t0.mul(t3));
+            Self {
+                x: x3,
+                y: y3,
+                z: z3,
+            }
         }
     }
 
@@ -1426,33 +1429,6 @@ pub mod bls_drand {
             }
         }
 
-        pub fn add(self, rhs: Self) -> Self {
-            let b3 = {
-                let b = b_g2();
-                b.add(b).add(b)
-            };
-            let t0 = self.x.mul(rhs.x);
-            let t1 = self.y.mul(rhs.y);
-            let t2 = self.z.mul(rhs.z);
-            let t3 = self.x.add(self.y).mul(rhs.x.add(rhs.y)).sub(t0.add(t1));
-            let t4 = self.y.add(self.z).mul(rhs.y.add(rhs.z)).sub(t1.add(t2));
-            let y3 = self.x.add(self.z).mul(rhs.x.add(rhs.z)).sub(t0.add(t2));
-            let x3 = t0.add(t0);
-            let t0 = x3.add(t0);
-            let t2 = t2.mul(b3);
-            let z3 = t1.add(t2);
-            let t1 = t1.sub(t2);
-            let y3 = y3.mul(b3);
-            let x3 = t3.mul(t1).sub(t4.mul(y3));
-            let y3 = t1.mul(z3).add(y3.mul(t0));
-            let z3 = z3.mul(t4).add(t0.mul(t3));
-            Self {
-                x: x3,
-                y: y3,
-                z: z3,
-            }
-        }
-
         pub fn mul_by_x(self) -> Self {
             let mut xself = Self::IDENTITY;
             let mut x = BLS_X >> 1;
@@ -1546,6 +1522,37 @@ pub mod bls_drand {
         }
     }
 
+    impl Add for G2Projective {
+        type Output = Self;
+
+        fn add(self, rhs: Self) -> Self {
+            let b3 = {
+                let b = b_g2();
+                b.add(b).add(b)
+            };
+            let t0 = self.x.mul(rhs.x);
+            let t1 = self.y.mul(rhs.y);
+            let t2 = self.z.mul(rhs.z);
+            let t3 = self.x.add(self.y).mul(rhs.x.add(rhs.y)).sub(t0.add(t1));
+            let t4 = self.y.add(self.z).mul(rhs.y.add(rhs.z)).sub(t1.add(t2));
+            let y3 = self.x.add(self.z).mul(rhs.x.add(rhs.z)).sub(t0.add(t2));
+            let x3 = t0.add(t0);
+            let t0 = x3.add(t0);
+            let t2 = t2.mul(b3);
+            let z3 = t1.add(t2);
+            let t1 = t1.sub(t2);
+            let y3 = y3.mul(b3);
+            let x3 = t3.mul(t1).sub(t4.mul(y3));
+            let y3 = t1.mul(z3).add(y3.mul(t0));
+            let z3 = z3.mul(t4).add(t0.mul(t3));
+            Self {
+                x: x3,
+                y: y3,
+                z: z3,
+            }
+        }
+    }
+
     pub struct G2Prepared {
         pub infinity: bool,
         pub coeffs: Vec<(Fp2, Fp2, Fp2)>,
@@ -1583,13 +1590,12 @@ pub mod bls_drand {
         let zsquared = r.z.square();
         let ysquared = q.y.square();
         let t0 = zsquared.mul(q.x);
-        let t1 = q
-            .y
-            .add(r.z)
-            .square()
-            .sub(ysquared)
-            .sub(zsquared)
-            .mul(zsquared);
+        let t1 =
+            q.y.add(r.z)
+                .square()
+                .sub(ysquared)
+                .sub(zsquared)
+                .mul(zsquared);
         let t2 = t0.sub(r.x);
         let t3 = t2.square();
         let t4 = {
@@ -1701,249 +1707,481 @@ pub mod bls_drand {
 
     const ISO11_XNUM: [Fp; 12] = [
         Fp::from_raw([
-            0x4d18_b6f3_af00_131c, 0x19fa_2197_93fe_e28c, 0x3f28_85f1_467f_19ae,
-            0x23dc_ea34_f2ff_b304, 0xd15b_58d2_ffc0_0054, 0x0913_be20_0a20_bef4,
+            0x4d18_b6f3_af00_131c,
+            0x19fa_2197_93fe_e28c,
+            0x3f28_85f1_467f_19ae,
+            0x23dc_ea34_f2ff_b304,
+            0xd15b_58d2_ffc0_0054,
+            0x0913_be20_0a20_bef4,
         ]),
         Fp::from_raw([
-            0x8989_8538_5cdb_bd8b, 0x3c79_e43c_c7d9_66aa, 0x1597_e193_f4cd_233a,
-            0x8637_ef1e_4d66_23ad, 0x11b2_2dee_d20d_827b, 0x0709_7bc5_9987_84ad,
+            0x8989_8538_5cdb_bd8b,
+            0x3c79_e43c_c7d9_66aa,
+            0x1597_e193_f4cd_233a,
+            0x8637_ef1e_4d66_23ad,
+            0x11b2_2dee_d20d_827b,
+            0x0709_7bc5_9987_84ad,
         ]),
         Fp::from_raw([
-            0xa542_583a_480b_664b, 0xfc71_69c0_26e5_68c6, 0x5ba2_ef31_4ed8_b5a6,
-            0x5b54_91c0_5102_f0e7, 0xdf6e_9970_7d2a_0079, 0x0784_151e_d760_5524,
+            0xa542_583a_480b_664b,
+            0xfc71_69c0_26e5_68c6,
+            0x5ba2_ef31_4ed8_b5a6,
+            0x5b54_91c0_5102_f0e7,
+            0xdf6e_9970_7d2a_0079,
+            0x0784_151e_d760_5524,
         ]),
         Fp::from_raw([
-            0x494e_2128_70f7_2741, 0xab9b_e52f_bda4_3021, 0x26f5_5779_94e3_4c3d,
-            0x049d_fee8_2aef_bd60, 0x65da_dd78_2850_5289, 0x0e93_d431_ea01_1aeb,
+            0x494e_2128_70f7_2741,
+            0xab9b_e52f_bda4_3021,
+            0x26f5_5779_94e3_4c3d,
+            0x049d_fee8_2aef_bd60,
+            0x65da_dd78_2850_5289,
+            0x0e93_d431_ea01_1aeb,
         ]),
         Fp::from_raw([
-            0x90ee_774b_d6a7_4d45, 0x7ada_1c8a_41bf_b185, 0x0f1a_8953_b325_f464,
-            0x104c_2421_1be4_805c, 0x1691_39d3_19ea_7a8f, 0x09f2_0ead_8e53_2bf6,
+            0x90ee_774b_d6a7_4d45,
+            0x7ada_1c8a_41bf_b185,
+            0x0f1a_8953_b325_f464,
+            0x104c_2421_1be4_805c,
+            0x1691_39d3_19ea_7a8f,
+            0x09f2_0ead_8e53_2bf6,
         ]),
         Fp::from_raw([
-            0x6ddd_93e2_f436_26b7, 0xa548_2c9a_a1cc_d7bd, 0x1432_4563_1883_f4bd,
-            0x2e0a_94cc_f77e_c0db, 0xb028_2d48_0e56_489f, 0x18f4_bfcb_b436_8929,
+            0x6ddd_93e2_f436_26b7,
+            0xa548_2c9a_a1cc_d7bd,
+            0x1432_4563_1883_f4bd,
+            0x2e0a_94cc_f77e_c0db,
+            0xb028_2d48_0e56_489f,
+            0x18f4_bfcb_b436_8929,
         ]),
         Fp::from_raw([
-            0x23c5_f0c9_5340_2dfd, 0x7a43_ff69_58ce_4fe9, 0x2c39_0d3d_2da5_df63,
-            0xd0df_5c98_e1f9_d70f, 0xffd8_9869_a572_b297, 0x1277_ffc7_2f25_e8fe,
+            0x23c5_f0c9_5340_2dfd,
+            0x7a43_ff69_58ce_4fe9,
+            0x2c39_0d3d_2da5_df63,
+            0xd0df_5c98_e1f9_d70f,
+            0xffd8_9869_a572_b297,
+            0x1277_ffc7_2f25_e8fe,
         ]),
         Fp::from_raw([
-            0x79f4_f049_0f06_a8a6, 0x85f8_94a8_8030_fd81, 0x12da_3054_b18b_6410,
-            0xe2a5_7f65_0588_0d65, 0xbba0_74f2_60e4_00f1, 0x08b7_6279_f621_d028,
+            0x79f4_f049_0f06_a8a6,
+            0x85f8_94a8_8030_fd81,
+            0x12da_3054_b18b_6410,
+            0xe2a5_7f65_0588_0d65,
+            0xbba0_74f2_60e4_00f1,
+            0x08b7_6279_f621_d028,
         ]),
         Fp::from_raw([
-            0xe672_45ba_78d5_b00b, 0x8456_ba9a_1f18_6475, 0x7888_bff6_e6b3_3bb4,
-            0xe215_85b9_a30f_86cb, 0x05a6_9cdc_ef55_feee, 0x09e6_99dd_9adf_a5ac,
+            0xe672_45ba_78d5_b00b,
+            0x8456_ba9a_1f18_6475,
+            0x7888_bff6_e6b3_3bb4,
+            0xe215_85b9_a30f_86cb,
+            0x05a6_9cdc_ef55_feee,
+            0x09e6_99dd_9adf_a5ac,
         ]),
         Fp::from_raw([
-            0x0de5_c357_bff5_7107, 0x0a0d_b4ae_6b1a_10b2, 0xe256_bb67_b3b3_cd8d,
-            0x8ad4_5657_4e9d_b24f, 0x0443_915f_50fd_4179, 0x098c_4bf7_de8b_6375,
+            0x0de5_c357_bff5_7107,
+            0x0a0d_b4ae_6b1a_10b2,
+            0xe256_bb67_b3b3_cd8d,
+            0x8ad4_5657_4e9d_b24f,
+            0x0443_915f_50fd_4179,
+            0x098c_4bf7_de8b_6375,
         ]),
         Fp::from_raw([
-            0xe6b0_617e_7dd9_29c7, 0xfe6e_37d4_4253_7375, 0x1daf_deda_137a_489e,
-            0xe4ef_d1ad_3f76_7ceb, 0x4a51_d866_7f0f_e1cf, 0x054f_df4b_bf1d_821c,
+            0xe6b0_617e_7dd9_29c7,
+            0xfe6e_37d4_4253_7375,
+            0x1daf_deda_137a_489e,
+            0xe4ef_d1ad_3f76_7ceb,
+            0x4a51_d866_7f0f_e1cf,
+            0x054f_df4b_bf1d_821c,
         ]),
         Fp::from_raw([
-            0x72db_2a50_658d_767b, 0x8abf_91fa_a257_b3d5, 0xe969_d683_3764_ab47,
-            0x4641_7014_2a10_09eb, 0xb14f_01aa_db30_be2f, 0x18ae_6a85_6f40_715d,
+            0x72db_2a50_658d_767b,
+            0x8abf_91fa_a257_b3d5,
+            0xe969_d683_3764_ab47,
+            0x4641_7014_2a10_09eb,
+            0xb14f_01aa_db30_be2f,
+            0x18ae_6a85_6f40_715d,
         ]),
     ];
 
     const ISO11_XDEN: [Fp; 11] = [
         Fp::from_raw([
-            0xb962_a077_fdb0_f945, 0xa6a9_740f_efda_13a0, 0xc14d_568c_3ed6_c544,
-            0xb43f_c37b_908b_133e, 0x9c0b_3ac9_2959_9016, 0x0165_aa6c_93ad_115f,
+            0xb962_a077_fdb0_f945,
+            0xa6a9_740f_efda_13a0,
+            0xc14d_568c_3ed6_c544,
+            0xb43f_c37b_908b_133e,
+            0x9c0b_3ac9_2959_9016,
+            0x0165_aa6c_93ad_115f,
         ]),
         Fp::from_raw([
-            0x2327_9a3b_a506_c1d9, 0x92cf_ca0a_9465_176a, 0x3b29_4ab1_3755_f0ff,
-            0x116d_da1c_5070_ae93, 0xed45_3092_4cec_2045, 0x0833_83d6_ed81_f1ce,
+            0x2327_9a3b_a506_c1d9,
+            0x92cf_ca0a_9465_176a,
+            0x3b29_4ab1_3755_f0ff,
+            0x116d_da1c_5070_ae93,
+            0xed45_3092_4cec_2045,
+            0x0833_83d6_ed81_f1ce,
         ]),
         Fp::from_raw([
-            0x9885_c2a6_449f_ecfc, 0x4a2b_54cc_d377_33f0, 0x17da_9ffd_8738_c142,
-            0xa0fb_a727_32b3_fafd, 0xff36_4f36_e54b_6812, 0x0f29_c13c_6605_23e2,
+            0x9885_c2a6_449f_ecfc,
+            0x4a2b_54cc_d377_33f0,
+            0x17da_9ffd_8738_c142,
+            0xa0fb_a727_32b3_fafd,
+            0xff36_4f36_e54b_6812,
+            0x0f29_c13c_6605_23e2,
         ]),
         Fp::from_raw([
-            0xe349_cc11_8278_f041, 0xd487_228f_2f32_04fb, 0xc9d3_2584_9ade_5150,
-            0x43a9_2bd6_9c15_c2df, 0x1c2c_7844_bc41_7be4, 0x1202_5184_f407_440c,
+            0xe349_cc11_8278_f041,
+            0xd487_228f_2f32_04fb,
+            0xc9d3_2584_9ade_5150,
+            0x43a9_2bd6_9c15_c2df,
+            0x1c2c_7844_bc41_7be4,
+            0x1202_5184_f407_440c,
         ]),
         Fp::from_raw([
-            0x587f_65ae_6acb_057b, 0x1444_ef32_5140_201f, 0xfbf9_95e7_1270_da49,
-            0xccda_0660_7243_6a42, 0x7408_904f_0f18_6bb2, 0x13b9_3c63_edf6_c015,
+            0x587f_65ae_6acb_057b,
+            0x1444_ef32_5140_201f,
+            0xfbf9_95e7_1270_da49,
+            0xccda_0660_7243_6a42,
+            0x7408_904f_0f18_6bb2,
+            0x13b9_3c63_edf6_c015,
         ]),
         Fp::from_raw([
-            0xfb91_8622_cd14_1920, 0x4a4c_6442_3eca_ddb4, 0x0beb_2329_27f7_fb26,
-            0x30f9_4df6_f83a_3dc2, 0xaeed_d424_d780_f388, 0x06cc_402d_d594_bbeb,
+            0xfb91_8622_cd14_1920,
+            0x4a4c_6442_3eca_ddb4,
+            0x0beb_2329_27f7_fb26,
+            0x30f9_4df6_f83a_3dc2,
+            0xaeed_d424_d780_f388,
+            0x06cc_402d_d594_bbeb,
         ]),
         Fp::from_raw([
-            0xd41f_7611_51b2_3f8f, 0x32a9_2465_4357_19b3, 0x64f4_36e8_88c6_2cb9,
-            0xdf70_a9a1_f757_c6e4, 0x6933_a38d_5b59_4c81, 0x0c6f_7f72_37b4_6606,
+            0xd41f_7611_51b2_3f8f,
+            0x32a9_2465_4357_19b3,
+            0x64f4_36e8_88c6_2cb9,
+            0xdf70_a9a1_f757_c6e4,
+            0x6933_a38d_5b59_4c81,
+            0x0c6f_7f72_37b4_6606,
         ]),
         Fp::from_raw([
-            0x693c_0874_7876_c8f7, 0x22c9_850b_f9cf_80f0, 0x8e90_71da_b950_c124,
-            0x89bc_62d6_1c7b_af23, 0xbc6b_e2d8_dad5_7c23, 0x1791_6987_aa14_a122,
+            0x693c_0874_7876_c8f7,
+            0x22c9_850b_f9cf_80f0,
+            0x8e90_71da_b950_c124,
+            0x89bc_62d6_1c7b_af23,
+            0xbc6b_e2d8_dad5_7c23,
+            0x1791_6987_aa14_a122,
         ]),
         Fp::from_raw([
-            0x1be3_ff43_9c13_16fd, 0x9965_243a_7571_dfa7, 0xc7f7_f629_62f5_cd81,
-            0x32c6_aa9a_f394_361c, 0xbbc2_ee18_e1c2_27f4, 0x0c10_2cba_c531_bb34,
+            0x1be3_ff43_9c13_16fd,
+            0x9965_243a_7571_dfa7,
+            0xc7f7_f629_62f5_cd81,
+            0x32c6_aa9a_f394_361c,
+            0xbbc2_ee18_e1c2_27f4,
+            0x0c10_2cba_c531_bb34,
         ]),
         Fp::from_raw([
-            0x9976_14c9_7bac_bf07, 0x61f8_6372_b991_92c0, 0x5b8c_95fc_1435_3fc3,
-            0xca2b_066c_2a87_492f, 0x1617_8f5b_bf69_8711, 0x12a6_dcd7_f0f4_e0e8,
+            0x9976_14c9_7bac_bf07,
+            0x61f8_6372_b991_92c0,
+            0x5b8c_95fc_1435_3fc3,
+            0xca2b_066c_2a87_492f,
+            0x1617_8f5b_bf69_8711,
+            0x12a6_dcd7_f0f4_e0e8,
         ]),
         Fp::ONE,
     ];
 
     const ISO11_YNUM: [Fp; 16] = [
         Fp::from_raw([
-            0x2b56_7ff3_e283_7267, 0x1d4d_9e57_b958_a767, 0xce02_8fea_04bd_7373,
-            0xcc31_a30a_0b6c_d3df, 0x7d7b_18a6_8269_2693, 0x0d30_0744_d42a_0310,
+            0x2b56_7ff3_e283_7267,
+            0x1d4d_9e57_b958_a767,
+            0xce02_8fea_04bd_7373,
+            0xcc31_a30a_0b6c_d3df,
+            0x7d7b_18a6_8269_2693,
+            0x0d30_0744_d42a_0310,
         ]),
         Fp::from_raw([
-            0x99c2_555f_a542_493f, 0xfe7f_53cc_4874_f878, 0x5df0_608b_8f97_608a,
-            0x14e0_3832_052b_49c8, 0x7063_26a6_957d_d5a4, 0x0a8d_add9_c241_4555,
+            0x99c2_555f_a542_493f,
+            0xfe7f_53cc_4874_f878,
+            0x5df0_608b_8f97_608a,
+            0x14e0_3832_052b_49c8,
+            0x7063_26a6_957d_d5a4,
+            0x0a8d_add9_c241_4555,
         ]),
         Fp::from_raw([
-            0x13d9_4292_2a5c_f63a, 0x357e_33e3_6e26_1e7d, 0xcf05_a27c_8456_088d,
-            0x0000_bd1d_e7ba_50f0, 0x83d0_c753_2f8c_1fde, 0x13f7_0bf3_8bbf_2905,
+            0x13d9_4292_2a5c_f63a,
+            0x357e_33e3_6e26_1e7d,
+            0xcf05_a27c_8456_088d,
+            0x0000_bd1d_e7ba_50f0,
+            0x83d0_c753_2f8c_1fde,
+            0x13f7_0bf3_8bbf_2905,
         ]),
         Fp::from_raw([
-            0x5c57_fd95_bfaf_bdbb, 0x28a3_59a6_5e54_1707, 0x3983_ceb4_f636_0b6d,
-            0xafe1_9ff6_f97e_6d53, 0xb346_8f45_5019_2bf7, 0x0bb6_cde4_9d8b_a257,
+            0x5c57_fd95_bfaf_bdbb,
+            0x28a3_59a6_5e54_1707,
+            0x3983_ceb4_f636_0b6d,
+            0xafe1_9ff6_f97e_6d53,
+            0xb346_8f45_5019_2bf7,
+            0x0bb6_cde4_9d8b_a257,
         ]),
         Fp::from_raw([
-            0x590b_62c7_ff8a_513f, 0x314b_4ce3_72ca_cefd, 0x6bef_32ce_94b8_a800,
-            0x6ddf_84a0_9571_3d5f, 0x64ea_ce4c_b098_2191, 0x0386_213c_651b_888d,
+            0x590b_62c7_ff8a_513f,
+            0x314b_4ce3_72ca_cefd,
+            0x6bef_32ce_94b8_a800,
+            0x6ddf_84a0_9571_3d5f,
+            0x64ea_ce4c_b098_2191,
+            0x0386_213c_651b_888d,
         ]),
         Fp::from_raw([
-            0xa531_0a31_111b_bcdd, 0xa14a_c0f5_da14_8982, 0xf9ad_9cc9_5423_d2e9,
-            0xaa6e_c095_283e_e4a7, 0xcf5b_1f02_2e1c_9107, 0x01fd_df5a_ed88_1793,
+            0xa531_0a31_111b_bcdd,
+            0xa14a_c0f5_da14_8982,
+            0xf9ad_9cc9_5423_d2e9,
+            0xaa6e_c095_283e_e4a7,
+            0xcf5b_1f02_2e1c_9107,
+            0x01fd_df5a_ed88_1793,
         ]),
         Fp::from_raw([
-            0x65a5_72b0_d7a7_d950, 0xe25c_2d81_8347_3a19, 0xc2fc_ebe7_cb87_7dbd,
-            0x05b2_d36c_769a_89b0, 0xba12_961b_e86e_9efb, 0x07eb_1b29_c1df_de1f,
+            0x65a5_72b0_d7a7_d950,
+            0xe25c_2d81_8347_3a19,
+            0xc2fc_ebe7_cb87_7dbd,
+            0x05b2_d36c_769a_89b0,
+            0xba12_961b_e86e_9efb,
+            0x07eb_1b29_c1df_de1f,
         ]),
         Fp::from_raw([
-            0x93e0_9572_f7c4_cd24, 0x364e_9290_7679_5091, 0x8569_467e_68af_51b5,
-            0xa47d_a894_39f5_340f, 0xf4fa_9180_82e4_4d64, 0x0ad5_2ba3_e669_5a79,
+            0x93e0_9572_f7c4_cd24,
+            0x364e_9290_7679_5091,
+            0x8569_467e_68af_51b5,
+            0xa47d_a894_39f5_340f,
+            0xf4fa_9180_82e4_4d64,
+            0x0ad5_2ba3_e669_5a79,
         ]),
         Fp::from_raw([
-            0x9114_2984_4e0d_5f54, 0xd03f_51a3_516b_b233, 0x3d58_7e56_4053_6e66,
-            0xfa86_d2a3_a9a7_3482, 0xa90e_d5ad_f1ed_5537, 0x149c_9c32_6a5e_7393,
+            0x9114_2984_4e0d_5f54,
+            0xd03f_51a3_516b_b233,
+            0x3d58_7e56_4053_6e66,
+            0xfa86_d2a3_a9a7_3482,
+            0xa90e_d5ad_f1ed_5537,
+            0x149c_9c32_6a5e_7393,
         ]),
         Fp::from_raw([
-            0x462b_beb0_3c12_921a, 0xdc9a_f5fa_0a27_4a17, 0x9a55_8ebd_e836_ebed,
-            0x649e_f8f1_1a4f_ae46, 0x8100_e165_2b3c_dc62, 0x1862_bd62_c291_dacb,
+            0x462b_beb0_3c12_921a,
+            0xdc9a_f5fa_0a27_4a17,
+            0x9a55_8ebd_e836_ebed,
+            0x649e_f8f1_1a4f_ae46,
+            0x8100_e165_2b3c_dc62,
+            0x1862_bd62_c291_dacb,
         ]),
         Fp::from_raw([
-            0x05c9_b8ca_89f1_2c26, 0x0194_160f_a9b9_ac4f, 0x6a64_3d5a_6879_fa2c,
-            0x1466_5bdd_8846_e19d, 0xbb1d_0d53_af3f_f6bf, 0x12c7_e1c3_b289_62e5,
+            0x05c9_b8ca_89f1_2c26,
+            0x0194_160f_a9b9_ac4f,
+            0x6a64_3d5a_6879_fa2c,
+            0x1466_5bdd_8846_e19d,
+            0xbb1d_0d53_af3f_f6bf,
+            0x12c7_e1c3_b289_62e5,
         ]),
         Fp::from_raw([
-            0xb55e_bf90_0b8a_3e17, 0xfedc_77ec_1a92_01c4, 0x1f07_db10_ea1a_4df4,
-            0x0dfb_d15d_c41a_594d, 0x3895_47f2_334a_5391, 0x0241_9f98_1658_71a4,
+            0xb55e_bf90_0b8a_3e17,
+            0xfedc_77ec_1a92_01c4,
+            0x1f07_db10_ea1a_4df4,
+            0x0dfb_d15d_c41a_594d,
+            0x3895_47f2_334a_5391,
+            0x0241_9f98_1658_71a4,
         ]),
         Fp::from_raw([
-            0xb416_af00_0745_fc20, 0x8e56_3e9d_1ea6_d0f5, 0x7c76_3e17_763a_0652,
-            0x0145_8ef0_159e_bbef, 0x8346_fe42_1f96_bb13, 0x0d2d_7b82_9ce3_24d2,
+            0xb416_af00_0745_fc20,
+            0x8e56_3e9d_1ea6_d0f5,
+            0x7c76_3e17_763a_0652,
+            0x0145_8ef0_159e_bbef,
+            0x8346_fe42_1f96_bb13,
+            0x0d2d_7b82_9ce3_24d2,
         ]),
         Fp::from_raw([
-            0x9309_6bb5_38d6_4615, 0x6f2a_2619_951d_823a, 0x8f66_b3ea_5951_4fa4,
-            0xf563_e637_04f7_092f, 0x724b_136c_4cf2_d9fa, 0x0469_59cf_cfd0_bf49,
+            0x9309_6bb5_38d6_4615,
+            0x6f2a_2619_951d_823a,
+            0x8f66_b3ea_5951_4fa4,
+            0xf563_e637_04f7_092f,
+            0x724b_136c_4cf2_d9fa,
+            0x0469_59cf_cfd0_bf49,
         ]),
         Fp::from_raw([
-            0xea74_8d4b_6e40_5346, 0x91e9_079c_2c02_d58f, 0x4106_4965_946d_9b59,
-            0xa067_31f1_d2bb_e1ee, 0x07f8_97e2_67a3_3f1b, 0x1017_2909_1921_0e5f,
+            0xea74_8d4b_6e40_5346,
+            0x91e9_079c_2c02_d58f,
+            0x4106_4965_946d_9b59,
+            0xa067_31f1_d2bb_e1ee,
+            0x07f8_97e2_67a3_3f1b,
+            0x1017_2909_1921_0e5f,
         ]),
         Fp::from_raw([
-            0x872a_a6c1_7d98_5097, 0xeecc_5316_1264_562a, 0x07af_e37a_fff5_5002,
-            0x5475_9078_e5be_6838, 0xc4b9_2d15_db8a_cca8, 0x106d_87d1_b51d_13b9,
+            0x872a_a6c1_7d98_5097,
+            0xeecc_5316_1264_562a,
+            0x07af_e37a_fff5_5002,
+            0x5475_9078_e5be_6838,
+            0xc4b9_2d15_db8a_cca8,
+            0x106d_87d1_b51d_13b9,
         ]),
     ];
 
     const ISO11_YDEN: [Fp; 16] = [
         Fp::from_raw([
-            0xeb6c_359d_47e5_2b1c, 0x18ef_5f8a_1063_4d60, 0xddfa_71a0_889d_5b7e,
-            0x723e_71dc_c5fc_1323, 0x52f4_5700_b70d_5c69, 0x0a8b_981e_e476_91f1,
+            0xeb6c_359d_47e5_2b1c,
+            0x18ef_5f8a_1063_4d60,
+            0xddfa_71a0_889d_5b7e,
+            0x723e_71dc_c5fc_1323,
+            0x52f4_5700_b70d_5c69,
+            0x0a8b_981e_e476_91f1,
         ]),
         Fp::from_raw([
-            0x616a_3c4f_5535_b9fb, 0x6f5f_0373_95db_d911, 0xf25f_4cc5_e35c_65da,
-            0x3e50_dffe_a3c6_2658, 0x6a33_dca5_2356_0776, 0x0fad_eff7_7b6b_fe3e,
+            0x616a_3c4f_5535_b9fb,
+            0x6f5f_0373_95db_d911,
+            0xf25f_4cc5_e35c_65da,
+            0x3e50_dffe_a3c6_2658,
+            0x6a33_dca5_2356_0776,
+            0x0fad_eff7_7b6b_fe3e,
         ]),
         Fp::from_raw([
-            0x2be9_b66d_f470_059c, 0x24a2_c159_a3d3_6742, 0x115d_be7a_d10c_2a37,
-            0xb663_4a65_2ee5_884d, 0x04fe_8bb2_b8d8_1af4, 0x01c2_a7a2_56fe_9c41,
+            0x2be9_b66d_f470_059c,
+            0x24a2_c159_a3d3_6742,
+            0x115d_be7a_d10c_2a37,
+            0xb663_4a65_2ee5_884d,
+            0x04fe_8bb2_b8d8_1af4,
+            0x01c2_a7a2_56fe_9c41,
         ]),
         Fp::from_raw([
-            0xf27b_f8ef_3b75_a386, 0x898b_3674_76c9_073f, 0x2448_2e6b_8c2f_4e5f,
-            0xc8e0_bbd6_fe11_0806, 0x59b0_c17f_7631_448a, 0x1103_7cd5_8b3d_bfbd,
+            0xf27b_f8ef_3b75_a386,
+            0x898b_3674_76c9_073f,
+            0x2448_2e6b_8c2f_4e5f,
+            0xc8e0_bbd6_fe11_0806,
+            0x59b0_c17f_7631_448a,
+            0x1103_7cd5_8b3d_bfbd,
         ]),
         Fp::from_raw([
-            0x31c7_912e_a267_eec6, 0x1dbf_6f1c_5fcd_b700, 0xd30d_4fe3_ba86_fdb1,
-            0x3cae_528f_bee9_a2a4, 0xb1cc_e69b_6aa9_ad9a, 0x0443_93bb_632d_94fb,
+            0x31c7_912e_a267_eec6,
+            0x1dbf_6f1c_5fcd_b700,
+            0xd30d_4fe3_ba86_fdb1,
+            0x3cae_528f_bee9_a2a4,
+            0xb1cc_e69b_6aa9_ad9a,
+            0x0443_93bb_632d_94fb,
         ]),
         Fp::from_raw([
-            0xc66e_f6ef_eeb5_c7e8, 0x9824_c289_dd72_bb55, 0x71b1_a4d2_f119_981d,
-            0x104f_c1aa_fb09_19cc, 0x0e49_df01_d942_a628, 0x096c_3a09_7732_72d4,
+            0xc66e_f6ef_eeb5_c7e8,
+            0x9824_c289_dd72_bb55,
+            0x71b1_a4d2_f119_981d,
+            0x104f_c1aa_fb09_19cc,
+            0x0e49_df01_d942_a628,
+            0x096c_3a09_7732_72d4,
         ]),
         Fp::from_raw([
-            0x9abc_11eb_5fad_eff4, 0x32dc_a50a_8857_28f0, 0xfb1f_a372_1569_734c,
-            0xc4b7_6271_ea65_06b3, 0xd466_a755_99ce_728e, 0x0c81_d464_5f4c_b6ed,
+            0x9abc_11eb_5fad_eff4,
+            0x32dc_a50a_8857_28f0,
+            0xfb1f_a372_1569_734c,
+            0xc4b7_6271_ea65_06b3,
+            0xd466_a755_99ce_728e,
+            0x0c81_d464_5f4c_b6ed,
         ]),
         Fp::from_raw([
-            0x4199_f10e_5b8b_e45b, 0xda64_e495_b1e8_7930, 0xcb35_3efe_9b33_e4ff,
-            0x9e9e_fb24_aa64_24c6, 0xf08d_3368_0a23_7465, 0x0d33_7802_3e4c_7406,
+            0x4199_f10e_5b8b_e45b,
+            0xda64_e495_b1e8_7930,
+            0xcb35_3efe_9b33_e4ff,
+            0x9e9e_fb24_aa64_24c6,
+            0xf08d_3368_0a23_7465,
+            0x0d33_7802_3e4c_7406,
         ]),
         Fp::from_raw([
-            0x7eb4_ae92_ec74_d3a5, 0xc341_b4aa_9fac_3497, 0x5be6_0389_9e90_7687,
-            0x03bf_d9cc_a75c_bdeb, 0x564c_2935_a96b_fa93, 0x0ef3_c333_71e2_fdb5,
+            0x7eb4_ae92_ec74_d3a5,
+            0xc341_b4aa_9fac_3497,
+            0x5be6_0389_9e90_7687,
+            0x03bf_d9cc_a75c_bdeb,
+            0x564c_2935_a96b_fa93,
+            0x0ef3_c333_71e2_fdb5,
         ]),
         Fp::from_raw([
-            0x7ee9_1fd4_49f6_ac2e, 0xe5d5_bd5c_b935_7a30, 0x773a_8ca5_196b_1380,
-            0xd0fd_a172_174e_d023, 0x6cb9_5e0f_a776_aead, 0x0d22_d5a4_0cec_7cff,
+            0x7ee9_1fd4_49f6_ac2e,
+            0xe5d5_bd5c_b935_7a30,
+            0x773a_8ca5_196b_1380,
+            0xd0fd_a172_174e_d023,
+            0x6cb9_5e0f_a776_aead,
+            0x0d22_d5a4_0cec_7cff,
         ]),
         Fp::from_raw([
-            0xf727_e092_85fd_8519, 0xdc9d_55a8_3017_897b, 0x7549_d8bd_0578_94ae,
-            0x1784_1961_3d90_d8f8, 0xfce9_5ebd_eb5b_490a, 0x0467_ffae_f23f_c49e,
+            0xf727_e092_85fd_8519,
+            0xdc9d_55a8_3017_897b,
+            0x7549_d8bd_0578_94ae,
+            0x1784_1961_3d90_d8f8,
+            0xfce9_5ebd_eb5b_490a,
+            0x0467_ffae_f23f_c49e,
         ]),
         Fp::from_raw([
-            0xc176_9e6a_7c38_5f1b, 0x79bc_930d_eac0_1c03, 0x5461_c75a_23ed_e3b5,
-            0x6e20_829e_5c23_0c45, 0x828e_0f1e_772a_53cd, 0x116a_efa7_4912_7bff,
+            0xc176_9e6a_7c38_5f1b,
+            0x79bc_930d_eac0_1c03,
+            0x5461_c75a_23ed_e3b5,
+            0x6e20_829e_5c23_0c45,
+            0x828e_0f1e_772a_53cd,
+            0x116a_efa7_4912_7bff,
         ]),
         Fp::from_raw([
-            0x101c_10bf_2744_c10a, 0xbbf1_8d05_3a6a_3154, 0xa0ec_f39e_f026_f602,
-            0xfc00_9d49_96dc_5153, 0xb900_0209_d5bd_08d3, 0x189e_5fe4_470c_d73c,
+            0x101c_10bf_2744_c10a,
+            0xbbf1_8d05_3a6a_3154,
+            0xa0ec_f39e_f026_f602,
+            0xfc00_9d49_96dc_5153,
+            0xb900_0209_d5bd_08d3,
+            0x189e_5fe4_470c_d73c,
         ]),
         Fp::from_raw([
-            0x7ebd_546c_a157_5ed2, 0xe47d_5a98_1d08_1b55, 0x57b2_b625_b6d4_ca21,
-            0xb0a1_ba04_2285_20cc, 0x9873_8983_c210_7ff3, 0x13dd_dbc4_799d_81d6,
+            0x7ebd_546c_a157_5ed2,
+            0xe47d_5a98_1d08_1b55,
+            0x57b2_b625_b6d4_ca21,
+            0xb0a1_ba04_2285_20cc,
+            0x9873_8983_c210_7ff3,
+            0x13dd_dbc4_799d_81d6,
         ]),
         Fp::from_raw([
-            0x0931_9f2e_3983_4935, 0x039e_952c_bdb0_5c21, 0x55ba_77a9_a2f7_6493,
-            0xfd04_e3df_c608_6467, 0xfb95_832e_7d78_742e, 0x0ef9_c24e_ccaf_5e0e,
+            0x0931_9f2e_3983_4935,
+            0x039e_952c_bdb0_5c21,
+            0x55ba_77a9_a2f7_6493,
+            0xfd04_e3df_c608_6467,
+            0xfb95_832e_7d78_742e,
+            0x0ef9_c24e_ccaf_5e0e,
         ]),
         Fp::ONE,
     ];
 
     const SSWU_ELLP_A: Fp = Fp::from_raw([
-        0x2f65_aa0e_9af5_aa51, 0x8646_4c2d_1e84_16c3, 0xb85c_e591_b7bd_31e2,
-        0x27e1_1c91_b5f2_4e7c, 0x2837_6eda_6bfc_1835, 0x1554_55c3_e507_1d85,
+        0x2f65_aa0e_9af5_aa51,
+        0x8646_4c2d_1e84_16c3,
+        0xb85c_e591_b7bd_31e2,
+        0x27e1_1c91_b5f2_4e7c,
+        0x2837_6eda_6bfc_1835,
+        0x1554_55c3_e507_1d85,
     ]);
     const SSWU_ELLP_B: Fp = Fp::from_raw([
-        0xfb99_6971_fe22_a1e0, 0x9aa9_3eb3_5b74_2d6f, 0x8c47_6013_de99_c5c4,
-        0x873e_27c3_a221_e571, 0xca72_b5e4_5a52_d888, 0x0682_4061_418a_386b,
+        0xfb99_6971_fe22_a1e0,
+        0x9aa9_3eb3_5b74_2d6f,
+        0x8c47_6013_de99_c5c4,
+        0x873e_27c3_a221_e571,
+        0xca72_b5e4_5a52_d888,
+        0x0682_4061_418a_386b,
     ]);
     const SSWU_XI: Fp = Fp::from_raw([
-        0x886c_0000_0023_ffdc, 0x0f70_008d_3090_001d, 0x7767_2417_ed58_28c3,
-        0x9dac_23e9_43dc_1740, 0x5055_3f1b_9c13_1521, 0x078c_712f_be0a_b6e8,
+        0x886c_0000_0023_ffdc,
+        0x0f70_008d_3090_001d,
+        0x7767_2417_ed58_28c3,
+        0x9dac_23e9_43dc_1740,
+        0x5055_3f1b_9c13_1521,
+        0x078c_712f_be0a_b6e8,
     ]);
     const SQRT_M_XI_CUBED: Fp = Fp::from_raw([
-        0x43b5_71ca_d321_5f1f, 0xccb4_60ef_1c70_2dc2, 0x742d_884f_4f97_100b,
-        0xdb2c_3e32_38a3_382b, 0xe40f_3fa1_3fce_8f88, 0x0073_a2af_9892_a2ff,
+        0x43b5_71ca_d321_5f1f,
+        0xccb4_60ef_1c70_2dc2,
+        0x742d_884f_4f97_100b,
+        0xdb2c_3e32_38a3_382b,
+        0xe40f_3fa1_3fce_8f88,
+        0x0073_a2af_9892_a2ff,
     ]);
     const F_2_256: Fp = Fp::from_raw([
-        0x075b_3cd7_c5ce_820f, 0x3ec6_ba62_1c3e_db0b, 0x168a_13d8_2bff_6bce,
-        0x8766_3c4b_f8c4_49d2, 0x15f3_4c83_ddc8_d830, 0x0f96_28b4_9caa_2e85,
+        0x075b_3cd7_c5ce_820f,
+        0x3ec6_ba62_1c3e_db0b,
+        0x168a_13d8_2bff_6bce,
+        0x8766_3c4b_f8c4_49d2,
+        0x15f3_4c83_ddc8_d830,
+        0x0f96_28b4_9caa_2e85,
     ]);
 
     fn expand_message_xmd_sha256(msg: &[u8], dst: &[u8], len_in_bytes: usize) -> Vec<u8> {
@@ -2201,7 +2439,13 @@ impl WotsSignature {
 }
 
 #[inline]
-fn wots_chain_advance(pub_seed: &[u8; 32], chain_idx: u8, start_step: u8, steps: u8, mut val: [u8; 32]) -> [u8; 32] {
+fn wots_chain_advance(
+    pub_seed: &[u8; 32],
+    chain_idx: u8,
+    start_step: u8,
+    steps: u8,
+    mut val: [u8; 32],
+) -> [u8; 32] {
     let mut buf = [0u8; 66];
     buf[0..32].copy_from_slice(pub_seed);
     buf[32] = chain_idx;
@@ -2260,7 +2504,8 @@ impl WotsKeypair {
         let digits = wots_encode_digits(msg);
         let mut chains = [[0u8; 32]; WOTS_CHAINS];
         for i in 0..WOTS_CHAINS {
-            chains[i] = wots_chain_advance(&self.pk.pub_seed, i as u8, 0, digits[i], self.sk_chains[i]);
+            chains[i] =
+                wots_chain_advance(&self.pk.pub_seed, i as u8, 0, digits[i], self.sk_chains[i]);
         }
         WotsSignature {
             pub_seed: self.pk.pub_seed,
@@ -2269,7 +2514,11 @@ impl WotsKeypair {
     }
 }
 
-pub fn verify_wots_signature(pk: &WotsPublicKey, msg: &[u8], sig: &WotsSignature) -> Result<(), String> {
+pub fn verify_wots_signature(
+    pk: &WotsPublicKey,
+    msg: &[u8],
+    sig: &WotsSignature,
+) -> Result<(), String> {
     if sig.pub_seed != pk.pub_seed {
         return Err("WOTS+ pub_seed mismatch".into());
     }
@@ -2356,8 +2605,8 @@ impl SaltedByteWhirCommitment {
         let mut rng = CShakeRng::from_seed(b"QW35-BYTE-WHIR-COMMIT-V1", &seed);
 
         let mut aux_limbs: [Vec<u32>; 4] = std::array::from_fn(|_| vec![0u32; 64]);
-        for l in 0..4 {
-            for v in &mut aux_limbs[l] {
+        for limb_vec in &mut aux_limbs {
+            for v in limb_vec.iter_mut() {
                 *v = rng.next_bb();
             }
         }
@@ -2579,11 +2828,13 @@ pub fn prove_masked_whir_byte_equality(
     let (eof_sc_1, rho_1, chals_eof1, _, _, term_eof1) = prove_gmask_einsum_ext4(
         &l_eof1,
         &r_eof1,
-        m1,
-        0,
-        &z_eof_1,
-        &c1.eof_gmask,
-        "eof_sc",
+        GmaskEinSumParams {
+            mu_s: m1,
+            kappa: 0,
+            z_s: &z_eof_1,
+            gmask: &c1.eof_gmask,
+            spec_name: "eof_sc",
+        },
         &mut tr,
     );
 
@@ -2599,11 +2850,13 @@ pub fn prove_masked_whir_byte_equality(
     let (eof_sc_2, rho_2, chals_eof2, _, _, term_eof2) = prove_gmask_einsum_ext4(
         &l_eof2,
         &r_eof2,
-        m2,
-        0,
-        &z_eof_2,
-        &c2.eof_gmask,
-        "eof_sc",
+        GmaskEinSumParams {
+            mu_s: m2,
+            kappa: 0,
+            z_s: &z_eof_2,
+            gmask: &c2.eof_gmask,
+            spec_name: "eof_sc",
+        },
         &mut tr,
     );
 
@@ -2740,7 +2993,7 @@ pub fn verify_masked_whir_byte_equality(
         return Err("invalid pad_len or gm_limb_vars in MaskedByteEqualityProof".into());
     }
     let min_pad = prf.pad_len_1.min(prf.pad_len_2);
-    if prf.word_len.checked_add(2).map_or(true, |n| n > min_pad) {
+    if prf.word_len.checked_add(2).is_none_or(|n| n > min_pad) {
         return Err("word_len + 2 exceeds min(pad_len_1, pad_len_2)".into());
     }
     if compute_content_root_v1(prf.word_len, &prf.root_1) != prf.content_root_1
@@ -2913,9 +3166,11 @@ pub fn prove_legacy_bpe_to_canonical_whir_weld(
     for (i, &b) in raw_bytes.iter().enumerate() {
         bytes_bb_512[i] = b as u32;
     }
-    let legacy_pcs = crate::pcs_ext4::commit_table_pcs(&bytes_bb_512, PcsParams::default_zk(3), None);
+    let legacy_pcs =
+        crate::pcs_ext4::commit_table_pcs(&bytes_bb_512, PcsParams::default_zk(3), None);
     let legacy_pcs_root = legacy_pcs.root;
-    let pad512_whir = SaltedByteWhirCommitment::commit_with_min_pad(&raw_bytes, byte_pad_len, None)?;
+    let pad512_whir =
+        SaltedByteWhirCommitment::commit_with_min_pad(&raw_bytes, byte_pad_len, None)?;
     let masked_whir_eq = prove_masked_whir_byte_equality(&pad512_whir, canonical_commit)?;
 
     let mut tr = CShakeTranscript::new(b"QW35-LEGACY-PCS-TO-WHIR-V1");
@@ -2938,7 +3193,11 @@ pub fn prove_legacy_bpe_to_canonical_whir_weld(
     let pad512_whir_batch = open_whir_batch_ext4(
         &[(
             &pad512_whir.whir_mat,
-            &[JointLinearClaimExt4::point_eval(0, z_bridge, legacy_pcs_eval)],
+            &[JointLinearClaimExt4::point_eval(
+                0,
+                z_bridge,
+                legacy_pcs_eval,
+            )],
         )],
         WHIR_EXT4_T_QUERIES_100,
         &mut tr,
@@ -3000,13 +3259,16 @@ pub fn verify_legacy_bpe_to_canonical_whir_weld(
         &weld.legacy_pcs_opening,
         &mut tr_pcs,
     )?;
-    let sh_512 =
-        SaltedByteWhirCommitment::expected_shape(byte_pad_len, weld.pad512_gm_limb_vars);
+    let sh_512 = SaltedByteWhirCommitment::expected_shape(byte_pad_len, weld.pad512_gm_limb_vars);
     verify_whir_batch_ext4(
         &[(
             &weld.masked_whir_eq.root_1,
             &sh_512,
-            &[JointLinearClaimExt4::point_eval(0, z_bridge, weld.legacy_pcs_eval)],
+            &[JointLinearClaimExt4::point_eval(
+                0,
+                z_bridge,
+                weld.legacy_pcs_eval,
+            )],
         )],
         WHIR_EXT4_T_QUERIES_100,
         &weld.pad512_whir_batch,
@@ -3116,12 +3378,9 @@ impl SpecPrefillCarryWitness {
         let mut shifted_logit_tv = vec![0u32; tv_len];
         let mut logit_gap_tv = vec![0u32; tv_len];
 
-        for u in 0..p_len {
-            tok_in_col[u] = prompt_tokens[u];
-        }
-        for i in 0..(CARRY_TURN_TOKENS - p_len) {
-            tok_in_col[p_len + i] = generated_tokens[i];
-        }
+        tok_in_col[..p_len].copy_from_slice(&prompt_tokens[..p_len]);
+        tok_in_col[p_len..CARRY_TURN_TOKENS]
+            .copy_from_slice(&generated_tokens[..(CARRY_TURN_TOKENS - p_len)]);
 
         for t in 0..CARRY_TURN_TOKENS {
             let target_tok = if t + 1 < p_len {
@@ -3149,10 +3408,9 @@ impl SpecPrefillCarryWitness {
                 strict_lt_tv[idx] = u32::from(vu < v_star);
 
                 // Exercise BOTH strict dominance (`v < v*`) AND exact tie (`v == v* + 1` has equal logit!):
-                let cand_logit: i32 = if vu == v_star {
+                let cand_logit: i32 = if vu == v_star || vu == v_star + 1 {
+                    // Exact tie at `v > v*` is allowed by lexicographic tie-breaking.
                     win_logit
-                } else if vu == v_star + 1 {
-                    win_logit // exact tie at `v > v*`, allowed by lexicographic tie-breaking!
                 } else {
                     win_logit - 7 - ((v as i32 * 19 + t as i32) % 300)
                 };
@@ -3404,7 +3662,9 @@ impl SpecPrefillCarryWitness {
 
     pub fn expected_shape() -> WhirExt4MatrixShape {
         WhirExt4MatrixShape::for_subtables(
-            &[7, 7, 7, 7, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13],
+            &[
+                7, 7, 7, 7, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
+            ],
             true,
             WHIR_EXT4_BLOWUP,
         )
@@ -3547,27 +3807,53 @@ pub struct SpecPrefillCarryWeldProof {
 }
 
 #[allow(clippy::too_many_arguments)]
-fn append_carry_weld_prover_transcript(
-    wit: &SpecPrefillCarryWitness,
-    w_loop_nibs: &[u8],
-    w_loop_scs: &[u32],
-    ext_gmask: &GMaskExt4,
-    gm_specs: &[GMaskSpecExt4],
-    gm_ids: [usize; 4],
-    mult_u16: &[u32],
-    mult_u16_sub: usize,
-    mult_rem11: &[u32],
-    mult_rem11_sub: usize,
-    tr: &mut CShakeTranscript,
-) -> (
+type LoopMxfp4Summary = (Vec<Ext4>, Vec<Ext4>, Ext4, Ext4);
+
+type CarryWeldProverOutput = (
     CarryWeldSubproof,
     Ext4,
     Ext4,
     Ext4,
     Vec<JointLinearClaimExt4>,
     Vec<JointLinearClaimExt4>,
-    (Vec<Ext4>, Vec<Ext4>, Ext4, Ext4),
-) {
+    LoopMxfp4Summary,
+);
+
+#[derive(Clone, Copy)]
+struct CarryWeldMaskCfg<'a> {
+    gm_specs: &'a [GMaskSpecExt4],
+    gm_ids: [usize; 4],
+    mult_u16_sub: usize,
+    mult_rem11_sub: usize,
+}
+
+#[derive(Clone, Copy)]
+struct CarryWeldAuxSlices<'a> {
+    w_loop_nibs: &'a [u8],
+    w_loop_scs: &'a [u32],
+    mult_u16: &'a [u32],
+    mult_rem11: &'a [u32],
+}
+
+fn append_carry_weld_prover_transcript(
+    wit: &SpecPrefillCarryWitness,
+    aux: CarryWeldAuxSlices<'_>,
+    ext_gmask: &GMaskExt4,
+    cfg: CarryWeldMaskCfg<'_>,
+    tr: &mut CShakeTranscript,
+) -> CarryWeldProverOutput {
+    let CarryWeldAuxSlices {
+        w_loop_nibs,
+        w_loop_scs,
+        mult_u16,
+        mult_rem11,
+    } = aux;
+    let CarryWeldMaskCfg {
+        gm_specs,
+        gm_ids,
+        mult_u16_sub,
+        mult_rem11_sub,
+    } = cfg;
     // A.1 Booleanity `sel_ind * (sel_ind - 1) == 0` over `{0, 1}^{13}`:
     let z_sb = tr.squeeze_ext4_vec(b"cw_zsb", 13, true);
     let sel_ext: Vec<Ext4> = wit.sel_ind_tv.iter().map(|&v| Ext4::from_bb(v)).collect();
@@ -3579,11 +3865,13 @@ fn append_carry_weld_prover_transcript(
     let (sel_bool_sc, sb_rho, sb_chals, _, _, sb_term) = prove_gmask_einsum_ext4(
         &sel_ext,
         &sel_m1,
-        13,
-        0,
-        &z_sb,
-        ext_gmask,
-        "cw_sbool",
+        GmaskEinSumParams {
+            mu_s: 13,
+            kappa: 0,
+            z_s: &z_sb,
+            gmask: ext_gmask,
+            spec_name: "cw_sbool",
+        },
         tr,
     );
     let sel_at_sb = mle_eval_bb_at_ext4(&wit.sel_ind_tv, &sb_chals);
@@ -3626,11 +3914,13 @@ fn append_carry_weld_prover_transcript(
     let (lt_shift_sc, lt_rho, lt_chals, _, _, lt_term) = prove_gmask_einsum_ext4(
         &left_lt,
         &right_lt,
-        7,
-        6,
-        &z_lt_t,
-        ext_gmask,
-        "cw_ltsh",
+        GmaskEinSumParams {
+            mu_s: 7,
+            kappa: 6,
+            z_s: &z_lt_t,
+            gmask: ext_gmask,
+            spec_name: "cw_ltsh",
+        },
         tr,
     );
     let lt_plus_sel_at_r = mle_eval_bb_at_ext4(&wit.strict_lt_tv, &lt_chals)
@@ -3660,11 +3950,13 @@ fn append_carry_weld_prover_transcript(
     let (sel_target_sc, st_rho, st_chals, _, _, st_term) = prove_gmask_einsum_ext4(
         &sel_ext,
         &right_sel,
-        7,
-        6,
-        &z_sel_t,
-        ext_gmask,
-        "cw_seltgt",
+        GmaskEinSumParams {
+            mu_s: 7,
+            kappa: 6,
+            z_s: &z_sel_t,
+            gmask: ext_gmask,
+            spec_name: "cw_seltgt",
+        },
         tr,
     );
     let sel_ind_at_r = mle_eval_bb_at_ext4(&wit.sel_ind_tv, &st_chals);
@@ -3699,26 +3991,19 @@ fn append_carry_weld_prover_transcript(
     let r_j_loop = tr.squeeze_ext4_vec(b"cw_rjlp", 10, true);
     let eq_rt = build_eq_table_lsb_ext4(&r_t_loop);
     let mut x_ri = vec![Ext4::ZERO; LOOP_DIM];
-    for d in 0..LOOP_DIM {
+    for (d, x_slot) in x_ri.iter_mut().enumerate() {
         let base = d << 3;
         let mut acc = Ext4::ZERO;
-        for t in 0..LOOP_TOKENS {
+        for (t, &eq_tv) in eq_rt.iter().enumerate().take(LOOP_TOKENS) {
             let x_comb = Ext4::from_bb(wit.x_loop_bb[0][base + t])
                 .add(rho_loop.scale_bb(wit.x_loop_bb[1][base + t]))
                 .add(rho_loop2.scale_bb(wit.x_loop_bb[2][base + t]));
-            acc = acc.add(eq_rt[t].mul(x_comb));
+            acc = acc.add(eq_tv.mul(x_comb));
         }
-        x_ri[d] = acc;
+        *x_slot = acc;
     }
-    let (loop_mxfp4_proof, loop_chals) = prove_mxfp4_delayed_bjk_horner_ext4(
-        &x_ri,
-        w_loop_nibs,
-        w_loop_scs,
-        10,
-        5,
-        &r_j_loop,
-        tr,
-    );
+    let (loop_mxfp4_proof, loop_chals) =
+        prove_mxfp4_delayed_bjk_horner_ext4(&x_ri, w_loop_nibs, w_loop_scs, 10, 5, &r_j_loop, tr);
 
     let z_rc = tr.squeeze_ext4_vec(b"cw_zrc", 13, true);
     let virt_rem11 = wit.build_virtual_rem11_table();
@@ -3994,11 +4279,29 @@ fn append_carry_weld_prover_transcript(
             d1b_rem11_proof.mult_leaf_eval,
         ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &sb_ws, sel_bool_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &sb_wa, sb_rho, sb_term.sub(unm_sb)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &sb_wa,
+            sb_rho,
+            sb_term.sub(unm_sb),
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &lt_ws, lt_shift_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &lt_wa, lt_rho, lt_term.sub(unm_lt)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &lt_wa,
+            lt_rho,
+            lt_term.sub(unm_lt),
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &st_ws, sel_target_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &st_wa, st_rho, st_term.sub(unm_st)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &st_wa,
+            st_rho,
+            st_term.sub(unm_st),
+        ),
     ];
 
     (
@@ -4030,27 +4333,38 @@ fn append_carry_weld_prover_transcript(
     )
 }
 
-#[allow(clippy::too_many_arguments)]
-fn replay_carry_weld_verifier_transcript(
-    prompt_tokens: &[u32],
-    sub: &CarryWeldSubproof,
+type CarryWeldVerifierOutput = (
+    Vec<JointLinearClaimExt4>,
+    Vec<JointLinearClaimExt4>,
+    LoopMxfp4Summary,
+);
+
+#[derive(Clone, Copy)]
+struct CarryWeldVerifierClaims {
     sel_at_sb: Ext4,
     strict_lt_at_zlt: Ext4,
     lt_plus_sel_at_r: Ext4,
-    gm_specs: &[GMaskSpecExt4],
-    gm_ids: [usize; 4],
+}
+
+fn replay_carry_weld_verifier_transcript(
+    prompt_tokens: &[u32],
+    sub: &CarryWeldSubproof,
+    claims: CarryWeldVerifierClaims,
+    cfg: CarryWeldMaskCfg<'_>,
     want_gm_len: usize,
-    mult_u16_sub: usize,
-    mult_rem11_sub: usize,
     tr: &mut CShakeTranscript,
-) -> Result<
-    (
-        Vec<JointLinearClaimExt4>,
-        Vec<JointLinearClaimExt4>,
-        (Vec<Ext4>, Vec<Ext4>, Ext4, Ext4),
-    ),
-    String,
-> {
+) -> Result<CarryWeldVerifierOutput, String> {
+    let CarryWeldVerifierClaims {
+        sel_at_sb,
+        strict_lt_at_zlt,
+        lt_plus_sel_at_r,
+    } = claims;
+    let CarryWeldMaskCfg {
+        gm_specs,
+        gm_ids,
+        mult_u16_sub,
+        mult_rem11_sub,
+    } = cfg;
     if prompt_tokens.is_empty() || prompt_tokens.len() >= CARRY_TURN_TOKENS {
         return Err("invalid prompt_tokens length in CarryWeld".into());
     }
@@ -4098,7 +4412,11 @@ fn replay_carry_weld_verifier_transcript(
         .add(gamma_sel2.mul(sub.logit_max_at_zsel));
     let (st_rho, st_chals, st_term) =
         verify_gmask_einsum_ext4(sel_claim, 7, 6, &z_sel_t, &sub.sel_target_sc, tr)?;
-    for e in [sub.sel_ind_at_r, sub.cand_vocab_at_r, sub.shifted_logit_at_r] {
+    for e in [
+        sub.sel_ind_at_r,
+        sub.cand_vocab_at_r,
+        sub.shifted_logit_at_r,
+    ] {
         tr.absorb_ext4(b"cw_st_ev", e);
     }
 
@@ -4403,11 +4721,29 @@ fn replay_carry_weld_verifier_transcript(
             sub.d1b_rem11_proof.mult_leaf_eval,
         ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &sb_ws, sub.sel_bool_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &sb_wa, sb_rho, sb_term.sub(unm_sb)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &sb_wa,
+            sb_rho,
+            sb_term.sub(unm_sb),
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &lt_ws, sub.lt_shift_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &lt_wa, lt_rho, lt_term.sub(unm_lt)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &lt_wa,
+            lt_rho,
+            lt_term.sub(unm_lt),
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &st_ws, sub.sel_target_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &st_wa, st_rho, st_term.sub(unm_st)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &st_wa,
+            st_rho,
+            st_term.sub(unm_st),
+        ),
     ];
 
     Ok((
@@ -4465,20 +4801,31 @@ pub fn prove_spec_prefill_carry_weld(
         tr.absorb_u32(b"cw_ptok", pt);
     }
 
-    let (subproof, sel_at_sb, strict_lt_at_zlt, lt_plus_sel_at_r, carry_claims, online_claims, qs_lp) =
-        append_carry_weld_prover_transcript(
-            wit,
-            &loop_qs.nibs_pad,
-            &loop_qs.scs_pad,
-            &ext_gmask,
-            &gm_specs,
-            [2, 3, 4, 5],
-            &mult_u16,
-            0,
-            &mult_rem11,
-            1,
-            &mut tr,
-        );
+    let (
+        subproof,
+        sel_at_sb,
+        strict_lt_at_zlt,
+        lt_plus_sel_at_r,
+        carry_claims,
+        online_claims,
+        qs_lp,
+    ) = append_carry_weld_prover_transcript(
+        wit,
+        CarryWeldAuxSlices {
+            w_loop_nibs: &loop_qs.nibs_pad,
+            w_loop_scs: &loop_qs.scs_pad,
+            mult_u16: &mult_u16,
+            mult_rem11: &mult_rem11,
+        },
+        &ext_gmask,
+        CarryWeldMaskCfg {
+            gm_specs: &gm_specs,
+            gm_ids: [2, 3, 4, 5],
+            mult_u16_sub: 0,
+            mult_rem11_sub: 1,
+        },
+        &mut tr,
+    );
 
     let qs_claims = vec![
         JointLinearClaimExt4::point_eval(0, qs_lp.0, qs_lp.2),
@@ -4539,14 +4886,18 @@ pub fn verify_spec_prefill_carry_weld(
     let (carry_claims, online_claims, qs_lp) = replay_carry_weld_verifier_transcript(
         &prf.prompt_tokens,
         &prf.subproof,
-        prf.sel_at_sb,
-        prf.strict_lt_at_zlt,
-        prf.lt_plus_sel_at_r,
-        &gm_specs,
-        [2, 3, 4, 5],
+        CarryWeldVerifierClaims {
+            sel_at_sb: prf.sel_at_sb,
+            strict_lt_at_zlt: prf.strict_lt_at_zlt,
+            lt_plus_sel_at_r: prf.lt_plus_sel_at_r,
+        },
+        CarryWeldMaskCfg {
+            gm_specs: &gm_specs,
+            gm_ids: [2, 3, 4, 5],
+            mult_u16_sub: 0,
+            mult_rem11_sub: 1,
+        },
         1usize << prf.gm_limb_vars,
-        0,
-        1,
         &mut tr,
     )?;
 
@@ -4603,7 +4954,9 @@ fn hash_trace_boundary_leaf(chunk_idx: usize, boundary_idx: usize, root: &[u8; 3
     cshake256_32(TRACE_LEAF_DOM, &buf)
 }
 
-fn build_trace_merkle_tree(chunk_boundary_roots: &[Vec<[u8; 32]>]) -> (Vec<Vec<[u8; 32]>>, [u8; 32]) {
+fn build_trace_merkle_tree(
+    chunk_boundary_roots: &[Vec<[u8; 32]>],
+) -> (Vec<Vec<[u8; 32]>>, [u8; 32]) {
     let num_chunks = chunk_boundary_roots.len();
     let raw_count = num_chunks * 25;
     let n_leaves = raw_count.next_power_of_two().max(64);
@@ -4633,8 +4986,8 @@ fn build_trace_merkle_tree(chunk_boundary_roots: &[Vec<[u8; 32]>]) -> (Vec<Vec<[
 fn open_trace_merkle_path(tree: &[Vec<[u8; 32]>], leaf_idx: usize) -> MerkleSinglePath {
     let mut siblings = Vec::with_capacity(tree.len() - 1);
     let mut cur = leaf_idx;
-    for lvl in 0..(tree.len() - 1) {
-        siblings.push(tree[lvl][cur ^ 1]);
+    for level in &tree[..tree.len() - 1] {
+        siblings.push(level[cur ^ 1]);
         cur >>= 1;
     }
     MerkleSinglePath {
@@ -4906,7 +5259,11 @@ impl EscrowCountersignature {
         if commit.lease_id != lease.lease_id {
             return Err("commit.lease_id != lease.lease_id".into());
         }
-        verify_wots_signature(&lease.provider_pk, &commit.body_digest(), &commit.provider_sig)?;
+        verify_wots_signature(
+            &lease.provider_pk,
+            &commit.body_digest(),
+            &commit.provider_sig,
+        )?;
         let target_beacon_round = round_commit
             .checked_add(lease.beacon_delay)
             .ok_or_else(|| "round_commit + beacon_delay overflow".to_string())?;
@@ -5111,7 +5468,9 @@ fn verify_d1b_qwen_rom_fast(
 
     for (step, lyr) in proof.layers.iter().enumerate() {
         if lyr.rounds.len() != step {
-            return Err(format!("D1bExt4TableProof round count mismatch at step {step}"));
+            return Err(format!(
+                "D1bExt4TableProof round count mismatch at step {step}"
+            ));
         }
         let eta = tr.squeeze_ext4(b"d1b_rom_eta", true);
         let mut sigma = cur_p_claim.add(eta.mul(cur_q_claim));
@@ -5119,7 +5478,9 @@ fn verify_d1b_qwen_rom_fast(
 
         for (r_idx, msg) in lyr.rounds.iter().enumerate() {
             if msg.p0.add(msg.p1) != sigma {
-                return Err(format!("D1bExt4TableProof sumcheck failed at {step}:{r_idx}"));
+                return Err(format!(
+                    "D1bExt4TableProof sumcheck failed at {step}:{r_idx}"
+                ));
             }
             tr.absorb_ext4(b"d1b_rom_c0", msg.p0);
             tr.absorb_ext4(b"d1b_rom_c1", msg.p1);
@@ -5138,7 +5499,9 @@ fn verify_d1b_qwen_rom_fast(
         let num_val = lyr.p_lo.mul(lyr.q_hi).add(lyr.p_hi.mul(lyr.q_lo));
         let den_val = lyr.q_lo.mul(lyr.q_hi);
         if sigma != eq_ev.mul(num_val.add(eta.mul(den_val))) {
-            return Err(format!("D1bExt4TableProof layer fold failed at step {step}"));
+            return Err(format!(
+                "D1bExt4TableProof layer fold failed at step {step}"
+            ));
         }
         let r_bit = tr.squeeze_ext4(b"d1b_rom_rbit", true);
         cur_p_claim = lyr.p_lo.add(r_bit.mul(lyr.p_hi.sub(lyr.p_lo)));
@@ -5185,7 +5548,7 @@ fn verify_d1b_qwen_rom_fast(
         .collect();
     let pos_weights: Vec<Ext4> = (0..max_len).map(|k| g3_slope.mul(pows[k])).collect();
     let pad_tuple = Ext4::from_bb(PAD_TOK_ID).add(gammas[0]).add(gammas[2]);
-    let p_u64 = P as u64;
+    let p_u64 = P;
 
     // 32 parallel chunks of `8,192` slots (`8192 * 248320 * 2.01e9 = 4.1e18 < u64::MAX`, `0` inner `% P` or `Ext4` muls!):
     let rom_ev = (0..32usize)
@@ -5198,8 +5561,7 @@ fn verify_d1b_qwen_rom_fast(
             let mut len_buckets = vec![Ext4::ZERO; max_len + 1];
             let mut pos_acc = vec![[0u64; 4]; max_len];
 
-            for slot in base..end {
-                let w = eq_tab[slot];
+            for (slot, &w) in eq_tab.iter().enumerate().take(end).skip(base) {
                 if slot < QWEN_DEFINED_TOKENS && rom.is_defined[slot] {
                     let s_u64 = slot as u64;
                     slot_acc[0] += (w.0[0] as u64) * s_u64;
@@ -5263,7 +5625,11 @@ fn verify_d1b_qwen_rom_fast(
 
 /// Build linear weights `w_horner[0..pad_len]` and scalar offset `c_sum` such that for ANY byte array
 /// `bs[0..word_len]`, `<w_horner, bytes_pad> + c_sum == eval_bytes_ext4(beta_ext4, bs)`!
-fn build_horner_byte_weights(beta_ext4: Ext4, word_len: usize, pad_len: usize) -> (Vec<Ext4>, Ext4) {
+fn build_horner_byte_weights(
+    beta_ext4: Ext4,
+    word_len: usize,
+    pad_len: usize,
+) -> (Vec<Ext4>, Ext4) {
     let c0 = eval_bytes_ext4(beta_ext4, &[0u8]);
     let slope = eval_bytes_ext4(beta_ext4, &[1u8]).sub(c0);
     let mut weights = vec![Ext4::ZERO; pad_len];
@@ -5292,14 +5658,13 @@ fn eval_shift_kernel_128(z: &[Ext4], u_pt: &[Ext4]) -> Ext4 {
 fn eval_non_slt_mask_mle_local(z_i: &[Ext4], z_j: &[Ext4]) -> Ext4 {
     let eq_i = build_eq_table_lsb_ext4(z_i);
     let eq_j = build_eq_table_lsb_ext4(z_j);
-    let c_len = eq_i.len();
     let mut acc = Ext4::ZERO;
-    for j in 0..c_len {
+    for (j, &eq_jv) in eq_j.iter().enumerate() {
         let mut s_i = Ext4::ZERO;
-        for i in 0..=j {
-            s_i = s_i.add(eq_i[i]);
+        for &eq_iv in &eq_i[..=j] {
+            s_i = s_i.add(eq_iv);
         }
-        acc = acc.add(eq_j[j].mul(s_i));
+        acc = acc.add(eq_jv.mul(s_i));
     }
     acc
 }
@@ -5390,10 +5755,10 @@ pub fn provider_commit_turn_phase1(
     carry_witnesses.push(base_carry);
     for s in 1..GDN_LAYER_INDICES_18.len() {
         let l_idx = GDN_LAYER_INDICES_18[s];
-        carry_witnesses.push(carry_witnesses[0].with_loop_weight(
-            &chunk_boundaries_bb[0][l_idx],
-            &gdn_loop_mats[s],
-        )?);
+        carry_witnesses.push(
+            carry_witnesses[0]
+                .with_loop_weight(&chunk_boundaries_bb[0][l_idx], &gdn_loop_mats[s])?,
+        );
     }
     let turn_weld_mats: Vec<WhirCommittedMatrixExt4> = carry_witnesses
         .par_iter()
@@ -5806,7 +6171,8 @@ pub fn prove_payable_compute_receipt(
 
     let b_in_mat = &phase1.chunk_boundary_mats[audited_chunk][audited_layer];
     let b_out_mat = &phase1.chunk_boundary_mats[audited_chunk][audited_layer + 1];
-    let b_in_trace_path = open_trace_merkle_path(&phase1.trace_tree, audited_chunk * 25 + audited_layer);
+    let b_in_trace_path =
+        open_trace_merkle_path(&phase1.trace_tree, audited_chunk * 25 + audited_layer);
     let b_out_trace_path =
         open_trace_merkle_path(&phase1.trace_tree, audited_chunk * 25 + audited_layer + 1);
     let turn_weld_mat = &phase1.turn_weld_mats[gdn_slot];
@@ -5897,7 +6263,8 @@ pub fn prove_payable_compute_receipt(
     let mut y_lsb_tj = vec![0u32; wy.c_len * j_pad];
     for t in 0..wy.c_len {
         for j in 0..j_pad {
-            y_lsb_tj[t + (j << log_c)] = bb_from_i64(audited_turn_exec.gate_proj_y_raw[t * j_pad + j]);
+            y_lsb_tj[t + (j << log_c)] =
+                bb_from_i64(audited_turn_exec.gate_proj_y_raw[t * j_pad + j]);
         }
     }
 
@@ -6028,19 +6395,31 @@ pub fn prove_payable_compute_receipt(
     for j in 0..wy.c_len {
         for h in 0..wy.h_pad {
             let mut al = Ext4::ZERO;
-            for i in 0..wy.c_len {
-                al = al.add(eq_i[i].scale_bb(wy.l_lsb_hij[h + (i << log_h) + (j << (log_h + log_c))]));
+            for (i, &eq_iv) in eq_i.iter().enumerate() {
+                al =
+                    al.add(eq_iv.scale_bb(wy.l_lsb_hij[h + (i << log_h) + (j << (log_h + log_c))]));
             }
             left_hj[h + (j << log_h)] = al;
             let mut ar = Ext4::ZERO;
-            for k in 0..wy_cols {
-                ar = ar.add(eq_k[k].scale_bb(wy.uw_lsb_hik[h + (j << log_h) + (k << (log_h + log_c))]));
+            for (k, &eq_kv) in eq_k.iter().enumerate() {
+                ar = ar
+                    .add(eq_kv.scale_bb(wy.uw_lsb_hik[h + (j << log_h) + (k << (log_h + log_c))]));
             }
             right_hj[h + (j << log_h)] = ar;
         }
     }
-    let (wy_blinded_sc, wy_rho, wy_chals, wy_l_eval, wy_uw_eval, wy_term) =
-        prove_gmask_einsum_ext4(&left_hj, &right_hj, log_h, log_c, &z_h, &ext_gmask, "wy_sc", &mut tr);
+    let (wy_blinded_sc, wy_rho, wy_chals, wy_l_eval, wy_uw_eval, wy_term) = prove_gmask_einsum_ext4(
+        &left_hj,
+        &right_hj,
+        GmaskEinSumParams {
+            mu_s: log_h,
+            kappa: log_c,
+            z_s: &z_h,
+            gmask: &ext_gmask,
+            spec_name: "wy_sc",
+        },
+        &mut tr,
+    );
     tr.absorb_ext4(b"wy_l_ev", wy_l_eval);
     tr.absorb_ext4(b"wy_uw_ev", wy_uw_eval);
 
@@ -6058,8 +6437,18 @@ pub fn prove_payable_compute_receipt(
             }
         }
     }
-    let (slt_blinded_sc, slt_rho, slt_chals, _, _, slt_term) =
-        prove_gmask_einsum_ext4(&non_slt, &l_ext, m_slt, 0, &z_slt, &ext_gmask, "slt_sc", &mut tr);
+    let (slt_blinded_sc, slt_rho, slt_chals, _, _, slt_term) = prove_gmask_einsum_ext4(
+        &non_slt,
+        &l_ext,
+        GmaskEinSumParams {
+            mu_s: m_slt,
+            kappa: 0,
+            z_s: &z_slt,
+            gmask: &ext_gmask,
+            spec_name: "slt_sc",
+        },
+        &mut tr,
+    );
 
     let (d1b_wy8192_proof, z_wy8192) =
         prove_d1b_range_ext4(&virt_wy8192, &mult_wy8192, 21, 13, &mut tr);
@@ -6095,7 +6484,8 @@ pub fn prove_payable_compute_receipt(
     let bnd_vars = 16usize; // `64 * 1024`
     let z_bnd = tr.squeeze_ext4_vec(b"u1_zb", bnd_vars, true);
     let b_in_eval = mle_eval_bb_at_ext4(&audited_turn_exec.boundaries_bb[audited_layer], &z_bnd);
-    let b_out_eval = mle_eval_bb_at_ext4(&audited_turn_exec.boundaries_bb[audited_layer + 1], &z_bnd);
+    let b_out_eval =
+        mle_eval_bb_at_ext4(&audited_turn_exec.boundaries_bb[audited_layer + 1], &z_bnd);
     let delta_gdn_eval = mle_eval_bb_at_ext4(&audited_turn_exec.delta_gdn_bb, &z_bnd);
     let delta_mlp_eval = mle_eval_bb_at_ext4(&audited_turn_exec.delta_mlp_bb, &z_bnd);
     for e in [b_in_eval, b_out_eval, delta_gdn_eval, delta_mlp_eval] {
@@ -6124,11 +6514,13 @@ pub fn prove_payable_compute_receipt(
     let (eof_blinded_sc, eof_rho, eof_chals, _, _, eof_term) = prove_gmask_einsum_ext4(
         &left_eof,
         &right_eof,
-        m_abs,
-        0,
-        &z_eof,
-        &phase1.byte_commit.eof_gmask,
-        "eof_sc",
+        GmaskEinSumParams {
+            mu_s: m_abs,
+            kappa: 0,
+            z_s: &z_eof,
+            gmask: &phase1.byte_commit.eof_gmask,
+            spec_name: "eof_sc",
+        },
         &mut tr,
     );
 
@@ -6137,12 +6529,20 @@ pub fn prove_payable_compute_receipt(
     tr.absorb_ext4(b"abs_qn", q_next_at_zsh);
     let eq_zsh = build_eq_table_lsb_ext4(&z_sh);
     let mut shift_col_abs = vec![Ext4::ZERO; pad_len];
-    for t in 0..(pad_len - 1) {
-        shift_col_abs[t + 1] = eq_zsh[t];
-    }
+    shift_col_abs[1..pad_len].copy_from_slice(&eq_zsh[..(pad_len - 1)]);
     let q_ext: Vec<Ext4> = q_vec.iter().map(|&v| Ext4::from_bb(v)).collect();
-    let (shift_blinded_sc, sh_rho, sh_chals, _, _, sh_term) =
-        prove_gmask_einsum_ext4(&shift_col_abs, &q_ext, 0, m_abs, &[], &ext_gmask, "shift_sc", &mut tr);
+    let (shift_blinded_sc, sh_rho, sh_chals, _, _, sh_term) = prove_gmask_einsum_ext4(
+        &shift_col_abs,
+        &q_ext,
+        GmaskEinSumParams {
+            mu_s: 0,
+            kappa: m_abs,
+            z_s: &[],
+            gmask: &ext_gmask,
+            spec_name: "shift_sc",
+        },
+        &mut tr,
+    );
 
     // --- Prove Section C: Post-Commitment `248,320`-Vocab `QwenBpeRom` Token-to-Byte Weld ---
     let rom_gammas = [
@@ -6169,7 +6569,13 @@ pub fn prove_payable_compute_receipt(
     let len_at_zrom = mle_eval_bb_at_ext4(&phase1.bpe_phase1_cols[2], &z_rom_wit);
     let pow_at_zrom = eval_ext4_vec_mle(&pow_col, &z_rom_wit);
     let val_at_zrom = eval_ext4_vec_mle(&val_col, &z_rom_wit);
-    for e in [tok_at_zrom, is_pad_at_zrom, len_at_zrom, pow_at_zrom, val_at_zrom] {
+    for e in [
+        tok_at_zrom,
+        is_pad_at_zrom,
+        len_at_zrom,
+        pow_at_zrom,
+        val_at_zrom,
+    ] {
         tr.absorb_ext4(b"bpe_rom_ev", e);
     }
 
@@ -6179,7 +6585,18 @@ pub fn prove_payable_compute_receipt(
     tr.absorb_ext4(b"bpe_anz", acc_next_at_zacc);
     tr.absorb_ext4(b"bpe_vz", val_at_zacc);
     let (bpe_acc_sc, bacc_rho, bacc_chals, acc_at_racc, pow_at_racc, bacc_term) =
-        prove_gmask_einsum_ext4(&acc_col, &pow_col, 7, 0, &z_acc, &ext_gmask, "bpe_acc", &mut tr);
+        prove_gmask_einsum_ext4(
+            &acc_col,
+            &pow_col,
+            GmaskEinSumParams {
+                mu_s: 7,
+                kappa: 0,
+                z_s: &z_acc,
+                gmask: &ext_gmask,
+                spec_name: "bpe_acc",
+            },
+            &mut tr,
+        );
     tr.absorb_ext4(b"bpe_ar", acc_at_racc);
     tr.absorb_ext4(b"bpe_pr", pow_at_racc);
 
@@ -6188,11 +6605,19 @@ pub fn prove_payable_compute_receipt(
     tr.absorb_ext4(b"bpe_ansh", acc_next_at_zash);
     let eq_zash = build_eq_table_lsb_ext4(&z_ash);
     let mut ash_col = vec![Ext4::ZERO; CARRY_TURN_TOKENS];
-    for i in 0..(CARRY_TURN_TOKENS - 1) {
-        ash_col[i + 1] = eq_zash[i];
-    }
-    let (bpe_acc_shift_sc, bash_rho, bash_chals, _, _, bash_term) =
-        prove_gmask_einsum_ext4(&ash_col, &acc_col, 0, 7, &[], &ext_gmask, "bpe_ash", &mut tr);
+    ash_col[1..CARRY_TURN_TOKENS].copy_from_slice(&eq_zash[..(CARRY_TURN_TOKENS - 1)]);
+    let (bpe_acc_shift_sc, bash_rho, bash_chals, _, _, bash_term) = prove_gmask_einsum_ext4(
+        &ash_col,
+        &acc_col,
+        GmaskEinSumParams {
+            mu_s: 0,
+            kappa: 7,
+            z_s: &[],
+            gmask: &ext_gmask,
+            spec_name: "bpe_ash",
+        },
+        &mut tr,
+    );
 
     let z_clen = tr.squeeze_ext4_vec(b"bpe_zcl", 7, true);
     let z_csh = tr.squeeze_ext4_vec(b"bpe_zcsh", 7, true);
@@ -6200,9 +6625,7 @@ pub fn prove_payable_compute_receipt(
     tr.absorb_ext4(b"bpe_cnsh", cum_next_at_zcsh);
     let eq_zcsh = build_eq_table_lsb_ext4(&z_csh);
     let mut csh_col = vec![Ext4::ZERO; CARRY_TURN_TOKENS];
-    for i in 0..(CARRY_TURN_TOKENS - 1) {
-        csh_col[i + 1] = eq_zcsh[i];
-    }
+    csh_col[1..CARRY_TURN_TOKENS].copy_from_slice(&eq_zcsh[..(CARRY_TURN_TOKENS - 1)]);
 
     let (w_horner, c_horner) = build_horner_byte_weights(beta_ext4, word_len, pad_len);
 
@@ -6227,15 +6650,19 @@ pub fn prove_payable_compute_receipt(
         qs_lp,
     ) = append_carry_weld_prover_transcript(
         carry_wit,
-        &w_loop_nibs,
-        &w_loop_scs,
+        CarryWeldAuxSlices {
+            w_loop_nibs: &w_loop_nibs,
+            w_loop_scs: &w_loop_scs,
+            mult_u16: &mult_cw_u16,
+            mult_rem11: &mult_cw_rem11,
+        },
         &ext_gmask,
-        &gm_specs,
-        gm_ids,
-        &mult_cw_u16,
-        17,
-        &mult_cw_rem11,
-        18,
+        CarryWeldMaskCfg {
+            gm_specs: &gm_specs,
+            gm_ids,
+            mult_u16_sub: 17,
+            mult_rem11_sub: 18,
+        },
         &mut tr,
     );
 
@@ -6251,10 +6678,9 @@ pub fn prove_payable_compute_receipt(
             pad_tail_emit = pad_tail_emit.add(eq_emit[i].scale_bb(PAD_TOK_ID));
         }
     }
-    let mut is_pad_want = Ext4::ZERO;
-    for i in k_gen..CARRY_TURN_TOKENS {
-        is_pad_want = is_pad_want.add(eq_emit[i]);
-    }
+    let is_pad_want = eq_emit[k_gen..CARRY_TURN_TOKENS]
+        .iter()
+        .fold(Ext4::ZERO, |a, &e| a.add(e));
     let eq_zcsh_last = eq_zcsh[CARRY_TURN_TOKENS - 1];
     turn_weld_claims.extend([
         JointLinearClaimExt4 {
@@ -6270,11 +6696,7 @@ pub fn prove_payable_compute_receipt(
         JointLinearClaimExt4::point_eval(20, z_emit, is_pad_want),
         JointLinearClaimExt4::point_eval(21, z_rom_wit.clone(), len_at_zrom),
         JointLinearClaimExt4::point_eval(22, vec![Ext4::ZERO; 7], Ext4::ZERO),
-        JointLinearClaimExt4::point_eval(
-            23,
-            vec![Ext4::ONE; 7],
-            Ext4::from_bb(word_len as u32),
-        ),
+        JointLinearClaimExt4::point_eval(23, vec![Ext4::ONE; 7], Ext4::from_bb(word_len as u32)),
         JointLinearClaimExt4 {
             terms: vec![
                 LinearTermExt4::PointEval {
@@ -6344,8 +6766,12 @@ pub fn prove_payable_compute_receipt(
         &slt_chals[log_h + log_c..],
     ));
     let shift_factor_abs = eval_shift_kernel_128(&z_sh, &sh_chals);
-    let wy_unm_term = eq_mle_ext4(&z_h, &wy_chals[..log_h]).mul(wy_l_eval).mul(wy_uw_eval);
-    let bacc_unm_term = eq_mle_ext4(&z_acc, &bacc_chals).mul(acc_at_racc).mul(pow_at_racc);
+    let wy_unm_term = eq_mle_ext4(&z_h, &wy_chals[..log_h])
+        .mul(wy_l_eval)
+        .mul(wy_uw_eval);
+    let bacc_unm_term = eq_mle_ext4(&z_acc, &bacc_chals)
+        .mul(acc_at_racc)
+        .mul(pow_at_racc);
     let bash_k = eval_shift_kernel_128(&z_ash, &bash_chals);
 
     // Consolidated `virt_wy8192` (`2^{21}`):
@@ -6404,7 +6830,11 @@ pub fn prove_payable_compute_receipt(
                 .sub(b_contrib_zwy)
                 .sub(bias_wy8192),
         },
-        JointLinearClaimExt4::point_eval(4, z_wy8192[..13].to_vec(), d1b_wy8192_proof.mult_leaf_eval),
+        JointLinearClaimExt4::point_eval(
+            4,
+            z_wy8192[..13].to_vec(),
+            d1b_wy8192_proof.mult_leaf_eval,
+        ),
         JointLinearClaimExt4::point_eval(5, pt_x, mxfp4_proof.finals.0),
         JointLinearClaimExt4::point_eval(6, pt_y, mxfp4_proof.claim),
         JointLinearClaimExt4::point_eval(7, z_bnd.clone(), delta_gdn_eval),
@@ -6414,21 +6844,59 @@ pub fn prove_payable_compute_receipt(
         JointLinearClaimExt4::point_eval(9, z_dfa_leaf.clone(), q_at_dfa_leaf),
         JointLinearClaimExt4::point_eval(10, z_dfa_leaf.clone(), q_next_at_dfa_leaf),
         JointLinearClaimExt4::point_eval(10, z_sh.clone(), q_next_at_zsh),
-        JointLinearClaimExt4::point_eval(11, z_dfa_leaf[..11].to_vec(), dfa_d1b_proof.mult_leaf_eval),
+        JointLinearClaimExt4::point_eval(
+            11,
+            z_dfa_leaf[..11].to_vec(),
+            dfa_d1b_proof.mult_leaf_eval,
+        ),
         // Phase-3 BPE `Ext4` packed columns + `mult_rom`:
-        JointLinearClaimExt4::point_eval(12, packed_pt(&z_rom_wit), pow_at_zrom.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(12, packed_pt(&bacc_chals), pow_at_racc.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(13, packed_pt(&z_rom_wit), val_at_zrom.mul(inv_limb_scale)),
+        JointLinearClaimExt4::point_eval(
+            12,
+            packed_pt(&z_rom_wit),
+            pow_at_zrom.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            12,
+            packed_pt(&bacc_chals),
+            pow_at_racc.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            13,
+            packed_pt(&z_rom_wit),
+            val_at_zrom.mul(inv_limb_scale),
+        ),
         JointLinearClaimExt4::point_eval(13, packed_pt(&z_acc), val_at_zacc.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(14, packed_pt(&vec![Ext4::ZERO; 7]), Ext4::ZERO),
-        JointLinearClaimExt4::point_eval(14, packed_pt(&bacc_chals), acc_at_racc.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(15, packed_pt(&vec![Ext4::ONE; 7]), final_acc_ext4.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(15, packed_pt(&z_acc), acc_next_at_zacc.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(15, packed_pt(&z_ash), acc_next_at_zash.mul(inv_limb_scale)),
+        JointLinearClaimExt4::point_eval(14, packed_pt(&[Ext4::ZERO; 7]), Ext4::ZERO),
+        JointLinearClaimExt4::point_eval(
+            14,
+            packed_pt(&bacc_chals),
+            acc_at_racc.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            15,
+            packed_pt(&[Ext4::ONE; 7]),
+            final_acc_ext4.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            15,
+            packed_pt(&z_acc),
+            acc_next_at_zacc.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            15,
+            packed_pt(&z_ash),
+            acc_next_at_zash.mul(inv_limb_scale),
+        ),
         JointLinearClaimExt4::point_eval(16, z_rom_tab, rom_d1b_proof.mult_leaf_eval),
         // `GMaskExt4` sum & HVZK terminal welds:
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &wy_ws, wy_blinded_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &wy_wa, wy_rho, wy_term.sub(wy_unm_term)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &wy_wa,
+            wy_rho,
+            wy_term.sub(wy_unm_term),
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &slt_ws, slt_blinded_sc.gmask_sum),
         JointLinearClaimExt4::hvzk_terminal_weld(
             vec![LinearTermExt4::PointEval {
@@ -6479,11 +6947,8 @@ pub fn prove_payable_compute_receipt(
     // `byte_commit` claims (`subtable 0 = bytes_pad`, `5..=8 = byte_commit.eof_gmask`):
     let (byte_eof_ws, byte_eof_wa) =
         GMaskExt4::build_spec_weights(&phase1.byte_commit.eof_gm_specs, "eof_sc", &eof_chals);
-    let f_eof_byte = eq_mle_ext4(&z_eof, &eof_chals).mul(eval_eof_ind_mle_local(
-        word_len,
-        pad_len,
-        &eof_chals,
-    ));
+    let f_eof_byte =
+        eq_mle_ext4(&z_eof, &eof_chals).mul(eval_eof_ind_mle_local(word_len, pad_len, &eof_chals));
     let byte_claims = vec![
         JointLinearClaimExt4::point_eval(0, z_dfa_leaf, b_at_dfa_leaf),
         JointLinearClaimExt4::point_eval(0, z_wy8192[..m_abs].to_vec(), b_at_zwy8192),
@@ -6583,7 +7048,11 @@ pub fn prove_payable_compute_receipt(
         JointLinearClaimExt4::point_eval(3, pt_lp_s, qs_lp.3),
     ];
 
-    let b_in_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd.clone(), b_in_eval)];
+    let b_in_claims = vec![JointLinearClaimExt4::point_eval(
+        0,
+        z_bnd.clone(),
+        b_in_eval,
+    )];
     let b_out_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd, b_out_eval)];
 
     // Open ALL 6 WHIR Matrices in **ONE SINGLE SHARED WHIR CASCADE**!
@@ -6700,7 +7169,7 @@ pub fn verify_payable_compute_receipt_and_settle(
         return Err("invalid num_generated_tokens".into());
     }
     if r.byte_pad_len != CANONICAL_BYTE_MIN_PAD
-        || c.word_len.checked_add(2).map_or(true, |n| n > r.byte_pad_len)
+        || c.word_len.checked_add(2).is_none_or(|n| n > r.byte_pad_len)
     {
         return Err("byte_pad_len must equal canonical 2048 and cover word_len + 2".into());
     }
@@ -6710,7 +7179,9 @@ pub fn verify_payable_compute_receipt_and_settle(
     if compute_bpe_weld_root_v1(c.word_len, r.num_generated_tokens, &c.carry_weld_root)
         != c.bpe_weld_root
     {
-        return Err("bpe_weld_root != H(word_len || num_generated_tokens || carry_weld_root)".into());
+        return Err(
+            "bpe_weld_root != H(word_len || num_generated_tokens || carry_weld_root)".into(),
+        );
     }
     let mut usage_in = [0u8; 16];
     usage_in[0..8].copy_from_slice(&c.claimed_units.to_le_bytes());
@@ -6762,7 +7233,9 @@ pub fn verify_payable_compute_receipt_and_settle(
         || r.audited_layer != want_layer
         || r.audited_chunk != want_chunk
     {
-        return Err("audited (layer, token_chunk) does not match post-countersignature drand target".into());
+        return Err(
+            "audited (layer, token_chunk) does not match post-countersignature drand target".into(),
+        );
     }
 
     if let Some(clear) = opt_cleartext_bytes {
@@ -6796,8 +7269,11 @@ pub fn verify_payable_compute_receipt_and_settle(
     }
 
     if r.carry_weld_path.index != r.audited_gdn_slot
-        || r.carry_weld_path.leaf != hash_carry_slot_leaf(r.audited_gdn_slot, &r.carry_slot_whir_root)
-        || !r.carry_weld_path.verify(CARRY_TREE_DOM, &c.carry_weld_root, 32)
+        || r.carry_weld_path.leaf
+            != hash_carry_slot_leaf(r.audited_gdn_slot, &r.carry_slot_whir_root)
+        || !r
+            .carry_weld_path
+            .verify(CARRY_TREE_DOM, &c.carry_weld_root, 32)
     {
         return Err("carry_weld_root Merkle path verification failed".into());
     }
@@ -6825,7 +7301,8 @@ pub fn verify_payable_compute_receipt_and_settle(
     let mut qs_bind_in = [0u8; 64];
     qs_bind_in[0..32].copy_from_slice(&r.layer_tensor_digests[r.gate_proj_tensor_slot]);
     qs_bind_in[32..64].copy_from_slice(&r.qs_whir_root);
-    if cshake256_32(b"QW35-QS-WHIR-BIND-V1", &qs_bind_in) != lease.gdn_qs_bindings[r.audited_gdn_slot]
+    if cshake256_32(b"QW35-QS-WHIR-BIND-V1", &qs_bind_in)
+        != lease.gdn_qs_bindings[r.audited_gdn_slot]
     {
         return Err("qs_whir_root binding mismatch for audited GDN layer".into());
     }
@@ -6903,7 +7380,12 @@ pub fn verify_payable_compute_receipt_and_settle(
     )?;
 
     let z_bnd = tr.squeeze_ext4_vec(b"u1_zb", bnd_vars, true);
-    for e in [r.b_in_eval, r.b_out_eval, r.delta_gdn_eval, r.delta_mlp_eval] {
+    for e in [
+        r.b_in_eval,
+        r.b_out_eval,
+        r.delta_gdn_eval,
+        r.delta_mlp_eval,
+    ] {
         tr.absorb_ext4(b"u1_ev", e);
     }
     if r.b_out_eval != r.b_in_eval.add(r.delta_gdn_eval).add(r.delta_mlp_eval) {
@@ -6956,7 +7438,8 @@ pub fn verify_payable_compute_receipt_and_settle(
     if r.rom_d1b_proof.m_wit != 7 {
         return Err("rom_d1b_proof m_wit != 7".into());
     }
-    let z_rom_tab = verify_d1b_qwen_rom_fast(rom, beta_ext4, rom_gammas, &r.rom_d1b_proof, &mut tr)?;
+    let z_rom_tab =
+        verify_d1b_qwen_rom_fast(rom, beta_ext4, rom_gammas, &r.rom_d1b_proof, &mut tr)?;
     let z_rom_wit = z_rom_tab[..7].to_vec();
     for e in [
         r.tok_at_zrom,
@@ -7005,9 +7488,7 @@ pub fn verify_payable_compute_receipt_and_settle(
     tr.absorb_ext4(b"bpe_cnsh", r.cum_next_at_zcsh);
     let eq_zcsh = build_eq_table_lsb_ext4(&z_csh);
     let mut csh_col = vec![Ext4::ZERO; CARRY_TURN_TOKENS];
-    for i in 0..(CARRY_TURN_TOKENS - 1) {
-        csh_col[i + 1] = eq_zcsh[i];
-    }
+    csh_col[1..CARRY_TURN_TOKENS].copy_from_slice(&eq_zcsh[..(CARRY_TURN_TOKENS - 1)]);
 
     let z_emit = tr.squeeze_ext4_vec(b"bpe_zemit", 7, true);
     tr.absorb_ext4(b"bpe_emitev", r.emit_tok_eval);
@@ -7032,14 +7513,18 @@ pub fn verify_payable_compute_receipt_and_settle(
     let (mut turn_weld_claims, cw_online_claims, qs_lp) = replay_carry_weld_verifier_transcript(
         &lease.prompt_tokens,
         &r.carry_subproof,
-        r.cw_sel_at_sb,
-        r.cw_strict_lt_at_zlt,
-        r.cw_lt_plus_sel_at_r,
-        &gm_specs,
-        gm_ids,
+        CarryWeldVerifierClaims {
+            sel_at_sb: r.cw_sel_at_sb,
+            strict_lt_at_zlt: r.cw_strict_lt_at_zlt,
+            lt_plus_sel_at_r: r.cw_lt_plus_sel_at_r,
+        },
+        CarryWeldMaskCfg {
+            gm_specs: &gm_specs,
+            gm_ids,
+            mult_u16_sub: 17,
+            mult_rem11_sub: 18,
+        },
         want_online_gm_len,
-        17,
-        18,
         &mut tr,
     )?;
 
@@ -7055,10 +7540,9 @@ pub fn verify_payable_compute_receipt_and_settle(
             pad_tail_emit = pad_tail_emit.add(eq_emit[i].scale_bb(PAD_TOK_ID));
         }
     }
-    let mut is_pad_want = Ext4::ZERO;
-    for i in k_gen..CARRY_TURN_TOKENS {
-        is_pad_want = is_pad_want.add(eq_emit[i]);
-    }
+    let is_pad_want = eq_emit[k_gen..CARRY_TURN_TOKENS]
+        .iter()
+        .fold(Ext4::ZERO, |a, &e| a.add(e));
     let eq_zcsh_last = eq_zcsh[CARRY_TURN_TOKENS - 1];
     turn_weld_claims.extend([
         JointLinearClaimExt4 {
@@ -7074,11 +7558,7 @@ pub fn verify_payable_compute_receipt_and_settle(
         JointLinearClaimExt4::point_eval(20, z_emit, is_pad_want),
         JointLinearClaimExt4::point_eval(21, z_rom_wit.clone(), r.len_at_zrom),
         JointLinearClaimExt4::point_eval(22, vec![Ext4::ZERO; 7], Ext4::ZERO),
-        JointLinearClaimExt4::point_eval(
-            23,
-            vec![Ext4::ONE; 7],
-            Ext4::from_bb(c.word_len as u32),
-        ),
+        JointLinearClaimExt4::point_eval(23, vec![Ext4::ONE; 7], Ext4::from_bb(c.word_len as u32)),
         JointLinearClaimExt4 {
             terms: vec![
                 LinearTermExt4::PointEval {
@@ -7215,7 +7695,11 @@ pub fn verify_payable_compute_receipt_and_settle(
                 .sub(b_contrib_zwy)
                 .sub(bias_wy8192),
         },
-        JointLinearClaimExt4::point_eval(4, z_wy8192[..13].to_vec(), r.d1b_wy8192_proof.mult_leaf_eval),
+        JointLinearClaimExt4::point_eval(
+            4,
+            z_wy8192[..13].to_vec(),
+            r.d1b_wy8192_proof.mult_leaf_eval,
+        ),
         JointLinearClaimExt4::point_eval(5, pt_x, r.mxfp4_proof.finals.0),
         JointLinearClaimExt4::point_eval(6, pt_y, r.mxfp4_proof.claim),
         JointLinearClaimExt4::point_eval(7, z_bnd.clone(), r.delta_gdn_eval),
@@ -7224,23 +7708,57 @@ pub fn verify_payable_compute_receipt_and_settle(
         JointLinearClaimExt4::point_eval(9, z_dfa_leaf.clone(), r.q_at_dfa_leaf),
         JointLinearClaimExt4::point_eval(10, z_dfa_leaf.clone(), r.q_next_at_dfa_leaf),
         JointLinearClaimExt4::point_eval(10, z_sh, r.q_next_at_zsh),
-        JointLinearClaimExt4::point_eval(11, z_dfa_leaf[..11].to_vec(), r.dfa_d1b_proof.mult_leaf_eval),
-        JointLinearClaimExt4::point_eval(12, packed_pt(&z_rom_wit), r.pow_at_zrom.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(12, packed_pt(&bacc_chals), r.pow_at_racc.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(13, packed_pt(&z_rom_wit), r.val_at_zrom.mul(inv_limb_scale)),
+        JointLinearClaimExt4::point_eval(
+            11,
+            z_dfa_leaf[..11].to_vec(),
+            r.dfa_d1b_proof.mult_leaf_eval,
+        ),
+        JointLinearClaimExt4::point_eval(
+            12,
+            packed_pt(&z_rom_wit),
+            r.pow_at_zrom.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            12,
+            packed_pt(&bacc_chals),
+            r.pow_at_racc.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            13,
+            packed_pt(&z_rom_wit),
+            r.val_at_zrom.mul(inv_limb_scale),
+        ),
         JointLinearClaimExt4::point_eval(13, packed_pt(&z_acc), r.val_at_zacc.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(14, packed_pt(&vec![Ext4::ZERO; 7]), Ext4::ZERO),
-        JointLinearClaimExt4::point_eval(14, packed_pt(&bacc_chals), r.acc_at_racc.mul(inv_limb_scale)),
+        JointLinearClaimExt4::point_eval(14, packed_pt(&[Ext4::ZERO; 7]), Ext4::ZERO),
+        JointLinearClaimExt4::point_eval(
+            14,
+            packed_pt(&bacc_chals),
+            r.acc_at_racc.mul(inv_limb_scale),
+        ),
         JointLinearClaimExt4::point_eval(
             15,
-            packed_pt(&vec![Ext4::ONE; 7]),
+            packed_pt(&[Ext4::ONE; 7]),
             r.final_acc_ext4.mul(inv_limb_scale),
         ),
-        JointLinearClaimExt4::point_eval(15, packed_pt(&z_acc), r.acc_next_at_zacc.mul(inv_limb_scale)),
-        JointLinearClaimExt4::point_eval(15, packed_pt(&z_ash), r.acc_next_at_zash.mul(inv_limb_scale)),
+        JointLinearClaimExt4::point_eval(
+            15,
+            packed_pt(&z_acc),
+            r.acc_next_at_zacc.mul(inv_limb_scale),
+        ),
+        JointLinearClaimExt4::point_eval(
+            15,
+            packed_pt(&z_ash),
+            r.acc_next_at_zash.mul(inv_limb_scale),
+        ),
         JointLinearClaimExt4::point_eval(16, z_rom_tab, r.rom_d1b_proof.mult_leaf_eval),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &wy_ws, r.wy_blinded_sc.gmask_sum),
-        JointLinearClaimExt4::hvzk_terminal_weld(Vec::new(), gm_ids, &wy_wa, wy_rho, wy_term.sub(wy_unm_term)),
+        JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_ids,
+            &wy_wa,
+            wy_rho,
+            wy_term.sub(wy_unm_term),
+        ),
         JointLinearClaimExt4::gmask_sum_claim(gm_ids, &slt_ws, r.slt_blinded_sc.gmask_sum),
         JointLinearClaimExt4::hvzk_terminal_weld(
             vec![LinearTermExt4::PointEval {
@@ -7310,7 +7828,11 @@ pub fn verify_payable_compute_receipt_and_settle(
             }],
             rhs: r.final_acc_ext4.sub(c_horner),
         },
-        JointLinearClaimExt4::gmask_sum_claim([5, 6, 7, 8], &byte_eof_ws, r.eof_blinded_sc.gmask_sum),
+        JointLinearClaimExt4::gmask_sum_claim(
+            [5, 6, 7, 8],
+            &byte_eof_ws,
+            r.eof_blinded_sc.gmask_sum,
+        ),
         JointLinearClaimExt4::hvzk_terminal_weld(
             vec![LinearTermExt4::PointEval {
                 subtable: 0,
@@ -7397,7 +7919,11 @@ pub fn verify_payable_compute_receipt_and_settle(
         JointLinearClaimExt4::point_eval(3, pt_lp_s, qs_lp.3),
     ];
 
-    let b_in_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd.clone(), r.b_in_eval)];
+    let b_in_claims = vec![JointLinearClaimExt4::point_eval(
+        0,
+        z_bnd.clone(),
+        r.b_in_eval,
+    )];
     let b_out_claims = vec![JointLinearClaimExt4::point_eval(0, z_bnd, r.b_out_eval)];
 
     let online_shape = WhirExt4MatrixShape::for_subtables(

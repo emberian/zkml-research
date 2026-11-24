@@ -30,8 +30,14 @@ pub struct PkCt {
 #[derive(Clone, Debug)]
 pub enum Witness {
     /// kinds "sk" and "key" (a key witness has no cts)
-    Sk { s: Vec<i64>, e_pk: Vec<i64>, cts: Vec<SkCt> },
-    Pk { cts: Vec<PkCt> },
+    Sk {
+        s: Vec<i64>,
+        e_pk: Vec<i64>,
+        cts: Vec<SkCt>,
+    },
+    Pk {
+        cts: Vec<PkCt>,
+    },
 }
 
 /// One group's integers: small (every honest witness) or arbitrary (forgers only).
@@ -114,11 +120,18 @@ fn group_vals(st: &Statement, wit: &Witness) -> Result<Vec<(String, Vals)>, Stri
 }
 
 fn lookup<'a>(vals: &'a [(String, Vals)], name: &str) -> Result<&'a Vals, String> {
-    vals.iter().find(|(n, _)| n == name).map(|(_, v)| v).ok_or_else(|| format!("'{name}'"))
+    vals.iter()
+        .find(|(n, _)| n == name)
+        .map(|(_, v)| v)
+        .ok_or_else(|| format!("'{name}'"))
 }
 
 /// zkpopk_ligero.values_to_digits.
-pub fn values_to_digits(groups: &[Group], vals: &[(String, Vals)], raw: bool) -> Result<Vec<Fe>, String> {
+pub fn values_to_digits(
+    groups: &[Group],
+    vals: &[(String, Vals)],
+    raw: bool,
+) -> Result<Vec<Fe>, String> {
     let mut out = Vec::new();
     for g in groups {
         let v = lookup(vals, &g.name)?;
@@ -231,8 +244,18 @@ pub fn draw_rho(tr: &mut Transcript, st: &Statement, f: usize) -> Rho {
         }
     }
     let mut flat = tr.ints_u64_many(&calls).into_iter();
-    let per = if st.kind().secret() { 1 + st.cts().len() } else { 2 * st.cts().len() };
-    (0..f).map(|_| (0..l).map(|_| (0..per).map(|_| flat.next().unwrap()).collect()).collect()).collect()
+    let per = if st.kind().secret() {
+        1 + st.cts().len()
+    } else {
+        2 * st.cts().len()
+    };
+    (0..f)
+        .map(|_| {
+            (0..l)
+                .map(|_| (0..per).map(|_| flat.next().unwrap()).collect())
+                .collect()
+        })
+        .collect()
 }
 
 fn adj_fe(c: &[u64]) -> Vec<Fe> {
@@ -246,7 +269,9 @@ fn adj_fe(c: &[u64]) -> Vec<Fe> {
 }
 
 fn dot_u64(a: &[Fe], b: &[u64]) -> Fe {
-    a.iter().zip(b).fold(Fe::ZERO, |acc, (x, y)| acc.add(x.mul(Fe::from_u64(*y))))
+    a.iter()
+        .zip(b)
+        .fold(Fe::ZERO, |acc, (x, y)| acc.add(x.mul(Fe::from_u64(*y))))
 }
 
 /// The lambda-combination of the F * L folded limb equations: per group the coefficient vector (mod P), and the
@@ -268,9 +293,9 @@ pub fn combine(st: &Statement, rho: &Rho, lam: &[Fe], f: usize) -> (Vec<(String,
             (0..per)
                 .map(|sl| {
                     let mut acc = vec![Fe::ZERO; n];
-                    for fi in 0..f {
+                    for (fi, rho_f) in rho.iter().enumerate().take(f) {
                         let c = lamc(fi, i);
-                        for (a, r) in acc.iter_mut().zip(&rho[fi][i][sl]) {
+                        for (a, r) in acc.iter_mut().zip(&rho_f[i][sl]) {
                             *a = a.add(c.mul(Fe::from_u64(*r)));
                         }
                     }
@@ -293,7 +318,9 @@ pub fn combine(st: &Statement, rho: &Rho, lam: &[Fe], f: usize) -> (Vec<(String,
     let scale = |v: Vec<Fe>, c: Fe| -> Vec<Fe> { v.into_iter().map(|x| x.mul(c)).collect() };
     if st.kind().secret() {
         // s: sum_i adj(a_i) * R_key_i + t * sum_{i,j} adj(c1_ij) * R_ij, in the transform domain
-        let jobs: Vec<(usize, Option<usize>)> = (0..l).flat_map(|i| std::iter::once((i, None)).chain((0..m).map(move |j| (i, Some(j))))).collect();
+        let jobs: Vec<(usize, Option<usize>)> = (0..l)
+            .flat_map(|i| std::iter::once((i, None)).chain((0..m).map(move |j| (i, Some(j)))))
+            .collect();
         let hat = jobs
             .par_iter()
             .map(|&(i, j)| {
@@ -303,9 +330,15 @@ pub fn combine(st: &Statement, rho: &Rho, lam: &[Fe], f: usize) -> (Vec<(String,
                 };
                 let pa = nega.fwd(&adj_fe(poly));
                 let pr = nega.fwd(r);
-                pa.iter().zip(&pr).map(|(x, y)| x.mul(*y).mul(c)).collect::<Vec<Fe>>()
+                pa.iter()
+                    .zip(&pr)
+                    .map(|(x, y)| x.mul(*y).mul(c))
+                    .collect::<Vec<Fe>>()
             })
-            .reduce(|| vec![Fe::ZERO; n], |a, b| a.iter().zip(&b).map(|(x, y)| x.add(*y)).collect());
+            .reduce(
+                || vec![Fe::ZERO; n],
+                |a, b| a.iter().zip(&b).map(|(x, y)| x.add(*y)).collect(),
+            );
         groups.push(("s".into(), nega.inv(hat)));
         groups.push(("e_pk".into(), sumv(&mut (0..l).map(|i| &rsum[i][0]))));
         for (j, s) in st.slots().iter().enumerate() {
@@ -329,13 +362,21 @@ pub fn combine(st: &Statement, rho: &Rho, lam: &[Fe], f: usize) -> (Vec<(String,
                     let a = nega.fwd(&adj_fe(&reg.a_res()[i]));
                     let r0 = nega.fwd(&rsum[i][2 * j]);
                     let r1 = nega.fwd(&rsum[i][2 * j + 1]);
-                    (0..n).map(|k| tn.mul(b[k]).mul(r0[k]).sub(a[k].mul(r1[k]))).collect::<Vec<Fe>>()
+                    (0..n)
+                        .map(|k| tn.mul(b[k]).mul(r0[k]).sub(a[k].mul(r1[k])))
+                        .collect::<Vec<Fe>>()
                 })
-                .reduce(|| vec![Fe::ZERO; n], |a, b| a.iter().zip(&b).map(|(x, y)| x.add(*y)).collect());
+                .reduce(
+                    || vec![Fe::ZERO; n],
+                    |a, b| a.iter().zip(&b).map(|(x, y)| x.add(*y)).collect(),
+                );
             groups.push((format!("u{j}"), nega.inv(hat)));
             let r0 = sumv(&mut (0..l).map(|i| &rsum[i][2 * j]));
             let r1 = sumv(&mut (0..l).map(|i| &rsum[i][2 * j + 1]));
-            groups.push((format!("r{j}"), st.slots()[j].iter().map(|&k| r0[k].neg()).collect()));
+            groups.push((
+                format!("r{j}"),
+                st.slots()[j].iter().map(|&k| r0[k].neg()).collect(),
+            ));
             groups.push((format!("e0_{j}"), scale(r0, tn)));
             groups.push((format!("e1_{j}"), r1.into_iter().map(|x| x.neg()).collect()));
             for i in 0..l {
@@ -346,7 +387,10 @@ pub fn combine(st: &Statement, rho: &Rho, lam: &[Fe], f: usize) -> (Vec<(String,
     }
     for fi in 0..f {
         for (i, &q) in reg.primes.iter().enumerate() {
-            groups.push((format!("K{fi}_{i}"), vec![Fe::from_u64(q).neg().mul(lamc(fi, i))]));
+            groups.push((
+                format!("K{fi}_{i}"),
+                vec![Fe::from_u64(q).neg().mul(lamc(fi, i))],
+            ));
         }
     }
     (groups, constant)
@@ -357,7 +401,11 @@ pub fn alpha_beta(groups: &[Group], comb: &[(String, Vec<Fe>)], constant: Fe) ->
     let mut beta = constant.neg();
     let mut alpha = Vec::new();
     for g in groups {
-        let c = &comb.iter().find(|(n, _)| *n == g.name).expect("group in the combination").1;
+        let c = &comb
+            .iter()
+            .find(|(n, _)| *n == g.name)
+            .expect("group in the combination")
+            .1;
         let ws: Vec<Fe> = weights(&g.range()).iter().map(Fe::from_biguint).collect();
         let s = c.iter().fold(Fe::ZERO, |a, x| a.add(*x));
         beta = beta.sub(Fe::from_bigint(&g.lo).mul(s));
@@ -392,9 +440,9 @@ impl W256 {
     fn mul_u64(&self, a: u64) -> W256 {
         let mut out = [0u64; 4];
         let mut c = 0u128;
-        for i in 0..4 {
-            let p = self.0[i] as u128 * a as u128 + c;
-            out[i] = p as u64;
+        for (o, &s) in out.iter_mut().zip(&self.0) {
+            let p = s as u128 * a as u128 + c;
+            *o = p as u64;
             c = p >> 64;
         }
         W256(out)
@@ -426,7 +474,12 @@ impl W256 {
 }
 
 /// The exact folded totals sum rho * LHS for every (fold, prime), over Z (the prover's quotient numerators).
-fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Result<Vec<BigInt>, String> {
+fn totals(
+    st: &Statement,
+    rho: &Rho,
+    vals: &[(String, Vals)],
+    f: usize,
+) -> Result<Vec<BigInt>, String> {
     let reg = st.reg();
     let n = reg.n;
     let l = reg.primes.len();
@@ -434,7 +487,10 @@ fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Resul
     let nega = Nega::new(n);
     let res = st.ct_res();
     let small = |name: &str| -> Result<Vec<i64>, String> {
-        lookup(vals, name)?.small().cloned().ok_or_else(|| format!("{name}: the ring factor must be small"))
+        lookup(vals, name)?
+            .small()
+            .cloned()
+            .ok_or_else(|| format!("{name}: the ring factor must be small"))
     };
     let all_small = vals.iter().all(|(_, v)| v.small().is_some());
     let get = |name: &str| lookup(vals, name);
@@ -449,13 +505,19 @@ fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Resul
             .into_par_iter()
             .map(|i| {
                 let a_s = exact_nega(&nega, &reg.a_res()[i], &s).ok_or("s too large")?;
-                let cs = (0..m).map(|j| exact_nega(&nega, &res[i][j].1, &s).ok_or("s too large")).collect::<Result<Vec<_>, _>>()?;
+                let cs = (0..m)
+                    .map(|j| exact_nega(&nega, &res[i][j].1, &s).ok_or("s too large"))
+                    .collect::<Result<Vec<_>, _>>()?;
                 Ok((a_s, cs))
             })
             .collect::<Result<_, &str>>()?;
         let e_pk = get("e_pk")?;
-        let es: Vec<&Vals> = (0..m).map(|j| get(&format!("e{j}"))).collect::<Result<_, _>>()?;
-        let rs: Vec<&Vals> = (0..m).map(|j| get(&format!("r{j}"))).collect::<Result<_, _>>()?;
+        let es: Vec<&Vals> = (0..m)
+            .map(|j| get(&format!("e{j}")))
+            .collect::<Result<_, _>>()?;
+        let rs: Vec<&Vals> = (0..m)
+            .map(|j| get(&format!("r{j}")))
+            .collect::<Result<_, _>>()?;
         for v in std::iter::once(e_pk).chain(es.iter().copied()) {
             if v.len() != n {
                 return Err("error vector: length".into());
@@ -501,14 +563,16 @@ fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Resul
                 } else {
                     let mut tot = BigInt::zero();
                     for k in 0..n {
-                        tot += BigInt::from(rk[k]) * (BigInt::from(bq[k] as i128 + a_s[k]) + e_pk.big(k));
+                        tot += BigInt::from(rk[k])
+                            * (BigInt::from(bq[k] as i128 + a_s[k]) + e_pk.big(k));
                     }
                     for j in 0..m {
                         let rc = &rho[fi][i][1 + j];
                         let c0 = &res[i][j].0;
                         let mut ct = BigInt::zero();
                         for k in 0..n {
-                            ct += BigInt::from(rc[k]) * (BigInt::from(c0[k] as i128 + cs[j][k]) + es[j].big(k));
+                            ct += BigInt::from(rc[k])
+                                * (BigInt::from(c0[k] as i128 + cs[j][k]) + es[j].big(k));
                         }
                         tot += &tb * ct;
                         for (idx, &k) in st.slots()[j].iter().enumerate() {
@@ -521,7 +585,9 @@ fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Resul
             .collect::<Vec<_>>();
         out = r;
     } else {
-        let us: Vec<Vec<i64>> = (0..m).map(|j| small(&format!("u{j}"))).collect::<Result<_, _>>()?;
+        let us: Vec<Vec<i64>> = (0..m)
+            .map(|j| small(&format!("u{j}")))
+            .collect::<Result<_, _>>()?;
         if us.iter().any(|u| u.len() != n) {
             return Err("u: length".into());
         }
@@ -530,14 +596,27 @@ fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Resul
             .into_par_iter()
             .map(|i| {
                 us.iter()
-                    .map(|u| Ok((exact_nega(&nega, &reg.b_res()[i], u).ok_or("u too large")?, exact_nega(&nega, &reg.a_res()[i], u).ok_or("u too large")?)))
+                    .map(|u| {
+                        Ok((
+                            exact_nega(&nega, &reg.b_res()[i], u).ok_or("u too large")?,
+                            exact_nega(&nega, &reg.a_res()[i], u).ok_or("u too large")?,
+                        ))
+                    })
                     .collect::<Result<Vec<_>, &str>>()
             })
             .collect::<Result<_, &str>>()?;
-        let e0s: Vec<&Vals> = (0..m).map(|j| get(&format!("e0_{j}"))).collect::<Result<_, _>>()?;
-        let e1s: Vec<&Vals> = (0..m).map(|j| get(&format!("e1_{j}"))).collect::<Result<_, _>>()?;
-        let rs: Vec<&Vals> = (0..m).map(|j| get(&format!("r{j}"))).collect::<Result<_, _>>()?;
-        if e0s.iter().chain(&e1s).any(|v| v.len() != n) || rs.iter().zip(st.slots()).any(|(v, s)| v.len() != s.len()) {
+        let e0s: Vec<&Vals> = (0..m)
+            .map(|j| get(&format!("e0_{j}")))
+            .collect::<Result<_, _>>()?;
+        let e1s: Vec<&Vals> = (0..m)
+            .map(|j| get(&format!("e1_{j}")))
+            .collect::<Result<_, _>>()?;
+        let rs: Vec<&Vals> = (0..m)
+            .map(|j| get(&format!("r{j}")))
+            .collect::<Result<_, _>>()?;
+        if e0s.iter().chain(&e1s).any(|v| v.len() != n)
+            || rs.iter().zip(st.slots()).any(|(v, s)| v.len() != s.len())
+        {
             return Err("pk witness: length".into());
         }
         let tb = BigInt::from(reg.t);
@@ -552,7 +631,11 @@ fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Resul
                     let r0 = &rho[fi][i][2 * j];
                     let r1 = &rho[fi][i][2 * j + 1];
                     if all_small {
-                        let (e0, e1, rr) = (e0s[j].small().unwrap(), e1s[j].small().unwrap(), rs[j].small().unwrap());
+                        let (e0, e1, rr) = (
+                            e0s[j].small().unwrap(),
+                            e1s[j].small().unwrap(),
+                            rs[j].small().unwrap(),
+                        );
                         let mut a0 = W256::default();
                         let mut a1 = W256::default();
                         let mut ar = W256::default();
@@ -571,8 +654,10 @@ fn totals(st: &Statement, rho: &Rho, vals: &[(String, Vals)], f: usize) -> Resul
                         let mut s0 = BigInt::zero();
                         let mut s1 = BigInt::zero();
                         for k in 0..n {
-                            s0 += BigInt::from(r0[k]) * (BigInt::from(c0[k] as i128 - bu[k]) - e0s[j].big(k));
-                            s1 += BigInt::from(r1[k]) * (BigInt::from(c1[k] as i128 - au[k]) - e1s[j].big(k));
+                            s0 += BigInt::from(r0[k])
+                                * (BigInt::from(c0[k] as i128 - bu[k]) - e0s[j].big(k));
+                            s1 += BigInt::from(r1[k])
+                                * (BigInt::from(c1[k] as i128 - au[k]) - e1s[j].big(k));
                         }
                         tot += &tb * s0 + s1;
                         for (idx, &k) in st.slots()[j].iter().enumerate() {
@@ -598,7 +683,10 @@ fn colbytes(rows: &[Vec<Fe>], j: usize) -> Vec<u8> {
 
 fn commit(rows: &[Vec<Fe>], salts: &[[u8; 32]]) -> Merkle {
     let n_d = salts.len();
-    let leaves: Vec<[u8; 32]> = (0..n_d).into_par_iter().map(|j| leaf(&salts[j], &colbytes(rows, j))).collect();
+    let leaves: Vec<[u8; 32]> = (0..n_d)
+        .into_par_iter()
+        .map(|j| leaf(&salts[j], &colbytes(rows, j)))
+        .collect();
     Merkle::build(leaves)
 }
 
@@ -613,20 +701,28 @@ fn encode_row(code: &Code, msg: &[Fe], rv: &[Fe]) -> Vec<Fe> {
 }
 
 fn draw_row_rand(code: &Code, n: usize, rng: &mut dyn Hiding) -> Vec<Vec<Fe>> {
-    (0..n).map(|_| (0..code.th).map(|_| rng.fe()).collect()).collect()
+    (0..n)
+        .map(|_| (0..code.th).map(|_| rng.fe()).collect())
+        .collect()
 }
 
 fn encode_rows(code: &Code, msgs: &[Vec<Fe>], rng: &mut dyn Hiding) -> Vec<Vec<Fe>> {
     // the row randomness is drawn in row order, then the rows are encoded in parallel
     let rand = draw_row_rand(code, msgs.len(), rng);
-    msgs.par_iter().zip(rand.par_iter()).map(|(msg, rv)| encode_row(code, msg, rv)).collect()
+    msgs.par_iter()
+        .zip(rand.par_iter())
+        .map(|(msg, rv)| encode_row(code, msg, rv))
+        .collect()
 }
 
 /// The round-1 data rows' codewords: kept (fast), or re-encoded from (message, randomness) on every pass (low
 /// memory: three encodings instead of one, and no m1 x nD table). Same field values either way.
 enum Rows1 {
     Stored(Vec<Vec<Fe>>),
-    Lean { msgs: Vec<Vec<Fe>>, rand: Vec<Vec<Fe>> },
+    Lean {
+        msgs: Vec<Vec<Fe>>,
+        rand: Vec<Vec<Fe>>,
+    },
 }
 
 impl Rows1 {
@@ -644,7 +740,10 @@ impl Rows1 {
                 let mut r0 = 0;
                 while r0 < msgs.len() {
                     let r1 = (r0 + c).min(msgs.len());
-                    let enc: Vec<Vec<Fe>> = (r0..r1).into_par_iter().map(|r| encode_row(code, &msgs[r], &rand[r])).collect();
+                    let enc: Vec<Vec<Fe>> = (r0..r1)
+                        .into_par_iter()
+                        .map(|r| encode_row(code, &msgs[r], &rand[r]))
+                        .collect();
                     f(r0, &enc);
                     r0 = r1;
                 }
@@ -654,7 +753,13 @@ impl Rows1 {
 }
 
 /// Merkle tree over the columns of (rows, then extra rows), hashing each leaf as a stream over the rows.
-fn commit_streamed(code: &Code, rows: &Rows1, nrows: usize, extra: &[Vec<Fe>], salts: &[[u8; 32]]) -> Merkle {
+fn commit_streamed(
+    code: &Code,
+    rows: &Rows1,
+    nrows: usize,
+    extra: &[Vec<Fe>],
+    salts: &[[u8; 32]],
+) -> Merkle {
     use sha2::{Digest, Sha256};
     let n_d = salts.len();
     let colb = ((nrows + extra.len()) * EB) as u64;
@@ -699,14 +804,23 @@ pub fn prove(st: &Statement, wit: &Witness, tcols: usize) -> Result<Vec<u8>, Str
     prove_with(st, wit, tcols, &mut ProveOpts::default())
 }
 
-pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveOpts) -> Result<Vec<u8>, String> {
+pub fn prove_with(
+    st: &Statement,
+    wit: &Witness,
+    tcols: usize,
+    opts: &mut ProveOpts,
+) -> Result<Vec<u8>, String> {
     let sh = shape(st, tcols)?;
     let (k, th, m1, m2) = (sh.k, sh.th, sh.m1, sh.m2);
     let code = Code::new(k, th);
     let n_d = code.n_d;
     #[cfg(feature = "test-det")]
     let mut rng: Box<dyn Hiding> = match &opts.det_seed {
-        Some(s) => Box::new(crate::rng::DetHiding::for_statement(s, "prove", &st.digest())),
+        Some(s) => Box::new(crate::rng::DetHiding::for_statement(
+            s,
+            "prove",
+            &st.digest(),
+        )),
         None => Box::new(OsHiding::new()),
     };
     #[cfg(not(feature = "test-det"))]
@@ -732,9 +846,16 @@ pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveO
     drop(d1);
     let rand1 = draw_row_rand(&code, m1, rng.as_mut());
     let rows1 = if opts.low_memory {
-        Rows1::Lean { msgs: r1, rand: rand1 }
+        Rows1::Lean {
+            msgs: r1,
+            rand: rand1,
+        }
     } else {
-        let e = r1.par_iter().zip(rand1.par_iter()).map(|(m, rv)| encode_row(&code, m, rv)).collect();
+        let e = r1
+            .par_iter()
+            .zip(rand1.par_iter())
+            .map(|(m, rv)| encode_row(&code, m, rv))
+            .collect();
         drop(r1);
         Rows1::Stored(e)
     };
@@ -798,33 +919,51 @@ pub fn prove_with(st: &Statement, wit: &Witness, tcols: usize, opts: &mut ProveO
     let mut qd = masks[1].clone();
     let mut pd = masks[2].clone();
     let mut acc = |r0: usize, ch: &[Vec<Fe>]| {
-        let rds: Vec<Vec<Fe>> = (0..ch.len()).into_par_iter().map(|x| code.eval_d(&code.interp(&arows[r0 + x]))).collect();
+        let rds: Vec<Vec<Fe>> = (0..ch.len())
+            .into_par_iter()
+            .map(|x| code.eval_d(&code.interp(&arows[r0 + x])))
+            .collect();
         let blk = 4096.min(n_d);
-        wd.par_chunks_mut(blk).zip(qd.par_chunks_mut(blk)).zip(pd.par_chunks_mut(blk)).enumerate().for_each(|(b, ((w, q), p))| {
-            for (x, er) in ch.iter().enumerate() {
-                let (gr, gqr) = (gam[r0 + x], gq[r0 + x]);
-                let rd = &rds[x];
-                for o in 0..w.len() {
-                    let j = b * blk + o;
-                    let y = er[j];
-                    w[o] = w[o].add(gr.mul(y));
-                    q[o] = q[o].add(rd[j].mul(y));
-                    p[o] = p[o].add(gqr.mul(y.mul(y).sub(y)));
+        wd.par_chunks_mut(blk)
+            .zip(qd.par_chunks_mut(blk))
+            .zip(pd.par_chunks_mut(blk))
+            .enumerate()
+            .for_each(|(b, ((w, q), p))| {
+                for (x, er) in ch.iter().enumerate() {
+                    let (gr, gqr) = (gam[r0 + x], gq[r0 + x]);
+                    let rd = &rds[x];
+                    for o in 0..w.len() {
+                        let j = b * blk + o;
+                        let y = er[j];
+                        w[o] = w[o].add(gr.mul(y));
+                        q[o] = q[o].add(rd[j].mul(y));
+                        p[o] = p[o].add(gqr.mul(y.mul(y).sub(y)));
+                    }
                 }
-            }
-        });
+            });
     };
     rows1.chunks(&code, |r0, ch| acc(r0, ch));
-    for (x, ch) in e2.chunks(2 * rayon::current_num_threads().max(1)).enumerate() {
+    for (x, ch) in e2
+        .chunks(2 * rayon::current_num_threads().max(1))
+        .enumerate()
+    {
         acc(m1 + x * 2 * rayon::current_num_threads().max(1), ch);
     }
     let polys: Vec<Vec<Fe>> = [wd, qd, pd].par_iter().map(|v| code.coeffs_d(v)).collect();
     let (lw, lq, lp) = (k + th, 2 * k + th - 1, 2 * k + 2 * th - 1);
-    if cheat.is_none() && (polys[0][lw..].iter().any(|x| !x.is_zero()) || polys[1][lq..].iter().any(|x| !x.is_zero()) || polys[2][lp..].iter().any(|x| !x.is_zero())) {
+    if cheat.is_none()
+        && (polys[0][lw..].iter().any(|x| !x.is_zero())
+            || polys[1][lq..].iter().any(|x| !x.is_zero())
+            || polys[2][lp..].iter().any(|x| !x.is_zero()))
+    {
         return Err("prover: a message exceeds its degree (internal)".into());
     }
     let mut msg = Vec::with_capacity(EB * (lw + lq + lp));
-    for x in polys[0][..lw].iter().chain(&polys[1][..lq]).chain(&polys[2][..lp]) {
+    for x in polys[0][..lw]
+        .iter()
+        .chain(&polys[1][..lq])
+        .chain(&polys[2][..lp])
+    {
         msg.extend_from_slice(&x.to_be32());
     }
     tr.absorb("msgs", &msg);
@@ -881,7 +1020,9 @@ pub fn verify_opts(st: &Statement, blob: &[u8], tcols: usize, legacy: bool) -> R
     if !reg.valid() {
         return Err("key registry invalid".into());
     }
-    if reg.a.len() != reg.n || reg.a.to_big() != crate::statement::public_a(&reg.seed, reg.n, &reg.q) {
+    if reg.a.len() != reg.n
+        || reg.a.to_big() != crate::statement::public_a(&reg.seed, reg.n, &reg.q)
+    {
         return Err("key registry: a is not the pinned seed's".into());
     }
     let sh = shape(st, tcols).map_err(|e| format!("malformed: {e}"))?;
@@ -987,7 +1128,10 @@ pub fn verify_opts(st: &Statement, blob: &[u8], tcols: usize, legacy: bool) -> R
             if peval(&q, x) != lin {
                 return Err("linear test (column)".to_string());
             }
-            let quad = gq.iter().zip(&u).fold(mq, |a, (g, y)| a.add(g.mul(y.mul(*y).sub(*y))));
+            let quad = gq
+                .iter()
+                .zip(&u)
+                .fold(mq, |a, (g, y)| a.add(g.mul(y.mul(*y).sub(*y))));
             if peval(&p, x) != quad {
                 return Err("quadratic test (column)".to_string());
             }
@@ -1003,7 +1147,11 @@ pub fn verify_opts(st: &Statement, blob: &[u8], tcols: usize, legacy: bool) -> R
 // ------------------------------------------------------------------------------------------- simulator / falsifier
 /// Honest-verifier simulator run as an ATTACK: with statement-only (legacy) challenges it fabricates an accepting
 /// proof for ANY statement, true or false, with no witness. The real verifier refuses it.
-pub fn simulate_legacy(st: &Statement, tcols: usize, rng: &mut dyn Hiding) -> Result<Vec<u8>, String> {
+pub fn simulate_legacy(
+    st: &Statement,
+    tcols: usize,
+    rng: &mut dyn Hiding,
+) -> Result<Vec<u8>, String> {
     let sh = shape(st, tcols)?;
     let (k, th, m1, m2) = (sh.k, sh.th, sh.m1, sh.m2);
     let code = Code::new(k, th);
@@ -1029,8 +1177,12 @@ pub fn simulate_legacy(st: &Statement, tcols: usize, rng: &mut dyn Hiding) -> Re
         p[i] = p[i].sub(*x);
         p[i + k] = p[i + k].add(*x);
     }
-    let mut e1: Vec<Vec<Fe>> = (0..m1 + 3).map(|_| (0..n_d).map(|_| rng.fe()).collect()).collect();
-    let e2: Vec<Vec<Fe>> = (0..m2).map(|_| (0..n_d).map(|_| rng.fe()).collect()).collect();
+    let mut e1: Vec<Vec<Fe>> = (0..m1 + 3)
+        .map(|_| (0..n_d).map(|_| rng.fe()).collect())
+        .collect();
+    let e2: Vec<Vec<Fe>> = (0..m2)
+        .map(|_| (0..n_d).map(|_| rng.fe()).collect())
+        .collect();
     let hk: Vec<Fe> = {
         let mut v = vec![ONE; k];
         for i in 1..k {
@@ -1041,14 +1193,37 @@ pub fn simulate_legacy(st: &Statement, tcols: usize, rng: &mut dyn Hiding) -> Re
     let kinv = Fe::from_u64(k as u64).inv();
     for &j in &jcols {
         let x = code.pts[j];
-        let u: Vec<Fe> = (0..m1).map(|r| e1[r][j]).chain((0..m2).map(|r| e2[r][j])).collect();
+        let u: Vec<Fe> = (0..m1)
+            .map(|r| e1[r][j])
+            .chain((0..m2).map(|r| e2[r][j]))
+            .collect();
         let z = x.pow_u64(k as u64).sub(ONE).mul(kinv);
         let inv = batch_inv(&hk.iter().map(|h| x.sub(*h)).collect::<Vec<_>>());
-        let wb: Vec<Fe> = hk.iter().zip(&inv).map(|(h, iv)| h.mul(*iv).mul(z)).collect();
-        e1[m1][j] = peval(&w, x).sub(gam.iter().zip(&u).fold(Fe::ZERO, |a, (g, y)| a.add(g.mul(*y))));
-        let lin = arows.iter().zip(&u).fold(Fe::ZERO, |a, (ar, y)| a.add(y.mul(ar.iter().zip(&wb).fold(Fe::ZERO, |s, (x, y)| s.add(x.mul(*y))))));
+        let wb: Vec<Fe> = hk
+            .iter()
+            .zip(&inv)
+            .map(|(h, iv)| h.mul(*iv).mul(z))
+            .collect();
+        e1[m1][j] = peval(&w, x).sub(
+            gam.iter()
+                .zip(&u)
+                .fold(Fe::ZERO, |a, (g, y)| a.add(g.mul(*y))),
+        );
+        let lin = arows.iter().zip(&u).fold(Fe::ZERO, |a, (ar, y)| {
+            a.add(
+                y.mul(
+                    ar.iter()
+                        .zip(&wb)
+                        .fold(Fe::ZERO, |s, (x, y)| s.add(x.mul(*y))),
+                ),
+            )
+        });
         e1[m1 + 1][j] = peval(&q, x).sub(lin);
-        e1[m1 + 2][j] = peval(&p, x).sub(gq.iter().zip(&u).fold(Fe::ZERO, |a, (g, y)| a.add(g.mul(y.mul(*y).sub(*y)))));
+        e1[m1 + 2][j] = peval(&p, x).sub(
+            gq.iter()
+                .zip(&u)
+                .fold(Fe::ZERO, |a, (g, y)| a.add(g.mul(y.mul(*y).sub(*y)))),
+        );
     }
     let salts1: Vec<[u8; 32]> = (0..n_d).map(|_| rng.salt()).collect();
     let salts2: Vec<[u8; 32]> = (0..n_d).map(|_| rng.salt()).collect();
@@ -1079,4 +1254,3 @@ pub fn simulate_legacy(st: &Statement, tcols: usize, rng: &mut dyn Hiding) -> Re
 pub fn fe_of(x: &BigInt) -> Fe {
     Fe::from_bigint(x)
 }
-

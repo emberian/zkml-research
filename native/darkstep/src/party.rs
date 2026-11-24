@@ -14,8 +14,16 @@ pub struct Sh {
     pub m: u64,
 }
 
-pub const PHASES: [&str; 8] =
-    ["input", "mul", "trunc", "lookup", "he_auth", "freivalds", "he_outer_commit", "he_outer_check"];
+pub const PHASES: [&str; 8] = [
+    "input",
+    "mul",
+    "trunc",
+    "lookup",
+    "he_auth",
+    "freivalds",
+    "he_outer_commit",
+    "he_outer_check",
+];
 pub const PH_INPUT: u8 = 0;
 pub const PH_MUL: u8 = 1;
 pub const PH_TRUNC: u8 = 2;
@@ -96,7 +104,15 @@ impl Transcript {
     }
 
     /// Entries [a, b) with sh/commit cursors (si, ci); `whole` adds the brackets (the full list).
-    fn repr_range(&self, h: &mut ReprHasher, a: usize, b: usize, si0: usize, ci0: usize, whole: bool) {
+    fn repr_range(
+        &self,
+        h: &mut ReprHasher,
+        a: usize,
+        b: usize,
+        si0: usize,
+        ci0: usize,
+        whole: bool,
+    ) {
         if whole {
             h.raw(b"[");
         }
@@ -114,13 +130,13 @@ impl Transcript {
                     let c = &self.commits[ci];
                     ci += 1;
                     h.raw(b", {");
-                    for i in 0..3 {
+                    for (i, ci) in c.iter().enumerate() {
                         if i > 0 {
                             h.raw(b", ");
                         }
                         h.u64(i as u64);
                         h.raw(b": ");
-                        h.s(&c[i]);
+                        h.s(ci);
                     }
                     h.raw(b"}, ");
                 }
@@ -128,13 +144,13 @@ impl Transcript {
                     let s = self.sh[si];
                     si += 1;
                     h.raw(b", {");
-                    for i in 0..3 {
+                    for (i, &si_val) in s.iter().enumerate() {
                         if i > 0 {
                             h.raw(b", ");
                         }
                         h.u64(i as u64);
                         h.raw(b": ");
-                        h.u64(s[i]);
+                        h.u64(si_val);
                     }
                     h.raw(b"}, ");
                 }
@@ -201,8 +217,22 @@ type Staged = (u8, [u64; 3], u64, u64);
 
 impl Party {
     pub fn new(i: usize, p: u64, net: Net, tape: Tape) -> Self {
-        Party { i, n: 3, p, net, tape, cur: 0, tr: Transcript::default(), open_log: Vec::new(), wire: BTreeMap::new(), nopen: 0,
-                atom_log: Vec::new(), middle_mul: false, xt: false, xt_zone: None }
+        Party {
+            i,
+            n: 3,
+            p,
+            net,
+            tape,
+            cur: 0,
+            tr: Transcript::default(),
+            open_log: Vec::new(),
+            wire: BTreeMap::new(),
+            nopen: 0,
+            atom_log: Vec::new(),
+            middle_mul: false,
+            xt: false,
+            xt_zone: None,
+        }
     }
 
     /// Err(the XT redo reason) once a truncation opening landed in the wrap zone (Party::xt_zone).
@@ -221,8 +251,14 @@ impl Party {
     // ------------------------------------------------------------------ tape
     #[inline]
     pub fn tape_at(&self, pos: usize, tag: Tag) -> Sh {
-        assert_eq!(self.tape.tags[pos], tag as u8, "tape tag mismatch at {pos}: want {tag:?}");
-        Sh { s: self.tape.sh[pos], m: self.tape.mac[pos] }
+        assert_eq!(
+            self.tape.tags[pos], tag as u8,
+            "tape tag mismatch at {pos}: want {tag:?}"
+        );
+        Sh {
+            s: self.tape.sh[pos],
+            m: self.tape.mac[pos],
+        }
     }
 
     pub fn take(&mut self, k: usize) -> usize {
@@ -235,24 +271,36 @@ impl Party {
     // ------------------------------------------------------------------ local linear ops
     #[inline]
     pub fn add(&self, x: Sh, y: Sh) -> Sh {
-        Sh { s: addmod(x.s, y.s, self.p), m: addmod(x.m, y.m, self.p) }
+        Sh {
+            s: addmod(x.s, y.s, self.p),
+            m: addmod(x.m, y.m, self.p),
+        }
     }
 
     #[inline]
     pub fn sub(&self, x: Sh, y: Sh) -> Sh {
-        Sh { s: submod(x.s, y.s, self.p), m: submod(x.m, y.m, self.p) }
+        Sh {
+            s: submod(x.s, y.s, self.p),
+            m: submod(x.m, y.m, self.p),
+        }
     }
 
     #[inline]
     pub fn cmul(&self, c: u64, x: Sh) -> Sh {
-        Sh { s: mulmod(c, x.s, self.p), m: mulmod(c, x.m, self.p) }
+        Sh {
+            s: mulmod(c, x.s, self.p),
+            m: mulmod(c, x.m, self.p),
+        }
     }
 
     /// x + public c (c in [0, p)): party 0 adds c to its share; every party adds alpha_i c to its MAC share.
     #[inline]
     pub fn cadd(&self, c: u64, x: Sh) -> Sh {
         let p = self.p;
-        Sh { s: if self.i == 0 { addmod(x.s, c, p) } else { x.s }, m: addmod(x.m, mulmod(self.alpha(), c, p), p) }
+        Sh {
+            s: if self.i == 0 { addmod(x.s, c, p) } else { x.s },
+            m: addmod(x.m, mulmod(self.alpha(), c, p), p),
+        }
     }
 
     /// sum c_k x_k + const (coefficients and const in [0, p)).
@@ -267,12 +315,23 @@ impl Party {
                 m %= p;
             }
         }
-        let out = Sh { s: (s % p) as u64, m: (m % p) as u64 };
-        if cst != 0 { self.cadd(cst, out) } else { out }
+        let out = Sh {
+            s: (s % p) as u64,
+            m: (m % p) as u64,
+        };
+        if cst != 0 {
+            self.cadd(cst, out)
+        } else {
+            out
+        }
     }
 
     pub fn centered(&self, v: u64) -> i64 {
-        if v > self.p / 2 { v as i64 - self.p as i64 } else { v as i64 }
+        if v > self.p / 2 {
+            v as i64 - self.p as i64
+        } else {
+            v as i64
+        }
     }
 
     // ------------------------------------------------------------------ opening
@@ -301,7 +360,11 @@ impl Party {
     /// spdz.Engine.open over a vector (all openings independent): one exchange, transcript in order.
     pub fn open_vec(&mut self, xs: &[Sh], ph: u8) -> Vec<u64> {
         let r = self.exchange_open(&xs.iter().map(|x| x.s).collect::<Vec<_>>());
-        let staged: Vec<Staged> = r.iter().zip(xs).map(|(&(sh, v), x)| (ph, sh, v, x.m)).collect();
+        let staged: Vec<Staged> = r
+            .iter()
+            .zip(xs)
+            .map(|(&(sh, v), x)| (ph, sh, v, x.m))
+            .collect();
         self.commit_staged(staged);
         r.iter().map(|x| x.1).collect()
     }
@@ -338,7 +401,9 @@ impl Party {
             trip.push((a, bb, c));
         }
         let v = self.open_vec(&opens, PH_MUL);
-        (0..d).map(|k| self.beaver_out(trip[k], v[2 * k], v[2 * k + 1])).collect()
+        (0..d)
+            .map(|k| self.beaver_out(trip[k], v[2 * k], v[2 * k + 1]))
+            .collect()
     }
 
     #[inline]
@@ -371,15 +436,18 @@ impl Party {
         let mut staged: Vec<Staged> = vec![(0, [0; 3], 0, 0); d * ent];
         // round 0: open c = x + 2^K + r
         let mut copen = Vec::with_capacity(d);
-        for k in 0..d {
+        for (k, &xk) in xs.iter().enumerate().take(d) {
             let r = self.tape_at(base + k * per, Tag::Tr);
-            copen.push(self.add(self.cadd((1u64 << kk) % p, xs[k]), r));
+            copen.push(self.add(self.cadd((1u64 << kk) % p, xk), r));
         }
         let r0 = self.exchange_open(&copen.iter().map(|x| x.s).collect::<Vec<_>>());
         let cvals: Vec<u64> = r0.iter().map(|x| x.1).collect();
         if self.xt && self.xt_zone.is_none() {
             if let Some(k) = cvals.iter().position(|&c| c < 1u64 << (kk + 1)) {
-                self.xt_zone = Some(format!("{XT_REDO} (c < 2^(K+1) at tape entry {}; reveals nothing); redo the step", base + k * per));
+                self.xt_zone = Some(format!(
+                    "{XT_REDO} (c < 2^(K+1) at tape entry {}; reveals nothing); redo the step",
+                    base + k * per
+                ));
             }
         }
         for k in 0..d {
@@ -401,15 +469,25 @@ impl Party {
             }
         }
         // i = s - 1: borrow = term, prefix = eq[s-1]
-        let mut borrow: Vec<Sh> = (0..d).map(|k| self.cmul(1 - abits[k][su - 1], rbits[k][su - 1])).collect();
+        let mut borrow: Vec<Sh> = (0..d)
+            .map(|k| self.cmul(1 - abits[k][su - 1], rbits[k][su - 1]))
+            .collect();
         let mut prefix: Vec<Sh> = (0..d).map(|k| eq[k][su - 1]).collect();
         for (it, i) in (0..su - 1).rev().enumerate() {
             let mut opens = Vec::with_capacity(4 * d);
             let mut trips = Vec::with_capacity(2 * d);
             for k in 0..d {
                 let tb = base + k * per + mo + 6 * it;
-                let t1 = (self.tape_at(tb, Tag::Ta), self.tape_at(tb + 1, Tag::Tb), self.tape_at(tb + 2, Tag::Tc));
-                let t2 = (self.tape_at(tb + 3, Tag::Ta), self.tape_at(tb + 4, Tag::Tb), self.tape_at(tb + 5, Tag::Tc));
+                let t1 = (
+                    self.tape_at(tb, Tag::Ta),
+                    self.tape_at(tb + 1, Tag::Tb),
+                    self.tape_at(tb + 2, Tag::Tc),
+                );
+                let t2 = (
+                    self.tape_at(tb + 3, Tag::Ta),
+                    self.tape_at(tb + 4, Tag::Tb),
+                    self.tape_at(tb + 5, Tag::Tc),
+                );
                 let term = self.cmul(1 - abits[k][i], rbits[k][i]);
                 opens.push(self.sub(term, t1.0));
                 opens.push(self.sub(prefix[k], t1.1));
@@ -441,15 +519,21 @@ impl Party {
     }
 
     /// spdz.Engine.lookup2 over a vector: P(u + offset) for each table, via the masked point and [r^j].
-    pub fn lookup_vec(&mut self, us: &[Sh], offset: u64, tables: &[Vec<u64>], deg: usize) -> Vec<Vec<Sh>> {
+    pub fn lookup_vec(
+        &mut self,
+        us: &[Sh],
+        offset: u64,
+        tables: &[Vec<u64>],
+        deg: usize,
+    ) -> Vec<Vec<Sh>> {
         use rayon::prelude::*;
         let d = us.len();
         let base = self.take(d * deg);
         self.atom_log.push(base..base + d * deg);
         let mut opens = Vec::with_capacity(d);
-        for k in 0..d {
+        for (k, &uk) in us.iter().enumerate().take(d) {
             let r1 = self.tape_at(base + k * deg, Tag::Lp);
-            opens.push(self.sub(self.cadd(offset % self.p, us[k]), r1));
+            opens.push(self.sub(self.cadd(offset % self.p, uk), r1));
         }
         let c = self.open_vec(&opens, PH_LOOKUP);
         let p = self.p;
@@ -467,7 +551,15 @@ impl Party {
                     .map(|coeffs| {
                         let tay = taylor_shift(coeffs, c[k], p);
                         let terms: Vec<(u64, Sh)> = (1..tay.len())
-                            .map(|j| (tay[j], Sh { s: me.tape.sh[base + k * deg + j - 1], m: me.tape.mac[base + k * deg + j - 1] }))
+                            .map(|j| {
+                                (
+                                    tay[j],
+                                    Sh {
+                                        s: me.tape.sh[base + k * deg + j - 1],
+                                        m: me.tape.mac[base + k * deg + j - 1],
+                                    },
+                                )
+                            })
                             .collect();
                         me.lin(&terms, tay[0])
                     })
@@ -533,7 +625,9 @@ impl Party {
             let sj = u64::from_le_bytes(opened[j][..8].try_into().unwrap());
             let nj = std::str::from_utf8(&opened[j][8..]).map_err(|_| "bad nonce".to_string())?;
             if sigma_commit(j, sj, nj).as_bytes() != coms[j].as_slice() {
-                return Err(format!("MAC check: party {j}'s opened sigma does not match its commitment"));
+                return Err(format!(
+                    "MAC check: party {j}'s opened sigma does not match its commitment"
+                ));
             }
             total = addmod(total, sj, p);
         }
@@ -583,7 +677,7 @@ pub fn interpolate(values: &[u64], p: u64) -> Vec<u64> {
         m = nm;
     }
     let mut coeffs = vec![0u64; n];
-    for k in 0..n {
+    for (k, &val) in values.iter().enumerate().take(n) {
         let kk = k as u64 % p;
         let mut q = vec![0u64; n];
         let mut acc = 0u64;
@@ -595,7 +689,7 @@ pub fn interpolate(values: &[u64], p: u64) -> Vec<u64> {
         for &c in q.iter().rev() {
             qk = addmod(mulmod(qk, kk, p), c, p);
         }
-        let scale = mulmod(values[k], invmod(qk, p), p);
+        let scale = mulmod(val, invmod(qk, p), p);
         for i in 0..n {
             coeffs[i] = addmod(coeffs[i], mulmod(scale, q[i], p), p);
         }

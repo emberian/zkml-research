@@ -10,7 +10,9 @@ use std::time::Duration;
 const MARK: &[u8] = b"DARKSTEP-PLAINTEXT-MARKER-0123456789";
 
 fn listeners() -> (Vec<TcpListener>, Vec<SocketAddr>) {
-    let l: Vec<TcpListener> = (0..3).map(|_| TcpListener::bind("127.0.0.1:0").unwrap()).collect();
+    let l: Vec<TcpListener> = (0..3)
+        .map(|_| TcpListener::bind("127.0.0.1:0").unwrap())
+        .collect();
     let a = l.iter().map(|x| x.local_addr().unwrap()).collect();
     (l, a)
 }
@@ -59,7 +61,13 @@ fn payload(i: usize, j: usize, k: usize) -> Vec<u8> {
     v
 }
 
-fn mesh(ids: Vec<Identity>, pinned: Vec<Vec<u8>>, ls: Vec<TcpListener>, addrs_of: Vec<Vec<SocketAddr>>, t: Duration) -> Vec<Result<Net, String>> {
+fn mesh(
+    ids: Vec<Identity>,
+    pinned: Vec<Vec<u8>>,
+    ls: Vec<TcpListener>,
+    addrs_of: Vec<Vec<SocketAddr>>,
+    t: Duration,
+) -> Vec<Result<Net, String>> {
     let pinned = Arc::new(pinned);
     let hs: Vec<_> = ids
         .into_iter()
@@ -68,7 +76,16 @@ fn mesh(ids: Vec<Identity>, pinned: Vec<Vec<u8>>, ls: Vec<TcpListener>, addrs_of
         .enumerate()
         .map(|(i, ((id, l), addrs))| {
             let pinned = pinned.clone();
-            thread::spawn(move || Net::connect_tls(i, if i < 2 { Some(l) } else { None }, &addrs, &id, &pinned, t))
+            thread::spawn(move || {
+                Net::connect_tls(
+                    i,
+                    if i < 2 { Some(l) } else { None },
+                    &addrs,
+                    &id,
+                    &pinned,
+                    t,
+                )
+            })
         })
         .collect();
     hs.into_iter().map(|h| h.join().unwrap()).collect()
@@ -83,7 +100,13 @@ fn tls_mesh_moves_bytes_encrypted_and_counts_links() {
     let (via, seen) = relay(addrs[0]);
     let mut a1 = addrs.clone();
     a1[0] = via;
-    let nets = mesh(ids, pinned, ls, vec![addrs.clone(), a1, addrs.clone()], Duration::from_secs(20));
+    let nets = mesh(
+        ids,
+        pinned,
+        ls,
+        vec![addrs.clone(), a1, addrs.clone()],
+        Duration::from_secs(20),
+    );
     let nets: Vec<Net> = nets.into_iter().map(|r| r.unwrap()).collect();
     eprintln!("mesh up");
     let big = 24 << 20;
@@ -109,18 +132,32 @@ fn tls_mesh_moves_bytes_encrypted_and_counts_links() {
     for net in &nets {
         let per = net.sent_per_peer();
         for j in net.others() {
-            assert_eq!(per[j][HE_RET as usize], 17 + big as u64, "TLS frames: tag, seq, len");
+            assert_eq!(
+                per[j][HE_RET as usize],
+                17 + big as u64,
+                "TLS frames: tag, seq, len"
+            );
             assert_eq!(per[j][HE_CT as usize], 17 + 1000);
         }
     }
     // each party closes on its own (its readers end when the peers close)
-    let hs: Vec<_> = nets.into_iter().map(|n| thread::spawn(move || n.shutdown())).collect();
+    let hs: Vec<_> = nets
+        .into_iter()
+        .map(|n| thread::spawn(move || n.shutdown()))
+        .collect();
     for h in hs {
         h.join().unwrap();
     }
     let seen = seen.lock().unwrap();
-    assert!(seen.len() > 2 * big, "the relay carried the 0 <-> 1 link ({} bytes)", seen.len());
-    assert!(!seen.windows(MARK.len()).any(|w| w == MARK), "plaintext visible on the wire");
+    assert!(
+        seen.len() > 2 * big,
+        "the relay carried the 0 <-> 1 link ({} bytes)",
+        seen.len()
+    );
+    assert!(
+        !seen.windows(MARK.len()).any(|w| w == MARK),
+        "plaintext visible on the wire"
+    );
 }
 
 #[test]
@@ -131,10 +168,22 @@ fn an_unpinned_dialer_is_refused() {
     let mut ids = ids;
     ids[2] = generate(2);
     let (ls, addrs) = listeners();
-    let r = mesh(ids, pinned, ls, vec![addrs.clone(); 3], Duration::from_secs(4));
+    let r = mesh(
+        ids,
+        pinned,
+        ls,
+        vec![addrs.clone(); 3],
+        Duration::from_secs(4),
+    );
     for i in 0..2 {
-        let e = r[i].as_ref().err().unwrap_or_else(|| panic!("party {i} accepted an unpinned party 2"));
-        assert!(e.contains("no authenticated connection from [2]"), "party {i}: {e}");
+        let e = r[i]
+            .as_ref()
+            .err()
+            .unwrap_or_else(|| panic!("party {i} accepted an unpinned party 2"));
+        assert!(
+            e.contains("no authenticated connection from [2]"),
+            "party {i}: {e}"
+        );
     }
 }
 
@@ -146,12 +195,29 @@ fn an_unpinned_listener_is_refused() {
     let mut ids = ids;
     ids[0] = generate(0);
     let (ls, addrs) = listeners();
-    let r = mesh(ids, pinned, ls, vec![addrs.clone(); 3], Duration::from_secs(4));
+    let r = mesh(
+        ids,
+        pinned,
+        ls,
+        vec![addrs.clone(); 3],
+        Duration::from_secs(4),
+    );
     for i in 1..3 {
-        let e = r[i].as_ref().err().unwrap_or_else(|| panic!("party {i} accepted an unpinned party 0"));
-        assert!(e.contains("TLS handshake with party 0 refused") || e.contains("no authenticated connection"), "party {i}: {e}");
+        let e = r[i]
+            .as_ref()
+            .err()
+            .unwrap_or_else(|| panic!("party {i} accepted an unpinned party 0"));
+        assert!(
+            e.contains("TLS handshake with party 0 refused")
+                || e.contains("no authenticated connection"),
+            "party {i}: {e}"
+        );
     }
-    assert!(r[1].as_ref().err().unwrap().contains("TLS handshake with party 0 refused"));
+    assert!(r[1]
+        .as_ref()
+        .err()
+        .unwrap()
+        .contains("TLS handshake with party 0 refused"));
 }
 
 /// Control for the wire check above: over the plain TCP mesh the same relay sees the plaintext.
@@ -180,7 +246,10 @@ fn control_plain_tcp_shows_plaintext_on_the_relay() {
         })
         .collect();
     let nets: Vec<Net> = hs.into_iter().map(|h| h.join().unwrap()).collect();
-    let hs: Vec<_> = nets.into_iter().map(|n| thread::spawn(move || n.shutdown())).collect();
+    let hs: Vec<_> = nets
+        .into_iter()
+        .map(|n| thread::spawn(move || n.shutdown()))
+        .collect();
     for h in hs {
         h.join().unwrap();
     }
@@ -191,7 +260,10 @@ fn clean_mesh(t: Duration) -> Vec<Net> {
     let ids: Vec<Identity> = (0..3).map(generate).collect();
     let pinned: Vec<Vec<u8>> = ids.iter().map(|x| x.cert_der.clone()).collect();
     let (ls, addrs) = listeners();
-    mesh(ids, pinned, ls, vec![addrs.clone(); 3], t).into_iter().map(|r| r.unwrap()).collect()
+    mesh(ids, pinned, ls, vec![addrs.clone(); 3], t)
+        .into_iter()
+        .map(|r| r.unwrap())
+        .collect()
 }
 
 /// A connection killed mid-transfer (twice, on two links) is resumed: every frame arrives once, in order.
@@ -210,10 +282,17 @@ fn a_dropped_link_resumes_and_delivers_every_frame_once() {
                 }
                 for j in net.others() {
                     for r in 0..6 {
-                        assert_eq!(net.recv(j, HE_RET), payload(j, i + 10 * r, big), "{j} -> {i} frame {r}");
+                        assert_eq!(
+                            net.recv(j, HE_RET),
+                            payload(j, i + 10 * r, big),
+                            "{j} -> {i} frame {r}"
+                        );
                     }
                 }
-                assert_eq!(net.exchange(CTRL, &[i as u64]), vec![vec![0], vec![1], vec![2]]);
+                assert_eq!(
+                    net.exchange(CTRL, &[i as u64]),
+                    vec![vec![0], vec![1], vec![2]]
+                );
             });
         }
         let n = &nets;
@@ -224,9 +303,20 @@ fn a_dropped_link_resumes_and_delivers_every_frame_once() {
             n[0].test_kill_link(2);
         });
     });
-    assert!(nets[1].reconnects()[0] >= 1, "link 1-0 was resumed: {:?}", nets[1].reconnects());
-    assert!(nets[2].reconnects()[0] >= 1, "link 2-0 was resumed: {:?}", nets[2].reconnects());
-    let hs: Vec<_> = nets.into_iter().map(|n| thread::spawn(move || n.shutdown())).collect();
+    assert!(
+        nets[1].reconnects()[0] >= 1,
+        "link 1-0 was resumed: {:?}",
+        nets[1].reconnects()
+    );
+    assert!(
+        nets[2].reconnects()[0] >= 1,
+        "link 2-0 was resumed: {:?}",
+        nets[2].reconnects()
+    );
+    let hs: Vec<_> = nets
+        .into_iter()
+        .map(|n| thread::spawn(move || n.shutdown()))
+        .collect();
     for h in hs {
         h.join().unwrap();
     }
@@ -244,8 +334,14 @@ fn a_drop_in_a_check_phase_is_an_abort() {
     while !(nets[0].link_dead(1) && nets[1].link_dead(0)) && t.elapsed() < Duration::from_secs(10) {
         thread::sleep(Duration::from_millis(20));
     }
-    assert!(nets[0].link_dead(1) && nets[1].link_dead(0), "both ends of the dropped link are dead");
-    assert!(!nets[2].link_dead(0) && !nets[2].link_dead(1), "the other links are not");
+    assert!(
+        nets[0].link_dead(1) && nets[1].link_dead(0),
+        "both ends of the dropped link are dead"
+    );
+    assert!(
+        !nets[2].link_dead(0) && !nets[2].link_dead(1),
+        "the other links are not"
+    );
     let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| nets[0].recv(1, HE_RET)));
     assert!(r.is_err(), "a receive on a dead link fails");
 }
@@ -260,8 +356,16 @@ fn a_nat_seat_dials_every_peer_and_binds_nothing() {
     assert!(dials(2, 0, &[]) && !dials(0, 2, &[]));
     let lo: SocketAddr = "127.0.0.1:1".parse().unwrap();
     let far: SocketAddr = "10.1.2.3:1".parse().unwrap();
-    assert!(check_nat(&[lo, far, far], &[0, 2]).is_ok(), "two NAT seats on one box: the lower one's loopback address");
-    assert!(check_nat(&[far, far, lo], &[0, 2]).unwrap_err().contains("need a relay"), "two NAT seats on two boxes are refused");
+    assert!(
+        check_nat(&[lo, far, far], &[0, 2]).is_ok(),
+        "two NAT seats on one box: the lower one's loopback address"
+    );
+    assert!(
+        check_nat(&[far, far, lo], &[0, 2])
+            .unwrap_err()
+            .contains("need a relay"),
+        "two NAT seats on two boxes are refused"
+    );
     let run = |nat: Vec<usize>| -> Vec<Result<Net, String>> {
         let ids: Vec<Identity> = (0..3).map(generate).collect();
         let pinned = Arc::new(ids.iter().map(|x| x.cert_der.clone()).collect::<Vec<_>>());
@@ -278,9 +382,21 @@ fn a_nat_seat_dials_every_peer_and_binds_nothing() {
                 let (pinned, addrs, nat) = (pinned.clone(), addrs.clone(), nat.clone());
                 // a seat listens iff a peer dials it; seat 0 never has a listener of its own (without the NAT role the
                 // others dial its dead port)
-                let l = if (0..3).any(|j| j != i && dials(j, i, &nat)) { l } else { None };
+                let l = if (0..3).any(|j| j != i && dials(j, i, &nat)) {
+                    l
+                } else {
+                    None
+                };
                 thread::spawn(move || {
-                    let r = Net::connect_tls_nat(i, l, &addrs, &id, &pinned, Duration::from_secs(15), &nat);
+                    let r = Net::connect_tls_nat(
+                        i,
+                        l,
+                        &addrs,
+                        &id,
+                        &pinned,
+                        Duration::from_secs(15),
+                        &nat,
+                    );
                     r
                 })
             })
@@ -304,11 +420,20 @@ fn a_nat_seat_dials_every_peer_and_binds_nothing() {
         }
     });
     // the three close together (a shutdown waits for its peers' close)
-    let hs: Vec<_> = nets.into_iter().map(|n| thread::spawn(move || n.shutdown())).collect();
+    let hs: Vec<_> = nets
+        .into_iter()
+        .map(|n| thread::spawn(move || n.shutdown()))
+        .collect();
     for h in hs {
         h.join().unwrap();
     }
     let ctl = run(vec![]);
-    eprintln!("control: {:?}", ctl.iter().map(|r| r.as_ref().err()).collect::<Vec<_>>());
-    assert!(ctl.iter().any(|r| r.is_err()), "control: without the NAT role the mesh cannot form");
+    eprintln!(
+        "control: {:?}",
+        ctl.iter().map(|r| r.as_ref().err()).collect::<Vec<_>>()
+    );
+    assert!(
+        ctl.iter().any(|r| r.is_err()),
+        "control: without the NAT role the mesh cannot form"
+    );
 }

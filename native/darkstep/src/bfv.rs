@@ -1,8 +1,8 @@
 //! BFV as bfv_ref.BFV / he_matvec.OwnKey, over RNS: every draw from the key's random.Random in the reference order,
 //! so keys, ciphertexts and decryptions are bit-identical to the harness.
 use crate::arith::*;
-use crate::rns::Rns;
 use crate::coins::{os_key, Coins, Prf};
+use crate::rns::Rns;
 use pycompat::PyRandom;
 use std::sync::Arc;
 
@@ -61,7 +61,7 @@ pub fn round_bits(full: &Rns, f_bits: u32) -> (u32, u32) {
     let x = (BigUint::from(1u32) << f_bits) + BigUint::from(n) * BigUint::from(t) * 32u32;
     let eb = (x * BigUint::from(q2) + &full.q_big - 1u32) / &full.q_big + 1u32;
     let e: u128 = eb.try_into().expect("E fits");
-    let sw = (1 + n) / 2 * (full.l() as u128 - 2) + 1;
+    let sw = n.div_ceil(2) * (full.l() as u128 - 2) + 1;
     let budget = q2 / (2 * t) - 1;
     assert!(budget > e + sw, "no room for rounding");
     let half = (budget - e - sw) / 2;
@@ -100,7 +100,11 @@ struct BitW {
 impl BitW {
     fn put(&mut self, v: u128, bits: u32) {
         // bits <= 122: split into two pushes of at most 64
-        let (lo, hi) = if bits > 64 { (v & u64::MAX as u128, Some((v >> 64, bits - 64))) } else { (v, None) };
+        let (lo, hi) = if bits > 64 {
+            (v & u64::MAX as u128, Some((v >> 64, bits - 64)))
+        } else {
+            (v, None)
+        };
         self.push(lo, bits.min(64));
         if let Some((h, b)) = hi {
             self.push(h, b);
@@ -158,7 +162,11 @@ impl BitR<'_> {
 pub fn round_wire(rns: &Rns, wire: &[u64], m: usize, b0: u32, b1: u32) -> Vec<u64> {
     let n = rns.n;
     let q2 = rns.qs[0] as u128 * rns.qs[1] as u128;
-    let mut w = BitW { out: Vec::with_capacity(wire.len()), acc: 0, nb: 0 };
+    let mut w = BitW {
+        out: Vec::with_capacity(wire.len()),
+        acc: 0,
+        nb: 0,
+    };
     for (base, cnt, b) in [(0usize, m, b0), (2 * m, n, b1)] {
         let bits = bitlen128(q2 >> b) + 1;
         for j in 0..cnt {
@@ -173,7 +181,12 @@ pub fn round_wire(rns: &Rns, wire: &[u64], m: usize, b0: u32, b1: u32) -> Vec<u6
 pub fn unround(rns: &Rns, packed: &[u64], m: usize, b0: u32, b1: u32) -> Vec<u64> {
     let n = rns.n;
     let q2 = rns.qs[0] as u128 * rns.qs[1] as u128;
-    let mut r = BitR { w: packed, pos: 0, acc: 0, nb: 0 };
+    let mut r = BitR {
+        w: packed,
+        pos: 0,
+        acc: 0,
+        nb: 0,
+    };
     let mut out = vec![0u64; 2 * m + 2 * n];
     for (base, cnt, b) in [(0usize, m, b0), (2 * m, n, b1)] {
         let bits = bitlen128(q2 >> b) + 1;
@@ -194,7 +207,9 @@ pub fn compress_return(rns: &Rns, ct: &Ct, k: usize, coefs: &[usize]) -> Vec<u64
     let l = rns.l();
     let drop = |c: &[u64], pos: &dyn Fn(usize) -> usize, cnt: usize| -> Vec<u64> {
         // c: residues limb-major over `cnt` coefficients (limb stride n, position pos(j))
-        let mut cur: Vec<Vec<u64>> = (0..l).map(|kk| (0..cnt).map(|j| c[kk * n + pos(j)]).collect()).collect();
+        let mut cur: Vec<Vec<u64>> = (0..l)
+            .map(|kk| (0..cnt).map(|j| c[kk * n + pos(j)]).collect())
+            .collect();
         for top in (k..l).rev() {
             let qt = rns.qs[top];
             let half = qt / 2;
@@ -205,7 +220,11 @@ pub fn compress_return(rns: &Rns, ct: &Ct, k: usize, coefs: &[usize]) -> Vec<u64
                 for (j, x) in row.iter_mut().enumerate() {
                     let r = last[j];
                     // centered remainder r in (-qt/2, qt/2]
-                    let rq = if r > half { submod(0, (qt - r) % q, q) } else { r % q };
+                    let rq = if r > half {
+                        submod(0, (qt - r) % q, q)
+                    } else {
+                        r % q
+                    };
                     *x = mulmod(submod(*x, rq, q), inv, q);
                 }
             }
@@ -253,7 +272,11 @@ impl OwnKey {
 
     /// A key with s, a, e and every later coin from OS randomness (a party process's ungated key).
     pub fn new_secure(rns: Arc<Rns>) -> Self {
-        Self::keygen(rns, Coins::Prf(Prf::new(&os_key(), "ownkey")), Some(os_key()))
+        Self::keygen(
+            rns,
+            Coins::Prf(Prf::new(&os_key(), "ownkey")),
+            Some(os_key()),
+        )
     }
 
     fn keygen(rns: Arc<Rns>, mut rng: Coins, return_key: Option<[u8; 32]>) -> Self {
@@ -274,21 +297,52 @@ impl OwnKey {
             }
         }
         rns.fwd(&mut pk0);
-        OwnKey { rns, rng, return_key, compress: None, s, s_ntt, pk: PubKey { pk0_ntt: pk0, pk1_ntt: a_ntt } }
+        OwnKey {
+            rns,
+            rng,
+            return_key,
+            compress: None,
+            s,
+            s_ntt,
+            pk: PubKey {
+                pk0_ntt: pk0,
+                pk1_ntt: a_ntt,
+            },
+        }
     }
 
     /// keygen_ceremony.CeremonyKey(N, Q, t, cust, seed): the ceremony's (s, b, a); the encryption coins come from
     /// random.Random(seed), with no key draws.
-    pub fn from_ceremony(rns: Arc<Rns>, seed: u64, s: &[i64], b: &[Vec<u64>], a: &[Vec<u64>]) -> Self {
+    pub fn from_ceremony(
+        rns: Arc<Rns>,
+        seed: u64,
+        s: &[i64],
+        b: &[Vec<u64>],
+        a: &[Vec<u64>],
+    ) -> Self {
         Self::from_ceremony_coins(rns, Coins::Py(PyRandom::from_u64(seed)), None, s, b, a)
     }
 
     /// The ceremony's key with encryption coins and HE-return coins from OS randomness (what a party process uses).
     pub fn from_ceremony_secure(rns: Arc<Rns>, s: &[i64], b: &[Vec<u64>], a: &[Vec<u64>]) -> Self {
-        Self::from_ceremony_coins(rns, Coins::Prf(Prf::new(&os_key(), "ownkey")), Some(os_key()), s, b, a)
+        Self::from_ceremony_coins(
+            rns,
+            Coins::Prf(Prf::new(&os_key(), "ownkey")),
+            Some(os_key()),
+            s,
+            b,
+            a,
+        )
     }
 
-    fn from_ceremony_coins(rns: Arc<Rns>, rng: Coins, return_key: Option<[u8; 32]>, s: &[i64], b: &[Vec<u64>], a: &[Vec<u64>]) -> Self {
+    fn from_ceremony_coins(
+        rns: Arc<Rns>,
+        rng: Coins,
+        return_key: Option<[u8; 32]>,
+        s: &[i64],
+        b: &[Vec<u64>],
+        a: &[Vec<u64>],
+    ) -> Self {
         let mut s_ntt = rns.from_signed(s);
         rns.fwd(&mut s_ntt);
         let flat = |v: &[Vec<u64>]| {
@@ -296,8 +350,19 @@ impl OwnKey {
             rns.fwd(&mut x);
             x
         };
-        let pk = PubKey { pk0_ntt: flat(b), pk1_ntt: flat(a) };
-        OwnKey { rns: rns.clone(), rng, return_key, compress: None, s: s.to_vec(), s_ntt, pk }
+        let pk = PubKey {
+            pk0_ntt: flat(b),
+            pk1_ntt: flat(a),
+        };
+        OwnKey {
+            rns: rns.clone(),
+            rng,
+            return_key,
+            compress: None,
+            s: s.to_vec(),
+            s_ntt,
+            pk,
+        }
     }
 
     /// Send and receive HE returns modulus-switched to the first `k` primes (k < L), c0 only at the decrypted
@@ -309,7 +374,11 @@ impl OwnKey {
         let small = Arc::new(Rns::new(self.rns.n, &self.rns.qs[..k], self.rns.t));
         let mut s_ntt = small.from_signed(&self.s);
         small.fwd(&mut s_ntt);
-        self.compress = Some(Arc::new(Compress { small, s_ntt, round: None }));
+        self.compress = Some(Arc::new(Compress {
+            small,
+            s_ntt,
+            round: None,
+        }));
     }
 
     /// Also round the switched returns' noise bits away (two primes only): c0 to 2^b0, c1 to 2^b1, bit-packed.
@@ -318,12 +387,19 @@ impl OwnKey {
         assert_eq!(c.small.l(), 2, "rounding is for two-prime returns");
         let mut s_ntt = c.small.from_signed(&self.s);
         c.small.fwd(&mut s_ntt);
-        self.compress = Some(Arc::new(Compress { small: c.small.clone(), s_ntt, round: Some((b0, b1)) }));
+        self.compress = Some(Arc::new(Compress {
+            small: c.small.clone(),
+            s_ntt,
+            round: Some((b0, b1)),
+        }));
     }
 
     /// Decrypt a compressed return (`compress_return`) at `coefs`.
     pub fn decrypt_compressed(&self, wire: &[u64], coefs: &[usize]) -> Vec<u64> {
-        let c = self.compress.as_ref().expect("compressed returns not configured");
+        let c = self
+            .compress
+            .as_ref()
+            .expect("compressed returns not configured");
         let rns = &c.small;
         let (n, k) = (rns.n, rns.l());
         let m = coefs.len();
@@ -434,7 +510,13 @@ impl OwnKey {
 /// The returner's reply (he_matvec / he_outer `_return`): acc + Enc_pk_j(0) + round(Q M / t) + flood, with every draw
 /// from `rng` in the reference order: M (N x randrange(t)), u (N x choice), e0, e1 (N x randint(-8, 8) each), flood
 /// (N x randint(-2^F, 2^F)). `acc` is (c0, c1) in NTT form. Returns the coefficient-form ciphertext and M.
-pub fn make_return(rns: &Rns, pk: &PubKey, acc: (&[u64], &[u64]), rng: &mut Coins, f_bits: u32) -> (Ct, Vec<u64>) {
+pub fn make_return(
+    rns: &Rns,
+    pk: &PubKey,
+    acc: (&[u64], &[u64]),
+    rng: &mut Coins,
+    f_bits: u32,
+) -> (Ct, Vec<u64>) {
     let n = rns.n;
     let t = rns.t;
     let m: Vec<u64> = (0..n).map(|_| rng.randrange_u64(t)).collect();
@@ -457,7 +539,11 @@ pub fn make_return(rns: &Rns, pk: &PubKey, acc: (&[u64], &[u64]), rng: &mut Coin
             let fl = rns.md[k].limbs5(&mag);
             let fl = if neg { submod(0, fl, q) } else { fl };
             let j = k * n + i;
-            c0[j] = addmod(addmod(addmod(c0[j], from_i64(e0[i], q), q), enc[k], q), fl, q);
+            c0[j] = addmod(
+                addmod(addmod(c0[j], from_i64(e0[i], q), q), enc[k], q),
+                fl,
+                q,
+            );
             c1[j] = addmod(c1[j], from_i64(e1[i], q), q);
         }
     }

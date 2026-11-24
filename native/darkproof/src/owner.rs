@@ -30,9 +30,16 @@ impl Owner {
 
     /// As `new`, but an existing state file that cannot be read or parsed is an error (never a reset to leaf 0,
     /// which would reuse one-time keys); only a missing file starts at leaf 0.
-    pub fn open(h_: usize, seed: Option<Vec<u8>>, state_path: Option<std::path::PathBuf>) -> Result<Self, String> {
+    pub fn open(
+        h_: usize,
+        seed: Option<Vec<u8>>,
+        state_path: Option<std::path::PathBuf>,
+    ) -> Result<Self, String> {
         let seed = seed.unwrap_or_else(|| crate::rng::secret_bytes(32));
-        let leaves: Vec<Hash> = (0..1u64 << h_).into_par_iter().map(|i| pkhash(&seed, i)).collect();
+        let leaves: Vec<Hash> = (0..1u64 << h_)
+            .into_par_iter()
+            .map(|i| pkhash(&seed, i))
+            .collect();
         let mut tree = vec![leaves];
         while tree.last().unwrap().len() > 1 {
             let l = tree.last().unwrap();
@@ -43,12 +50,29 @@ impl Owner {
         let mut next_leaf = 0;
         if let Some(p) = &state_path {
             match std::fs::read_to_string(p) {
-                Ok(s) => next_leaf = s.trim().parse().map_err(|_| format!("owner state {}: not a leaf counter", p.display()))?,
+                Ok(s) => {
+                    next_leaf = s
+                        .trim()
+                        .parse()
+                        .map_err(|_| format!("owner state {}: not a leaf counter", p.display()))?
+                }
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
-                Err(e) => return Err(format!("owner state {}: {e} (refusing to restart at leaf 0)", p.display())),
+                Err(e) => {
+                    return Err(format!(
+                        "owner state {}: {e} (refusing to restart at leaf 0)",
+                        p.display()
+                    ))
+                }
             }
         }
-        Ok(Owner { h: h_, seed, tree, pk, next_leaf, state_path })
+        Ok(Owner {
+            h: h_,
+            seed,
+            tree,
+            pk,
+            next_leaf,
+            state_path,
+        })
     }
 
     pub fn sign(&mut self, msg: &[u8]) -> Result<Vec<u8>, String> {
@@ -62,7 +86,8 @@ impl Owner {
             {
                 use std::io::Write;
                 let mut f = std::fs::File::create(&tmp).map_err(|e| e.to_string())?;
-                f.write_all(self.next_leaf.to_string().as_bytes()).map_err(|e| e.to_string())?;
+                f.write_all(self.next_leaf.to_string().as_bytes())
+                    .map_err(|e| e.to_string())?;
                 f.sync_all().map_err(|e| e.to_string())?;
             }
             std::fs::rename(&tmp, p).map_err(|e| e.to_string())?;
@@ -70,7 +95,9 @@ impl Owner {
         let dig = h(&[msg]);
         let sk = sk(&self.seed, leaf);
         let mut out = (leaf as u32).to_be_bytes().to_vec();
-        let bits: Vec<usize> = (0..256).map(|j| ((dig[j / 8] >> (7 - j % 8)) & 1) as usize).collect();
+        let bits: Vec<usize> = (0..256)
+            .map(|j| ((dig[j / 8] >> (7 - j % 8)) & 1) as usize)
+            .collect();
         for (j, &b) in bits.iter().enumerate() {
             out.extend_from_slice(&sk[b][j]);
         }
@@ -94,7 +121,14 @@ pub fn det_seed(seed: &str, k: u64) -> Vec<u8> {
 fn sk(seed: &[u8], i: u64) -> [Vec<Hash>; 2] {
     let one = |b: u64| -> Vec<Hash> {
         (0..256u64)
-            .map(|j| h(&[seed, i.to_string().as_bytes(), b.to_string().as_bytes(), j.to_string().as_bytes()]))
+            .map(|j| {
+                h(&[
+                    seed,
+                    i.to_string().as_bytes(),
+                    b.to_string().as_bytes(),
+                    j.to_string().as_bytes(),
+                ])
+            })
             .collect()
     };
     [one(0), one(1)]
@@ -103,8 +137,8 @@ fn sk(seed: &[u8], i: u64) -> [Vec<Hash>; 2] {
 fn pkhash(seed: &[u8], i: u64) -> Hash {
     let s = sk(seed, i);
     let mut m = Sha256::new();
-    for b in 0..2 {
-        for x in &s[b] {
+    for sb in &s {
+        for x in sb {
             m.update(h(&[x]));
         }
     }
@@ -136,8 +170,8 @@ pub fn verify(pk: &Hash, h_: usize, min_leaf: u64, msg: &[u8], sig: &[u8]) -> bo
         halves[b][j] = h(&[at(j)]);
         halves[1 - b][j].copy_from_slice(at(256 + j));
     }
-    for b in 0..2 {
-        for x in &halves[b] {
+    for hb in &halves {
+        for x in hb {
             node.update(x);
         }
     }
@@ -145,7 +179,11 @@ pub fn verify(pk: &Hash, h_: usize, min_leaf: u64, msg: &[u8], sig: &[u8]) -> bo
     let mut k = leaf;
     for j in 0..h_ {
         let sib = at(512 + j);
-        nd = if k % 2 == 0 { h(&[&nd, sib]) } else { h(&[sib, &nd]) };
+        nd = if k.is_multiple_of(2) {
+            h(&[&nd, sib])
+        } else {
+            h(&[sib, &nd])
+        };
         k /= 2;
     }
     &nd == pk
@@ -154,6 +192,9 @@ pub fn verify(pk: &Hash, h_: usize, min_leaf: u64, msg: &[u8], sig: &[u8]) -> bo
 /// batch_message: H("dark-learning batch", tuple(ctx), tuple(roots_x), tuple(roots_y)) as raw digest bytes.
 pub fn batch_message(ctx: &Ctx, rx: &[Hash], ry: &[Hash]) -> Hash {
     let mut p = Py::new();
-    p.s("dark-learning batch").ctx(ctx).tuple_hx(rx).tuple_hx(ry);
+    p.s("dark-learning batch")
+        .ctx(ctx)
+        .tuple_hx(rx)
+        .tuple_hx(ry);
     p.done()
 }

@@ -34,7 +34,12 @@ pub struct Shape {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Dom {
     Int,
-    Coset { k: u32, t: usize, omega: u64, z: u64 },
+    Coset {
+        k: u32,
+        t: usize,
+        omega: u64,
+        z: u64,
+    },
 }
 
 /// cosnark.coset_params: k minimising T (2^(k-1) k + w) (ties to the larger k), omega = h^((p-1)/2^k) for the least
@@ -46,7 +51,7 @@ pub fn coset_params(npts: usize, w: usize) -> Dom {
     for k in 1..=s {
         let t = npts.div_ceil(1usize << k);
         let cost = t * ((1usize << (k - 1)) * k as usize + w);
-        if best.map_or(true, |b| cost <= b.0) {
+        if best.is_none_or(|b| cost <= b.0) {
             best = Some((cost, k, t));
         }
     }
@@ -67,9 +72,10 @@ impl Dom {
     pub fn point(&self, j: usize) -> u64 {
         match *self {
             Dom::Int => (j + 1) as u64,
-            Dom::Coset { k, omega, z, .. } => {
-                field::mul(field::pow(z, (j >> k) as u64), field::pow(omega, (j & ((1usize << k) - 1)) as u64))
-            }
+            Dom::Coset { k, omega, z, .. } => field::mul(
+                field::pow(z, (j >> k) as u64),
+                field::pow(omega, (j & ((1usize << k) - 1)) as u64),
+            ),
         }
     }
 }
@@ -109,7 +115,13 @@ pub fn row_split(pr: &Profile, m: usize) -> usize {
         crate::Split::Balanced => {
             let (t, k) = (pr.t_cols as u128, pr.k_l as u128);
             (0..=m)
-                .min_by_key(|&r| (t * k * ((1u128 << r) + pr.nmask as u128) + ((1u128 << (m - r)) + pr.hide as u128) * (k + t), r))
+                .min_by_key(|&r| {
+                    (
+                        t * k * ((1u128 << r) + pr.nmask as u128)
+                            + ((1u128 << (m - r)) + pr.hide as u128) * (k + t),
+                        r,
+                    )
+                })
                 .unwrap()
         }
     }
@@ -165,7 +177,9 @@ impl Shape {
     /// This life's proximity mask rows for F_{p^E} weights: the last E rows of its block, one per component
     /// (E = 1: [prox_row()]).
     pub fn prox_rows_e(&self, e: usize) -> Vec<usize> {
-        (0..e).map(|k| self.rd + self.base + self.block - e + k).collect()
+        (0..e)
+            .map(|k| self.rd + self.base + self.block - e + k)
+            .collect()
     }
     pub fn prox_len_e(&self, e: usize) -> usize {
         self.r - if self.nmask > 0 { e } else { 0 }
@@ -264,8 +278,7 @@ impl PcsParty {
                 ext[r * w + k] = rng.randrange_u64(field::p());
             }
         }
-        let salts: Vec<Hash> =
-            (0..shape.npts).map(|_| salt(&mut rng)).collect();
+        let salts: Vec<Hash> = (0..shape.npts).map(|_| salt(&mut rng)).collect();
         let mut me = PcsParty {
             label: label.to_string(),
             shape,
@@ -287,17 +300,23 @@ impl PcsParty {
             return self.cw[j * s.r..(j + 1) * s.r].to_vec();
         }
         let pw = powers(s.dom.point(j), s.w);
-        (0..s.r).map(|r| field::dot(&self.ext[r * s.w..(r + 1) * s.w], &pw)).collect()
+        (0..s.r)
+            .map(|r| field::dot(&self.ext[r * s.w..(r + 1) * s.w], &pw))
+            .collect()
     }
 
     /// Every row's codeword on the coset domain by NTT, column-major (npts x R).
     fn encode_coset(&self) -> Vec<u64> {
         let s = &self.shape;
-        let Dom::Coset { k, t, omega, z } = s.dom else { unreachable!() };
+        let Dom::Coset { k, t, omega, z } = s.dom else {
+            unreachable!()
+        };
         let n = 1usize << k;
         let tw = powers(omega, n / 2);
         // per coset: the scaling c^c (c = z^tt) of the row's coefficients, shared by every row
-        let scale: Vec<Vec<u64>> = (0..t).map(|tt| powers(field::pow(z, tt as u64), s.w)).collect();
+        let scale: Vec<Vec<u64>> = (0..t)
+            .map(|tt| powers(field::pow(z, tt as u64), s.w))
+            .collect();
         let (r, w, npts) = (s.r, s.w, s.npts);
         // blocks of 64 rows: each block's codewords are encoded into a small buffer, then written into its own
         // (disjoint) slots of the column-major codeword, so the only large allocation is the codeword itself
@@ -342,10 +361,14 @@ impl PcsParty {
     /// Rows r0..r0 + nb encoded on the coset domain, row-major (nb x npts).
     fn encode_rows(&self, r0: usize, nb: usize) -> Vec<u64> {
         let s = &self.shape;
-        let Dom::Coset { k, t, omega, z } = s.dom else { unreachable!() };
+        let Dom::Coset { k, t, omega, z } = s.dom else {
+            unreachable!()
+        };
         let n = 1usize << k;
         let tw = powers(omega, n / 2);
-        let scale: Vec<Vec<u64>> = (0..t).map(|tt| powers(field::pow(z, tt as u64), s.w)).collect();
+        let scale: Vec<Vec<u64>> = (0..t)
+            .map(|tt| powers(field::pow(z, tt as u64), s.w))
+            .collect();
         let (w, npts) = (s.w, s.npts);
         let mut rows = vec![0u64; nb * npts];
         rows.par_chunks_mut(npts).enumerate().for_each(|(dr, dst)| {
@@ -372,7 +395,10 @@ impl PcsParty {
     /// DP_CW_HOLD_MB (default 1024) MiB; a larger one is streamed: the leaves are hashed block by block of rows, and
     /// an opening re-encodes the rows to read its columns. Same bytes either way.
     fn hold_cw(&self) -> bool {
-        let lim: usize = std::env::var("DP_CW_HOLD_MB").ok().and_then(|v| v.parse().ok()).unwrap_or(1024);
+        let lim: usize = std::env::var("DP_CW_HOLD_MB")
+            .ok()
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(1024);
         self.shape.r * self.shape.npts * 8 <= lim << 20
     }
 
@@ -438,7 +464,10 @@ impl PcsParty {
             if coset {
                 self.cw = self.encode_coset();
             }
-            (0..npts).into_par_iter().map(|j| h_leaf(&self.salts[j], &self.column(j))).collect()
+            (0..npts)
+                .into_par_iter()
+                .map(|j| h_leaf(&self.salts[j], &self.column(j)))
+                .collect()
         };
         let full = 1usize << bitlen(npts - 1);
         for j in 0..full - npts {
@@ -453,7 +482,11 @@ impl PcsParty {
     pub fn open_batch(&mut self, js: &[usize]) -> Vec<Opening> {
         if matches!(self.shape.dom, Dom::Coset { .. }) && self.cw.is_empty() && !self.hold_cw() {
             let cols = self.stream_columns(js);
-            return cols.into_iter().zip(js).map(|(c, &j)| (c, auth_path(&self.tree, &self.salts[j], j))).collect();
+            return cols
+                .into_iter()
+                .zip(js)
+                .map(|(c, &j)| (c, auth_path(&self.tree, &self.salts[j], j)))
+                .collect();
         }
         if matches!(self.shape.dom, Dom::Coset { .. }) && self.cw.is_empty() {
             self.cw = self.encode_coset();
@@ -476,8 +509,8 @@ impl PcsParty {
                 let c = blk * 1024 + cc;
                 let mut acc = 0u64;
                 let mut sacc = 0u128;
-                for r in 0..s.r {
-                    sacc += a[r] as u128 * self.ext[r * s.w + c] as u128;
+                for (r, &ar) in a.iter().enumerate().take(s.r) {
+                    sacc += ar as u128 * self.ext[r * s.w + c] as u128;
                     if r % 32 == 31 {
                         acc = field::add(acc, field::red(sacc));
                         sacc = 0;
@@ -500,7 +533,9 @@ impl PcsParty {
 
     /// row_combo_e: sum_r a_r row_r for F_{p^E} weights, as E component rows (each length W).
     pub fn row_combo_e<const E: usize>(&self, a: &[[u64; E]]) -> Vec<Vec<u64>> {
-        (0..E).map(|k| self.row_combo(&a.iter().map(|w| w[k]).collect::<Vec<_>>())).collect()
+        (0..E)
+            .map(|k| self.row_combo(&a.iter().map(|w| w[k]).collect::<Vec<_>>()))
+            .collect()
     }
 
     /// The party's share of u_e at an F_{p^E} point (E component rows) and of Y_e = <u_e[:C], eq(pt[:mc])>.
@@ -560,7 +595,11 @@ pub fn verify_path(root: &Hash, col: &[u64], j: usize, path: &[Hash]) -> bool {
     let mut h = h_leaf(&path[0], col);
     let mut k = j;
     for sib in &path[1..] {
-        h = if k % 2 == 0 { h_node(&h, sib) } else { h_node(sib, &h) };
+        h = if k.is_multiple_of(2) {
+            h_node(&h, sib)
+        } else {
+            h_node(sib, &h)
+        };
         k /= 2;
     }
     &h == root
@@ -575,18 +614,29 @@ pub struct PcsCols {
     pub open: Vec<Vec<Opening>>,
 }
 
+pub struct VerifyBatch<'a> {
+    pub keys: &'a [String],
+    pub shapes: &'a [Shape],
+    pub roots: &'a [Vec<Hash>],
+    pub prox: &'a [Vec<Vec<u64>>],
+    pub cols: &'a [PcsCols],
+}
+
 /// pcs_verify(sh, roots, [], [], prox, cols, tr): replays the proximity challenges and column draws, checks every
 /// Merkle opening and the proximity test at every opened column. Keys in sorted order.
 pub fn verify(
     pr: &Profile,
-    keys: &[String],
-    shapes: &[Shape],
-    roots: &[Vec<Hash>],
-    prox: &[Vec<Vec<u64>>],
-    cols: &[PcsCols],
+    batch: &VerifyBatch<'_>,
     tr: &mut Transcript,
     n: usize,
 ) -> Result<(), String> {
+    let VerifyBatch {
+        keys,
+        shapes,
+        roots,
+        prox,
+        cols,
+    } = *batch;
     let mut gams = Vec::with_capacity(keys.len());
     for (ki, k) in keys.iter().enumerate() {
         let s = &shapes[ki];
@@ -603,8 +653,9 @@ pub fn verify(
         if jj != cols[ki].j {
             return Err("column challenge mismatch".into());
         }
-        let gsum: Vec<u64> =
-            (0..s.w).map(|c| prox[ki].iter().fold(0u64, |a, g| field::add(a, g[c]))).collect();
+        let gsum: Vec<u64> = (0..s.w)
+            .map(|c| prox[ki].iter().fold(0u64, |a, g| field::add(a, g[c])))
+            .collect();
         let gam = &gams[ki];
         // check in column order, Merkle paths first per column, as cosnark.pcs_verify
         let fails: Vec<Option<String>> = jj
@@ -612,9 +663,11 @@ pub fn verify(
             .enumerate()
             .map(|(t, &j)| {
                 let mut colsum = vec![0u64; s.r];
-                for i in 0..n {
-                    let (col, path) = &cols[ki].open[i][t];
-                    if !verify_path(&roots[ki][i], col, j, path) {
+                for (i, (open_i, root_i)) in
+                    cols[ki].open.iter().zip(&roots[ki]).enumerate().take(n)
+                {
+                    let (col, path) = &open_i[t];
+                    if !verify_path(root_i, col, j, path) {
                         return Some(format!("Merkle opening fails ({k}, custodian {i})"));
                     }
                     for (a, &b) in colsum.iter_mut().zip(col) {
@@ -669,17 +722,29 @@ pub fn verify_e<const E: usize>(
             return Err("column challenge mismatch".into());
         }
         let gsum: Vec<Vec<u64>> = (0..E)
-            .map(|kk| (0..s.w).map(|c| prox[ki].iter().fold(0u64, |a, g| field::add(a, g[kk * s.w + c]))).collect())
+            .map(|kk| {
+                (0..s.w)
+                    .map(|c| {
+                        prox[ki]
+                            .iter()
+                            .fold(0u64, |a, g| field::add(a, g[kk * s.w + c]))
+                    })
+                    .collect()
+            })
             .collect();
-        let gam: Vec<Vec<u64>> = (0..E).map(|kk| gams[ki].iter().map(|g| g[kk]).collect()).collect();
+        let gam: Vec<Vec<u64>> = (0..E)
+            .map(|kk| gams[ki].iter().map(|g| g[kk]).collect())
+            .collect();
         let fails: Vec<Option<String>> = jj
             .par_iter()
             .enumerate()
             .map(|(t, &j)| {
                 let mut colsum = vec![0u64; s.r];
-                for i in 0..n {
-                    let (col, path) = &cols[ki].open[i][t];
-                    if !verify_path(&roots[ki][i], col, j, path) {
+                for (i, (open_i, root_i)) in
+                    cols[ki].open.iter().zip(&roots[ki]).enumerate().take(n)
+                {
+                    let (col, path) = &open_i[t];
+                    if !verify_path(root_i, col, j, path) {
                         return Some(format!("Merkle opening fails ({k}, custodian {i})"));
                     }
                     for (a, &b) in colsum.iter_mut().zip(col) {
@@ -728,7 +793,10 @@ fn stream_rows(npts: usize) -> usize {
 /// then per entry (in key order): key, label (u32 LE length + bytes each), m, base, opened_lives, max_lives (u32 LE),
 /// ext (u64 LE count + u64 LE words), salts (u32 LE count + 32 bytes each), root (32 bytes). read_carry rebuilds each
 /// tree (and the coset codeword) from ext and salts and refuses a root that differs.
-pub fn write_carry(carry: &std::collections::BTreeMap<String, PcsParty>, out: &mut impl std::io::Write) -> std::io::Result<()> {
+pub fn write_carry(
+    carry: &std::collections::BTreeMap<String, PcsParty>,
+    out: &mut impl std::io::Write,
+) -> std::io::Result<()> {
     let u32w = |o: &mut dyn std::io::Write, v: usize| o.write_all(&(v as u32).to_le_bytes());
     out.write_all(b"DLCARRY1")?;
     u32w(out, carry.len())?;
@@ -756,7 +824,10 @@ pub fn write_carry(carry: &std::collections::BTreeMap<String, PcsParty>, out: &m
 }
 
 /// Read a carry checkpoint (write_carry) under profile `pr`; every root is recomputed and must equal the stored one.
-pub fn read_carry(inp: &mut impl std::io::Read, pr: &Profile) -> Result<std::collections::BTreeMap<String, PcsParty>, String> {
+pub fn read_carry(
+    inp: &mut impl std::io::Read,
+    pr: &Profile,
+) -> Result<std::collections::BTreeMap<String, PcsParty>, String> {
     let e = |x: std::io::Error| format!("carry checkpoint: {x}");
     let mut b4 = [0u8; 4];
     let mut rd32 = |i: &mut dyn std::io::Read| -> Result<usize, String> {
@@ -786,16 +857,27 @@ pub fn read_carry(inp: &mut impl std::io::Read, pr: &Profile) -> Result<std::col
             return Err("carry checkpoint: m out of range".into());
         }
         // DEFER: a carried W (key W1, W2) has one life (Profile::w_life)
-        let shape = if pr.defer && strs[0].starts_with('W') { Shape::new(&pr.w_life(), m, base) } else { Shape::new(pr, m, base) };
+        let shape = if pr.defer && strs[0].starts_with('W') {
+            Shape::new(&pr.w_life(), m, base)
+        } else {
+            Shape::new(pr, m, base)
+        };
         let mut b8 = [0u8; 8];
         inp.read_exact(&mut b8).map_err(e)?;
         let ne = u64::from_le_bytes(b8) as usize;
         if ne != shape.r * shape.w {
-            return Err(format!("carry checkpoint: {} holds {ne} words, its shape {}", strs[0], shape.r * shape.w));
+            return Err(format!(
+                "carry checkpoint: {} holds {ne} words, its shape {}",
+                strs[0],
+                shape.r * shape.w
+            ));
         }
         let mut raw = vec![0u8; 8 * ne];
         inp.read_exact(&mut raw).map_err(e)?;
-        let ext: Vec<u64> = raw.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+        let ext: Vec<u64> = raw
+            .chunks_exact(8)
+            .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
+            .collect();
         drop(raw);
         if ext.iter().any(|&x| x >= field::p()) {
             return Err("carry checkpoint: a word is not a field element".into());
@@ -810,10 +892,23 @@ pub fn read_carry(inp: &mut impl std::io::Read, pr: &Profile) -> Result<std::col
         }
         let mut root = [0u8; 32];
         inp.read_exact(&mut root).map_err(e)?;
-        let mut c = PcsParty { label: strs[1].clone(), shape, ext, salts, tree: Vec::new(), root: [0; 32], opened_lives, max_lives, cw: Vec::new() };
+        let mut c = PcsParty {
+            label: strs[1].clone(),
+            shape,
+            ext,
+            salts,
+            tree: Vec::new(),
+            root: [0; 32],
+            opened_lives,
+            max_lives,
+            cw: Vec::new(),
+        };
         c.build_tree();
         if c.root != root {
-            return Err(format!("carry checkpoint: {}'s recomputed root differs from the stored one", strs[0]));
+            return Err(format!(
+                "carry checkpoint: {}'s recomputed root differs from the stored one",
+                strs[0]
+            ));
         }
         out.insert(strs[0].clone(), c);
     }

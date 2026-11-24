@@ -23,12 +23,13 @@ use crate::pcs_ext4::{
     PcsShape,
 };
 use crate::qwen35_layer::{
-    prove_audited_gdn_layer, verify_audited_gdn_layer_standalone, PrecommittedMxfp4Pcs,
-    Qwen35TurnExecution, RealGdnWyWitness, SuccinctGdnLayerProof,
+    prove_audited_gdn_layer, verify_audited_gdn_layer_standalone, AuditedGdnLayerVerifyStmt,
+    AuditedGdnLayerWitness, PrecommittedMxfp4Pcs, Qwen35TurnExecution, RealGdnWyWitness,
+    SuccinctGdnLayerProof,
 };
 use crate::safetensors_mmap::{
     decode_e2m1_x2_bb, decode_e2m1_x2_i32, MmapSafetensors, Mxfp4Matrix, Qwen35WeightRegistry,
-    QWEN35_SAFETENSORS_FILE, W_SCALE_SHIFT, WY_SCALE, WY_SHIFT,
+    QWEN35_SAFETENSORS_FILE, WY_SCALE, WY_SHIFT, W_SCALE_SHIFT,
 };
 use crate::u1_audit::{
     commit_u1_fast_stream_boundaries, commit_u1_pcs_boundaries, padded_complement_sk_step,
@@ -40,6 +41,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::fs;
 use std::hash::Hash;
+use std::ops::{Add, Mul, Sub};
 use std::path::Path;
 use std::sync::OnceLock;
 use std::time::Instant;
@@ -174,13 +176,13 @@ pub fn int_math_tables() -> &'static IntMathTables {
     INT_MATH_TABLES.get_or_init(|| {
         let mut fp8_e4m3_x512 = [0i32; 256];
         let mut pairs: Vec<(i32, u8)> = Vec::with_capacity(253);
-        for code in 0..256usize {
+        for (code, slot) in fp8_e4m3_x512.iter_mut().enumerate() {
             let sign = (code >> 7) != 0;
             let exp = ((code >> 3) & 0x0F) as u32;
             let mant = (code & 0x07) as i32;
             if exp == 15 && mant == 7 {
                 // NaN -> 0 fallback, excluded from quantizer codebook
-                fp8_e4m3_x512[code] = 0;
+                *slot = 0;
                 continue;
             }
             let mag_x512: i32 = if exp == 0 {
@@ -193,7 +195,7 @@ pub fn int_math_tables() -> &'static IntMathTables {
             } else {
                 -mag_x512
             };
-            fp8_e4m3_x512[code] = signed;
+            *slot = signed;
             if code != 0x80 {
                 // Canonical: exclude -0.0 (0x80) from quantizer codebook!
                 pairs.push((signed, code as u8));
@@ -211,16 +213,16 @@ pub fn int_math_tables() -> &'static IntMathTables {
         }
 
         let mut bf16_to_q16_i16 = vec![0i16; 65536];
-        for bits in 0..65536usize {
+        for (bits, slot) in bf16_to_q16_i16.iter_mut().enumerate() {
             let q20 = bf16_bits_to_q20_i64(bits as u16);
             let q16 = rshift_round_i64(q20, 4);
-            bf16_to_q16_i16[bits] = q16.clamp(-32767, 32767) as i16;
+            *slot = q16.clamp(-32767, 32767) as i16;
         }
 
         let mut exp_neg_q15 = vec![0u16; 8193];
-        for idx in 0..=8192usize {
+        for (idx, slot) in exp_neg_q15.iter_mut().enumerate() {
             let x = -(idx as f64) / 512.0;
-            exp_neg_q15[idx] = (x.exp() * 32768.0).round().clamp(0.0, 32768.0) as u16;
+            *slot = (x.exp() * 32768.0).round().clamp(0.0, 32768.0) as u16;
         }
 
         let mut sigmoid_q15 = vec![0u16; 8193];
@@ -333,7 +335,7 @@ pub fn int_softplus_q16(tabs: &IntMathTables, x_q16: i32) -> i64 {
 #[inline]
 pub fn int_rsqrt_from_q32_to_q16(tabs: &IntMathTables, val_q32: u128) -> i64 {
     let v = val_q32.max(4295); // >= 1e-6 * 2^32 = 4295
-    // Find `e` such that `v = u * 2^(32 + 2*k)` with `u in [1.0, 4.0)`:
+                               // Find `e` such that `v = u * 2^(32 + 2*k)` with `u in [1.0, 4.0)`:
     let bit_len = 128 - v.leading_zeros(); // v in [2^(bit_len-1), 2^bit_len)
     let exp_raw = (bit_len as i32) - 1 - 32; // floor(log2(v / 2^32))
     let k_even = exp_raw.div_euclid(2);
@@ -439,7 +441,8 @@ pub fn quantize_act_i16_dyn_pow2(
         } else {
             let ratio = ((target_max as u64) << 16) / (max_abs as u64);
             if ratio == 0 {
-                let down = ((max_abs as u64 + target_max as u64 - 1) / target_max as u64)
+                let down = (max_abs as u64)
+                    .div_ceil(target_max as u64)
                     .next_power_of_two()
                     .trailing_zeros() as i32;
                 (16 - down).max(-4)
@@ -541,11 +544,7 @@ impl Fp8E4m3Matrix {
                 }
             }
         }
-        let e_floor = if any_nz {
-            e_min_nz.max(e_max - 10)
-        } else {
-            0
-        };
+        let e_floor = if any_nz { e_min_nz.max(e_max - 10) } else { 0 };
 
         let mut codes = vec![0u8; rows * cols];
         let mut scales = vec![1u32; rows * blocks_per_row];
@@ -762,34 +761,37 @@ impl FastIntMxfp4 {
             // `raw_acc = x_real * 2^x_sh * w_real * 2 * 2^W_SCALE_SHIFT`
             // To obtain `Q16`: shift right by `x_sh + 1 + W_SCALE_SHIFT - 16 = x_sh - 5`!
             let rsh = x_shifts[0] + 1 + W_SCALE_SHIFT - 16;
-            out_q16.par_chunks_mut(64).enumerate().for_each(|(cg, dst)| {
-                let j_base = cg * 64;
-                for (off, slot) in dst.iter_mut().enumerate() {
-                    let j = j_base + off;
-                    let q_row = &self.q_x2_i8[j * cols..(j + 1) * cols];
-                    let s_row = &self.mat.scales[j * k_len..(j + 1) * k_len];
-                    let mut acc = 0i64;
-                    for k in 0..k_len {
-                        let s = s_row[k] as i64;
-                        if s == 0 {
-                            continue;
+            out_q16
+                .par_chunks_mut(64)
+                .enumerate()
+                .for_each(|(cg, dst)| {
+                    let j_base = cg * 64;
+                    for (off, slot) in dst.iter_mut().enumerate() {
+                        let j = j_base + off;
+                        let q_row = &self.q_x2_i8[j * cols..(j + 1) * cols];
+                        let s_row = &self.mat.scales[j * k_len..(j + 1) * k_len];
+                        let mut acc = 0i64;
+                        for k in 0..k_len {
+                            let s = s_row[k] as i64;
+                            if s == 0 {
+                                continue;
+                            }
+                            let qb = &q_row[k * 32..(k + 1) * 32];
+                            let xb = &x_row[k * 32..(k + 1) * 32];
+                            let mut b_sum = 0i32;
+                            for b in 0..32 {
+                                b_sum += (xb[b] as i32) * (qb[b] as i32);
+                            }
+                            acc += s * (b_sum as i64);
                         }
-                        let qb = &q_row[k * 32..(k + 1) * 32];
-                        let xb = &x_row[k * 32..(k + 1) * 32];
-                        let mut b_sum = 0i32;
-                        for b in 0..32 {
-                            b_sum += (xb[b] as i32) * (qb[b] as i32);
-                        }
-                        acc += s * (b_sum as i64);
+                        let y_q16 = if rsh >= 0 {
+                            rshift_round_i64(acc, rsh as u32)
+                        } else {
+                            acc << ((-rsh).min(24) as u32)
+                        };
+                        *slot = y_q16.clamp(i32::MIN as i64 + 1, i32::MAX as i64) as i32;
                     }
-                    let y_q16 = if rsh >= 0 {
-                        rshift_round_i64(acc, rsh as u32)
-                    } else {
-                        acc << ((-rsh).min(24) as u32)
-                    };
-                    *slot = y_q16.clamp(i32::MIN as i64 + 1, i32::MAX as i64) as i32;
-                }
-            });
+                });
             return (out_q16, None);
         }
 
@@ -846,7 +848,7 @@ impl FastIntMxfp4 {
                 .for_each(|(t, y_q16_row)| {
                     let x_row = &x_i16[t * cols..(t + 1) * cols];
                     let rsh = x_shifts[t] + 1 + W_SCALE_SHIFT - 16;
-                    for j in 0..rows_orig {
+                    for (j, y_cell) in y_q16_row.iter_mut().take(rows_orig).enumerate() {
                         let q_row = &self.q_x2_i8[j * cols..(j + 1) * cols];
                         let s_row = &self.mat.scales[j * k_len..(j + 1) * k_len];
                         let mut acc = 0i64;
@@ -868,7 +870,7 @@ impl FastIntMxfp4 {
                         } else {
                             acc << ((-rsh).min(24) as u32)
                         };
-                        y_q16_row[j] = v_q16.clamp(i32::MIN as i64 + 1, i32::MAX as i64) as i32;
+                        *y_cell = v_q16.clamp(i32::MIN as i64 + 1, i32::MAX as i64) as i32;
                     }
                 });
             (out_q16, None)
@@ -893,8 +895,8 @@ impl QwenBpeTokenizer {
     pub fn from_file(path: impl AsRef<Path>) -> Result<Self, String> {
         let raw_json = fs::read_to_string(path.as_ref())
             .map_err(|e| format!("failed reading tokenizer {}: {e}", path.as_ref().display()))?;
-        let root: serde_json::Value =
-            serde_json::from_str(&raw_json).map_err(|e| format!("tokenizer JSON parse error: {e}"))?;
+        let root: serde_json::Value = serde_json::from_str(&raw_json)
+            .map_err(|e| format!("tokenizer JSON parse error: {e}"))?;
 
         let mut byte_to_char = ['\0'; 256];
         let mut char_to_byte = HashMap::with_capacity(256);
@@ -942,7 +944,9 @@ impl QwenBpeTokenizer {
 
         if let Some(added) = root["added_tokens"].as_array() {
             for item in added {
-                if let (Some(id_u64), Some(content)) = (item["id"].as_u64(), item["content"].as_str()) {
+                if let (Some(id_u64), Some(content)) =
+                    (item["id"].as_u64(), item["content"].as_str())
+                {
                     let id = id_u64 as usize;
                     if id >= id_to_bytes.len() {
                         id_to_bytes.resize(id + 1, Vec::new());
@@ -1045,7 +1049,12 @@ impl QwenBpeTokenizer {
                 continue;
             }
             // Non-letter, non-digit prefix followed immediately by letters (`[^\r\n\p{L}\p{N}]?[\p{L}]+`)
-            if !is_newline(b) && !b.is_ascii_digit() && !is_letter(b) && i + 1 < n && is_letter(bytes[i + 1]) {
+            if !is_newline(b)
+                && !b.is_ascii_digit()
+                && !is_letter(b)
+                && i + 1 < n
+                && is_letter(bytes[i + 1])
+            {
                 let start = i;
                 i += 1;
                 while i < n && is_letter(bytes[i]) {
@@ -1127,7 +1136,7 @@ impl QwenBpeTokenizer {
             let mut best: Option<(u32, usize)> = None;
             for idx in 0..(ids.len() - 1) {
                 if let Some(&rk) = self.merge_ranks.get(&(ids[idx], ids[idx + 1])) {
-                    if best.map_or(true, |(brk, _)| rk < brk) {
+                    if best.is_none_or(|(brk, _)| rk < brk) {
                         best = Some((rk, idx));
                     }
                 }
@@ -1176,26 +1185,30 @@ impl QwenBpeTokenizer {
 // §4. Pure-Integer 24-Layer `Qwen3.5-0.8B` Engine (`Mixed-MXFP4/FP8` + `IntWY` + KV/SSM Cache)
 // ============================================================================
 
+struct GdnAttnWeights {
+    qkv: Fp8E4m3Matrix,
+    z: Fp8E4m3Matrix,
+    b: Fp8E4m3Matrix,
+    a: Fp8E4m3Matrix,
+    out_proj: Fp8E4m3Matrix,
+    conv_w_q16: Vec<i32>,        // [6144 * 4]
+    neg_exp_alog_q16: [i64; 16], // -exp(A_log[h]) in Q16
+    dt_bias_q16: [i32; 16],      // dt_bias[h] in Q16
+    norm_w_q16: Vec<i32>,        // [128] plain w[d] in Q16 (NO 1 + w!)
+}
+
+struct GqaAttnWeights {
+    q_proj: Fp8E4m3Matrix,
+    k_proj: Fp8E4m3Matrix,
+    v_proj: Fp8E4m3Matrix,
+    o_proj: Fp8E4m3Matrix,
+    q_norm_1pw_q16: Vec<i32>, // [256] (1 + w[d]) in Q16
+    k_norm_1pw_q16: Vec<i32>, // [256] (1 + w[d]) in Q16
+}
+
 enum LayerAttnWeights {
-    Gdn {
-        qkv: Fp8E4m3Matrix,
-        z: Fp8E4m3Matrix,
-        b: Fp8E4m3Matrix,
-        a: Fp8E4m3Matrix,
-        out_proj: Fp8E4m3Matrix,
-        conv_w_q16: Vec<i32>,       // [6144 * 4]
-        neg_exp_alog_q16: [i64; 16], // -exp(A_log[h]) in Q16
-        dt_bias_q16: [i32; 16],      // dt_bias[h] in Q16
-        norm_w_q16: Vec<i32>,        // [128] plain w[d] in Q16 (NO 1 + w!)
-    },
-    Gqa {
-        q_proj: Fp8E4m3Matrix,
-        k_proj: Fp8E4m3Matrix,
-        v_proj: Fp8E4m3Matrix,
-        o_proj: Fp8E4m3Matrix,
-        q_norm_1pw_q16: Vec<i32>, // [256] (1 + w[d]) in Q16
-        k_norm_1pw_q16: Vec<i32>, // [256] (1 + w[d]) in Q16
-    },
+    Gdn(Box<GdnAttnWeights>),
+    Gqa(Box<GqaAttnWeights>),
 }
 
 struct LayerWeights {
@@ -1213,10 +1226,16 @@ struct LayerWeights {
 #[derive(Clone)]
 pub struct ExactIntDecodeCache {
     pub pos: usize,
-    pub conv_q16: Vec<Vec<i32>>, // per GDN layer: [6144 * 4]
-    pub ssm_q16: Vec<Vec<i32>>,  // per GDN layer: [16 * 128 * 128]
+    pub conv_q16: Vec<Vec<i32>>,    // per GDN layer: [6144 * 4]
+    pub ssm_q16: Vec<Vec<i32>>,     // per GDN layer: [16 * 128 * 128]
     pub k_cache_q12: Vec<Vec<i16>>, // per GQA layer: [seq_so_far * 2 * 256]
     pub v_cache_q12: Vec<Vec<i16>>, // per GQA layer: [seq_so_far * 2 * 256]
+}
+
+impl Default for ExactIntDecodeCache {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ExactIntDecodeCache {
@@ -1330,9 +1349,10 @@ impl ExactIntQwen35Engine {
     }
 
     pub fn load_from_safetensors(path: impl AsRef<Path>) -> Result<Self, String> {
+        type LoadedLayerTuple = (LayerWeights, [u8; 32], usize, usize);
         let _tabs = int_math_tables();
         let mmap = MmapSafetensors::open(path)?;
-        let per_layer: Result<Vec<(LayerWeights, [u8; 32], usize, usize)>, String> = (0..NUM_LAYERS)
+        let per_layer: Result<Vec<LoadedLayerTuple>, String> = (0..NUM_LAYERS)
             .into_par_iter()
             .map(|l| {
                 let pfx = format!("model.language_model.layers.{l}");
@@ -1398,13 +1418,7 @@ impl ExactIntQwen35Engine {
                             + b.rows * b.cols
                             + a.rows * a.cols
                             + out_proj.rows * out_proj.cols;
-                        let digs = vec![
-                            qkv.digest,
-                            z.digest,
-                            b.digest,
-                            a.digest,
-                            out_proj.digest,
-                        ];
+                        let digs = vec![qkv.digest, z.digest, b.digest, a.digest, out_proj.digest];
                         let aux = vec![
                             ln1_dig,
                             ln2_dig,
@@ -1414,7 +1428,7 @@ impl ExactIntQwen35Engine {
                             hash_1d_tensor_bytes(&mmap, &norm_name)?,
                         ];
                         (
-                            LayerAttnWeights::Gdn {
+                            LayerAttnWeights::Gdn(Box::new(GdnAttnWeights {
                                 qkv,
                                 z,
                                 b,
@@ -1424,7 +1438,7 @@ impl ExactIntQwen35Engine {
                                 neg_exp_alog_q16,
                                 dt_bias_q16,
                                 norm_w_q16,
-                            },
+                            })),
                             digs,
                             aux,
                             5usize,
@@ -1463,14 +1477,14 @@ impl ExactIntQwen35Engine {
                             hash_1d_tensor_bytes(&mmap, &kn_name)?,
                         ];
                         (
-                            LayerAttnWeights::Gqa {
+                            LayerAttnWeights::Gqa(Box::new(GqaAttnWeights {
                                 q_proj,
                                 k_proj,
                                 v_proj,
                                 o_proj,
                                 q_norm_1pw_q16,
                                 k_norm_1pw_q16,
-                            },
+                            })),
                             digs,
                             aux,
                             4usize,
@@ -1644,11 +1658,12 @@ impl ExactIntQwen35Engine {
         beta_q12: &[i64],   // [64 * 16] in [0, 4096]
         s_init_q16: &[i32], // [16 * 128 * 128]
     ) -> (Vec<i32>, Vec<i32>, RealGdnWyWitness) {
+        type IntGdnHeadOutputs = (Vec<i64>, Vec<i64>, Vec<i64>, Vec<u32>, Vec<i32>, Vec<i32>);
         let c_len = 64usize;
         let cols = 256usize;
         let half_wy = M_WY / 2; // 2048
 
-        let per_head: Vec<(Vec<i64>, Vec<i64>, Vec<i64>, Vec<u32>, Vec<i32>, Vec<i32>)> = (0..GDN_H)
+        let per_head: Vec<IntGdnHeadOutputs> = (0..GDN_H)
             .into_par_iter()
             .map(|h| {
                 let mut q_int = vec![0i64; c_len * GDN_D];
@@ -1674,10 +1689,10 @@ impl ExactIntQwen35Engine {
 
                     for d in 0..GDN_D {
                         // `qs[d] * inv_q` is Q32 -> shift right by `32 - 12 = 20` for `K_WY_SCALE = 4096`!
-                        q_int[t * GDN_D + d] =
-                            rshift_round_i64((qs[d] as i64) * inv_q, 20).clamp(-K_WY_SCALE, K_WY_SCALE);
-                        k_int[t * GDN_D + d] =
-                            rshift_round_i64((ks[d] as i64) * inv_k, 20).clamp(-K_WY_SCALE, K_WY_SCALE);
+                        q_int[t * GDN_D + d] = rshift_round_i64((qs[d] as i64) * inv_q, 20)
+                            .clamp(-K_WY_SCALE, K_WY_SCALE);
+                        k_int[t * GDN_D + d] = rshift_round_i64((ks[d] as i64) * inv_k, 20)
+                            .clamp(-K_WY_SCALE, K_WY_SCALE);
                         let vb = (vs[d] as i64) * b_val; // Q16 * Q12 = Q28
                         v_beta_q28[t * GDN_D + d] = vb;
                         if vb.abs() > max_vb {
@@ -1798,8 +1813,7 @@ impl ExactIntQwen35Engine {
                         for dk in 0..GDN_D {
                             ws += uw_mat[i * cols + GDN_D + dk] * s_u[dk * GDN_D + dv];
                         }
-                        u_eff[i * GDN_D + dv] =
-                            uw_mat[i * cols + dv] - rshift_round_i64(ws, 12);
+                        u_eff[i * GDN_D + dv] = uw_mat[i * cols + dv] - rshift_round_i64(ws, 12);
                     }
                 }
 
@@ -1832,7 +1846,8 @@ impl ExactIntQwen35Engine {
                     }
                     for dv in 0..GDN_D {
                         let y_acc = (rshift_round_i64(y_inter_row[dv], 12) << 12) + y_intra_row[dv];
-                        let scaled = rshift_round_i128((y_acc as i128) * (INV_SQRT128_Q16 as i128), y_rsh);
+                        let scaled =
+                            rshift_round_i128((y_acc as i128) * (INV_SQRT128_Q16 as i128), y_rsh);
                         y_h_q16[i * GDN_D + dv] =
                             scaled.clamp(i32::MIN as i64 + 1, i32::MAX as i64) as i32;
                     }
@@ -1964,17 +1979,18 @@ impl ExactIntQwen35Engine {
                 quantize_act_i16_dyn_pow2(&x_ln1_q16, seq_len, D_MODEL, 16383);
 
             let attn_delta_q16: Vec<i32> = match &lw.attn {
-                LayerAttnWeights::Gdn {
-                    qkv,
-                    z,
-                    b,
-                    a,
-                    out_proj,
-                    conv_w_q16,
-                    neg_exp_alog_q16,
-                    dt_bias_q16,
-                    norm_w_q16,
-                } => {
+                LayerAttnWeights::Gdn(gdn) => {
+                    let GdnAttnWeights {
+                        qkv,
+                        z,
+                        b,
+                        a,
+                        out_proj,
+                        conv_w_q16,
+                        neg_exp_alog_q16,
+                        dt_bias_q16,
+                        norm_w_q16,
+                    } = gdn.as_ref();
                     let qkv_q16 = qkv.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, seq_len);
                     let z_q16 = z.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, seq_len);
                     let b_q16 = b.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, seq_len);
@@ -2022,11 +2038,14 @@ impl ExactIntQwen35Engine {
                         v_q16[t * 2048..(t + 1) * 2048]
                             .copy_from_slice(&conv_out_q16[t * 6144 + 4096..t * 6144 + 6144]);
                         for h in 0..16 {
-                            beta_q12[t * 16 + h] =
-                                rshift_round_i64(int_sigmoid_q15(tabs, b_q16[t * 16 + h]) as i64, 3);
+                            beta_q12[t * 16 + h] = rshift_round_i64(
+                                int_sigmoid_q15(tabs, b_q16[t * 16 + h]) as i64,
+                                3,
+                            );
                             let sp = int_softplus_q16(tabs, a_q16[t * 16 + h] + dt_bias_q16[h]);
                             let g_q16 = rshift_round_i64(neg_exp_alog_q16[h] * sp, 16)
-                                .clamp(-(32 << 16), 0) as i32;
+                                .clamp(-(32 << 16), 0)
+                                as i32;
                             alpha_q12[t * 16 + h] =
                                 rshift_round_i64(int_exp_neg_q15(tabs, g_q16) as i64, 3);
                         }
@@ -2053,10 +2072,10 @@ impl ExactIntQwen35Engine {
                             let off = (t * 16 + h) * 128;
                             let ys = &y_wy_q16[off..off + 128];
                             let zs = &z_q16[off..off + 128];
-                            let mut sq: u128 = 0;
-                            for d in 0..128 {
-                                sq += ((ys[d] as i128) * (ys[d] as i128)) as u128;
-                            }
+                            let sq: u128 = ys
+                                .iter()
+                                .map(|&y| ((y as i128) * (y as i128)) as u128)
+                                .sum();
                             let inv_rms = int_rsqrt_from_q32_to_q16(tabs, (sq >> 7) + 4295);
                             for d in 0..128 {
                                 let yn = rshift_round_i64((ys[d] as i64) * inv_rms, 16);
@@ -2069,14 +2088,15 @@ impl ExactIntQwen35Engine {
                     let (g_i16, g_sh) = quantize_act_i16_dyn_pow2(&gated_q16, seq_len, 2048, 16383);
                     out_proj.matmul_to_q16(&g_i16, &g_sh, seq_len)
                 }
-                LayerAttnWeights::Gqa {
-                    q_proj,
-                    k_proj,
-                    v_proj,
-                    o_proj,
-                    q_norm_1pw_q16,
-                    k_norm_1pw_q16,
-                } => {
+                LayerAttnWeights::Gqa(gqa) => {
+                    let GqaAttnWeights {
+                        q_proj,
+                        k_proj,
+                        v_proj,
+                        o_proj,
+                        q_norm_1pw_q16,
+                        k_norm_1pw_q16,
+                    } = gqa.as_ref();
                     let qg_q16 = q_proj.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, seq_len);
                     let kp_q16 = k_proj.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, seq_len);
                     let vp_q16 = v_proj.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, seq_len);
@@ -2150,8 +2170,7 @@ impl ExactIntQwen35Engine {
                                 for d in 0..256 {
                                     dot += (qi[d] as i64) * (kj[d] as i64);
                                 }
-                                let s_q16 =
-                                    rshift_round_i64(dot, 12 + INV_SQRT256_SHIFT) as i32;
+                                let s_q16 = rshift_round_i64(dot, 12 + INV_SQRT256_SHIFT) as i32;
                                 scores_q16[tj] = s_q16;
                                 if s_q16 > max_s {
                                     max_s = s_q16;
@@ -2170,8 +2189,7 @@ impl ExactIntQwen35Engine {
                             for d in 0..256 {
                                 let mut acc: i128 = 0;
                                 for tj in 0..total_kv {
-                                    let vj_q16 =
-                                        (v_all[(tj * 2 + hk) * 256 + d] as i128) << 4; // Q12 -> Q16
+                                    let vj_q16 = (v_all[(tj * 2 + hk) * 256 + d] as i128) << 4; // Q12 -> Q16
                                     acc += (weights[tj] as i128) * vj_q16;
                                 }
                                 let av = (acc + sum_w / 2).div_euclid(sum_w) as i64;
@@ -2200,19 +2218,23 @@ impl ExactIntQwen35Engine {
             }
 
             // SwiGLU MLP (`MXFP4-E2M1`: target_max = `2047` -> `|Y_raw| < 15M << P_BB / 2` with 66 dB dynamic range!)
-            let x_ln2_q16 = rmsnorm_zero_centered_int_q16(tabs, &h_mid_q16, &lw.ln2_1pw_q16, D_MODEL);
+            let x_ln2_q16 =
+                rmsnorm_zero_centered_int_q16(tabs, &h_mid_q16, &lw.ln2_1pw_q16, D_MODEL);
             let (x_ln2_i16, x_ln2_sh) =
                 quantize_act_i16_dyn_pow2(&x_ln2_q16, seq_len, D_MODEL, 2047);
             let (gate_q16, gate_raw_opt) =
                 lw.gate_proj
                     .matmul_to_q16(&x_ln2_i16, &x_ln2_sh, seq_len, l == audited_layer);
-            let (up_q16, _) = lw.up_proj.matmul_to_q16(&x_ln2_i16, &x_ln2_sh, seq_len, false);
+            let (up_q16, _) = lw
+                .up_proj
+                .matmul_to_q16(&x_ln2_i16, &x_ln2_sh, seq_len, false);
 
             let mut swiglu_q16 = vec![0i32; seq_len * D_FF];
             for i in 0..(seq_len * D_FF) {
                 let sg = int_silu_q16(tabs, gate_q16[i]) as i64;
                 swiglu_q16[i] = rshift_round_i64(sg * (up_q16[i] as i64), 16)
-                    .clamp(i32::MIN as i64 + 1, i32::MAX as i64) as i32;
+                    .clamp(i32::MIN as i64 + 1, i32::MAX as i64)
+                    as i32;
             }
             let (sw_i16, sw_sh) = quantize_act_i16_dyn_pow2(&swiglu_q16, seq_len, D_FF, 2047);
             let (down_q16, _) = lw.down_proj.matmul_to_q16(&sw_i16, &sw_sh, seq_len, false);
@@ -2284,17 +2306,18 @@ impl ExactIntQwen35Engine {
             let (x_ln1_i16, x_ln1_sh) = quantize_act_i16_dyn_pow2(&x_ln1_q16, 1, D_MODEL, 16383);
 
             let attn_delta_q16: Vec<i32> = match &lw.attn {
-                LayerAttnWeights::Gdn {
-                    qkv,
-                    z,
-                    b,
-                    a,
-                    out_proj,
-                    conv_w_q16,
-                    neg_exp_alog_q16,
-                    dt_bias_q16,
-                    norm_w_q16,
-                } => {
+                LayerAttnWeights::Gdn(gdn) => {
+                    let GdnAttnWeights {
+                        qkv,
+                        z,
+                        b,
+                        a,
+                        out_proj,
+                        conv_w_q16,
+                        neg_exp_alog_q16,
+                        dt_bias_q16,
+                        norm_w_q16,
+                    } = gdn.as_ref();
                     let qkv_q16 = qkv.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, 1);
                     let z_q16 = z.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, 1);
                     let b_q16 = b.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, 1);
@@ -2352,13 +2375,13 @@ impl ExactIntQwen35Engine {
                                 rshift_round_i64(int_sigmoid_q15(tabs, b_q16[h]) as i64, 3);
                             let sp = int_softplus_q16(tabs, a_q16[h] + dt_bias_q16[h]);
                             let g_q16 = rshift_round_i64(neg_exp_alog_q16[h] * sp, 16)
-                                .clamp(-(32 << 16), 0) as i32;
+                                .clamp(-(32 << 16), 0)
+                                as i32;
                             let alpha_q12 =
                                 rshift_round_i64(int_exp_neg_q15(tabs, g_q16) as i64, 3);
 
                             for s_cell in s_mat.iter_mut() {
-                                *s_cell =
-                                    rshift_round_i64((*s_cell as i64) * alpha_q12, 12) as i32;
+                                *s_cell = rshift_round_i64((*s_cell as i64) * alpha_q12, 12) as i32;
                             }
 
                             let mut kv_mem_q16 = [0i64; GDN_D];
@@ -2414,14 +2437,15 @@ impl ExactIntQwen35Engine {
                     let (g_i16, g_sh) = quantize_act_i16_dyn_pow2(&gated_q16, 1, 2048, 16383);
                     out_proj.matmul_to_q16(&g_i16, &g_sh, 1)
                 }
-                LayerAttnWeights::Gqa {
-                    q_proj,
-                    k_proj,
-                    v_proj,
-                    o_proj,
-                    q_norm_1pw_q16,
-                    k_norm_1pw_q16,
-                } => {
+                LayerAttnWeights::Gqa(gqa) => {
+                    let GqaAttnWeights {
+                        q_proj,
+                        k_proj,
+                        v_proj,
+                        o_proj,
+                        q_norm_1pw_q16,
+                        k_norm_1pw_q16,
+                    } = gqa.as_ref();
                     let qg_q16 = q_proj.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, 1);
                     let kp_q16 = k_proj.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, 1);
                     let vp_q16 = v_proj.matmul_to_q16(&x_ln1_i16, &x_ln1_sh, 1);
@@ -2483,8 +2507,7 @@ impl ExactIntQwen35Engine {
                             for d in 0..256 {
                                 dot += (qi[d] as i64) * (kj[d] as i64);
                             }
-                            let s_q16 =
-                                rshift_round_i64(dot, 12 + INV_SQRT256_SHIFT) as i32;
+                            let s_q16 = rshift_round_i64(dot, 12 + INV_SQRT256_SHIFT) as i32;
                             scores_q16[tj] = s_q16;
                             if s_q16 > max_s {
                                 max_s = s_q16;
@@ -2522,7 +2545,8 @@ impl ExactIntQwen35Engine {
                 h_mid_q16[i] = h_q16[i].saturating_add(attn_delta_q16[i]);
             }
 
-            let x_ln2_q16 = rmsnorm_zero_centered_int_q16(tabs, &h_mid_q16, &lw.ln2_1pw_q16, D_MODEL);
+            let x_ln2_q16 =
+                rmsnorm_zero_centered_int_q16(tabs, &h_mid_q16, &lw.ln2_1pw_q16, D_MODEL);
             let (x_ln2_i16, x_ln2_sh) = quantize_act_i16_dyn_pow2(&x_ln2_q16, 1, D_MODEL, 2047);
             let (gate_q16, _) = lw.gate_proj.matmul_to_q16(&x_ln2_i16, &x_ln2_sh, 1, false);
             let (up_q16, _) = lw.up_proj.matmul_to_q16(&x_ln2_i16, &x_ln2_sh, 1, false);
@@ -2531,7 +2555,8 @@ impl ExactIntQwen35Engine {
             for i in 0..D_FF {
                 let sg = int_silu_q16(tabs, gate_q16[i]) as i64;
                 swiglu_q16[i] = rshift_round_i64(sg * (up_q16[i] as i64), 16)
-                    .clamp(i32::MIN as i64 + 1, i32::MAX as i64) as i32;
+                    .clamp(i32::MIN as i64 + 1, i32::MAX as i64)
+                    as i32;
             }
             let (sw_i16, sw_sh) = quantize_act_i16_dyn_pow2(&swiglu_q16, 1, D_FF, 2047);
             let (down_q16, _) = lw.down_proj.matmul_to_q16(&sw_i16, &sw_sh, 1, false);
@@ -2774,8 +2799,7 @@ fn read_npz_entries(path: &Path) -> Result<HashMap<String, Vec<u8>>, String> {
     }
     let eocd = eocd_off.ok_or_else(|| "missing ZIP EOCD signature".to_string())?;
     let total_entries = u16::from_le_bytes([zip[eocd + 10], zip[eocd + 11]]) as usize;
-    let cd_offset =
-        u32::from_le_bytes(zip[eocd + 16..eocd + 20].try_into().unwrap()) as usize;
+    let cd_offset = u32::from_le_bytes(zip[eocd + 16..eocd + 20].try_into().unwrap()) as usize;
 
     let mut entries = HashMap::with_capacity(total_entries);
     let mut cd_pos = cd_offset;
@@ -2855,7 +2879,8 @@ fn npy_data_slice(npy: &[u8]) -> Result<&[u8], String> {
         )
     };
     let end = hdr_off.checked_add(hdr_len).ok_or(".npy header overflow")?;
-    npy.get(end..).ok_or_else(|| ".npy header exceeds buffer".to_string())
+    npy.get(end..)
+        .ok_or_else(|| ".npy header exceeds buffer".to_string())
 }
 
 #[derive(Clone, Debug)]
@@ -3214,18 +3239,19 @@ static CONTENT_MERKLE_CACHE: OnceLock<ContentMerkleCache> = OnceLock::new();
 fn content_merkle_cache() -> &'static ContentMerkleCache {
     CONTENT_MERKLE_CACHE.get_or_init(|| {
         let mut byte_leaves = [[0u8; 32]; 256];
-        for b in 0..256usize {
+        for (b, leaf) in byte_leaves.iter_mut().enumerate() {
             // `0 :: (32 zeros ++ [1] ++ c8_le[32])` = 66 bytes
             let mut inp = [0u8; 66];
             inp[0] = 0;
             inp[33] = 1;
             inp[34] = b as u8;
-            byte_leaves[b] = cshake256_32(MERKLE_LEAF_CUST, &inp);
+            *leaf = cshake256_32(MERKLE_LEAF_CUST, &inp);
         }
         let mut zero_subtrees = [[0u8; 32]; 24];
         zero_subtrees[0] = byte_leaves[0];
         for h in 1..24 {
-            zero_subtrees[h] = hash_tower256_merkle_node(&zero_subtrees[h - 1], &zero_subtrees[h - 1]);
+            zero_subtrees[h] =
+                hash_tower256_merkle_node(&zero_subtrees[h - 1], &zero_subtrees[h - 1]);
         }
         ContentMerkleCache {
             byte_leaves,
@@ -3260,7 +3286,14 @@ fn content_root_strided(
         let b = bytes.get(offset).copied().unwrap_or(0);
         cache.byte_leaves[b as usize]
     } else {
-        let l = content_root_strided(cache, bytes, total_leaves, offset, stride * 2, rem_depth - 1);
+        let l = content_root_strided(
+            cache,
+            bytes,
+            total_leaves,
+            offset,
+            stride * 2,
+            rem_depth - 1,
+        );
         let r = content_root_strided(
             cache,
             bytes,
@@ -3356,9 +3389,9 @@ pub fn safe_replacement(pat: &[u8], repl: &[u8]) -> bool {
 }
 
 pub fn all_rules_safe(rules: &[RedactRule]) -> bool {
-    rules.iter().all(|rt| {
-        !rt.pat.is_empty() && rules.iter().all(|r| safe_replacement(&rt.pat, &r.repl))
-    })
+    rules
+        .iter()
+        .all(|rt| !rt.pat.is_empty() && rules.iter().all(|r| safe_replacement(&rt.pat, &r.repl)))
 }
 
 /// Exact `Theory.VerifiedAstTransducer.redactBytes` deterministic longest-match byte transducer.
@@ -3374,7 +3407,7 @@ pub fn redact_bytes_canonical(rules: &[RedactRule], input: &[u8]) -> Vec<u8> {
                 while len < rem.len() && (r.body_pred)(rem[len]) {
                     len += 1;
                 }
-                if best.map_or(true, |(_, bl)| bl < len) {
+                if best.is_none_or(|(_, bl)| bl < len) {
                     best = Some((&r.repl, len));
                 }
             }
@@ -3549,9 +3582,10 @@ fn eval_mini_op(op: &MiniOp, vs: &[MiniValue]) -> Result<MiniValue, String> {
         },
         MiniOp::BatchEmpty => Ok(MiniValue::BatchNil),
         MiniOp::BatchCons => match vs {
-            [item, _, rest] | [_, _, item, _, rest] => {
-                Ok(MiniValue::BatchCons(Box::new(item.clone()), Box::new(rest.clone())))
-            }
+            [item, _, rest] | [_, _, item, _, rest] => Ok(MiniValue::BatchCons(
+                Box::new(item.clone()),
+                Box::new(rest.clone()),
+            )),
             _ => Ok(MiniValue::BatchNil),
         },
     }
@@ -3582,33 +3616,141 @@ pub fn mini_json_cfg() -> AttrCfg<u8, MiniNT, MiniOp, MiniValue> {
     cot_rest.extend([Nt(WS), T(b':'), Nt(WS), Nt(NatVal), Nt(WS), T(b'}')]);
 
     let mut rules = vec![
-        AttrRule { lhs: Root, rhs: vec![Nt(WS), Nt(TopExpr), Nt(WS)], op: MiniOp::PassAt(1) },
-        AttrRule { lhs: TopExpr, rhs: vec![T(b'{'), Nt(WS), T(b'"'), Nt(ObjDispatch)], op: MiniOp::PassAt(3) },
-        AttrRule { lhs: TopExpr, rhs: vec![T(b'['), Nt(WS), Nt(BatchBody), T(b']')], op: MiniOp::PassAt(2) },
-        AttrRule { lhs: ObjDispatch, rhs: vec![T(b't'), Nt(ToolRest)], op: MiniOp::PassAt(1) },
-        AttrRule { lhs: ObjDispatch, rhs: vec![T(b'c'), Nt(CotRest)], op: MiniOp::PassAt(1) },
-        AttrRule { lhs: ToolRest, rhs: tool_rest, op: MiniOp::MkToolRest },
-        AttrRule { lhs: CotRest, rhs: cot_rest, op: MiniOp::MkCotRest },
-        AttrRule { lhs: BatchBody, rhs: vec![Nt(TopExpr), Nt(WS), Nt(BatchTail)], op: MiniOp::BatchCons },
-        AttrRule { lhs: BatchBody, rhs: vec![], op: MiniOp::BatchEmpty },
-        AttrRule { lhs: BatchTail, rhs: vec![T(b','), Nt(WS), Nt(TopExpr), Nt(WS), Nt(BatchTail)], op: MiniOp::BatchCons },
-        AttrRule { lhs: BatchTail, rhs: vec![], op: MiniOp::BatchEmpty },
-        AttrRule { lhs: WS, rhs: vec![T(b' '), Nt(WS)], op: MiniOp::UnitOp },
-        AttrRule { lhs: WS, rhs: vec![T(b'\t'), Nt(WS)], op: MiniOp::UnitOp },
-        AttrRule { lhs: WS, rhs: vec![T(b'\n'), Nt(WS)], op: MiniOp::UnitOp },
-        AttrRule { lhs: WS, rhs: vec![T(b'\r'), Nt(WS)], op: MiniOp::UnitOp },
-        AttrRule { lhs: WS, rhs: vec![], op: MiniOp::UnitOp },
-        AttrRule { lhs: StrVal, rhs: vec![T(b'"'), Nt(Chars), T(b'"')], op: MiniOp::StrUnquote },
-        AttrRule { lhs: Chars, rhs: vec![T(b'\\'), Nt(Esc), Nt(Chars)], op: MiniOp::CharsEsc },
-        AttrRule { lhs: Chars, rhs: vec![], op: MiniOp::CharsNil },
-        AttrRule { lhs: Esc, rhs: vec![T(b'"')], op: MiniOp::EscConst(b'"') },
-        AttrRule { lhs: Esc, rhs: vec![T(b'\\')], op: MiniOp::EscConst(b'\\') },
-        AttrRule { lhs: Esc, rhs: vec![T(b'/')], op: MiniOp::EscConst(b'/') },
-        AttrRule { lhs: Esc, rhs: vec![T(b'n')], op: MiniOp::EscConst(b'\n') },
-        AttrRule { lhs: Esc, rhs: vec![T(b'r')], op: MiniOp::EscConst(b'\r') },
-        AttrRule { lhs: Esc, rhs: vec![T(b't')], op: MiniOp::EscConst(b'\t') },
-        AttrRule { lhs: NatVal, rhs: vec![T(b'0')], op: MiniOp::NatZero },
-        AttrRule { lhs: Digits, rhs: vec![], op: MiniOp::DigitsNil },
+        AttrRule {
+            lhs: Root,
+            rhs: vec![Nt(WS), Nt(TopExpr), Nt(WS)],
+            op: MiniOp::PassAt(1),
+        },
+        AttrRule {
+            lhs: TopExpr,
+            rhs: vec![T(b'{'), Nt(WS), T(b'"'), Nt(ObjDispatch)],
+            op: MiniOp::PassAt(3),
+        },
+        AttrRule {
+            lhs: TopExpr,
+            rhs: vec![T(b'['), Nt(WS), Nt(BatchBody), T(b']')],
+            op: MiniOp::PassAt(2),
+        },
+        AttrRule {
+            lhs: ObjDispatch,
+            rhs: vec![T(b't'), Nt(ToolRest)],
+            op: MiniOp::PassAt(1),
+        },
+        AttrRule {
+            lhs: ObjDispatch,
+            rhs: vec![T(b'c'), Nt(CotRest)],
+            op: MiniOp::PassAt(1),
+        },
+        AttrRule {
+            lhs: ToolRest,
+            rhs: tool_rest,
+            op: MiniOp::MkToolRest,
+        },
+        AttrRule {
+            lhs: CotRest,
+            rhs: cot_rest,
+            op: MiniOp::MkCotRest,
+        },
+        AttrRule {
+            lhs: BatchBody,
+            rhs: vec![Nt(TopExpr), Nt(WS), Nt(BatchTail)],
+            op: MiniOp::BatchCons,
+        },
+        AttrRule {
+            lhs: BatchBody,
+            rhs: vec![],
+            op: MiniOp::BatchEmpty,
+        },
+        AttrRule {
+            lhs: BatchTail,
+            rhs: vec![T(b','), Nt(WS), Nt(TopExpr), Nt(WS), Nt(BatchTail)],
+            op: MiniOp::BatchCons,
+        },
+        AttrRule {
+            lhs: BatchTail,
+            rhs: vec![],
+            op: MiniOp::BatchEmpty,
+        },
+        AttrRule {
+            lhs: WS,
+            rhs: vec![T(b' '), Nt(WS)],
+            op: MiniOp::UnitOp,
+        },
+        AttrRule {
+            lhs: WS,
+            rhs: vec![T(b'\t'), Nt(WS)],
+            op: MiniOp::UnitOp,
+        },
+        AttrRule {
+            lhs: WS,
+            rhs: vec![T(b'\n'), Nt(WS)],
+            op: MiniOp::UnitOp,
+        },
+        AttrRule {
+            lhs: WS,
+            rhs: vec![T(b'\r'), Nt(WS)],
+            op: MiniOp::UnitOp,
+        },
+        AttrRule {
+            lhs: WS,
+            rhs: vec![],
+            op: MiniOp::UnitOp,
+        },
+        AttrRule {
+            lhs: StrVal,
+            rhs: vec![T(b'"'), Nt(Chars), T(b'"')],
+            op: MiniOp::StrUnquote,
+        },
+        AttrRule {
+            lhs: Chars,
+            rhs: vec![T(b'\\'), Nt(Esc), Nt(Chars)],
+            op: MiniOp::CharsEsc,
+        },
+        AttrRule {
+            lhs: Chars,
+            rhs: vec![],
+            op: MiniOp::CharsNil,
+        },
+        AttrRule {
+            lhs: Esc,
+            rhs: vec![T(b'"')],
+            op: MiniOp::EscConst(b'"'),
+        },
+        AttrRule {
+            lhs: Esc,
+            rhs: vec![T(b'\\')],
+            op: MiniOp::EscConst(b'\\'),
+        },
+        AttrRule {
+            lhs: Esc,
+            rhs: vec![T(b'/')],
+            op: MiniOp::EscConst(b'/'),
+        },
+        AttrRule {
+            lhs: Esc,
+            rhs: vec![T(b'n')],
+            op: MiniOp::EscConst(b'\n'),
+        },
+        AttrRule {
+            lhs: Esc,
+            rhs: vec![T(b'r')],
+            op: MiniOp::EscConst(b'\r'),
+        },
+        AttrRule {
+            lhs: Esc,
+            rhs: vec![T(b't')],
+            op: MiniOp::EscConst(b'\t'),
+        },
+        AttrRule {
+            lhs: NatVal,
+            rhs: vec![T(b'0')],
+            op: MiniOp::NatZero,
+        },
+        AttrRule {
+            lhs: Digits,
+            rhs: vec![],
+            op: MiniOp::DigitsNil,
+        },
     ];
     for k in 0..9u8 {
         let d = k + 1;
@@ -3703,8 +3845,8 @@ pub fn ll1_parse_mini_json(input: &[u8]) -> Result<(Vec<usize>, MiniValue), Stri
                     break;
                 }
                 CfgSym::Nonterminal(nt) => {
-                    for b in 0..256 {
-                        if first[nt as usize][b] && !out.contains(&(b + 1)) {
+                    for (b, &has_b) in first[nt as usize].iter().enumerate().take(256) {
+                        if has_b && !out.contains(&(b + 1)) {
                             out.push(b + 1);
                         }
                     }
@@ -3742,8 +3884,8 @@ pub fn ll1_parse_mini_json(input: &[u8]) -> Result<(Vec<usize>, MiniValue), Stri
     for (ridx, r) in cfg.rules.iter().enumerate() {
         let mut slots = seq_first(&r.rhs);
         if seq_null(&r.rhs) {
-            for sl in 0..257 {
-                if follow[r.lhs as usize][sl] && !slots.contains(&sl) {
+            for (sl, &has_sl) in follow[r.lhs as usize].iter().enumerate() {
+                if has_sl && !slots.contains(&sl) {
                     slots.push(sl);
                 }
             }
@@ -3768,7 +3910,9 @@ pub fn ll1_parse_mini_json(input: &[u8]) -> Result<(Vec<usize>, MiniValue), Stri
                     return Err("unexpected EOF in LL(1) parse".to_string());
                 };
                 if act != exp {
-                    return Err(format!("terminal mismatch at {pos}: expected 0x{exp:02x}, got 0x{act:02x}"));
+                    return Err(format!(
+                        "terminal mismatch at {pos}: expected 0x{exp:02x}, got 0x{act:02x}"
+                    ));
                 }
                 pos += 1;
                 vstk.push((cfg.term_val)(exp));
@@ -3777,7 +3921,9 @@ pub fn ll1_parse_mini_json(input: &[u8]) -> Result<(Vec<usize>, MiniValue), Stri
                 let slot = input.get(pos).map_or(0usize, |&b| (b as usize) + 1);
                 let ridx = dispatch[nt as usize][slot];
                 if ridx == u16::MAX {
-                    return Err(format!("no matching LL(1) rule for {nt:?} at byte pos {pos}"));
+                    return Err(format!(
+                        "no matching LL(1) rule for {nt:?} at byte pos {pos}"
+                    ));
                 }
                 let rule = &cfg.rules[ridx as usize];
                 rule_indices.push(ridx as usize);
@@ -4372,8 +4518,8 @@ fn eval_shift_kernel_mle_checked(z: &[Ext4], u_pt: &[Ext4]) -> Result<Ext4, Stri
 fn eval_eof_indicator_mle(word_len: usize, pad_len: usize, z_pt: &[Ext4]) -> Ext4 {
     let eq_z = build_eq_table_lsb_ext4(z_pt);
     let mut acc = Ext4::ZERO;
-    for t in word_len..pad_len {
-        acc = acc.add(eq_z[t]);
+    for &ez in &eq_z[word_len..pad_len] {
+        acc = acc.add(ez);
     }
     acc
 }
@@ -4528,7 +4674,11 @@ pub fn prove_hardened_padded_absence_zk(
     let mut q_next_vec = vec![final_state as u32; pad_len];
     let mut tuples = vec![0u32; pad_len];
     for t in 0..pad_len {
-        let qt = if t < trace.len() { trace[t] as u32 } else { final_state as u32 };
+        let qt = if t < trace.len() {
+            trace[t] as u32
+        } else {
+            final_state as u32
+        };
         let qn = if t + 1 < trace.len() {
             trace[t + 1] as u32
         } else {
@@ -4590,9 +4740,7 @@ pub fn prove_hardened_padded_absence_zk(
 
     let eq_zsh = build_eq_table_lsb_ext4(&z_sh);
     let mut shift_col = vec![Ext4::ZERO; pad_len];
-    for t in 0..(pad_len - 1) {
-        shift_col[t + 1] = eq_zsh[t];
-    }
+    shift_col[1..pad_len].copy_from_slice(&eq_zsh[..(pad_len - 1)]);
     let q_ext: Vec<Ext4> = q_vec.iter().map(|&v| Ext4::from_bb(v)).collect();
     let (shift_gruen_proof, shift_chals) =
         prove_gruen_einsum_mode2_ext4(&shift_col, &q_ext, 0, m, &[], tr);
@@ -4715,7 +4863,10 @@ pub fn verify_hardened_padded_absence_zk(
     }
     if !receipt.pad_len.is_power_of_two()
         || receipt.pad_len < 2048
-        || receipt.word_len.checked_add(2).map_or(true, |n| n > receipt.pad_len)
+        || receipt
+            .word_len
+            .checked_add(2)
+            .is_none_or(|n| n > receipt.pad_len)
     {
         return Err("invalid HardenedPaddedAbsenceZkReceipt pad_len".to_string());
     }
@@ -4776,7 +4927,10 @@ pub fn verify_hardened_padded_absence_zk(
         .rem_leaf_eval
         .add(eof_ind_eval.scale_bb(256));
     if receipt.b_pad_at_zb8 != expected_b_pad_zb8 {
-        return Err("position-dependent byte/EOF check failed: b_pad != b8 + 256 * 1[t >= word_len]".to_string());
+        return Err(
+            "position-dependent byte/EOF check failed: b_pad != b8 + 256 * 1[t >= word_len]"
+                .to_string(),
+        );
     }
 
     // When `opt_cleartext_bytes` (`w_clean`) is supplied, cryptographically bind `w_clean` to
@@ -4787,7 +4941,9 @@ pub fn verify_hardened_padded_absence_zk(
         }
         let (q_end, _) = run_padded_complement_sk_dfa(clear);
         if q_end >= 4 || q_end != receipt.final_state {
-            return Err("cleartext bytes fail padded-complement Absent(\"sk-...\") DFA!".to_string());
+            return Err(
+                "cleartext bytes fail padded-complement Absent(\"sk-...\") DFA!".to_string(),
+            );
         }
         let mut expected_bytes_pad = vec![256u32; receipt.pad_len];
         for (i, &b) in clear.iter().enumerate() {
@@ -4796,7 +4952,10 @@ pub fn verify_hardened_padded_absence_zk(
         if mle_eval_bb_at_ext4(&expected_bytes_pad, &z_dfa_leaf) != receipt.b_at_dfa_leaf
             || mle_eval_bb_at_ext4(&expected_bytes_pad, &z_b8_leaf) != receipt.b_pad_at_zb8
         {
-            return Err("third-party re-pointing forgery refused: w_clean MLE != committed bytes_pcs_root!".to_string());
+            return Err(
+                "third-party re-pointing forgery refused: w_clean MLE != committed bytes_pcs_root!"
+                    .to_string(),
+            );
         }
     }
 
@@ -4811,13 +4970,11 @@ pub fn verify_hardened_padded_absence_zk(
     if receipt.shift_gruen_proof.rounds.len() != m {
         return Err("shift_gruen_proof kappa != m".to_string());
     }
-    let shift_chals = verify_gruen_einsum_mode2_ext4(
-        expected_shift_claim,
-        &[],
-        &receipt.shift_gruen_proof,
-        tr,
-    )?;
-    if receipt.shift_gruen_proof.terminal_openings.0 != eval_shift_kernel_mle_checked(&z_sh, &shift_chals)? {
+    let shift_chals =
+        verify_gruen_einsum_mode2_ext4(expected_shift_claim, &[], &receipt.shift_gruen_proof, tr)?;
+    if receipt.shift_gruen_proof.terminal_openings.0
+        != eval_shift_kernel_mle_checked(&z_sh, &shift_chals)?
+    {
         return Err("DFA shift kernel public evaluation mismatch".to_string());
     }
 
@@ -4965,7 +5122,9 @@ impl HardenedVAgentU1AuditBundle {
         let mut cur = ByteCursor::new(bytes);
         let magic = cur.read_exact(8)?;
         if magic != HARDENED_U1_MAGIC {
-            return Err("invalid HardenedVAgentU1AuditBundle magic (expected QW35U1P2)".to_string());
+            return Err(
+                "invalid HardenedVAgentU1AuditBundle magic (expected QW35U1P2)".to_string(),
+            );
         }
         let audited_layer = cur.read_u32()? as usize;
         let bnd_vars = cur.read_u32()? as usize;
@@ -5006,29 +5165,33 @@ impl HardenedVAgentU1AuditBundle {
     }
 }
 
-fn absorb_turn_context_into_transcript(
-    tr: &mut CShakeTranscript,
-    weight_root: &[u8; 32],
+struct TurnContextMetadata<'a> {
+    weight_root: &'a [u8; 32],
     prompt_len: usize,
-    prompt_root: &[u8; 32],
+    prompt_root: &'a [u8; 32],
     raw_len: usize,
-    raw_root: &[u8; 32],
+    raw_root: &'a [u8; 32],
     clean_len: usize,
-    clean_root: &[u8; 32],
-    boundary_roots: &[[u8; 32]; 25],
-) {
-    tr.absorb_root(b"turn_weight_root", weight_root);
-    tr.absorb_u32(b"turn_prompt_len", prompt_len as u32);
-    tr.absorb_root(b"turn_prompt_root", prompt_root);
-    tr.absorb_u32(b"turn_raw_len", raw_len as u32);
-    tr.absorb_root(b"turn_raw_root", raw_root);
-    tr.absorb_u32(b"turn_clean_len", clean_len as u32);
-    tr.absorb_root(b"turn_clean_root", clean_root);
-    for (idx, br) in boundary_roots.iter().enumerate() {
+    clean_root: &'a [u8; 32],
+    boundary_roots: &'a [[u8; 32]; 25],
+}
+
+fn absorb_turn_context_into_transcript(tr: &mut CShakeTranscript, ctx: &TurnContextMetadata<'_>) {
+    tr.absorb_root(b"turn_weight_root", ctx.weight_root);
+    tr.absorb_u32(b"turn_prompt_len", ctx.prompt_len as u32);
+    tr.absorb_root(b"turn_prompt_root", ctx.prompt_root);
+    tr.absorb_u32(b"turn_raw_len", ctx.raw_len as u32);
+    tr.absorb_root(b"turn_raw_root", ctx.raw_root);
+    tr.absorb_u32(b"turn_clean_len", ctx.clean_len as u32);
+    tr.absorb_root(b"turn_clean_root", ctx.clean_root);
+    for (idx, br) in ctx.boundary_roots.iter().enumerate() {
         tr.absorb_u32(b"turn_bnd_idx", idx as u32);
         tr.absorb_root(b"turn_bnd_root", br);
     }
 }
+
+/// `(bundle_bytes, content_root, qs_binding)` returned by [`prove_hardened_vagent_u1_bundle`].
+pub type VagentBundleResult = (Vec<u8>, [u8; 32], [u8; 32]);
 
 #[allow(clippy::too_many_arguments)]
 pub fn prove_hardened_vagent_u1_bundle(
@@ -5044,19 +5207,19 @@ pub fn prove_hardened_vagent_u1_bundle(
     raw_root: &[u8; 32],
     redacted_output_bytes: &[u8],
     clean_root: &[u8; 32],
-) -> Result<(Vec<u8>, [u8; 32], [u8; 32]), String> {
-    let mut abs_tr = CShakeTranscript::new(b"QW35-VAGENT01-ABSENCE-V2");
-    absorb_turn_context_into_transcript(
-        &mut abs_tr,
-        &registry.weight_root,
+) -> Result<VagentBundleResult, String> {
+    let ctx = TurnContextMetadata {
+        weight_root: &registry.weight_root,
         prompt_len,
         prompt_root,
         raw_len,
         raw_root,
-        redacted_output_bytes.len(),
+        clean_len: redacted_output_bytes.len(),
         clean_root,
-        &u1_online.boundary_roots,
-    );
+        boundary_roots: &u1_online.boundary_roots,
+    };
+    let mut abs_tr = CShakeTranscript::new(b"QW35-VAGENT01-ABSENCE-V2");
+    absorb_turn_context_into_transcript(&mut abs_tr, &ctx);
     let absence_receipt = prove_hardened_padded_absence_zk(redacted_output_bytes, &mut abs_tr)?;
 
     let l_idx = turn.audited_layer;
@@ -5094,17 +5257,7 @@ pub fn prove_hardened_vagent_u1_bundle(
     let mult_rhs_state = commit_table_pcs(&mult_rhs, PcsParams::default_zk(1), None);
 
     let mut lyr_tr = CShakeTranscript::new(b"QW35-VAGENT01-LAYER-AUDIT-V2");
-    absorb_turn_context_into_transcript(
-        &mut lyr_tr,
-        &registry.weight_root,
-        prompt_len,
-        prompt_root,
-        raw_len,
-        raw_root,
-        redacted_output_bytes.len(),
-        clean_root,
-        &u1_online.boundary_roots,
-    );
+    absorb_turn_context_into_transcript(&mut lyr_tr, &ctx);
     for r in [
         &uw_sh_state.root,
         &mult_uw_state.root,
@@ -5117,20 +5270,22 @@ pub fn prove_hardened_vagent_u1_bundle(
     let mut z_hik_replay = lyr_tr.clone();
     let layer_proof = prove_audited_gdn_layer(
         &registry.weight_root,
-        layer_path,
-        layer_tensor_digests,
-        gate_proj_slot,
-        gate_pcs,
-        &u1_online.boundary_states[l_idx],
-        &u1_online.boundary_states[l_idx + 1],
-        &turn.boundaries_bb[l_idx],
-        &turn.boundaries_bb[l_idx + 1],
-        &turn.delta_gdn_bb,
-        &turn.delta_mlp_bb,
-        &turn.wy_witness,
-        &turn.x_ln2_i16,
-        &turn.gate_proj_y_raw,
         l_idx,
+        AuditedGdnLayerWitness {
+            layer_weight_path: layer_path,
+            layer_tensor_digests,
+            gate_proj_tensor_slot: gate_proj_slot,
+            gate_pcs,
+            b_in_state: &u1_online.boundary_states[l_idx],
+            b_out_state: &u1_online.boundary_states[l_idx + 1],
+            b_in_bb: &turn.boundaries_bb[l_idx],
+            b_out_bb: &turn.boundaries_bb[l_idx + 1],
+            delta_gdn_bb: &turn.delta_gdn_bb,
+            delta_mlp_bb: &turn.delta_mlp_bb,
+            wy: &turn.wy_witness,
+            x_ln2_i16: &turn.x_ln2_i16,
+            gate_y_raw: &turn.gate_proj_y_raw,
+        },
         &mut lyr_tr,
     )?;
 
@@ -5164,8 +5319,13 @@ pub fn prove_hardened_vagent_u1_bundle(
 
     let (d1b_uw_proof, z_uw_leaf) =
         prove_d1b_range_ext4(&uw_shifted, &mult_uw, m_wy_wit, UW_RANGE_BITS, &mut lyr_tr);
-    let (d1b_rhs_proof, z_rhs_leaf) =
-        prove_d1b_range_ext4(&rhs_shifted, &mult_rhs, m_wy_wit, RHS_RANGE_BITS, &mut lyr_tr);
+    let (d1b_rhs_proof, z_rhs_leaf) = prove_d1b_range_ext4(
+        &rhs_shifted,
+        &mult_rhs,
+        m_wy_wit,
+        RHS_RANGE_BITS,
+        &mut lyr_tr,
+    );
 
     let uw_shifted_pcs_proof = open_pcs_claims(
         &uw_sh_state,
@@ -5251,18 +5411,18 @@ pub fn verify_hardened_vagent_u1_bundle(
         return Err("bundle audited_layer or bnd_vars mismatch".to_string());
     }
 
-    let mut abs_tr = CShakeTranscript::new(b"QW35-VAGENT01-ABSENCE-V2");
-    absorb_turn_context_into_transcript(
-        &mut abs_tr,
-        &stmt.weight_root,
-        stmt.prompt_length,
-        &stmt.prompt_root,
-        stmt.raw_length,
-        &stmt.raw_root,
-        stmt.clean_length,
-        &stmt.clean_root,
+    let ctx = TurnContextMetadata {
+        weight_root: &stmt.weight_root,
+        prompt_len: stmt.prompt_length,
+        prompt_root: &stmt.prompt_root,
+        raw_len: stmt.raw_length,
+        raw_root: &stmt.raw_root,
+        clean_len: stmt.clean_length,
+        clean_root: &stmt.clean_root,
         boundary_roots,
-    );
+    };
+    let mut abs_tr = CShakeTranscript::new(b"QW35-VAGENT01-ABSENCE-V2");
+    absorb_turn_context_into_transcript(&mut abs_tr, &ctx);
     verify_hardened_padded_absence_zk(
         expected_out_root,
         opt_redacted_bytes,
@@ -5271,17 +5431,7 @@ pub fn verify_hardened_vagent_u1_bundle(
     )?;
 
     let mut lyr_tr = CShakeTranscript::new(b"QW35-VAGENT01-LAYER-AUDIT-V2");
-    absorb_turn_context_into_transcript(
-        &mut lyr_tr,
-        &stmt.weight_root,
-        stmt.prompt_length,
-        &stmt.prompt_root,
-        stmt.raw_length,
-        &stmt.raw_root,
-        stmt.clean_length,
-        &stmt.clean_root,
-        boundary_roots,
-    );
+    absorb_turn_context_into_transcript(&mut lyr_tr, &ctx);
     for r in [
         &bundle.uw_shifted_pcs_root,
         &bundle.mult_uw_pcs_root,
@@ -5293,20 +5443,29 @@ pub fn verify_hardened_vagent_u1_bundle(
 
     let mut z_hik_replay = lyr_tr.clone();
     verify_audited_gdn_layer_standalone(
-        &stmt.weight_root,
-        &boundary_roots[expected_audited_layer],
-        &boundary_roots[expected_audited_layer + 1],
-        expected_audited_layer,
-        qs_binding,
-        bundle.bnd_vars,
+        &AuditedGdnLayerVerifyStmt {
+            expected_weight_root: &stmt.weight_root,
+            expected_b_in_root: &boundary_roots[expected_audited_layer],
+            expected_b_out_root: &boundary_roots[expected_audited_layer + 1],
+            expected_audited_layer,
+            expected_q_s_binding: qs_binding,
+            bnd_vars: bundle.bnd_vars,
+        },
         &bundle.layer_proof,
         &mut lyr_tr,
     )?;
 
     // Enforce expected Qwen3.5-0.8B GDN layer geometry (`16` heads, `64` chunk, `256` WY cols, `4096x32` MXFP4)
     let lp = &bundle.layer_proof;
-    if lp.h_pad != 16 || lp.c_len != 64 || lp.wy_cols != 256 || lp.mxfp4_j_pad != 4096 || lp.mxfp4_k_pad != 32 {
-        return Err("unexpected GDN/MXFP4 layer dimensions in HardenedVAgentU1AuditBundle".to_string());
+    if lp.h_pad != 16
+        || lp.c_len != 64
+        || lp.wy_cols != 256
+        || lp.mxfp4_j_pad != 4096
+        || lp.mxfp4_k_pad != 32
+    {
+        return Err(
+            "unexpected GDN/MXFP4 layer dimensions in HardenedVAgentU1AuditBundle".to_string(),
+        );
     }
     let log_h = lp.h_pad.trailing_zeros() as usize;
     let log_c = lp.c_len.trailing_zeros() as usize;
@@ -5315,7 +5474,10 @@ pub fn verify_hardened_vagent_u1_bundle(
 
     z_hik_replay.absorb_root(b"stmt_weight_root", &stmt.weight_root);
     z_hik_replay.absorb_root(b"stmt_b_in_root", &boundary_roots[expected_audited_layer]);
-    z_hik_replay.absorb_root(b"stmt_b_out_root", &boundary_roots[expected_audited_layer + 1]);
+    z_hik_replay.absorb_root(
+        b"stmt_b_out_root",
+        &boundary_roots[expected_audited_layer + 1],
+    );
     z_hik_replay.absorb_u32(b"stmt_audited_layer", expected_audited_layer as u32);
     for r in [
         &lp.q_pcs_root,
@@ -5500,7 +5662,8 @@ impl VAgent01Bundle {
 
 impl PublicRedactedVAgent01Bundle {
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut out = Vec::with_capacity(128 + self.stmt_bytes.len() + self.u1_zk_audit_bytes.len());
+        let mut out =
+            Vec::with_capacity(128 + self.stmt_bytes.len() + self.u1_zk_audit_bytes.len());
         out.extend_from_slice(VAGENT01_MAGIC);
         out.push(0xA2); // External redacted zero-secret envelope tag (`0xA2`)
         stream_encode_bytes(&self.stmt_bytes, &mut out);
@@ -5632,7 +5795,11 @@ pub fn verify_vagent01_bytes_pinned(
     expected_weight_root: &[u8; 32],
     expected_qs_binding: &[u8; 32],
 ) -> Result<(VerifiableAgentTurnStmt, VerifiableAgentTurnReceipt), String> {
-    verify_vagent01_bytes_with_policy(bundle_bytes, Some(expected_weight_root), Some(expected_qs_binding))
+    verify_vagent01_bytes_with_policy(
+        bundle_bytes,
+        Some(expected_weight_root),
+        Some(expected_qs_binding),
+    )
 }
 
 /// Full standalone verifier for `VAgent01Bundle` (unpinned convenience wrapper).
@@ -5914,21 +6081,20 @@ pub fn run_live_verifiable_qwen_agent_turn(
 
     let (layer_digests, gate_slot) = engine.layer_tensor_digests(audited_layer);
     let gate_pcs = PrecommittedMxfp4Pcs::build(&turn.gate_proj_mat);
-    let (u1_zk_audit_bytes, zk_absence_content_root, qs_binding) =
-        prove_hardened_vagent_u1_bundle(
-            &engine.registry,
-            layer_digests,
-            gate_slot,
-            &gate_pcs,
-            &u1_online,
-            &turn,
-            prompt_bytes.len(),
-            &prompt_root,
-            w_raw.len(),
-            &raw_root,
-            &w_clean,
-            &clean_root,
-        )?;
+    let (u1_zk_audit_bytes, zk_absence_content_root, qs_binding) = prove_hardened_vagent_u1_bundle(
+        &engine.registry,
+        layer_digests,
+        gate_slot,
+        &gate_pcs,
+        &u1_online,
+        &turn,
+        prompt_bytes.len(),
+        &prompt_root,
+        w_raw.len(),
+        &raw_root,
+        &w_clean,
+        &clean_root,
+    )?;
     let u1_proof_digest = cshake256_32(U1_PF_DIGEST_CUST, &u1_zk_audit_bytes);
 
     let turn_chain_root = compute_u1_turn_head_cshake(

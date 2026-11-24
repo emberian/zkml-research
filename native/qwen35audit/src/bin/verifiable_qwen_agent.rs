@@ -46,8 +46,12 @@ fn main() -> Result<(), String> {
     }
 
     println!("==========================================================================================");
-    println!("  verifiable_qwen_agent — 100% Native Exact-Integer Qwen3.5-0.8B (24L) + Qwen3.8-27B E2E");
-    println!("  Zero Python | Zero Float Online Path | StreamCodec VAGENT01 + BabyBear Ext4 U1 ZK Audit");
+    println!(
+        "  verifiable_qwen_agent — 100% Native Exact-Integer Qwen3.5-0.8B (24L) + Qwen3.8-27B E2E"
+    );
+    println!(
+        "  Zero Python | Zero Float Online Path | StreamCodec VAGENT01 + BabyBear Ext4 U1 ZK Audit"
+    );
     println!("==========================================================================================");
 
     // 1. Audit real cached `Qwen3.8-27B` Layer-0 `MXFP4` `.npz` slice (`8 -> 0` `-0.0` canonicalization!)
@@ -93,8 +97,16 @@ fn main() -> Result<(), String> {
         rep12.decode_tok_s,
         rep12.u1_stream_fast_us_per_tok
     );
-    println!("  Raw Output   ({} B): {}", rep12.w_raw.len(), String::from_utf8_lossy(&rep12.w_raw));
-    println!("  Clean Output ({} B): {}", rep12.w_clean.len(), String::from_utf8_lossy(&rep12.w_clean));
+    println!(
+        "  Raw Output   ({} B): {}",
+        rep12.w_raw.len(),
+        String::from_utf8_lossy(&rep12.w_raw)
+    );
+    println!(
+        "  Clean Output ({} B): {}",
+        rep12.w_clean.len(),
+        String::from_utf8_lossy(&rep12.w_clean)
+    );
     println!("  Extracted LL(1) AST: {}", rep12.claimed_ast);
     println!(
         "[WELD & ZK] VRF Layer L{} | Prove = {:.2} ms | Verify = {:.2} ms | VASTMT01 = {} B | VAGENT01 = {} B | Full Bundle = {} B ({:.2} KiB)",
@@ -113,10 +125,12 @@ fn main() -> Result<(), String> {
             .num_threads(1)
             .build()
             .map_err(|e| format!("pool1 error: {e}"))?;
-        let (sha_p1, csh_p1, sha_d1, csh_d1, gen1) = pool1.install(
-            || -> Result<([u8; 32], [u8; 32], [u8; 32], [u8; 32], Vec<u32>), String> {
+        type SingleThreadDetSummary = ([u8; 32], [u8; 32], [u8; 32], [u8; 32], Vec<u32>);
+        let (sha_p1, csh_p1, sha_d1, csh_d1, gen1) =
+            pool1.install(|| -> Result<SingleThreadDetSummary, String> {
                 let mut c1 = ExactIntDecodeCache::new();
-                let (t1, mut h1) = engine.prefill_chunk64_int(&rep12.prompt_token_ids, 0, &mut c1)?;
+                let (t1, mut h1) =
+                    engine.prefill_chunk64_int(&rep12.prompt_token_ids, 0, &mut c1)?;
                 let (first1, _, lsha1) = engine.argmax_lm_head_int(&h1)?;
                 use sha2::{Digest, Sha256};
                 let mut sha = Sha256::new();
@@ -153,13 +167,27 @@ fn main() -> Result<(), String> {
                 let sd: [u8; 32] = dsha.finalize().into();
                 let cd = qwen35audit::ext4::cshake256_32(b"QW35-DET-DECODE-STREAM-V1", &dflat);
                 Ok((sp, cp, sd, cd, g1))
-            },
-        )?;
-        assert_eq!(sha_p1, rep12.prefill_boundaries_sha256, "1T vs 12T prefill SHA-256 mismatch!");
-        assert_eq!(csh_p1, rep12.prefill_boundaries_cshake256, "1T vs 12T prefill cSHAKE256 mismatch!");
-        assert_eq!(sha_d1, rep12.decode_stream_sha256, "1T vs 12T decode SHA-256 mismatch!");
-        assert_eq!(csh_d1, rep12.decode_stream_cshake256, "1T vs 12T decode cSHAKE256 mismatch!");
-        assert_eq!(gen1, rep12.generated_token_ids, "1T vs 12T generated token sequence mismatch!");
+            })?;
+        assert_eq!(
+            sha_p1, rep12.prefill_boundaries_sha256,
+            "1T vs 12T prefill SHA-256 mismatch!"
+        );
+        assert_eq!(
+            csh_p1, rep12.prefill_boundaries_cshake256,
+            "1T vs 12T prefill cSHAKE256 mismatch!"
+        );
+        assert_eq!(
+            sha_d1, rep12.decode_stream_sha256,
+            "1T vs 12T decode SHA-256 mismatch!"
+        );
+        assert_eq!(
+            csh_d1, rep12.decode_stream_cshake256,
+            "1T vs 12T decode cSHAKE256 mismatch!"
+        );
+        assert_eq!(
+            gen1, rep12.generated_token_ids,
+            "1T vs 12T generated token sequence mismatch!"
+        );
         println!(
             "[DETERMINISM 1T == 12T] BIT-IDENTICAL across 25 prefill boundaries + {} decode steps + 248,320 logits!\n  Prefill SHA-256   = {}\n  Prefill cSHAKE256 = {}\n  Decode  SHA-256   = {}\n  Decode  cSHAKE256 = {}",
             rep12.generated_token_ids.len() - 1,

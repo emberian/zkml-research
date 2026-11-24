@@ -5,7 +5,8 @@
 fn ram_symlinks_are_scanned_and_counted_apart() {
     use darkhand::scan::Canaries;
     let shm = std::path::PathBuf::from(format!("/dev/shm/dlh-ram-test-{}", std::process::id()));
-    let disk = std::path::PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join(format!("dlh-ram-test-{}", std::process::id())); // persistent (bb2's /tmp is a tmpfs)
+    let disk = std::path::PathBuf::from(env!("CARGO_TARGET_TMPDIR"))
+        .join(format!("dlh-ram-test-{}", std::process::id())); // persistent (bb2's /tmp is a tmpfs)
     std::fs::create_dir_all(&shm).unwrap();
     std::fs::create_dir_all(&disk).unwrap();
     let mut can = Canaries::bounded(1 << 61);
@@ -16,10 +17,16 @@ fn ram_symlinks_are_scanned_and_counted_apart() {
     std::fs::write(disk.join("ckpt.bin"), &bytes).unwrap();
     std::os::unix::fs::symlink(&shm, disk.join("Player-Data")).unwrap();
     let r = can.scan_paths(&[disk.clone()]);
-    println!("persistent {} files {} hits; RAM {} files {} hits, mounts {:?}, swap {:?} kB", r.files, r.hits, r.ram_files, r.ram_hits, r.ram_mounts, r.swap_total_kb);
+    println!(
+        "persistent {} files {} hits; RAM {} files {} hits, mounts {:?}, swap {:?} kB",
+        r.files, r.hits, r.ram_files, r.ram_hits, r.ram_mounts, r.swap_total_kb
+    );
     assert_eq!((r.files, r.ram_files), (1, 1));
     assert_eq!(r.hits, 64, "the persistent copy is found");
-    assert_eq!(r.ram_hits, 64, "the RAM copy is found through the symlink and counted apart");
+    assert_eq!(
+        r.ram_hits, 64,
+        "the RAM copy is found through the symlink and counted apart"
+    );
     assert!(r.ram_mounts.iter().any(|(_, f, _)| f == "tmpfs"));
     // erase both: nothing left either way
     std::fs::remove_file(shm.join("Player-MAC-Keys")).unwrap();

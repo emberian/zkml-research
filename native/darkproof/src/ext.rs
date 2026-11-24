@@ -86,7 +86,10 @@ pub fn mul<const E: usize>(a: [u64; E], b: [u64; E]) -> [u64; E] {
     if E == 1 {
         o[0] = field::mul(a[0], b[0]);
     } else {
-        o[0] = field::add(field::mul(a[0], b[0]), field::mul(nr(), field::mul(a[1], b[1])));
+        o[0] = field::add(
+            field::mul(a[0], b[0]),
+            field::mul(nr(), field::mul(a[1], b[1])),
+        );
         o[1] = field::add(field::mul(a[0], b[1]), field::mul(a[1], b[0]));
     }
     o
@@ -97,7 +100,10 @@ pub fn inv<const E: usize>(a: [u64; E]) -> [u64; E] {
     if E == 1 {
         o[0] = field::inv(a[0]);
     } else {
-        let nrm = field::sub(field::mul(a[0], a[0]), field::mul(nr(), field::mul(a[1], a[1])));
+        let nrm = field::sub(
+            field::mul(a[0], a[0]),
+            field::mul(nr(), field::mul(a[1], a[1])),
+        );
         let ni = field::inv(nrm);
         o[0] = field::mul(a[0], ni);
         o[1] = field::mul(field::neg(a[1]), ni);
@@ -112,7 +118,9 @@ pub fn one_minus<const E: usize>(r: [u64; E]) -> [u64; E] {
 
 /// sum x_i y_i (zip semantics: the shorter length).
 pub fn dot<const E: usize>(a: &[[u64; E]], b: &[[u64; E]]) -> [u64; E] {
-    a.iter().zip(b).fold(zero(), |acc, (&x, &y)| add(acc, mul(x, y)))
+    a.iter()
+        .zip(b)
+        .fold(zero(), |acc, (&x, &y)| add(acc, mul(x, y)))
 }
 
 /// sum a_i b_i with a in F_p (zip semantics).
@@ -144,8 +152,11 @@ impl<'a, const E: usize> ChalStream<'a, E> {
     pub fn new(tr: &'a mut Transcript, k: usize) -> Self {
         ChalStream { tr, i: 0, k }
     }
-    pub fn next(&mut self) -> [u64; E] {
-        assert!((self.i as usize) < E * self.k, "the challenge stream is exhausted");
+    pub fn draw(&mut self) -> [u64; E] {
+        assert!(
+            (self.i as usize) < E * self.k,
+            "the challenge stream is exhausted"
+        );
         std::array::from_fn(|_| {
             let v = self.tr.chal1_i(self.i);
             self.i += 1;
@@ -273,7 +284,10 @@ pub fn ucmul<const E: usize>(c: [u64; E], x: [u64; E], nr: u64) -> [u64; E] {
     if E == 1 {
         o[0] = field::mul(c[0], x[0]);
     } else {
-        o[0] = field::add(field::mul(c[0], x[0]), field::mul(field::mul(nr, c[1]), x[1]));
+        o[0] = field::add(
+            field::mul(c[0], x[0]),
+            field::mul(field::mul(nr, c[1]), x[1]),
+        );
         o[1] = field::add(field::mul(c[0], x[1]), field::mul(c[1], x[0]));
     }
     o
@@ -295,7 +309,14 @@ pub fn mul_triples<const E: usize>(xb: bool, yb: bool) -> usize {
 /// Queue the products' operand pairs of x y in the harness's triple order (cosnark_ext.smul): (1, 1) x0 y0;
 /// (E, 1) x0 y0, x1 y0; (1, E) x0 y0, x0 y1; (E, E) x0 y0, x1 y1, (x0 + x1)(y0 + y1).
 #[inline(always)]
-pub fn push_mul<const E: usize>(x: [Sh; E], xb: bool, y: [Sh; E], yb: bool, xs: &mut Vec<Sh>, ys: &mut Vec<Sh>) {
+pub fn push_mul<const E: usize>(
+    x: [Sh; E],
+    xb: bool,
+    y: [Sh; E],
+    yb: bool,
+    xs: &mut Vec<Sh>,
+    ys: &mut Vec<Sh>,
+) {
     if E == 1 || (xb && yb) {
         xs.push(x[0]);
         ys.push(y[0]);
@@ -365,7 +386,11 @@ impl<const E: usize> Tab<E> {
         let om = one_minus(r);
         let nr = nr();
         match self {
-            Tab::B(v) if E == 1 => Tab::B(v.par_chunks(2).map(|c| lin2(om[0], c[0], r[0], c[1])).collect()),
+            Tab::B(v) if E == 1 => Tab::B(
+                v.par_chunks(2)
+                    .map(|c| lin2(om[0], c[0], r[0], c[1]))
+                    .collect(),
+            ),
             Tab::B(v) => Tab::X(
                 v.par_chunks(2)
                     .map(|c| {
@@ -377,7 +402,11 @@ impl<const E: usize> Tab<E> {
                     })
                     .collect(),
             ),
-            Tab::X(v) => Tab::X(v.par_chunks(2).map(|c| sadd(scmul(om, c[0], nr), scmul(r, c[1], nr))).collect()),
+            Tab::X(v) => Tab::X(
+                v.par_chunks(2)
+                    .map(|c| sadd(scmul(om, c[0], nr), scmul(r, c[1], nr)))
+                    .collect(),
+            ),
         }
     }
 }

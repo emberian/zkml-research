@@ -67,7 +67,8 @@ pub fn run(net: Arc<Net>, forward_base: u16, local: SocketAddr) -> Result<(), St
     let mut hs = Vec::new();
     for j in net.others() {
         // outbound: local programs connecting to the forward port for j
-        let l = TcpListener::bind(("127.0.0.1", forward_base + j as u16)).map_err(|e| format!("bind 127.0.0.1:{}: {e}", forward_base + j as u16))?;
+        let l = TcpListener::bind(("127.0.0.1", forward_base + j as u16))
+            .map_err(|e| format!("bind 127.0.0.1:{}: {e}", forward_base + j as u16))?;
         let (net2, streams2) = (net.clone(), streams.clone());
         hs.push(thread::spawn(move || {
             let mut ctr: u64 = 0;
@@ -88,7 +89,9 @@ pub fn run(net: Arc<Net>, forward_base: u16, local: SocketAddr) -> Result<(), St
         // inbound: peer j's messages
         let (net2, streams2) = (net.clone(), streams.clone());
         hs.push(thread::spawn(move || loop {
-            let m = match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| net2.recv(j, RELAY))) {
+            let m = match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                net2.recv(j, RELAY)
+            })) {
                 Ok(m) => m,
                 Err(_) => return,
             };
@@ -101,7 +104,9 @@ pub fn run(net: Arc<Net>, forward_base: u16, local: SocketAddr) -> Result<(), St
                     let s = match TcpStream::connect(local) {
                         Ok(s) => s,
                         Err(e) => {
-                            eprintln!("relay: stream {sid:x} from party {j}: cannot reach {local}: {e}");
+                            eprintln!(
+                                "relay: stream {sid:x} from party {j}: cannot reach {local}: {e}"
+                            );
                             net2.send(j, RELAY, msg(FIN, sid, &[]));
                             continue;
                         }

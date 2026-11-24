@@ -18,13 +18,23 @@ impl Default for ReprHasher {
 
 impl ReprHasher {
     pub fn new() -> Self {
-        ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(1 << 16), grow: false, flushed: false }
+        ReprHasher {
+            h: Sha256::new(),
+            buf: Vec::with_capacity(1 << 16),
+            grow: false,
+            flushed: false,
+        }
     }
 
     /// A hasher whose write buffer holds `cap` bytes (`new` holds 64 KiB), for many live hashers at once (a streamed
     /// Merkle level keeps one per column). The digest does not depend on the capacity.
     pub fn with_capacity(cap: usize) -> Self {
-        ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(cap), grow: false, flushed: false }
+        ReprHasher {
+            h: Sha256::new(),
+            buf: Vec::with_capacity(cap),
+            grow: false,
+            flushed: false,
+        }
     }
 
     #[inline]
@@ -83,7 +93,9 @@ impl ReprHasher {
 
     /// repr of a str with no quote, backslash or non-printable character: single-quoted.
     pub fn s(&mut self, s: &str) {
-        debug_assert!(s.bytes().all(|c| (0x20..0x7f).contains(&c) && c != b'\'' && c != b'\\'));
+        debug_assert!(s
+            .bytes()
+            .all(|c| (0x20..0x7f).contains(&c) && c != b'\'' && c != b'\\'));
         self.raw(b"'");
         self.raw(s.as_bytes());
         self.raw(b"'");
@@ -107,11 +119,19 @@ impl ReprHasher {
 
     /// A writer that only buffers (no hashing), for rendering a chunk in parallel; take it with into_buffer.
     pub fn new_buffer() -> Self {
-        ReprHasher { h: Sha256::new(), buf: Vec::with_capacity(1 << 22), grow: true, flushed: false }
+        ReprHasher {
+            h: Sha256::new(),
+            buf: Vec::with_capacity(1 << 22),
+            grow: true,
+            flushed: false,
+        }
     }
 
     pub fn into_buffer(self) -> Vec<u8> {
-        assert!(!self.flushed, "into_buffer after the buffer was flushed into the hash");
+        assert!(
+            !self.flushed,
+            "into_buffer after the buffer was flushed into the hash"
+        );
         self.buf
     }
 

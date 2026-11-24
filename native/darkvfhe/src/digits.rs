@@ -101,7 +101,11 @@ impl DirectDigitSpec {
             let d7 = (u[2] >> 12) & W20_MASK;
             let d8 = (u[2] >> 32) & W20_MASK;
             let d9 = u[2] >> 52;
-            assert!(d9 < top_lim, "top limb {d9} overflows 2^{}", self.top_x_bits);
+            assert!(
+                d9 < top_lim,
+                "top limb {d9} overflows 2^{}",
+                self.top_x_bits
+            );
             let ds = [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9];
             for m in 0..10 {
                 cols[m][j] = ds[m] as u32;
@@ -117,8 +121,8 @@ impl DirectDigitSpec {
         let top_lim = 1u64 << self.top_y_bits;
         for (j, y) in ys.iter().enumerate() {
             let mut rem = y.add_pow2(self.max_y_bits);
-            for m in 0..(self.ly - 1) {
-                cols[m][j] = (rem[0] & W20_MASK) as u32;
+            for col in cols.iter_mut().take(self.ly - 1) {
+                col[j] = (rem[0] & W20_MASK) as u32;
                 // Shift [u64; 5] right by 20 bits:
                 rem = [
                     (rem[0] >> 20) | (rem[1] << 44),
@@ -140,7 +144,12 @@ impl DirectDigitSpec {
     }
 
     /// Deterministic verifier check on `num_limbs` `w = 20` columns with narrowed `top_bits`.
-    pub fn check_digits(&self, dc: &DigitCols, num_limbs: usize, top_bits: u32) -> Result<(), String> {
+    pub fn check_digits(
+        &self,
+        dc: &DigitCols,
+        num_limbs: usize,
+        top_bits: u32,
+    ) -> Result<(), String> {
         if dc.cols.len() != num_limbs {
             return Err(format!(
                 "wrong number of digit limbs: got {}, expected {}",
@@ -157,7 +166,9 @@ impl DirectDigitSpec {
                     return Err(format!("digit limb {m} value {val} out of [0, 2^20)"));
                 }
                 if is_top && (val >= top_lim || (val << shift) >= W20_LIMIT) {
-                    return Err(format!("top digit limb {m} value {val} overflows 2^{top_bits}"));
+                    return Err(format!(
+                        "top digit limb {m} value {val} overflows 2^{top_bits}"
+                    ));
                 }
             }
         }
@@ -244,7 +255,10 @@ impl ExactGarnerSpec {
         let qp = params.qp;
         let deltas = qp.map(|q| (1u64 << 61) - q);
         for &d in &deltas {
-            assert!(d > 0 && d < (1u64 << 20), "Exact-Garner-15 requires 2^61 - q_i < 2^20");
+            assert!(
+                d > 0 && d < (1u64 << 20),
+                "Exact-Garner-15 requires 2^61 - q_i < 2^20"
+            );
         }
         let inv2_20_mod_q = qp.map(|q| invmod(1u64 << 20, q));
         let q0_limbs = [qp[0], 0, 0];
@@ -272,12 +286,19 @@ impl ExactGarnerSpec {
         for (j, u) in us.iter().enumerate() {
             let (quo0, r0) = divrem_u192_by_u64(u, q0);
             let (quo1, r1) = divrem_u192_by_u64(&quo0, q1);
-            assert!(quo1[1] == 0 && quo1[2] == 0 && quo1[0] < q2, "u outside [0, Q)");
+            assert!(
+                quo1[1] == 0 && quo1[2] == 0 && quo1[0] < q2,
+                "u outside [0, Q)"
+            );
             let r2 = quo1[0];
 
-            for (idx, (ri, delta)) in [(r0, self.deltas[0]), (r1, self.deltas[1]), (r2, self.deltas[2])]
-                .into_iter()
-                .enumerate()
+            for (idx, (ri, delta)) in [
+                (r0, self.deltas[0]),
+                (r1, self.deltas[1]),
+                (r2, self.deltas[2]),
+            ]
+            .into_iter()
+            .enumerate()
             {
                 let d0 = ri & ((1u64 << 20) - 1);
                 let d1 = (ri >> 20) & ((1u64 << 19) - 1);
@@ -303,7 +324,10 @@ impl ExactGarnerSpec {
     /// Deterministic verifier check proving every coefficient `u_j in [0, Q - 1]` with zero slack!
     pub fn check_u_exact(&self, dc: &DigitCols) -> Result<(), String> {
         if dc.cols.len() != 15 {
-            return Err(format!("Exact-Garner-15 requires 15 columns, got {}", dc.cols.len()));
+            return Err(format!(
+                "Exact-Garner-15 requires 15 columns, got {}",
+                dc.cols.len()
+            ));
         }
         let n = dc.n();
         for idx in 0..3 {

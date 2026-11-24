@@ -31,8 +31,8 @@ use darkvfhe::dark_block::{
     params_ring_homo, setup_threshold_cluster_with_rlk, spdz_private_router_top2,
     verify_and_ingest_pinned_persistent_bundle, verify_and_ingest_relinearized_ct,
     verify_spdz_rmsnorm_witness, verify_spdz_top2_selector_constraints, EncryptedQwenHybridBlock,
-    HomomorphicDarkGdnResident, HomomorphicGdnState, HomomorphicUpdateStrategy, QwenHybridWeights,
-    BLUM_PRIME_T32,
+    HomomorphicDarkGdnResident, HomomorphicGdnState, HomomorphicUpdateStrategy, QwenHybridShape,
+    QwenHybridWeights, BLUM_PRIME_T32,
 };
 use darkvfhe::dark_gdn::{
     cleartext_gdn_step_mod_t, verify_pd_succinct_proof, ThreeCustodianCluster,
@@ -88,10 +88,18 @@ fn test_homomorphic_gdn_both_strategies_6_turns_bit_exact() {
         let t_mod = params.t;
 
         let embed_table: Vec<Vec<u64>> = (0..vocab_size)
-            .map(|tok| (0..d_k).map(|i| ((tok * 13 + i * 5 + 3) as u64) % t_mod).collect())
+            .map(|tok| {
+                (0..d_k)
+                    .map(|i| ((tok * 13 + i * 5 + 3) as u64) % t_mod)
+                    .collect()
+            })
             .collect();
         let mut state_ref: Vec<Vec<u64>> = (0..d_k)
-            .map(|i| (0..d_v).map(|j| ((i * 7 + j * 3 + 1) as u64) % 29).collect())
+            .map(|i| {
+                (0..d_v)
+                    .map(|j| ((i * 7 + j * 3 + 1) as u64) % 29)
+                    .collect()
+            })
             .collect();
         let w_q: Vec<Vec<u64>> = (0..d_k)
             .map(|r| (0..d_k).map(|c| ((r * 3 + c + 1) as u64) % 11).collect())
@@ -100,7 +108,11 @@ fn test_homomorphic_gdn_both_strategies_6_turns_bit_exact() {
             .map(|r| (0..d_k).map(|c| ((r + c * 5 + 2) as u64) % 11).collect())
             .collect();
         let w_v: Vec<Vec<u64>> = (0..d_v)
-            .map(|r| (0..d_k).map(|c| ((r * 2 + c * 3 + 4) as u64) % 11).collect())
+            .map(|r| {
+                (0..d_k)
+                    .map(|c| ((r * 2 + c * 3 + 4) as u64) % 11)
+                    .collect()
+            })
             .collect();
 
         let mut resident = HomomorphicDarkGdnResident::initialize(
@@ -147,9 +159,15 @@ fn test_homomorphic_gdn_both_strategies_6_turns_bit_exact() {
 
             // Verify cadence behavior & empirical state noise stays well below ceiling:
             let want_refreshed = (turn_idx + 1) % 3 == 0;
-            assert_eq!(metrics.state_update_detail.refreshed_via_crossing, want_refreshed);
+            assert_eq!(
+                metrics.state_update_detail.refreshed_via_crossing,
+                want_refreshed
+            );
             if !want_refreshed {
-                assert_eq!(metrics.state_update_detail.shipped_s2e_cts, 1 + resident.gdn_state.r_gdn);
+                assert_eq!(
+                    metrics.state_update_detail.shipped_s2e_cts,
+                    1 + resident.gdn_state.r_gdn
+                );
             }
             let mut s0_flat = vec![0u64; params.n];
             for r_in in 0..resident.gdn_state.dr {
@@ -177,18 +195,23 @@ fn test_full_encrypted_qwen38_hybrid_block_e8_and_e16_zero_routing_leakage() {
     for &num_experts in &[8usize, 16usize] {
         let params = Arc::new(params_ring_homo(64));
         let engine = Arc::new(HoistedEngine::new(params.clone()));
-        let (mut cluster, rlk) =
-            setup_threshold_cluster_with_rlk(params.clone(), engine, [0x61u8 + num_experts as u8; 32])
-                .unwrap();
+        let (mut cluster, rlk) = setup_threshold_cluster_with_rlk(
+            params.clone(),
+            engine,
+            [0x61u8 + num_experts as u8; 32],
+        )
+        .unwrap();
 
         let weights = QwenHybridWeights::sample_deterministic(
             &params.fp_t,
-            12,          // vocab_size
-            8,           // d_model
-            8,           // d_k
-            8,           // d_v
-            num_experts, // E in {8, 16}
-            4,           // d_ff
+            QwenHybridShape {
+                vocab_size: 12,
+                d_model: 8,
+                d_k: 8,
+                d_v: 8,
+                num_experts,
+                d_ff: 4,
+            },
             20261121 + num_experts as u64,
         );
         let mut state_ref: Vec<Vec<u64>> = (0..8)
@@ -232,8 +255,14 @@ fn test_full_encrypted_qwen38_hybrid_block_e8_and_e16_zero_routing_leakage() {
             "test turns must exercise distinct Top-2 expert selections ({seen_expert_pairs:?})"
         );
         for (idx, view) in host_views.iter().enumerate() {
-            assert_eq!(view.enc_kronecker_gate_up_inputs[0].len(), host_views[0].enc_kronecker_gate_up_inputs[0].len());
-            assert_eq!(view.enc_kronecker_down_input.len(), host_views[0].enc_kronecker_down_input.len());
+            assert_eq!(
+                view.enc_kronecker_gate_up_inputs[0].len(),
+                host_views[0].enc_kronecker_gate_up_inputs[0].len()
+            );
+            assert_eq!(
+                view.enc_kronecker_down_input.len(),
+                host_views[0].enc_kronecker_down_input.len()
+            );
             // Every 1-hot selector ciphertext must be freshly RLWE-encrypted (`c0, c1` full-entropy non-zero, unique handles):
             for r in 0..2 {
                 let ct_sel = &view.enc_one_hot_selectors[r];
@@ -262,18 +291,35 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
     let mut rng = PcsRng::from_seed([0x55u8; 32]);
 
     let a_grid = vec![vec![
-        cluster.pub_key.encrypt_pk(&(0..n).map(|j| (j as u64) % 9).collect::<Vec<_>>(), &mut rng),
-        cluster.pub_key.encrypt_pk(&(0..n).map(|j| ((j + 4) as u64) % 9).collect::<Vec<_>>(), &mut rng),
+        cluster.pub_key.encrypt_pk(
+            &(0..n).map(|j| (j as u64) % 9).collect::<Vec<_>>(),
+            &mut rng,
+        ),
+        cluster.pub_key.encrypt_pk(
+            &(0..n).map(|j| ((j + 4) as u64) % 9).collect::<Vec<_>>(),
+            &mut rng,
+        ),
     ]];
     let b_vec = vec![
-        cluster.pub_key.encrypt_pk(&{
-            let mut v = vec![0u64; n];
-            v[0] = 3; // alpha_t
-            v
-        }, &mut rng),
-        cluster.pub_key.encrypt_pk(&(0..n).map(|j| if j % 8 == 0 { 5 } else { 0 }).collect::<Vec<_>>(), &mut rng),
+        cluster.pub_key.encrypt_pk(
+            &{
+                let mut v = vec![0u64; n];
+                v[0] = 3; // alpha_t
+                v
+            },
+            &mut rng,
+        ),
+        cluster.pub_key.encrypt_pk(
+            &(0..n)
+                .map(|j| if j % 8 == 0 { 5 } else { 0 })
+                .collect::<Vec<_>>(),
+            &mut rng,
+        ),
     ];
-    let ha: Vec<Vec<[u8; 32]>> = a_grid.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+    let ha: Vec<Vec<[u8; 32]>> = a_grid
+        .iter()
+        .map(|r| r.iter().map(ct2_handle).collect())
+        .collect();
     let hb: Vec<[u8; 32]> = b_vec.iter().map(ct2_handle).collect();
 
     for cust in &mut cluster.custodians {
@@ -339,7 +385,10 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
             &forged_relin,
         )
         .expect_err("forged relinearized state ciphertext must be refused");
-        assert!(err_relin.contains("Relinearization verification FAILED"), "{err_relin}");
+        assert!(
+            err_relin.contains("Relinearization verification FAILED"),
+            "{err_relin}"
+        );
     }
 
     // =========================================================================
@@ -415,7 +464,13 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
         }
         let zero_mask = cluster.pub_key.encrypt_pk(&vec![0u64; n], &mut rng);
         let mut pd0 = cluster.custodians[0]
-            .partial_decrypt_ct3_checked(&engine, &hout_ct3[0], &honest_ct3s[0], &zero_mask, "pd_atk")
+            .partial_decrypt_ct3_checked(
+                &engine,
+                &hout_ct3[0],
+                &honest_ct3s[0],
+                &zero_mask,
+                "pd_atk",
+            )
             .unwrap();
 
         // Cross-ciphertext replay (`unrelated_boundary_shares`):
@@ -469,7 +524,10 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
         let err_quad =
             verify_spdz_rmsnorm_witness(&mut cluster, s_ms, chi_good, r_inv_bad, "atk5_quad")
                 .expect_err("forged r_inv must fail quadratic RMSNorm check");
-        assert!(err_quad.contains("RMSNorm quadratic r_inv check FAILED"), "{err_quad}");
+        assert!(
+            err_quad.contains("RMSNorm quadratic r_inv check FAILED"),
+            "{err_quad}"
+        );
 
         // Also test corrupted custodian SPDZ MAC on valid `r_inv = 2^{-1} mod t`:
         let mut r_inv_corrupt = cluster.share_authenticated(params.fp_t.inv(2));
@@ -496,9 +554,13 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
         assert!(err_c1.contains("C1 booleanity"), "{err_c1}");
 
         // 6b. Duplicate-expert cheat (`sel0 == sel1`, selecting same expert twice!):
-        let err_dup =
-            verify_spdz_top2_selector_constraints(&mut cluster, &valid_sel1, &valid_sel1, "atk6_dup")
-                .expect_err("duplicate Top-2 expert selection must fail disjointness");
+        let err_dup = verify_spdz_top2_selector_constraints(
+            &mut cluster,
+            &valid_sel1,
+            &valid_sel1,
+            "atk6_dup",
+        )
+        .expect_err("duplicate Top-2 expert selection must fail disjointness");
         assert!(err_dup.contains("disjointness"), "{err_dup}");
 
         // 6c. Zero-expert capacity-drop cheat (`sum == 0`, skipping expert compute!):
@@ -515,11 +577,23 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
     {
         let grid_w1 = a_grid.clone();
         let grid_w2 = vec![vec![
-            cluster.pub_key.encrypt_pk(&(0..n).map(|j| ((j * 3 + 1) as u64) % 9).collect::<Vec<_>>(), &mut rng),
-            cluster.pub_key.encrypt_pk(&(0..n).map(|j| ((j * 5 + 2) as u64) % 9).collect::<Vec<_>>(), &mut rng),
+            cluster.pub_key.encrypt_pk(
+                &(0..n).map(|j| ((j * 3 + 1) as u64) % 9).collect::<Vec<_>>(),
+                &mut rng,
+            ),
+            cluster.pub_key.encrypt_pk(
+                &(0..n).map(|j| ((j * 5 + 2) as u64) % 9).collect::<Vec<_>>(),
+                &mut rng,
+            ),
         ]];
-        let ha_w1: Vec<Vec<[u8; 32]>> = grid_w1.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
-        let ha_w2: Vec<Vec<[u8; 32]>> = grid_w2.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+        let ha_w1: Vec<Vec<[u8; 32]>> = grid_w1
+            .iter()
+            .map(|r| r.iter().map(ct2_handle).collect())
+            .collect();
+        let ha_w2: Vec<Vec<[u8; 32]>> = grid_w2
+            .iter()
+            .map(|r| r.iter().map(ct2_handle).collect())
+            .collect();
         let (pre_w1, pcs_w1) =
             commit_persistent_grid_pcs(&engine, &grid_w1, LiftMode::ExactGarner15).unwrap();
         let (_, pcs_w2) =
@@ -622,7 +696,10 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
         let top0 = (t - l0_z) % t;
         let top1 = (t - l1_z) % t;
         assert_eq!(
-            fp_t.add(fp_t.add(1, fp_t.mul(top0, top0)), fp_t.add(1, fp_t.mul(top1, top1))),
+            fp_t.add(
+                fp_t.add(1, fp_t.mul(top0, top0)),
+                fp_t.add(1, fp_t.mul(top1, top1))
+            ),
             0
         );
         let z_logits = vec![0, top0, 1, top1];
@@ -631,11 +708,17 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
         let z_logits_sh = cluster.share_vec(&z_logits);
         let ([sel0_got, sel1_got], [g0_sh, g1_sh]) =
             spdz_private_router_top2(&mut cluster, &z_logits_sh, None, "zero_denom_reg").unwrap();
-        let g_open = cluster.open_verified_output(&[g0_sh, g1_sh], "zero_denom_g").unwrap();
+        let g_open = cluster
+            .open_verified_output(&[g0_sh, g1_sh], "zero_denom_g")
+            .unwrap();
         assert_eq!(g_open, gates_want.to_vec());
         assert_eq!(fp_t.add(g_open[0], g_open[1]), 1);
-        let s0_open = cluster.open_verified_output(&sel0_got, "zero_denom_s0").unwrap();
-        let s1_open = cluster.open_verified_output(&sel1_got, "zero_denom_s1").unwrap();
+        let s0_open = cluster
+            .open_verified_output(&sel0_got, "zero_denom_s0")
+            .unwrap();
+        let s1_open = cluster
+            .open_verified_output(&sel1_got, "zero_denom_s1")
+            .unwrap();
         assert_eq!(s0_open[exps_want[0]], 1);
         assert_eq!(s1_open[exps_want[1]], 1);
 
@@ -648,7 +731,16 @@ fn test_all_six_homomorphic_and_hybrid_block_adversarial_attacks() {
         let k_slots: Vec<(usize, _)> = k_sh.iter().copied().enumerate().collect();
         let (k_ct, hk) = cluster.s2e_encrypt_slots(&k_slots, "reg_kfwd").unwrap();
         let _staged = st_b
-            .prepare_state_update(&mut cluster, &rlk, 99, alpha_sh, &u_sh, &k_sh, &[k_ct], &[hk])
+            .prepare_state_update(
+                &mut cluster,
+                &rlk,
+                99,
+                alpha_sh,
+                &u_sh,
+                &k_sh,
+                &[k_ct],
+                &[hk],
+            )
             .unwrap();
         assert_eq!(st_b.h_state_t_grid, h_before);
         assert_eq!(st_b.turns_since_refresh, turns_before);

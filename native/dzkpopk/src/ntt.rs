@@ -13,8 +13,10 @@ pub struct Plan {
     scale: Fe,
 }
 
-fn plans() -> &'static Mutex<HashMap<(usize, bool), Arc<Plan>>> {
-    static C: OnceLock<Mutex<HashMap<(usize, bool), Arc<Plan>>>> = OnceLock::new();
+type PlanCache = Mutex<HashMap<(usize, bool), Arc<Plan>>>;
+
+fn plans() -> &'static PlanCache {
+    static C: OnceLock<PlanCache> = OnceLock::new();
     C.get_or_init(|| Mutex::new(HashMap::new()))
 }
 
@@ -33,7 +35,11 @@ pub fn plan(n: usize, inverse: bool) -> Arc<Plan> {
         tw.push(x);
         x = x.mul(w);
     }
-    let scale = if inverse { Fe::from_u64(n as u64).inv() } else { ONE };
+    let scale = if inverse {
+        Fe::from_u64(n as u64).inv()
+    } else {
+        ONE
+    };
     let p = Arc::new(Plan { n, tw, scale });
     plans().lock().unwrap().insert((n, inverse), p.clone());
     p
@@ -190,7 +196,13 @@ impl Nega {
             psi[i] = psi[i - 1].mul(psi1);
             ipsi[i] = ipsi[i - 1].mul(ipsi1);
         }
-        Nega { n, psi, ipsi, fwd: plan(n, false), inv: plan(n, true) }
+        Nega {
+            n,
+            psi,
+            ipsi,
+            fwd: plan(n, false),
+            inv: plan(n, true),
+        }
     }
 
     /// Forward transform of a coefficient vector.

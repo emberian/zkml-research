@@ -7,7 +7,7 @@ use darkstep::bfv::{Ct, OwnKey};
 use darkvfhe::cert::{
     compute_statement_digest, ct2_handle, ct3_handle, evaluate_shared_a_at_fs,
     precompute_shared_grid, prove_hoisted_matvec, verify_hoisted_matvec,
-    verify_hoisted_matvec_succinct_with_a_evals, ProveOptions, VerifyOptions,
+    verify_hoisted_matvec_succinct_with_a_evals, ProveOptions, SuccinctAEvalsQuery, VerifyOptions,
 };
 use darkvfhe::digits::LiftMode;
 use darkvfhe::logup_gkr::LogUpConfig;
@@ -27,14 +27,19 @@ fn fhe_layout(d: usize, n: usize) -> (usize, usize, usize, usize) {
     (dc, dr, r_blk, k_blk)
 }
 
-fn gen_cts_parallel(params: &HoistedParams, engine: &HoistedEngine, count: usize, seed_base: u64) -> Vec<Ct> {
+fn gen_cts_parallel(
+    params: &HoistedParams,
+    engine: &HoistedEngine,
+    count: usize,
+    seed_base: u64,
+) -> Vec<Ct> {
     (0..count)
         .into_par_iter()
         .map(|idx| {
             let mut key = OwnKey::new(engine.rns_q.clone(), seed_base + idx as u64);
             let mut m = vec![0u64; params.n];
-            for j in 0..64 {
-                m[j] = ((idx * 7 + j * 3 + 1) as u64) % 13;
+            for (j, slot) in m.iter_mut().take(64).enumerate() {
+                *slot = ((idx * 7 + j * 3 + 1) as u64) % 13;
             }
             key.encrypt_exact(&m)
         })
@@ -156,12 +161,14 @@ fn main() {
         let t_vsucc = Instant::now();
         verify_hoisted_matvec_succinct_with_a_evals(
             &params,
-            r_blk,
-            k_blk,
-            &stmt_h,
-            &a_evals,
-            &b_vec,
-            &out_d20,
+            &SuccinctAEvalsQuery {
+                r_blk,
+                k_blk,
+                stmt_hash: &stmt_h,
+                a_evals_per_prime: &a_evals,
+                opened_b: &b_vec,
+                out_cts: &out_d20,
+            },
             &wit_d20,
         )
         .expect("succinct HoistedB61 + D1b verify");
@@ -169,7 +176,8 @@ fn main() {
         drop(shared_d20);
         drop(wit_d20);
 
-        let (a_pre_eg15, shared_eg15) = precompute_shared_grid(&engine, &a_grid, LiftMode::ExactGarner15);
+        let (a_pre_eg15, shared_eg15) =
+            precompute_shared_grid(&engine, &a_grid, LiftMode::ExactGarner15);
         let t_peg15 = Instant::now();
         let (out_eg15, wit_eg15) = prove_hoisted_matvec(
             &engine,
@@ -229,9 +237,21 @@ fn main() {
         let hb = vec![ct2_handle(&ct_b[0])];
 
         for (label, mode, lu_cfg) in [
-            ("Direct-20 + D1b(c=3, 2^18)", LiftMode::Direct20, LogUpConfig::BatchedC3 { chunk_log2: 18 }),
-            ("Exact-Garner-15 + D1b(c=3, 2^18)", LiftMode::ExactGarner15, LogUpConfig::BatchedC3 { chunk_log2: 18 }),
-            ("Exact-Garner-15 + D1b(c=4, mono)", LiftMode::ExactGarner15, LogUpConfig::MonolithicC4),
+            (
+                "Direct-20 + D1b(c=3, 2^18)",
+                LiftMode::Direct20,
+                LogUpConfig::BatchedC3 { chunk_log2: 18 },
+            ),
+            (
+                "Exact-Garner-15 + D1b(c=3, 2^18)",
+                LiftMode::ExactGarner15,
+                LogUpConfig::BatchedC3 { chunk_log2: 18 },
+            ),
+            (
+                "Exact-Garner-15 + D1b(c=4, mono)",
+                LiftMode::ExactGarner15,
+                LogUpConfig::MonolithicC4,
+            ),
         ] {
             let tp = Instant::now();
             let (out1, wit1) = prove_hoisted_matvec(
@@ -309,9 +329,15 @@ fn main() {
             }
             Ct { c0, c1: a }
         };
-        let az: Vec<Ct> = (0..64).into_par_iter().map(|c| make_zero_ct(10_000 + c)).collect();
-        let bz: Vec<Ct> = (0..64).into_par_iter().map(|c| make_zero_ct(20_000 + c)).collect();
-        let hz_out = engine.hoisted_matvec(&[az.clone()], &bz);
+        let az: Vec<Ct> = (0..64)
+            .into_par_iter()
+            .map(|c| make_zero_ct(10_000 + c))
+            .collect();
+        let bz: Vec<Ct> = (0..64)
+            .into_par_iter()
+            .map(|c| make_zero_ct(20_000 + c))
+            .collect();
+        let hz_out = engine.hoisted_matvec(std::slice::from_ref(&az), &bz);
         let ez_out = engine.eager_matvec(&[az], &bz);
         let zeros = vec![0u64; 8192];
         let nh = engine.phase_noise_inf(&key_z, &hz_out[0], &zeros);
@@ -377,7 +403,10 @@ fn main() {
         .unwrap();
         let vfheml_prove_ms = t_vfheml.elapsed().as_secs_f64() * 1e3;
 
-        let hw: Vec<Vec<[u8; 32]>> = w_grid.par_iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+        let hw: Vec<Vec<[u8; 32]>> = w_grid
+            .par_iter()
+            .map(|r| r.iter().map(ct2_handle).collect())
+            .collect();
         let hx: Vec<[u8; 32]> = x_vec.par_iter().map(ct2_handle).collect();
         let hh: Vec<[u8; 32]> = h_vec.par_iter().map(ct2_handle).collect();
         let hz1: Vec<[u8; 32]> = z1_cts.par_iter().map(ct3_handle).collect();
@@ -509,8 +538,11 @@ fn main() {
         let q_pir_cts = gen_cts_parallel(&params, &engine, k_pir, 1_200_000);
         let e_row0_cts = gen_cts_parallel(&params, &engine, k_pir, 1_300_000);
 
-        let (e_row0_pre, e_row0_shared) =
-            precompute_shared_grid(&engine, &[e_row0_cts.clone()], LiftMode::Direct20);
+        let (e_row0_pre, e_row0_shared) = precompute_shared_grid(
+            &engine,
+            std::slice::from_ref(&e_row0_cts),
+            LiftMode::Direct20,
+        );
 
         // Measure 1) Query precompute (`2,374` cts, paid ONCE across all 32 dim-groups!), and
         //         2) All `32` row-groups (`32 x 2,374 = 75,968` 8-limb NTT tensor blocks + 32 BEHZ rescales)!
@@ -582,5 +614,8 @@ fn main() {
         );
     }
 
-    println!("\nBenchmark suite completed cleanly in {:.2}s.", t_total.elapsed().as_secs_f64());
+    println!(
+        "\nBenchmark suite completed cleanly in {:.2}s.",
+        t_total.elapsed().as_secs_f64()
+    );
 }

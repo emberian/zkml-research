@@ -5,14 +5,21 @@
 //!   2. `/tmp/qwen38fn_real_4layer_slice.bin` (`QW38FNS1` emitted by `qwen38fn_range_slice.py`:
 //!      proves real HTTP-Range `Qwen/Qwen3.8-Flash-Next-FP8` `H_v = 48` `C=64` WY + `512E` Top-1 MoE + `QSA` `C3+C5`).
 
-use crate::ext4::{bb_from_i64, build_eq_table_lsb_ext4, mle_eval_bb_at_ext4, ByteCursor, CShakeTranscript, Ext4};
-use crate::gruen_ext4::{prove_mxfp4_delayed_bjk_horner_ext4, verify_mxfp4_delayed_bjk_horner_ext4};
-use crate::pcs_ext4::{commit_table_pcs, open_pcs_claims, verify_pcs_claims, MleEvalClaim, PcsParams, PcsShape};
+use crate::ext4::{
+    bb_from_i64, build_eq_table_lsb_ext4, mle_eval_bb_at_ext4, ByteCursor, CShakeTranscript, Ext4,
+};
+use crate::gruen_ext4::{
+    prove_mxfp4_delayed_bjk_horner_ext4, verify_mxfp4_delayed_bjk_horner_ext4,
+};
+use crate::pcs_ext4::{
+    commit_table_pcs, open_pcs_claims, verify_pcs_claims, MleEvalClaim, PcsParams, PcsShape,
+};
 use crate::qwen35_layer::RealGdnWyWitness;
 use crate::qwen38fn_slice::QsaTopKbWitness;
 use crate::safetensors_mmap::{decode_e2m1_x2_bb, WY_SCALE};
 use crate::u1_audit::{prove_padded_absence_zk, redact_sk_secrets, verify_padded_absence_zk};
 use std::fs;
+use std::ops::Add;
 use std::path::Path;
 use std::time::Instant;
 
@@ -28,7 +35,9 @@ pub struct PyQwen35BundleSummary {
 /// Parse `/tmp/qwen35_real_layer_turn.bin` (`QW35AUD1`), cross-verify algebraic WY & MXFP4 equations
 /// bit-for-bit, prove all 3 real Layer-0 `MXFP4` E2M1 projections (`in_proj_z`, `out_proj`, `mlp.gate_proj`)
 /// with `124`-bit `Ext4` 0-mul Horner + succinct `Ext4` PCS, and redact + ZK-verify the real P5 completion!
-pub fn verify_py_qwen35_bundle(path: &Path) -> Result<(PyQwen35BundleSummary, RealGdnWyWitness), String> {
+pub fn verify_py_qwen35_bundle(
+    path: &Path,
+) -> Result<(PyQwen35BundleSummary, RealGdnWyWitness), String> {
     let bytes = fs::read(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     let mut cur = ByteCursor::new(&bytes);
     let magic = cur.read_exact(8)?;
@@ -49,7 +58,14 @@ pub fn verify_py_qwen35_bundle(path: &Path) -> Result<(PyQwen35BundleSummary, Re
     let _s_gdn = cur.read_u32()?;
     let _s_ln2 = cur.read_u32()?;
     let num_mats = cur.read_u32()? as usize;
-    if ver != 1 || c_len != 64 || d_model != 1024 || h_v != 16 || d_k != 128 || d_v != 128 || m_wy != 4096 {
+    if ver != 1
+        || c_len != 64
+        || d_model != 1024
+        || h_v != 16
+        || d_k != 128
+        || d_v != 128
+        || m_wy != 4096
+    {
         return Err("unexpected QW35AUD1 header constants".to_string());
     }
 
@@ -226,10 +242,38 @@ pub fn verify_py_qwen35_bundle(path: &Path) -> Result<(PyQwen35BundleSummary, Re
             return Err(format!("Python <-> Rust MXFP4 mismatch on {name}!"));
         }
 
-        let q_pf = open_pcs_claims(&q_st, &[MleEvalClaim { point: pt_q.clone(), value: mpf.finals.1 }], &mut p_tr);
-        let s_pf = open_pcs_claims(&s_st, &[MleEvalClaim { point: pt_s.clone(), value: mpf.finals.2 }], &mut p_tr);
-        let x_pf = open_pcs_claims(&x_st, &[MleEvalClaim { point: pt_x.clone(), value: mpf.finals.0 }], &mut p_tr);
-        let y_pf = open_pcs_claims(&y_st, &[MleEvalClaim { point: pt_y.clone(), value: mpf.claim }], &mut p_tr);
+        let q_pf = open_pcs_claims(
+            &q_st,
+            &[MleEvalClaim {
+                point: pt_q.clone(),
+                value: mpf.finals.1,
+            }],
+            &mut p_tr,
+        );
+        let s_pf = open_pcs_claims(
+            &s_st,
+            &[MleEvalClaim {
+                point: pt_s.clone(),
+                value: mpf.finals.2,
+            }],
+            &mut p_tr,
+        );
+        let x_pf = open_pcs_claims(
+            &x_st,
+            &[MleEvalClaim {
+                point: pt_x.clone(),
+                value: mpf.finals.0,
+            }],
+            &mut p_tr,
+        );
+        let y_pf = open_pcs_claims(
+            &y_st,
+            &[MleEvalClaim {
+                point: pt_y.clone(),
+                value: mpf.claim,
+            }],
+            &mut p_tr,
+        );
         let prove_ms = tp0.elapsed().as_secs_f64() * 1000.0;
 
         let tv0 = Instant::now();
@@ -238,10 +282,46 @@ pub fn verify_py_qwen35_bundle(path: &Path) -> Result<(PyQwen35BundleSummary, Re
         let vr_j = v_tr.squeeze_ext4_vec(b"rj", log_j, true);
         let _ = vr_i;
         let _ = verify_mxfp4_delayed_bjk_horner_ext4(mpf.claim, &vr_j, &mpf, &mut v_tr)?;
-        verify_pcs_claims(&q_st.root, PcsShape::new(5 + log_j + log_k, PcsParams::default_public(1)), &[MleEvalClaim { point: pt_q, value: mpf.finals.1 }], &q_pf, &mut v_tr)?;
-        verify_pcs_claims(&s_st.root, PcsShape::new(log_j + log_k, PcsParams::default_public(1)), &[MleEvalClaim { point: pt_s, value: mpf.finals.2 }], &s_pf, &mut v_tr)?;
-        verify_pcs_claims(&x_st.root, PcsShape::new(6 + 5 + log_k, PcsParams::default_zk(1)), &[MleEvalClaim { point: pt_x, value: mpf.finals.0 }], &x_pf, &mut v_tr)?;
-        verify_pcs_claims(&y_st.root, PcsShape::new(6 + log_j, PcsParams::default_zk(1)), &[MleEvalClaim { point: pt_y, value: mpf.claim }], &y_pf, &mut v_tr)?;
+        verify_pcs_claims(
+            &q_st.root,
+            PcsShape::new(5 + log_j + log_k, PcsParams::default_public(1)),
+            &[MleEvalClaim {
+                point: pt_q,
+                value: mpf.finals.1,
+            }],
+            &q_pf,
+            &mut v_tr,
+        )?;
+        verify_pcs_claims(
+            &s_st.root,
+            PcsShape::new(log_j + log_k, PcsParams::default_public(1)),
+            &[MleEvalClaim {
+                point: pt_s,
+                value: mpf.finals.2,
+            }],
+            &s_pf,
+            &mut v_tr,
+        )?;
+        verify_pcs_claims(
+            &x_st.root,
+            PcsShape::new(6 + 5 + log_k, PcsParams::default_zk(1)),
+            &[MleEvalClaim {
+                point: pt_x,
+                value: mpf.finals.0,
+            }],
+            &x_pf,
+            &mut v_tr,
+        )?;
+        verify_pcs_claims(
+            &y_st.root,
+            PcsShape::new(6 + log_j, PcsParams::default_zk(1)),
+            &[MleEvalClaim {
+                point: pt_y,
+                value: mpf.claim,
+            }],
+            &y_pf,
+            &mut v_tr,
+        )?;
         let verify_ms = tv0.elapsed().as_secs_f64() * 1000.0;
 
         mxfp4_verified_names.push((name, orig_rows, in_dim, prove_ms, verify_ms));
@@ -276,10 +356,20 @@ pub fn verify_py_qwen35_bundle(path: &Path) -> Result<(PyQwen35BundleSummary, Re
     ))
 }
 
+/// Parsed witness bundle from `/tmp/qwen38fn_real_4layer_slice.bin` (`QW38FNS1`).
+pub type Qwen38FnRangeBundle = (
+    RealGdnWyWitness,
+    Vec<i16>,
+    Vec<u8>,
+    Vec<u32>,
+    Vec<i64>,
+    QsaTopKbWitness,
+    u32,
+    u32,
+);
+
 /// Exact 128-byte header parser for `/tmp/qwen38fn_real_4layer_slice.bin` (`QW38FNS1` emitted by `qwen38fn_range_slice.py`)!
-pub fn load_qwen38fn_range_bundle(
-    path: &Path,
-) -> Result<(RealGdnWyWitness, Vec<i16>, Vec<u8>, Vec<u32>, Vec<i64>, QsaTopKbWitness, u32, u32), String> {
+pub fn load_qwen38fn_range_bundle(path: &Path) -> Result<Qwen38FnRangeBundle, String> {
     let raw = fs::read(path).map_err(|e| format!("read {}: {e}", path.display()))?;
     if raw.len() < 128 || &raw[0..8] != b"QW38FNS1" {
         return Err("invalid QW38FNS1 header".to_string());

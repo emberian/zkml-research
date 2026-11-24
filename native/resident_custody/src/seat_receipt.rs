@@ -177,7 +177,9 @@ impl fmt::Display for TransferError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Malformed(e) => write!(f, "malformed seat transfer receipt: {e}"),
-            Self::SignerMismatch => f.write_str("signing key is not the transfer's source operator"),
+            Self::SignerMismatch => {
+                f.write_str("signing key is not the transfer's source operator")
+            }
             Self::WrongOperator => f.write_str("wrong handoff operator"),
             Self::WrongAsset => f.write_str("wrong asset"),
             Self::StaleEpoch { epoch, floor } => write!(f, "stale epoch {epoch} (floor {floor})"),
@@ -249,8 +251,8 @@ impl SeatTransferReceipt {
         if self.seat_root != t.seat_root()? {
             return Err(TransferError::SeatRootMismatch);
         }
-        let issuer =
-            VerifyingKey::from_bytes(&policy.issuer).map_err(|_| TransferError::InvalidIssuerKey)?;
+        let issuer = VerifyingKey::from_bytes(&policy.issuer)
+            .map_err(|_| TransferError::InvalidIssuerKey)?;
         let mut signature = [0u8; 64];
         hex::decode_to_slice(&self.signature, &mut signature)
             .map_err(|_| TransferError::InvalidSignature)?;
@@ -341,7 +343,11 @@ mod tests {
             mint_idempotency_key: payment_nullifier(&ASSET, pi),
         }
     }
-    fn credit(claim: PaymentClaim, remaining_minor: u64, backing: CreditBacking) -> TransferredCredit {
+    fn credit(
+        claim: PaymentClaim,
+        remaining_minor: u64,
+        backing: CreditBacking,
+    ) -> TransferredCredit {
         TransferredCredit {
             mint: MintReceipt::new(&claim, MintReceipt::expected_effect(&claim)).unwrap(),
             claim,
@@ -414,12 +420,18 @@ mod tests {
             with(|p| p.target = SigningKey::from_bytes(&[33; 32]).verifying_key().to_bytes()),
             TransferError::WrongOperator
         ));
-        assert!(matches!(with(|p| p.asset = [9; 32]), TransferError::WrongAsset));
+        assert!(matches!(
+            with(|p| p.asset = [9; 32]),
+            TransferError::WrongAsset
+        ));
         assert!(matches!(
             with(|p| p.epoch_floor = 2),
             TransferError::StaleEpoch { epoch: 2, floor: 2 }
         ));
-        assert!(matches!(with(|p| p.currency = "eur"), TransferError::SeatOrCurrencyMismatch));
+        assert!(matches!(
+            with(|p| p.currency = "eur"),
+            TransferError::SeatOrCurrencyMismatch
+        ));
         assert!(matches!(
             with(|p| p.max_reserve_cap_minor = 99),
             TransferError::UnbackedReserve

@@ -80,7 +80,10 @@ pub fn ct_parse(b: &[u8]) -> Option<Ct> {
     if v.len() != 1 + 2 * n {
         return None;
     }
-    Some(Ct { c0: v[1..1 + n].to_vec(), c1: v[1 + n..].to_vec() })
+    Some(Ct {
+        c0: v[1..1 + n].to_vec(),
+        c1: v[1 + n..].to_vec(),
+    })
 }
 
 pub fn digest(xs: &[u64]) -> String {
@@ -105,14 +108,20 @@ fn disk_json(r: &DiskReport) -> Value {
 pub fn peak_rss_mb() -> f64 {
     std::fs::read_to_string("/proc/self/status")
         .ok()
-        .and_then(|s| s.lines().find(|l| l.starts_with("VmHWM:")).and_then(|l| l.split_whitespace().nth(1)?.parse::<f64>().ok()))
+        .and_then(|s| {
+            s.lines()
+                .find(|l| l.starts_with("VmHWM:"))
+                .and_then(|l| l.split_whitespace().nth(1)?.parse::<f64>().ok())
+        })
         .map(|kb| kb / 1024.0)
         .unwrap_or(0.0)
 }
 
 /// Bytes this party sent on `net` so far, per peer, by tag name (only the tags with traffic).
 pub fn sent_json(net: &Net) -> Value {
-    const NAMES: [&str; darkstep::net::NTAGS] = ["OPEN", "HE_CT", "HE_RET", "CTRL", "PROOF", "RESHARE", "RELAY"];
+    const NAMES: [&str; darkstep::net::NTAGS] = [
+        "OPEN", "HE_CT", "HE_RET", "CTRL", "PROOF", "RESHARE", "RELAY",
+    ];
     let per = net.sent_per_peer();
     let mut out = serde_json::Map::new();
     for (j, row) in per.iter().enumerate() {
@@ -150,7 +159,11 @@ impl HeSecret {
     pub fn from_ceremony(cust: Custodian, cer: &Ceremony) -> Self {
         let mut cust = cust;
         let reg = cer.registry(cust.i).expect("own key registered");
-        HeSecret { s: std::mem::take(&mut cust.s), e: std::mem::take(&mut cust.e), reg }
+        HeSecret {
+            s: std::mem::take(&mut cust.s),
+            e: std::mem::take(&mut cust.e),
+            reg,
+        }
     }
 }
 
@@ -181,6 +194,8 @@ pub struct OldCustodian {
     pub old_carries: Option<BTreeMap<String, PcsParty>>,
 }
 
+type VaultCopies = Vec<(String, String, Vec<u8>)>;
+
 /// What the shallow frame needs after the erasure: the canaries, the public pieces of the decryption attempt, the
 /// files, and the report so far.
 struct Erased {
@@ -194,7 +209,7 @@ struct Erased {
     a: Vec<Vec<u64>>,
     files: Vec<PathBuf>,
     /// the vault's name and copies of the small sealed state files (role, bytes), taken before the erasure
-    vault_copies: Option<(String, Vec<(String, String, Vec<u8>)>)>,
+    vault_copies: Option<(String, VaultCopies)>,
 }
 
 /// Whether a carried commitment is a PUBLIC one (darkproof's public genesis: `PcsParty::commit_public`, its tails
@@ -211,14 +226,15 @@ pub fn carry_is_public(pc: &PcsParty, p: u64) -> bool {
         share.extend_from_slice(&pc.ext[r * s.w..r * s.w + s.c]);
     }
     share.resize(1 << darkproof::pcs::bitlen(share.len().max(2) - 1), 0);
-    let mut rng = darkproof::rng::public_coins(&["dl-public-genesis", &darkproof::h::h_list_hex(&share)]);
+    let mut rng =
+        darkproof::rng::public_coins(&["dl-public-genesis", &darkproof::h::h_list_hex(&share)]);
     rng.randrange_u64(p) == pc.ext[s.c] && rng.randrange_u64(p) == pc.ext[s.c + 1]
 }
 
 /// The P-256 group order n, big-endian.
 const P256_N: [u8; 32] = [
-    0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xbc, 0xe6, 0xfa, 0xad,
-    0xa7, 0x17, 0x9e, 0x84, 0xf3, 0xb9, 0xca, 0xc2, 0xfc, 0x63, 0x25, 0x51,
+    0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xbc, 0xe6, 0xfa, 0xad, 0xa7, 0x17, 0x9e, 0x84, 0xf3, 0xb9, 0xca, 0xc2, 0xfc, 0x63, 0x25, 0x51,
 ];
 
 /// The private scalar of a PKCS#8 ECDSA P-256 key (darkstep::tls, rcgen's serialize_der): the ECPrivateKey's
@@ -236,7 +252,10 @@ pub fn p256_scalar(der: &[u8]) -> Option<[u8; 32]> {
 /// the form ring's EcdsaKeyPair keeps).
 pub fn p256_scalar_words(d: &[u8; 32]) -> [(&'static str, Vec<u64>); 3] {
     use num_bigint::BigUint;
-    let be: Vec<u64> = d.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+    let be: Vec<u64> = d
+        .chunks_exact(8)
+        .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
+        .collect();
     let limbs = |x: &BigUint| -> Vec<u64> {
         let mut v = x.to_u64_digits();
         v.resize(4, 0);
@@ -256,16 +275,24 @@ pub fn p256_scalar_words(d: &[u8; 32]) -> [(&'static str, Vec<u64>); 3] {
 /// bytes at any offset of small files. Returns the files used.
 /// Also returns the key files' plaintext, kept live through the before-erasure scan as its control (by the time of
 /// that scan the meshes are closed and rustls's key is gone; reh showed it), then wiped by the caller.
-fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], vault: Option<&crate::vault::Vault>) -> (Vec<String>, Vec<Vec<u8>>) {
+fn tls_key_canaries(
+    can: &mut Canaries,
+    dcan: &mut Canaries,
+    files: &[PathBuf],
+    vault: Option<&crate::vault::Vault>,
+) -> (Vec<String>, Vec<Vec<u8>>) {
     let mut used = Vec::new();
     let mut live = Vec::new();
     for f in files {
-        let name = f.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
+        let name = f
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_default();
         if !(name.starts_with("tls_") && name.ends_with(".key")) {
             continue;
         }
         let Ok(raw) = std::fs::read(f) else { continue };
-        let mut der = if raw.starts_with(crate::vault::MAGIC) {
+        let der = if raw.starts_with(crate::vault::MAGIC) {
             match vault.map(|v| v.open(&vault_role(f), raw)) {
                 Some(Ok(d)) => d,
                 _ => continue,
@@ -275,13 +302,25 @@ fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], 
         };
         // only the DER's words that hold scalar bytes: the rest is the algorithm OIDs and the PUBLIC key, which the
         // certificate (public, kept) also holds; reh found 8 such words live in the heap after erasure on every seat
-        let ws: Vec<u64> = der.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+        let ws: Vec<u64> = der
+            .chunks_exact(8)
+            .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
+            .collect();
         let at = p256_scalar(&der).and_then(|d| der.windows(32).position(|w| w == d));
         let priv_words: Vec<u64> = match at {
-            Some(a) => ws.iter().enumerate().filter(|(k, _)| 8 * k + 8 > a && 8 * k < a + 32).map(|(_, w)| *w).collect(),
+            Some(a) => ws
+                .iter()
+                .enumerate()
+                .filter(|(k, _)| 8 * k + 8 > a && 8 * k < a + 32)
+                .map(|(_, w)| *w)
+                .collect(),
             None => Vec::new(),
         };
-        can.add_words("TLS private key (PKCS#8 DER, the scalar's words)", &priv_words, priv_words.len());
+        can.add_words(
+            "TLS private key (PKCS#8 DER, the scalar's words)",
+            &priv_words,
+            priv_words.len(),
+        );
         if let Some(mut d) = p256_scalar(&der) {
             for (kind, mut ws) in p256_scalar_words(&d) {
                 can.add_words(kind, &ws, ws.len());
@@ -306,13 +345,18 @@ fn tls_key_canaries(can: &mut Canaries, dcan: &mut Canaries, files: &[PathBuf], 
 pub fn scrub_stack_all() -> usize {
     let here = 0u8;
     let sp = std::hint::black_box(&here) as *const u8 as u64;
-    let low = std::fs::read_to_string("/proc/self/maps").ok().and_then(|m| {
-        m.lines().find_map(|l| {
-            let (a, b) = l.split_whitespace().next()?.split_once('-')?;
-            let (a, b) = (u64::from_str_radix(a, 16).ok()?, u64::from_str_radix(b, 16).ok()?);
-            (a <= sp && sp < b).then_some(a)
-        })
-    });
+    let low = std::fs::read_to_string("/proc/self/maps")
+        .ok()
+        .and_then(|m| {
+            m.lines().find_map(|l| {
+                let (a, b) = l.split_whitespace().next()?.split_once('-')?;
+                let (a, b) = (
+                    u64::from_str_radix(a, 16).ok()?,
+                    u64::from_str_radix(b, 16).ok()?,
+                );
+                (a <= sp && sp < b).then_some(a)
+            })
+        });
     let kb = match low {
         // each 16 KiB page frame of scrub_stack costs a little more than 16 KiB of stack: leave 1/16 + 64 KiB
         Some(a) if sp > a + (64 << 10) => (((sp - a) * 15 / 16 - (64 << 10)) >> 10) as usize,
@@ -351,13 +395,22 @@ fn run_setup<F: FnOnce() -> Box<OldCustodian>>(setup: F) -> Box<OldCustodian> {
 /// The old custodian's part. `setup` builds its state (keys, shares, commitment) on the heap in a frame that is
 /// dead and scrubbed before the final scan; `connect6` then joins the six-party mesh. Returns its report; the caller
 /// exits the process.
-pub fn old_side(c: &Common, setup: impl FnOnce() -> Box<OldCustodian>, connect6: impl FnOnce() -> Net) -> Result<Value, String> {
+pub fn old_side(
+    c: &Common,
+    setup: impl FnOnce() -> Box<OldCustodian>,
+    connect6: impl FnOnce() -> Net,
+) -> Result<Value, String> {
     old_side_e(c, None, setup, connect6)
 }
 
 /// old_side under cut E: `pend` = the ledger head's pending claims (None: a final head, or outside DEFER). The
 /// handover proof discharges them with the custodian's `old_carries`.
-pub fn old_side_e(c: &Common, pend: Option<&Pending>, setup: impl FnOnce() -> Box<OldCustodian>, connect6: impl FnOnce() -> Net) -> Result<Value, String> {
+pub fn old_side_e(
+    c: &Common,
+    pend: Option<&Pending>,
+    setup: impl FnOnce() -> Box<OldCustodian>,
+    connect6: impl FnOnce() -> Net,
+) -> Result<Value, String> {
     let t0 = Instant::now();
     let st = run_setup(setup);
     let e = old_side_erase(c, pend, st, connect6())?;
@@ -369,7 +422,12 @@ pub fn old_side_e(c: &Common, pend: Option<&Pending>, setup: impl FnOnce() -> Bo
         let rem = OwnKey::from_ceremony_secure(c.rns.clone(), &e.s_left, &e.b, &e.a);
         digest(&rem.decrypt(ct, None)) == *dg
     });
-    let files_left: Vec<String> = e.files.iter().filter(|f| f.exists()).map(|f| f.display().to_string()).collect();
+    let files_left: Vec<String> = e
+        .files
+        .iter()
+        .filter(|f| f.exists())
+        .map(|f| f.display().to_string())
+        .collect();
     // the sealed copies after the erasure: the keyring has no key of the vault's name, so nothing the seat (or its
     // uid) holds opens them; and the zero key, the only one memory can still give, does not either
     let vault_post = e.vault_copies.as_ref().map(|(name, copies)| {
@@ -391,18 +449,28 @@ pub fn old_side_e(c: &Common, pend: Option<&Pending>, setup: impl FnOnce() -> Bo
     rep["stack_scrubbed_kb"] = json!(scrubbed_kb);
     rep["disk_scan_after_erasure"] = disk_json(&post_disk);
     rep["disk_canary_kinds"] = json!(e.dcan.kinds);
-    rep["scan_paths"] = json!(e.scan_paths.iter().map(|p| p.display().to_string()).collect::<Vec<_>>());
+    rep["scan_paths"] = json!(e
+        .scan_paths
+        .iter()
+        .map(|p| p.display().to_string())
+        .collect::<Vec<_>>());
     rep["peak_rss_mb"] = json!(peak_rss_mb());
     rep["canary_kinds"] = json!(e.can.kinds);
     rep["decrypts_captured_after_erasure"] = json!(post_dec);
     rep["state_files_left"] = json!(files_left);
-    rep["allocator_wiped_bytes"] = json!(crate::erase::WIPED_BYTES.load(std::sync::atomic::Ordering::Relaxed));
+    rep["allocator_wiped_bytes"] =
+        json!(crate::erase::WIPED_BYTES.load(std::sync::atomic::Ordering::Relaxed));
     rep["seconds"] = json!(t0.elapsed().as_secs_f64());
     Ok(rep)
 }
 
 #[inline(never)]
-fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>, net6: Net) -> Result<Erased, String> {
+fn old_side_erase(
+    c: &Common,
+    pend: Option<&Pending>,
+    mut st: Box<OldCustodian>,
+    net6: Net,
+) -> Result<Erased, String> {
     let (n_old, n_new) = (c.n_old, c.n_new);
     let i = st.i;
     assert!(net6.me == i && net6.n == n_old + n_new);
@@ -418,7 +486,11 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
                 }
                 r
             } else {
-                st.w[k].iter().zip(&acc).map(|(s, &a)| darkstep::arith::submod(s.s, a, c.t)).collect()
+                st.w[k]
+                    .iter()
+                    .zip(&acc)
+                    .map(|(s, &a)| darkstep::arith::submod(s.s, a, c.t))
+                    .collect()
             };
             net6.send(n_old + j, RESHARE, u64s_to_bytes(&sub));
             sub.wipe();
@@ -430,16 +502,42 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
     let tp = Instant::now();
     let mut tn = TcpNet(net6);
     let proof = if c.pr.defer {
-        handover::prove_defer(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut st.carry, pend, st.old_carries.as_mut(), &mut tn, &Det(None))?.0
+        handover::prove_defer(
+            &c.pr,
+            &c.lp,
+            c.d,
+            n_old,
+            n_new,
+            &c.ctx,
+            &mut st.carry,
+            pend,
+            st.old_carries.as_mut(),
+            &mut tn,
+            &Det(None),
+        )?
+        .0
     } else {
-        handover::prove(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut st.carry, &mut tn, &Det(None))?
+        handover::prove(
+            &c.pr,
+            &c.lp,
+            c.d,
+            n_old,
+            n_new,
+            &c.ctx,
+            &mut st.carry,
+            &mut tn,
+            &Det(None),
+        )?
     };
     let prove_s = tp.elapsed().as_secs_f64();
     let blob = handover::encode(&c.pr, c.d, &proof);
     let proof_digest = pycompat::repr::hex(&Sha256::digest(&blob));
     drop(blob);
     // the opened columns' salts are in the proof (public); the others must go
-    let opened: BTreeMap<String, Vec<usize>> = KINDS.iter().map(|k| (k.to_string(), proof.cols_old[*k].j.clone())).collect();
+    let opened: BTreeMap<String, Vec<usize>> = KINDS
+        .iter()
+        .map(|k| (k.to_string(), proof.cols_old[*k].j.clone()))
+        .collect();
     drop(proof);
     let sent6 = sent_json(&tn.0);
     tn.0.shutdown();
@@ -467,7 +565,11 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
             public_carry.push(k.to_string());
             continue;
         }
-        can.add_words(&format!("{k} commitment rows and tails"), &st.carry[k].ext, 1 << 16);
+        can.add_words(
+            &format!("{k} commitment rows and tails"),
+            &st.carry[k].ext,
+            1 << 16,
+        );
         let mut salts: Vec<u8> = st.carry[k]
             .salts
             .iter()
@@ -493,7 +595,11 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
     // Transactions file, decimal text in Player-MAC-Keys
     let r64 = ((1u128 << 64) % c.t as u128) as u64;
     let mont = ((st.tape.alpha_i as u128 * r64 as u128) % c.t as u128) as u64;
-    dcan.add_words("alpha share (Montgomery form)", std::slice::from_ref(&mont), 1);
+    dcan.add_words(
+        "alpha share (Montgomery form)",
+        std::slice::from_ref(&mont),
+        1,
+    );
     let mut dec = st.tape.alpha_i.to_string().into_bytes();
     dcan.add_text16("alpha share (decimal text)", &dec);
     dec.wipe();
@@ -508,7 +614,8 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
         can.add_bytes("HE return-coin key", rk);
     }
     // the seat's TLS private key (its identity on the meshes: kept, it could still join a mesh as this custodian)
-    let (tls_kinds, mut tls_live) = tls_key_canaries(&mut can, &mut dcan, &st.files, st.vault.as_ref());
+    let (tls_kinds, mut tls_live) =
+        tls_key_canaries(&mut can, &mut dcan, &st.files, st.vault.as_ref());
     // the file key, and copies of the small sealed files (ciphertext) for the check that nothing opens them after
     let mut vault_pre = serde_json::Value::Null;
     let vault_copies = st.vault.as_ref().map(|v| {
@@ -621,7 +728,10 @@ fn old_side_erase(c: &Common, pend: Option<&Pending>, mut st: Box<OldCustodian>,
 /// A sealed state file's role (the AAD's last part): its file name without the seat digits and extension, e.g.
 /// "ckpt_P0.bin" -> "ckpt", "tls_2.key" -> "tls". The deploy lane seals with the same roles (`vault_role`).
 pub fn vault_role(f: &std::path::Path) -> String {
-    let n = f.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default();
+    let n = f
+        .file_name()
+        .map(|n| n.to_string_lossy().to_string())
+        .unwrap_or_default();
     n.split(['_', '.']).next().unwrap_or("").to_string()
 }
 
@@ -653,8 +763,16 @@ pub struct NewCustodian {
 /// `keep`: Some((custodian, ceremony, key)) in a self-handover (the same seat keeps its HE key; only the MAC key is
 /// new); None in a rotation (a fresh ceremony at `epoch`).
 #[allow(clippy::too_many_arguments)]
-pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i64, test_reveal: usize,
-                keep: Option<OwnKey>) -> Result<NewCustodian, String> {
+pub fn new_side(
+    c: &Common,
+    j: usize,
+    net3: Net,
+    net6: Net,
+    tape: Tape,
+    epoch: i64,
+    test_reveal: usize,
+    keep: Option<OwnKey>,
+) -> Result<NewCustodian, String> {
     new_side_e(c, None, j, net3, net6, tape, epoch, test_reveal, keep)
 }
 
@@ -662,8 +780,17 @@ pub fn new_side(c: &Common, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i
 /// committed with one life and not opened; the returned NewCustodian's `defer` is its side of the new head's
 /// pending claims (the next step's DeferIn).
 #[allow(clippy::too_many_arguments)]
-pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6: Net, tape: Tape, epoch: i64, test_reveal: usize,
-                  keep: Option<OwnKey>) -> Result<NewCustodian, String> {
+pub fn new_side_e(
+    c: &Common,
+    pend: Option<&Pending>,
+    j: usize,
+    net3: Net,
+    net6: Net,
+    tape: Tape,
+    epoch: i64,
+    test_reveal: usize,
+    keep: Option<OwnKey>,
+) -> Result<NewCustodian, String> {
     let t0 = Instant::now();
     let (n_old, n_new) = (c.n_old, c.n_new);
     assert!(net6.me == n_old + j && net3.me == j && net3.n == n_new);
@@ -671,9 +798,11 @@ pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6:
     let (keys, key) = match keep {
         Some(k) => (None, k),
         None => {
-            let (cust, cer) = crate::ceremony::run(&net3, j, c.rns.n, &c.rns.qs, c.t, c.pr.t_cols, epoch)?;
+            let (cust, cer) =
+                crate::ceremony::run(&net3, j, c.rns.n, &c.rns.qs, c.t, c.pr.t_cols, epoch)?;
             let hs = HeSecret::from_ceremony(cust, &cer);
-            let key = OwnKey::from_ceremony_secure(c.rns.clone(), &hs.s, hs.reg.b_res(), hs.reg.a_res());
+            let key =
+                OwnKey::from_ceremony_secure(c.rns.clone(), &hs.s, hs.reg.b_res(), hs.reg.a_res());
             (Some((hs, cer)), key)
         }
     };
@@ -688,7 +817,9 @@ pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6:
             let mut v = bytes_to_u64s(&b);
             b.wipe();
             if v.len() != acc.len() {
-                return Err(format!("resharing: old custodian {i}'s {k} subshare has the wrong length"));
+                return Err(format!(
+                    "resharing: old custodian {i}'s {k} subshare has the wrong length"
+                ));
             }
             for (a, &x) in acc.iter_mut().zip(&v) {
                 *a = darkstep::arith::addmod(*a, x, c.t);
@@ -700,15 +831,47 @@ pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6:
     let reshare_s = tr.elapsed().as_secs_f64();
     let tcm = Instant::now();
     let wp = c.pr.w_life();
-    let mut carry: BTreeMap<String, PcsParty> =
-        KINDS.iter().map(|k| (k.to_string(), PcsParty::commit(&wp, &plain[*k], k, j, &Det(None)))).collect();
+    let mut carry: BTreeMap<String, PcsParty> = KINDS
+        .iter()
+        .map(|k| {
+            (
+                k.to_string(),
+                PcsParty::commit(&wp, &plain[*k], k, j, &Det(None)),
+            )
+        })
+        .collect();
     let commit_s = tcm.elapsed().as_secs_f64();
     let tp = Instant::now();
     let mut tn = TcpNet(net6);
     let (proof, defer) = if c.pr.defer {
-        handover::prove_defer(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut carry, pend, None, &mut tn, &Det(None))?
+        handover::prove_defer(
+            &c.pr,
+            &c.lp,
+            c.d,
+            n_old,
+            n_new,
+            &c.ctx,
+            &mut carry,
+            pend,
+            None,
+            &mut tn,
+            &Det(None),
+        )?
     } else {
-        (handover::prove(&c.pr, &c.lp, c.d, n_old, n_new, &c.ctx, &mut carry, &mut tn, &Det(None))?, None)
+        (
+            handover::prove(
+                &c.pr,
+                &c.lp,
+                c.d,
+                n_old,
+                n_new,
+                &c.ctx,
+                &mut carry,
+                &mut tn,
+                &Det(None),
+            )?,
+            None,
+        )
     };
     let prove_s = tp.elapsed().as_secs_f64();
     let sent6 = sent_json(&tn.0);
@@ -721,7 +884,10 @@ pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6:
     let mut w = BTreeMap::new();
     for k in KINDS {
         let mut pl = plain.remove(k).unwrap();
-        w.insert(k.to_string(), party.auth_plain_vec(&pl, darkstep::party::PH_HE_AUTH));
+        w.insert(
+            k.to_string(),
+            party.auth_plain_vec(&pl, darkstep::party::PH_HE_AUTH),
+        );
         pl.wipe();
     }
     let auth_s = ta.elapsed().as_secs_f64();
@@ -744,7 +910,10 @@ pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6:
         let pos = party.take(1);
         let r = party.tape_at(pos, darkstep::tape::Tag::Ar);
         let y = party.lin(&terms, 0);
-        let y = Sh { s: darkstep::arith::addmod(y.s, r.s, c.t), m: darkstep::arith::addmod(y.m, r.m, c.t) };
+        let y = Sh {
+            s: darkstep::arith::addmod(y.s, r.s, c.t),
+            m: darkstep::arith::addmod(y.m, r.m, c.t),
+        };
         masked.push(y);
     }
     let masked_open = party.open_vec(&masked, darkstep::party::PH_HE_AUTH);
@@ -752,10 +921,16 @@ pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6:
     if test_reveal > 0 {
         for k in KINDS {
             let xs: Vec<Sh> = w[k][..test_reveal.min(c.d * c.d)].to_vec();
-            opened.insert(k.to_string(), party.open_vec(&xs, darkstep::party::PH_HE_AUTH));
+            opened.insert(
+                k.to_string(),
+                party.open_vec(&xs, darkstep::party::PH_HE_AUTH),
+            );
         }
     }
-    let mac = match party.mac_check("handover") { Ok(_) => "ok".to_string(), Err(e) => e };
+    let mac = match party.mac_check("handover") {
+        Ok(_) => "ok".to_string(),
+        Err(e) => e,
+    };
     if mac != "ok" {
         return Err(format!("re-authentication: {mac}"));
     }
@@ -774,5 +949,16 @@ pub fn new_side_e(c: &Common, pend: Option<&Pending>, j: usize, net3: Net, net6:
         "bytes_sent_per_peer_mesh6": sent6, "bytes_sent_per_peer_mesh3_ceremony": sent3_before_auth,
         "bytes_sent_per_peer_mesh3_total": sent_json(&party.net), "peak_rss_mb": peak_rss_mb(),
     });
-    Ok(NewCustodian { j, keys, key: key2, party, w, carry, proof: blob, new_roots: proof.new_roots, report, defer })
+    Ok(NewCustodian {
+        j,
+        keys,
+        key: key2,
+        party,
+        w,
+        carry,
+        proof: blob,
+        new_roots: proof.new_roots,
+        report,
+        defer,
+    })
 }

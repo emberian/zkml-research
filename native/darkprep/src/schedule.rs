@@ -23,11 +23,15 @@ pub enum Tag {
 
 impl Tag {
     pub fn name(self) -> &'static str {
-        ["in", "ta", "tb", "tc", "tr", "trb", "trh", "lp", "ar", "trhb"][self as usize]
+        [
+            "in", "ta", "tb", "tc", "tr", "trb", "trh", "lp", "ar", "trhb",
+        ][self as usize]
     }
     pub fn from_code(c: u8) -> Option<Tag> {
         use Tag::*;
-        [In, Ta, Tb, Tc, Tr, Trb, Trh, Lp, Ar, Trhb].get(c as usize).copied()
+        [In, Ta, Tb, Tc, Tr, Trb, Trh, Lp, Ar, Trhb]
+            .get(c as usize)
+            .copied()
     }
 }
 
@@ -62,7 +66,11 @@ pub struct StepParams {
 
 /// Random bits per truncation mask: 61 under XT (r uniform in [0, p), p < 2^61), K + KAPPA statistically.
 pub fn mask_bits(xt: Option<u64>, k: u32) -> usize {
-    if xt.is_some() { 61 } else { (k + KAPPA) as usize }
+    if xt.is_some() {
+        61
+    } else {
+        (k + KAPPA) as usize
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -90,13 +98,31 @@ pub struct Release {
 impl StepParams {
     /// The harness's d = 64 step (mpc_fork.run_step hard-codes K = 13, 13, 8, 13 with S1, S2, S3 = 5, 4, 8).
     pub fn harness_d64() -> Self {
-        StepParams { d: 64, inputs: Inputs::Harness, trunc: [(5, 13), (5, 13), (4, 8), (8, 13)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false, xt: None }
+        StepParams {
+            d: 64,
+            inputs: Inputs::Harness,
+            trunc: [(5, 13), (5, 13), (4, 8), (8, 13)],
+            proof_atoms: false,
+            proof_triples: 0,
+            phase: Phase::Step,
+            rs: false,
+            xt: None,
+        }
     }
     /// `step_counts.params(d)`: S1 = max(5, ceil(log2(49 d / 128))), K1 = S1 + 8, S2 = 4, K2 = 8, S3 = S1 + 3, K3 = S1 + 8.
     pub fn at(d: usize, inputs: Inputs) -> Self {
         let x = 49.0 * d as f64 / 128.0;
         let s1 = (x.log2().ceil() as i64).max(5) as u32;
-        StepParams { d, inputs, trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)], proof_atoms: false, proof_triples: 0, phase: Phase::Step, rs: false, xt: None }
+        StepParams {
+            d,
+            inputs,
+            trunc: [(s1, s1 + 8), (s1, s1 + 8), (4, 8), (s1 + 3, s1 + 8)],
+            proof_atoms: false,
+            proof_triples: 0,
+            phase: Phase::Step,
+            rs: false,
+            xt: None,
+        }
     }
     /// The step with the collaborative proof's preprocessing: Trhb atoms and the proof section's triples,
     /// darkproof::spine::beaver_count(d) + darkproof::middle::beaver_count(n_had).
@@ -110,7 +136,11 @@ impl StepParams {
     /// truncation bit (s low bits and K + KAPPA - s high bits), and 254 per lookup power chain.
     /// Checked against cosnark_gates results: 1,992 / 7,968 / 31,872 at d = 4, 16, 64 and 2,260,992 at d = 4096.
     pub fn n_had(&self) -> usize {
-        let per: usize = self.trunc.iter().map(|&(s, k)| 2 * (s as usize - 1) + (k + KAPPA) as usize).sum();
+        let per: usize = self
+            .trunc
+            .iter()
+            .map(|&(s, k)| 2 * (s as usize - 1) + (k + KAPPA) as usize)
+            .sum();
         self.d * (per + 1 + (DEG - 1))
     }
     /// The release with its proof atoms and its proof section of `proof_triples` (the proof lane's count).
@@ -122,7 +152,11 @@ impl StepParams {
     }
     /// Trhb entries per truncation (s, K) when proof_atoms is on.
     pub fn trhb(&self, s: u32, k: u32) -> usize {
-        if self.rs { (k + 1 - s) as usize } else { (k + KAPPA - s) as usize }
+        if self.rs {
+            (k + 1 - s) as usize
+        } else {
+            (k + KAPPA - s) as usize
+        }
     }
     /// A new seat's handover tape of n auth_plain entries.
     pub fn handover(mut self, n: usize) -> Self {
@@ -155,7 +189,10 @@ pub enum Event {
 
 /// The events in program order, expanded (small shapes and tests; `runs` for release-sized ones).
 pub fn events(sp: &StepParams) -> Vec<Event> {
-    runs(sp).into_iter().flat_map(|(e, k)| std::iter::repeat(e).take(k)).collect()
+    runs(sp)
+        .into_iter()
+        .flat_map(|(e, k)| std::iter::repeat_n(e, k))
+        .collect()
 }
 
 /// The events in program order as (event, repeat count) runs.
@@ -215,17 +252,17 @@ pub fn expand(sp: &StepParams, e: Event, out: &mut Vec<Tag>) {
         Event::Mul => out.extend([Tag::Ta, Tag::Tb, Tag::Tc]),
         Event::Trunc(s, k) => {
             out.push(Tag::Tr);
-            out.extend(std::iter::repeat(Tag::Trb).take(s as usize));
+            out.extend(std::iter::repeat_n(Tag::Trb, s as usize));
             out.push(Tag::Trh);
             if sp.proof_atoms {
-                out.extend(std::iter::repeat(Tag::Trhb).take(sp.trhb(s, k)));
+                out.extend(std::iter::repeat_n(Tag::Trhb, sp.trhb(s, k)));
             }
             // borrow computation: 2 (s - 1) Beaver products
             for _ in 0..2 * (s - 1) {
                 out.extend([Tag::Ta, Tag::Tb, Tag::Tc]);
             }
         }
-        Event::Lookup => out.extend(std::iter::repeat(Tag::Lp).take(DEG)),
+        Event::Lookup => out.extend(std::iter::repeat_n(Tag::Lp, DEG)),
     }
 }
 
@@ -242,7 +279,9 @@ pub fn event_len(sp: &StepParams, e: Event) -> usize {
     match e {
         Event::Input | Event::AuthPlain => 1,
         Event::Mul => 3,
-        Event::Trunc(s, k) => 2 + s as usize + if sp.proof_atoms { sp.trhb(s, k) } else { 0 } + 6 * (s as usize - 1),
+        Event::Trunc(s, k) => {
+            2 + s as usize + if sp.proof_atoms { sp.trhb(s, k) } else { 0 } + 6 * (s as usize - 1)
+        }
         Event::Lookup => DEG,
     }
 }
@@ -267,7 +306,14 @@ pub struct Plan {
 
 impl Plan {
     pub fn of(sp: &StepParams) -> Plan {
-        let mut p = Plan { n_in: 0, n_ar: 0, n_tri: 0, n_lp: 0, trunc_classes: vec![], xt: sp.xt };
+        let mut p = Plan {
+            n_in: 0,
+            n_ar: 0,
+            n_tri: 0,
+            n_lp: 0,
+            trunc_classes: vec![],
+            xt: sp.xt,
+        };
         for (e, n) in runs(sp) {
             match e {
                 Event::Input => p.n_in += n,
@@ -275,7 +321,11 @@ impl Plan {
                 Event::Mul => p.n_tri += n,
                 Event::Trunc(s, k) => {
                     p.n_tri += n * 2 * (s as usize - 1);
-                    match p.trunc_classes.iter().position(|&(a, b, _)| (a, b) == (s, k)) {
+                    match p
+                        .trunc_classes
+                        .iter()
+                        .position(|&(a, b, _)| (a, b) == (s, k))
+                    {
                         Some(i) => p.trunc_classes[i].2 += n,
                         None => p.trunc_classes.push((s, k, n)),
                     }
@@ -288,13 +338,20 @@ impl Plan {
 
     /// The index of truncation class (s, K).
     pub fn class_of(&self, s: u32, k: u32) -> usize {
-        self.trunc_classes.iter().position(|&(a, b, _)| (a, b) == (s, k)).expect("a truncation class of the plan")
+        self.trunc_classes
+            .iter()
+            .position(|&(a, b, _)| (a, b) == (s, k))
+            .expect("a truncation class of the plan")
     }
 
     /// The compile-time arguments of mpc/darkprep.mpc.
     pub fn mpc_args(&self, threads: usize, batch: usize) -> Vec<String> {
-        let mut a = vec![format!("in{}", self.n_in), format!("ar{}", self.n_ar), format!("tri{}", self.n_tri),
-                         format!("lp{}", self.n_lp)];
+        let mut a = vec![
+            format!("in{}", self.n_in),
+            format!("ar{}", self.n_ar),
+            format!("tri{}", self.n_tri),
+            format!("lp{}", self.n_lp),
+        ];
         for &(s, k, m) in &self.trunc_classes {
             a.push(format!("tr{}x{}x{}", s, k, m));
         }
@@ -317,9 +374,20 @@ impl Plan {
         let input = sec(3, self.n_in);
         let ar = sec(1, self.n_ar);
         let tri = sec(3, self.n_tri);
-        let tr: Vec<_> = self.trunc_classes.iter().map(|&(_, k, m)| sec(mask_bits(self.xt, k), m)).collect();
+        let tr: Vec<_> = self
+            .trunc_classes
+            .iter()
+            .map(|&(_, k, m)| sec(mask_bits(self.xt, k), m))
+            .collect();
         let lp = sec(DEG, self.n_lp);
-        Sections { input, ar, tri, tr, lp, total: base }
+        Sections {
+            input,
+            ar,
+            tri,
+            tr,
+            lp,
+            total: base,
+        }
     }
 }
 
@@ -349,9 +417,21 @@ pub fn plan_of_steps(steps: &[StepParams]) -> Plan {
     let mut p = Plan::of(&steps[0]);
     for sp in &steps[1..] {
         let q = Plan::of(sp);
-        assert_eq!(q.xt, p.xt, "steps of a chunk share the truncation mask (XT or statistical)");
-        assert_eq!(q.trunc_classes.iter().map(|c| (c.0, c.1)).collect::<Vec<_>>(),
-                   p.trunc_classes.iter().map(|c| (c.0, c.1)).collect::<Vec<_>>(), "steps of a chunk share truncations");
+        assert_eq!(
+            q.xt, p.xt,
+            "steps of a chunk share the truncation mask (XT or statistical)"
+        );
+        assert_eq!(
+            q.trunc_classes
+                .iter()
+                .map(|c| (c.0, c.1))
+                .collect::<Vec<_>>(),
+            p.trunc_classes
+                .iter()
+                .map(|c| (c.0, c.1))
+                .collect::<Vec<_>>(),
+            "steps of a chunk share truncations"
+        );
         p.n_in += q.n_in;
         p.n_ar += q.n_ar;
         p.n_tri += q.n_tri;
@@ -369,7 +449,13 @@ pub fn offsets(steps: &[StepParams], j: usize) -> (usize, usize, usize, usize, V
         return (0, 0, 0, 0, vec![0; Plan::of(&steps[0]).trunc_classes.len()]);
     }
     let p = plan_of_steps(&steps[..j]);
-    (p.n_in, p.n_ar, p.n_tri, p.n_lp, p.trunc_classes.iter().map(|c| c.2).collect())
+    (
+        p.n_in,
+        p.n_ar,
+        p.n_tri,
+        p.n_lp,
+        p.trunc_classes.iter().map(|c| c.2).collect(),
+    )
 }
 
 impl Plan {

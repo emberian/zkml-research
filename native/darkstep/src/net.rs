@@ -70,7 +70,13 @@ impl Sink for TcpStream {
     }
 }
 
-fn wire_up(stream: TcpStream, peer: usize, sent: Arc<[AtomicU64; NTAGS]>, by_peer: Arc<Vec<[AtomicU64; NTAGS]>>, threads: &mut Vec<thread::JoinHandle<()>>) -> Peer {
+fn wire_up(
+    stream: TcpStream,
+    peer: usize,
+    sent: Arc<[AtomicU64; NTAGS]>,
+    by_peer: Arc<Vec<[AtomicU64; NTAGS]>>,
+    threads: &mut Vec<thread::JoinHandle<()>>,
+) -> Peer {
     stream.set_nodelay(true).ok();
     let rd = stream.try_clone().unwrap();
     wire(rd, stream, peer, sent, by_peer, threads)
@@ -176,12 +182,13 @@ impl Net {
     pub fn connect(me: usize, listener: TcpListener, addrs: &[SocketAddr]) -> Net {
         let n = addrs.len();
         let sent: Arc<[AtomicU64; NTAGS]> = Arc::new(Default::default());
-        let by_peer: Arc<Vec<[AtomicU64; NTAGS]>> = Arc::new((0..n).map(|_| Default::default()).collect());
+        let by_peer: Arc<Vec<[AtomicU64; NTAGS]>> =
+            Arc::new((0..n).map(|_| Default::default()).collect());
         let mut threads = Vec::new();
         let mut streams: HashMap<usize, TcpStream> = HashMap::new();
-        for j in 0..me {
+        for (j, &addr) in addrs.iter().enumerate().take(me) {
             let s = loop {
-                match TcpStream::connect(addrs[j]) {
+                match TcpStream::connect(addr) {
                     Ok(s) => break s,
                     Err(_) => thread::sleep(std::time::Duration::from_millis(20)),
                 }
@@ -198,30 +205,66 @@ impl Net {
         }
         let mut peers = Vec::new();
         for j in 0..n {
-            peers.push(streams.remove(&j).map(|s| wire_up(s, j, sent.clone(), by_peer.clone(), &mut threads)));
+            peers.push(
+                streams
+                    .remove(&j)
+                    .map(|s| wire_up(s, j, sent.clone(), by_peer.clone(), &mut threads)),
+            );
         }
-        Net { me, n, peers, sent_bytes: sent, sent_by_peer: by_peer, threads, critical: Arc::new(AtomicBool::new(false)), closed: Arc::new(AtomicBool::new(false)), sessions: vec![] }
+        Net {
+            me,
+            n,
+            peers,
+            sent_bytes: sent,
+            sent_by_peer: by_peer,
+            threads,
+            critical: Arc::new(AtomicBool::new(false)),
+            closed: Arc::new(AtomicBool::new(false)),
+            sessions: vec![],
+        }
     }
 
     /// The same mesh over mutual TLS 1.3 with pinned certificates (`tls`): party `me` dials every lower-numbered
     /// party and accepts every higher-numbered one, so the highest-numbered seat only dials (a box behind NAT).
     /// `certs[j]` is party j's certificate; an accepted dialer is identified by the certificate it presents, and a
     /// connection presenting anything else is refused. Fails if the mesh is not complete within `timeout`.
-    pub fn connect_tls(me: usize, listener: Option<TcpListener>, addrs: &[SocketAddr], id: &crate::tls::Identity, certs: &[Vec<u8>], timeout: std::time::Duration) -> Result<Net, String> {
+    pub fn connect_tls(
+        me: usize,
+        listener: Option<TcpListener>,
+        addrs: &[SocketAddr],
+        id: &crate::tls::Identity,
+        certs: &[Vec<u8>],
+        timeout: std::time::Duration,
+    ) -> Result<Net, String> {
         Self::connect_tls_nat(me, listener, addrs, id, certs, timeout, &[])
     }
 
     /// connect_tls with NAT seats (`nat`: indices that cannot accept connections): see `dials`.
-    pub fn connect_tls_nat(me: usize, listener: Option<TcpListener>, addrs: &[SocketAddr], id: &crate::tls::Identity, certs: &[Vec<u8>], timeout: std::time::Duration, nat: &[usize]) -> Result<Net, String> {
+    pub fn connect_tls_nat(
+        me: usize,
+        listener: Option<TcpListener>,
+        addrs: &[SocketAddr],
+        id: &crate::tls::Identity,
+        certs: &[Vec<u8>],
+        timeout: std::time::Duration,
+        nat: &[usize],
+    ) -> Result<Net, String> {
         use crate::resil::{self, Session};
         check_nat(addrs, nat)?;
         use std::time::{Duration, Instant};
         let n = addrs.len();
         let deadline = Instant::now() + timeout;
-        let budget = Duration::from_secs(std::env::var("DS_RECONNECT_SECS").ok().and_then(|s| s.parse().ok()).unwrap_or(600));
+        let budget = Duration::from_secs(
+            std::env::var("DS_RECONNECT_SECS")
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(600),
+        );
         let critical = Arc::new(AtomicBool::new(false));
         let closed = Arc::new(AtomicBool::new(false));
-        let sessions: Vec<Option<Arc<Session>>> = (0..n).map(|j| (j != me).then(|| Session::new(j, critical.clone(), budget))).collect();
+        let sessions: Vec<Option<Arc<Session>>> = (0..n)
+            .map(|j| (j != me).then(|| Session::new(j, critical.clone(), budget)))
+            .collect();
         let mut threads = Vec::new();
         // who dials whom: `dials(a, b, nat)`; I accept from every peer that dials me
         let inbound: Vec<usize> = (0..n).filter(|&j| j != me && dials(j, me, nat)).collect();
@@ -230,15 +273,30 @@ impl Net {
             let listener = listener.ok_or("party must listen: peers dial it")?;
             let others: Vec<Vec<u8>> = inbound.iter().map(|&j| certs[j].clone()).collect();
             let scfg = crate::tls::server_config(id, &others);
-            let idx: Vec<(usize, Vec<u8>)> = inbound.iter().map(|&j| (j, certs[j].clone())).collect();
+            let idx: Vec<(usize, Vec<u8>)> =
+                inbound.iter().map(|&j| (j, certs[j].clone())).collect();
             let (ss, cl) = (sessions.clone(), closed.clone());
-            threads.push(thread::spawn(move || resil::acceptor(listener, scfg, idx, ss, cl, me)));
+            threads.push(thread::spawn(move || {
+                resil::acceptor(listener, scfg, idx, ss, cl, me)
+            }));
         }
-        let ccfgs: Vec<Option<Arc<rustls::ClientConfig>>> = (0..n).map(|j| outbound.contains(&j).then(|| crate::tls::client_config(id, &certs[j]))).collect();
+        let ccfgs: Vec<Option<Arc<rustls::ClientConfig>>> = (0..n)
+            .map(|j| {
+                outbound
+                    .contains(&j)
+                    .then(|| crate::tls::client_config(id, &certs[j]))
+            })
+            .collect();
         for &j in &outbound {
             let s = sessions[j].as_ref().unwrap();
             loop {
-                match resil::dial(s, addrs[j], ccfgs[j].clone().unwrap(), j, Duration::from_secs(10)) {
+                match resil::dial(
+                    s,
+                    addrs[j],
+                    ccfgs[j].clone().unwrap(),
+                    j,
+                    Duration::from_secs(10),
+                ) {
                     Ok(()) => break,
                     Err(e) if e.contains("TLS handshake") => {
                         closed.store(true, Ordering::Relaxed);
@@ -256,18 +314,25 @@ impl Net {
         }
         // the first connections of the peers that dial me
         loop {
-            let missing: Vec<usize> = inbound.iter().copied().filter(|&j| sessions[j].as_ref().unwrap().is_down()).collect();
+            let missing: Vec<usize> = inbound
+                .iter()
+                .copied()
+                .filter(|&j| sessions[j].as_ref().unwrap().is_down())
+                .collect();
             if missing.is_empty() {
                 break;
             }
             if Instant::now() > deadline {
                 closed.store(true, Ordering::Relaxed);
-                return Err(format!("party {me}: no authenticated connection from {missing:?} in time"));
+                return Err(format!(
+                    "party {me}: no authenticated connection from {missing:?} in time"
+                ));
             }
             thread::sleep(Duration::from_millis(10));
         }
         let sent: Arc<[AtomicU64; NTAGS]> = Arc::new(Default::default());
-        let by_peer: Arc<Vec<[AtomicU64; NTAGS]>> = Arc::new((0..n).map(|_| Default::default()).collect());
+        let by_peer: Arc<Vec<[AtomicU64; NTAGS]>> =
+            Arc::new((0..n).map(|_| Default::default()).collect());
         let kill = test_kill();
         let mut peers = Vec::new();
         for j in 0..n {
@@ -277,10 +342,15 @@ impl Net {
                 let k = kill.filter(|k| k.0 == j).map(|k| (k.1, k.2));
                 let s2 = s.clone();
                 threads.push(thread::spawn(move || {
-                    resil::writer(s2, wrx, move |tag, b| {
-                        sent[tag as usize].fetch_add(b, Ordering::Relaxed);
-                        by_peer[j][tag as usize].fetch_add(b, Ordering::Relaxed);
-                    }, k)
+                    resil::writer(
+                        s2,
+                        wrx,
+                        move |tag, b| {
+                            sent[tag as usize].fetch_add(b, Ordering::Relaxed);
+                            by_peer[j][tag as usize].fetch_add(b, Ordering::Relaxed);
+                        },
+                        k,
+                    )
                 }));
                 let mut txs = Vec::new();
                 let mut rxs = Vec::new();
@@ -299,7 +369,17 @@ impl Net {
                 Peer { tx, rx: rxs }
             }));
         }
-        Ok(Net { me, n, peers, sent_bytes: sent, sent_by_peer: by_peer, threads, critical, closed, sessions })
+        Ok(Net {
+            me,
+            n,
+            peers,
+            sent_bytes: sent,
+            sent_by_peer: by_peer,
+            threads,
+            critical,
+            closed,
+            sessions,
+        })
     }
 
     /// Mark the check phases (MAC check, Freivalds): a link drop now is an abort, not a resume (TLS mesh only).
@@ -321,23 +401,45 @@ impl Net {
             s.abort_req.store(true, Ordering::Relaxed);
         }
         let t = std::time::Instant::now();
-        while self.sessions.iter().flatten().any(|s| !s.dead.load(Ordering::Relaxed)) && t.elapsed() < std::time::Duration::from_secs(5) {
+        while self
+            .sessions
+            .iter()
+            .flatten()
+            .any(|s| !s.dead.load(Ordering::Relaxed))
+            && t.elapsed() < std::time::Duration::from_secs(5)
+        {
             thread::sleep(std::time::Duration::from_millis(10));
         }
     }
 
     /// Is the session to peer j dead (a drop in a check phase, or an outage past the budget)?
     pub fn link_dead(&self, j: usize) -> bool {
-        self.sessions.get(j).and_then(|s| s.as_ref()).map(|s| s.dead.load(Ordering::Relaxed)).unwrap_or(false)
+        self.sessions
+            .get(j)
+            .and_then(|s| s.as_ref())
+            .map(|s| s.dead.load(Ordering::Relaxed))
+            .unwrap_or(false)
     }
 
     /// Reconnections per peer so far (TLS mesh).
     pub fn reconnects(&self) -> Vec<u64> {
-        self.sessions.iter().map(|s| s.as_ref().map(|s| s.reconnects.load(Ordering::Relaxed)).unwrap_or(0)).collect()
+        self.sessions
+            .iter()
+            .map(|s| {
+                s.as_ref()
+                    .map(|s| s.reconnects.load(Ordering::Relaxed))
+                    .unwrap_or(0)
+            })
+            .collect()
     }
 
     pub fn send(&self, to: usize, tag: u8, buf: Vec<u8>) {
-        self.peers[to].as_ref().expect("no self-send").tx.send((tag, buf)).expect("peer writer gone");
+        self.peers[to]
+            .as_ref()
+            .expect("no self-send")
+            .tx
+            .send((tag, buf))
+            .expect("peer writer gone");
     }
 
     pub fn sender(&self, to: usize) -> SyncSender<(u8, Vec<u8>)> {
@@ -345,7 +447,11 @@ impl Net {
     }
 
     pub fn recv(&self, from: usize, tag: u8) -> Vec<u8> {
-        self.peers[from].as_ref().expect("no self-recv").rx[tag as usize].lock().unwrap().recv().expect("peer gone")
+        self.peers[from].as_ref().expect("no self-recv").rx[tag as usize]
+            .lock()
+            .unwrap()
+            .recv()
+            .expect("peer gone")
     }
 
     pub fn others(&self) -> Vec<usize> {
@@ -359,7 +465,13 @@ impl Net {
             self.send(j, tag, b.clone());
         }
         (0..self.n)
-            .map(|j| if j == self.me { mine.to_vec() } else { bytes_to_u64s(&self.recv(j, tag)) })
+            .map(|j| {
+                if j == self.me {
+                    mine.to_vec()
+                } else {
+                    bytes_to_u64s(&self.recv(j, tag))
+                }
+            })
             .collect()
     }
 
@@ -367,7 +479,15 @@ impl Net {
         for j in self.others() {
             self.send(j, tag, mine.to_vec());
         }
-        (0..self.n).map(|j| if j == self.me { mine.to_vec() } else { self.recv(j, tag) }).collect()
+        (0..self.n)
+            .map(|j| {
+                if j == self.me {
+                    mine.to_vec()
+                } else {
+                    self.recv(j, tag)
+                }
+            })
+            .collect()
     }
 
     pub fn total_sent(&self) -> [u64; NTAGS] {
@@ -380,7 +500,10 @@ impl Net {
 
     /// Bytes sent to each peer, per tag: `[peer][tag]`.
     pub fn sent_per_peer(&self) -> Vec<[u64; NTAGS]> {
-        self.sent_by_peer.iter().map(|row| std::array::from_fn(|k| row[k].load(Ordering::Relaxed))).collect()
+        self.sent_by_peer
+            .iter()
+            .map(|row| std::array::from_fn(|k| row[k].load(Ordering::Relaxed)))
+            .collect()
     }
 
     /// Close the writers (dropping the queues ends the writer threads) and join everything.
@@ -390,7 +513,11 @@ impl Net {
         let closed = self.closed.clone();
         let sessions = self.sessions.clone();
         thread::spawn(move || {
-            while sessions.iter().flatten().any(|s| !(s.closing.load(Ordering::Relaxed) || s.dead.load(Ordering::Relaxed))) {
+            while sessions
+                .iter()
+                .flatten()
+                .any(|s| !(s.closing.load(Ordering::Relaxed) || s.dead.load(Ordering::Relaxed)))
+            {
                 thread::sleep(std::time::Duration::from_millis(20));
             }
             thread::sleep(std::time::Duration::from_millis(200));
@@ -414,5 +541,7 @@ pub fn u64s_to_bytes(v: &[u64]) -> Vec<u8> {
 }
 
 pub fn bytes_to_u64s(b: &[u8]) -> Vec<u64> {
-    b.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect()
+    b.chunks_exact(8)
+        .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
+        .collect()
 }

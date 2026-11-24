@@ -98,13 +98,22 @@ pub fn public_coins(parts: &[&str]) -> Coins {
         h.update((p.len() as u64).to_le_bytes());
         h.update(p.as_bytes());
     }
-    Coins::Public(PubCoins { key: h.finalize().into(), ctr: 0, buf: [0; 32], pos: 32 })
+    Coins::Public(PubCoins {
+        key: h.finalize().into(),
+        ctr: 0,
+        buf: [0; 32],
+        pos: 32,
+    })
 }
 
 fn rejection(n: u64, mut word: impl FnMut() -> u64) -> u64 {
     assert!(n > 0);
     let bits = 64 - (n - 1).leading_zeros();
-    let mask = if bits == 64 { u64::MAX } else { (1u64 << bits) - 1 };
+    let mask = if bits == 64 {
+        u64::MAX
+    } else {
+        (1u64 << bits) - 1
+    };
     loop {
         let x = word() & mask;
         if x < n {
@@ -146,7 +155,10 @@ impl Coins {
 
 /// Fresh OS coins.
 pub fn secret_coins() -> Coins {
-    Coins::Os(OsCoins { buf: Vec::new(), pos: 0 })
+    Coins::Os(OsCoins {
+        buf: Vec::new(),
+        pos: 0,
+    })
 }
 
 /// random.Random(secrets.randbits(256)): MT19937 seeded from the OS. NOT a CSPRNG (its outputs determine its

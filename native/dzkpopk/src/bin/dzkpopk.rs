@@ -36,9 +36,13 @@ fn main() {
     }
     match a.get(1).map(|s| s.as_str()) {
         Some("vectors") => {
-            let (n, l, m, t): (usize, usize, usize, usize) = (arg(&a, 2), arg(&a, 3), arg(&a, 4), arg(&a, 5));
+            let (n, l, m, t): (usize, usize, usize, usize) =
+                (arg(&a, 2), arg(&a, 3), arg(&a, 4), arg(&a, 5));
             let out = &a[6];
-            let kinds: Vec<String> = a.get(7).map(|s| s.split(',').map(String::from).collect()).unwrap_or(vec!["sk".into(), "pk".into(), "key".into()]);
+            let kinds: Vec<String> = a
+                .get(7)
+                .map(|s| s.split(',').map(String::from).collect())
+                .unwrap_or(vec!["sk".into(), "pk".into(), "key".into()]);
             let mut res = vec![];
             for (kind, st, wit) in instances(n, l, m) {
                 if !kinds.iter().any(|k| k == kind) {
@@ -46,7 +50,10 @@ fn main() {
                 }
                 let t0 = Instant::now();
                 #[cfg(feature = "test-det")]
-                let mut opts = ProveOpts { det_seed: det.clone(), ..Default::default() };
+                let mut opts = ProveOpts {
+                    det_seed: det.clone(),
+                    ..Default::default()
+                };
                 #[cfg(not(feature = "test-det"))]
                 let mut opts = ProveOpts::default();
                 let blob = prove_with(&st, &wit, t, &mut opts).unwrap();
@@ -70,13 +77,21 @@ fn main() {
             println!("{{\n{}\n}}", res.join(",\n"));
         }
         Some("verify") => {
-            let (n, l, m, t): (usize, usize, usize, usize) = (arg(&a, 2), arg(&a, 3), arg(&a, 4), arg(&a, 5));
+            let (n, l, m, t): (usize, usize, usize, usize) =
+                (arg(&a, 2), arg(&a, 3), arg(&a, 4), arg(&a, 5));
             let kind = &a[6];
             let blob = std::fs::read(&a[7]).unwrap();
-            let (_, st, _) = instances(n, l, m).into_iter().find(|(k, _, _)| k == kind).unwrap();
+            let (_, st, _) = instances(n, l, m)
+                .into_iter()
+                .find(|(k, _, _)| k == kind)
+                .unwrap();
             let t0 = Instant::now();
             let r = verify(&st, &blob, t);
-            println!("{{\"kind\": \"{kind}\", \"result\": \"{:?}\", \"verify_s\": {:.3}}}", r, t0.elapsed().as_secs_f64());
+            println!(
+                "{{\"kind\": \"{kind}\", \"result\": \"{:?}\", \"verify_s\": {:.3}}}",
+                r,
+                t0.elapsed().as_secs_f64()
+            );
         }
         Some("ceremony") => {
             let (n, l, t): (usize, usize, usize) = (arg(&a, 2), arg(&a, 3), arg(&a, 4));
@@ -91,7 +106,12 @@ fn main() {
             let bd: Vec<String> = (0..3)
                 .map(|i| {
                     let b = &cer.registry(i).unwrap().b;
-                    let j = Json::List(b.to_big().into_iter().map(|x| Json::Int(x.into())).collect());
+                    let j = Json::List(
+                        b.to_big()
+                            .into_iter()
+                            .map(|x| Json::Int(x.into()))
+                            .collect(),
+                    );
                     format!("\"{}\"", sha_hex(&j.canonical()))
                 })
                 .collect();
@@ -106,7 +126,8 @@ fn main() {
         }
         Some("bench") => {
             let kind = Kind::parse(&a[2]).unwrap();
-            let (n, l, m, s, t): (usize, usize, usize, usize, usize) = (arg(&a, 3), arg(&a, 4), arg(&a, 5), arg(&a, 6), arg(&a, 7));
+            let (n, l, m, s, t): (usize, usize, usize, usize, usize) =
+                (arg(&a, 3), arg(&a, 4), arg(&a, 5), arg(&a, 6), arg(&a, 7));
             let reps: usize = a.get(8).map(|x| x.parse().unwrap()).unwrap_or(1);
             let (qp, tt) = params(n, l);
             let mut rng = PyRandom::from_u64(4096);
@@ -126,7 +147,10 @@ fn main() {
                         cts.push(ct);
                         ws.push(w);
                     }
-                    (Statement::new(reg, kind, cts, vec![sl.clone(); m], ctx()).unwrap(), Witness::Pk { cts: ws })
+                    (
+                        Statement::new(reg, kind, cts, vec![sl.clone(); m], ctx()).unwrap(),
+                        Witness::Pk { cts: ws },
+                    )
                 }
                 _ => {
                     let (mut cts, mut ws) = (vec![], vec![]);
@@ -139,17 +163,31 @@ fn main() {
                         cts.push(ct);
                         ws.push(w);
                     }
-                    let slots = if kind == Kind::Key { vec![] } else { vec![sl.clone(); m] };
+                    let slots = if kind == Kind::Key {
+                        vec![]
+                    } else {
+                        vec![sl.clone(); m]
+                    };
                     let cts = if kind == Kind::Key { vec![] } else { cts };
                     let ws = if kind == Kind::Key { vec![] } else { ws };
-                    (Statement::new(reg, kind, cts, slots, ctx()).unwrap(), Witness::Sk { s: sk, e_pk: epk, cts: ws })
+                    (
+                        Statement::new(reg, kind, cts, slots, ctx()).unwrap(),
+                        Witness::Sk {
+                            s: sk,
+                            e_pk: epk,
+                            cts: ws,
+                        },
+                    )
                 }
             };
             let tgen = t0.elapsed().as_secs_f64();
             let sh = shape(&st, t).unwrap();
             for rep in 0..reps {
                 let t0 = Instant::now();
-                let mut o = ProveOpts { low_memory: std::env::var("DZK_LOW_MEMORY").is_ok_and(|v| v != "0"), ..Default::default() };
+                let mut o = ProveOpts {
+                    low_memory: std::env::var("DZK_LOW_MEMORY").is_ok_and(|v| v != "0"),
+                    ..Default::default()
+                };
                 let blob = prove_with(&st, &wit, t, &mut o).unwrap();
                 let tp = t0.elapsed().as_secs_f64();
                 let t0 = Instant::now();
@@ -179,7 +217,12 @@ fn main() {
             let (qp, tt) = params(n, l);
             for (m, s) in [(2usize, 64usize), (64, 64), (32, 128), (16, 256)] {
                 let (bits, sh) = batch_proof_bits(Kind::Sk, n, &qp, tt, &vec![s; m], t).unwrap();
-                println!("sk M={m} S={s}: {bits} bits, k={}, rows={}, digits={}", sh.k, sh.m1 + sh.m2, sh.n1 + sh.n2);
+                println!(
+                    "sk M={m} S={s}: {bits} bits, k={}, rows={}, digits={}",
+                    sh.k,
+                    sh.m1 + sh.m2,
+                    sh.n1 + sh.n2
+                );
             }
         }
         _ => {

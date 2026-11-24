@@ -11,12 +11,20 @@ fn check_with(n: usize, l: usize, f: u32, d: usize, ret_primes: usize) -> serde_
     check_round(n, l, f, d, ret_primes, None)
 }
 
-fn check_round(n: usize, l: usize, f: u32, d: usize, ret_primes: usize, round: Option<(u32, u32)>) -> serde_json::Value {
+fn check_round(
+    n: usize,
+    l: usize,
+    f: u32,
+    d: usize,
+    ret_primes: usize,
+    round: Option<(u32, u32)>,
+) -> serde_json::Value {
     let path = format!(
         "{}/../../research/dark_learning_2026_11_06/native_ref_results/native_ref_N{n}_L{l}_F{f}_d{d}.json",
         env!("CARGO_MANIFEST_DIR")
     );
-    let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+    let r: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
     let mut pf = prof(&[n.to_string(), l.to_string(), f.to_string(), d.to_string()]);
     pf.ret_primes = ret_primes;
     pf.ret_round = round;
@@ -25,8 +33,16 @@ fn check_round(n: usize, l: usize, f: u32, d: usize, ret_primes: usize, round: O
     assert_eq!(res["refines_spec"], true);
     assert_eq!(res["transcript"], r["transcript"], "transcript digest");
     for i in 0..3 {
-        assert_eq!(res["parties"][i], r["parties"][i.to_string()], "party {i} shares digest");
-        assert_eq!(res["sigma"][i], r["sigma"][i.to_string()], "party {i} sigma");
+        assert_eq!(
+            res["parties"][i],
+            r["parties"][i.to_string()],
+            "party {i} shares digest"
+        );
+        assert_eq!(
+            res["sigma"][i],
+            r["sigma"][i.to_string()],
+            "party {i} sigma"
+        );
     }
     assert_eq!(res["detail"][0]["wire"], r["wire"], "SPDZ wire counts");
     for i in 0..3 {
@@ -36,9 +52,16 @@ fn check_round(n: usize, l: usize, f: u32, d: usize, ret_primes: usize, round: O
         assert!(!to.contains_key(&i.to_string()), "party {i}: no self link");
         for tag in ["open", "he_ct", "he_ret", "ctrl", "proof"] {
             let links: u64 = to.values().map(|l| l[tag].as_u64().unwrap()).sum();
-            assert_eq!(links, det["bytes_sent"][tag].as_u64().unwrap(), "party {i} tag {tag}: links sum to the total");
+            assert_eq!(
+                links,
+                det["bytes_sent"][tag].as_u64().unwrap(),
+                "party {i} tag {tag}: links sum to the total"
+            );
         }
-        assert!(to.values().all(|l| l["he_ct"].as_u64().unwrap() > 0), "party {i}: HE ciphertexts go to both peers");
+        assert!(
+            to.values().all(|l| l["he_ct"].as_u64().unwrap() > 0),
+            "party {i}: HE ciphertexts go to both peers"
+        );
     }
     res
 }
@@ -52,7 +75,11 @@ fn compressed_returns_stay_bit_exact() {
         let small = check_with(n, l, f, 64, 2);
         let ret = |r: &serde_json::Value| r["detail"][0]["bytes_sent"]["he_ret"].as_u64().unwrap();
         let ratio = ret(&small) as f64 / ret(&full) as f64;
-        eprintln!("N = {n}, L = {l}: he_ret {} -> {} bytes per party ({ratio:.3})", ret(&full), ret(&small));
+        eprintln!(
+            "N = {n}, L = {l}: he_ret {} -> {} bytes per party ({ratio:.3})",
+            ret(&full),
+            ret(&small)
+        );
         assert!(ratio < 0.5 + 0.1 / l as f64, "ratio {ratio}");
     }
 }
@@ -77,10 +104,17 @@ fn d64_n8192_demo_profile() {
 #[test]
 fn attacks_refused() {
     let pf = prof(&["4096".into(), "3".into(), "118".into(), "64".into()]);
-    for (att, by) in [("mv_wrong_return", "HE matvec: Freivalds"), ("wrong_return", "HE outer: Freivalds")] {
+    for (att, by) in [
+        ("mv_wrong_return", "HE matvec: Freivalds"),
+        ("wrong_return", "HE outer: Freivalds"),
+    ] {
         let (res, _) = run_local(&pf, Some((att.into(), 1)));
         assert_eq!(res["verdict"], "REFUSED", "{att}");
-        assert!(res["by"][0].as_str().unwrap().starts_with(by), "{att}: {}", res["by"]);
+        assert!(
+            res["by"][0].as_str().unwrap().starts_with(by),
+            "{att}: {}",
+            res["by"]
+        );
     }
 }
 
@@ -131,7 +165,12 @@ fn rounded_returns_stay_bit_exact() {
         let sw = check_with(n, l, f, 64, 2);
         let rd = check_round(n, l, f, 64, 2, Some(rb));
         let ret = |r: &serde_json::Value| r["detail"][0]["bytes_sent"]["he_ret"].as_u64().unwrap();
-        eprintln!("N = {n}, L = {l}: round bits (c0, c1) = {rb:?}; he_ret {} -> {} ({:.3})", ret(&sw), ret(&rd), ret(&rd) as f64 / ret(&sw) as f64);
+        eprintln!(
+            "N = {n}, L = {l}: round bits (c0, c1) = {rb:?}; he_ret {} -> {} ({:.3})",
+            ret(&sw),
+            ret(&rd),
+            ret(&rd) as f64 / ret(&sw) as f64
+        );
         assert!(ret(&rd) < ret(&sw));
     }
 }

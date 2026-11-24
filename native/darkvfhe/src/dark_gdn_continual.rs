@@ -162,24 +162,25 @@ pub fn cleartext_fast_weight_seq(
 /// Division-free Neumann inverse `(I + L)^{-1} = sum_{p=0}^{tau - 1} (-L)^p` over `F_t` (`0` divisions!).
 pub fn neumann_inv_strict_lower_tri(fp_t: &FastPrime61, l_mat: &[Vec<u64>]) -> Vec<Vec<u64>> {
     let tau = l_mat.len();
-    for i in 0..tau {
-        assert_eq!(l_mat[i].len(), tau);
-        for j in i..tau {
-            assert_eq!(l_mat[i][j], 0, "L must be strictly lower triangular");
+    for (i, row) in l_mat.iter().enumerate() {
+        assert_eq!(row.len(), tau);
+        for &val in &row[i..] {
+            assert_eq!(val, 0, "L must be strictly lower triangular");
         }
     }
     let mut inverse = vec![vec![0; tau]; tau];
-    for i in 0..tau {
+    for (i, l_row) in l_mat.iter().enumerate() {
         inverse[i][i] = 1;
-        for j in 0..i {
-            let sum = (j..i).fold(0, |acc, k| {
-                fp_t.add(acc, fp_t.mul(l_mat[i][k], inverse[k][j]))
-            });
-            inverse[i][j] = fp_t.neg(sum);
+        let (upper, cur_row) = inverse.split_at_mut(i);
+        for (j, inv_ij) in cur_row[0].iter_mut().enumerate().take(i) {
+            let sum = (j..i).fold(0, |acc, k| fp_t.add(acc, fp_t.mul(l_row[k], upper[k][j])));
+            *inv_ij = fp_t.neg(sum);
         }
     }
     inverse
 }
+
+type CleartextWyChunkResult = (Vec<Vec<u64>>, u64, Vec<Vec<u64>>, Vec<Vec<u64>>);
 
 /// Stateful division-free WY chunk update `(I + L) U = V - K_in S_0^T`,
 /// `S_tau = Gamma_tau S_0 + U^T K_decayed^T` over `F_t`.
@@ -187,17 +188,15 @@ pub fn cleartext_wy_chunk_head(
     fp_t: &FastPrime61,
     s0: &[Vec<u64>],
     chunk: &[GdnHeadStepPlain],
-) -> (Vec<Vec<u64>>, u64, Vec<Vec<u64>>, Vec<Vec<u64>>) {
+) -> CleartextWyChunkResult {
     let tau = chunk.len();
     let d_v = s0.len();
     let d_k = s0[0].len();
 
     let decay_range = |a: usize, b: usize| -> u64 {
-        let mut prod = 1u64;
-        for r in a..b {
-            prod = fp_t.mul(prod, chunk[r].gamma % fp_t.p);
-        }
-        prod
+        chunk[a..b]
+            .iter()
+            .fold(1u64, |prod, st| fp_t.mul(prod, st.gamma % fp_t.p))
     };
 
     let gamma_tau = decay_range(0, tau);
@@ -239,10 +238,10 @@ pub fn cleartext_wy_chunk_head(
     }
 
     let mut k_decayed_rows = vec![vec![0u64; d_k]; tau];
-    for j in 0..tau {
+    for (j, k_dec_row) in k_decayed_rows.iter_mut().enumerate() {
         let g_tail = decay_range(j + 1, tau);
-        for c in 0..d_k {
-            k_decayed_rows[j][c] = fp_t.mul(g_tail, chunk[j].k[c] % fp_t.p);
+        for (dst, &k_val) in k_dec_row.iter_mut().zip(&chunk[j].k) {
+            *dst = fp_t.mul(g_tail, k_val % fp_t.p);
         }
     }
 
@@ -266,8 +265,8 @@ pub fn cleartext_multihead_seq(
 ) -> Vec<Vec<Vec<u64>>> {
     let mut cur = s0_heads.to_vec();
     for ch in chunks {
-        for h in 0..cur.len() {
-            cur[h] = cleartext_fast_weight_seq(fp_t, &cur[h], &ch.heads[h]);
+        for (cur_h, ch_h) in cur.iter_mut().zip(&ch.heads) {
+            *cur_h = cleartext_fast_weight_seq(fp_t, cur_h, ch_h);
         }
     }
     cur
@@ -349,7 +348,7 @@ pub fn sub_ct2_mod_q(params: &HoistedParams, a: &Ct, b: &Ct) -> Ct {
 pub fn compute_state_handles_commitment(handles: &[[u8; 32]]) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_B61_GDN_STATE_CHAIN_V1|");
-    h.update(&(handles.len() as u32).to_le_bytes());
+    h.update((handles.len() as u32).to_le_bytes());
     for hd in handles {
         h.update(hd);
     }
@@ -813,23 +812,23 @@ fn replay_logup_terminal_points_local(
     let mut st: [u8; 32] = {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_D1B_GKR|LOGUP_RANGE20");
-        h.update(&fp.p.to_le_bytes());
+        h.update(fp.p.to_le_bytes());
         h.update(ctx);
         h.finalize().into()
     };
     let absorb_u64s = |s: &mut [u8; 32], vals: &[u64]| {
         let mut h = Sha256::new();
-        h.update(&*s);
+        h.update(*s);
         for &v in vals {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         *s = h.finalize().into();
     };
     let squeeze = |s: &mut [u8; 32], tag: u64| -> u64 {
         let mut h = Sha256::new();
-        h.update(&*s);
+        h.update(*s);
         h.update(b"CHAL");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         *s = out;
         fp.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -839,15 +838,15 @@ fn replay_logup_terminal_points_local(
         h.update(s);
         h.update(b"SUB|");
         h.update(label.as_bytes());
-        h.update(&idx.to_le_bytes());
+        h.update(idx.to_le_bytes());
         h.finalize().into()
     };
 
     absorb_u64s(&mut st, &[proof.total_lookups as u64, c as u64]);
     {
         let mut h = Sha256::new();
-        h.update(&st);
-        h.update(&proof.mult_commitment);
+        h.update(st);
+        h.update(proof.mult_commitment);
         st = h.finalize().into();
     }
     for ell in 0..c {
@@ -1164,18 +1163,23 @@ fn derive_state_whir_fs_points(
         let qk = params.qp[k];
         let mut h = Sha256::new();
         h.update(b"STATE_WHIR_PT|");
-        h.update(&ctx);
-        h.update(&qk.to_le_bytes());
+        h.update(ctx);
+        h.update(qk.to_le_bytes());
         let d: [u8; 32] = h.finalize().into();
         (u128::from_le_bytes(d[0..16].try_into().unwrap()) % (qk as u128)) as u64
     });
     (ctx, pts)
 }
 
-fn build_state_garner_v_families(
-    params: &HoistedParams,
-    r_qp: &[u64; 3],
-) -> (Vec<Vec<u64>>, [usize; 15], [[[usize; 3]; 15]; 2]) {
+type StateGarnerVFamilies = (Vec<Vec<u64>>, [usize; 15], [[[usize; 3]; 15]; 2]);
+type SpdzWyChunkSolveResult = (
+    Vec<Vec<Vec<SharedScalar>>>,
+    Vec<Vec<Vec<SharedScalar>>>,
+    Vec<SharedScalar>,
+    Vec<Vec<Vec<SharedScalar>>>,
+);
+
+fn build_state_garner_v_families(params: &HoistedParams, r_qp: &[u64; 3]) -> StateGarnerVFamilies {
     let n = params.n;
     let fp0 = &params.fp[0];
     let gspec = ExactGarnerSpec::new(params);
@@ -1194,7 +1198,7 @@ fn build_state_garner_v_families(
         cur0 = fp0.mul(cur0, r_qp[0]);
     }
     // Note: mod q0, q0 == 0 and q0*q1 == 0! Still register v_fams cleanly for all 15 cols mod q_l:
-    for m in 0..15 {
+    for (m, p0_slot) in p0_vf.iter_mut().enumerate() {
         let grp = m / 5;
         let sub = m % 5;
         let base_factor = if !limb_active[sub] {
@@ -1210,7 +1214,7 @@ fn build_state_garner_v_families(
                 vec_m[j] = fp0.mul(base_factor, r0_pows[j]);
             }
         }
-        p0_vf[m] = v_fams.len();
+        *p0_slot = v_fams.len();
         v_fams.push(vec_m);
     }
 
@@ -1227,7 +1231,7 @@ fn build_state_garner_v_families(
             rl_pows.push(c);
             c = fpl.mul(c, r_qp[li + 1]);
         }
-        for m in 0..15 {
+        for (m, p12_slot) in p12_map[li].iter_mut().enumerate() {
             let grp = m / 5;
             let sub = m % 5;
             let w_m = if !limb_active[sub] {
@@ -1250,7 +1254,7 @@ fn build_state_garner_v_families(
             v_fams.push(b0);
             v_fams.push(b1);
             v_fams.push(b2);
-            p12_map[li][m] = [base, base + 1, base + 2];
+            *p12_slot = [base, base + 1, base + 2];
         }
     }
     (v_fams, p0_vf, p12_map)
@@ -1496,16 +1500,16 @@ pub fn prove_continual_whir_state_bundle(
             rhs: ev0,
         });
 
-        for li in 0..2 {
+        for p12_li in &p12_map {
             let mut sub = [0u64; 3];
             for b in 0..3 {
                 let mut acc = 0u64;
                 let mut terms_b = Vec::new();
-                for m in 0..15 {
+                for (m, p12_m) in p12_li.iter().enumerate() {
                     if m % 5 == 4 {
                         continue;
                     }
-                    let vfi = p12_map[li][m][b];
+                    let vfi = p12_m[b];
                     acc += fp0.dot(&flat[(base + m) * n..(base + m + 1) * n], &v_fams[vfi]);
                     terms_b.push((vfi, vec![(base + m, 1u64)]));
                 }
@@ -1768,19 +1772,19 @@ pub fn verify_continual_whir_state_bytes(
             terms: terms0,
             rhs: bundle.p0_poly_evals[p_idx],
         });
-        for li in 0..2 {
+        for (li, p12_li) in p12_map.iter().enumerate() {
             let sub = bundle.p12_poly_subsums[2 * p_idx + li];
-            for b in 0..3 {
+            for (b, &rhs_b) in sub.iter().enumerate() {
                 let mut terms_b = Vec::new();
-                for m in 0..15 {
+                for (m, p12_m) in p12_li.iter().enumerate() {
                     if m % 5 == 4 {
                         continue;
                     }
-                    terms_b.push((p12_map[li][m][b], vec![(base + m, 1u64)]));
+                    terms_b.push((p12_m[b], vec![(base + m, 1u64)]));
                 }
                 claims.push(SlotLinearClaim {
                     terms: terms_b,
-                    rhs: sub[b],
+                    rhs: rhs_b,
                 });
             }
         }
@@ -1901,12 +1905,11 @@ pub fn verify_continual_whir_state_bytes(
     .map_err(ContinualGdnError::InvalidWhirProof)?;
 
     // 4. Check 3-prime `Qp` polynomial evaluations `u(r_k) - floor(Q/2) * ones(r_k) == ct(r_k) (mod q_k)`:
-    for k_idx in 0..3 {
+    for (k_idx, &r) in r_qp.iter().enumerate() {
         let fpk = &params.fp[k_idx];
-        let r = r_qp[k_idx];
         let ones = fpk.ones_eval(n, r);
         let hq_shift = fpk.mul(params.half_q_mod_p[k_idx], ones);
-        for ct_i in 0..bundle.num_cts {
+        for (ct_i, st_ct) in state_cts.iter().enumerate().take(bundle.num_cts) {
             for comp in 0..2 {
                 let p_idx = 2 * ct_i + comp;
                 let u_ev = if k_idx == 0 {
@@ -1916,9 +1919,9 @@ pub fn verify_continual_whir_state_bytes(
                 };
                 let lifted_ev = fpk.sub(u_ev, hq_shift);
                 let ct_slice = if comp == 0 {
-                    &state_cts[ct_i].c0[k_idx * n..(k_idx + 1) * n]
+                    &st_ct.c0[k_idx * n..(k_idx + 1) * n]
                 } else {
-                    &state_cts[ct_i].c1[k_idx * n..(k_idx + 1) * n]
+                    &st_ct.c1[k_idx * n..(k_idx + 1) * n]
                 };
                 let want_ev = fpk.eval_poly(ct_slice, r);
                 if lifted_ev != want_ev {
@@ -2125,13 +2128,13 @@ impl DarkB61GdnResident {
         {
             return Err(ContinualGdnError::InvalidGeometry("ragged initial state"));
         }
-        if !d_v.is_power_of_two() || !d_k.is_power_of_two() || d_k >= n || n % d_k != 0 {
+        if !d_v.is_power_of_two() || !d_k.is_power_of_two() || d_k >= n || !n.is_multiple_of(d_k) {
             return Err(ContinualGdnError::InvalidGeometry(
                 "d_v/d_k must be powers of two with d_k < N and d_k | N",
             ));
         }
         let slice_rows = (n / d_k).min(d_v);
-        if d_v % slice_rows != 0 || slice_rows * d_k > n {
+        if !d_v.is_multiple_of(slice_rows) || slice_rows * d_k > n {
             return Err(ContinualGdnError::InvalidGeometry(
                 "d_v must be divisible by slice_rows and slice_rows * d_k <= N",
             ));
@@ -2155,8 +2158,8 @@ impl DarkB61GdnResident {
                     pack_fast_weight_slice(&initial_heads[h], s, slice_rows, d_k, n, params.t);
                 let mut sh = Sha256::new();
                 sh.update(b"GENESIS_SLICE_RNG|");
-                sh.update(&base_seed);
-                sh.update(&(b as u32).to_le_bytes());
+                sh.update(base_seed);
+                sh.update((b as u32).to_le_bytes());
                 let mut prng = PcsRng::from_seed(sh.finalize().into());
                 pub_key.encrypt_pk(&plain, &mut prng)
             })
@@ -2368,10 +2371,10 @@ impl DarkB61GdnResident {
         let t_spdz0 = Instant::now();
         let mut rev_k_cts = vec![Vec::with_capacity(tau); self.num_heads];
         let mut rev_k_hs = vec![Vec::with_capacity(tau); self.num_heads];
-        for h in 0..self.num_heads {
-            for m in 0..tau {
+        for (h, head_steps) in spdz_heads.iter().enumerate() {
+            for (m, step) in head_steps.iter().enumerate() {
                 let slots: Vec<(usize, SharedScalar)> = (0..self.d_k)
-                    .map(|c| ((self.d_k - 1) - c, spdz_heads[h][m].k[c]))
+                    .map(|c| ((self.d_k - 1) - c, step.k[c]))
                     .collect();
                 let (ct_kr, h_kr) = quorum
                     .cluster
@@ -2428,7 +2431,7 @@ impl DarkB61GdnResident {
         read_cert_hasher.update(b"DARKGDN_READ_CERTS_V1|");
         for &(h, m) in &read_tasks {
             let idx = h * tau + m;
-            read_cert_hasher.update(&read_proved[idx].1.witness_root);
+            read_cert_hasher.update(read_proved[idx].1.witness_root);
         }
         let read_cert_digest: [u8; 32] = read_cert_hasher.finalize().into();
 
@@ -2802,12 +2805,7 @@ impl DarkB61GdnResident {
         spdz_heads: &[Vec<SpdzHeadStepShares>],
         crossed_reads: &[Vec<SharedScalar>], // [h * tau + m) * slices_per_head + s][0..slice_rows]
         episode_id: usize,
-    ) -> Result<(
-        Vec<Vec<Vec<SharedScalar>>>,
-        Vec<Vec<Vec<SharedScalar>>>,
-        Vec<SharedScalar>,
-        Vec<Vec<Vec<SharedScalar>>>,
-    )> {
+    ) -> Result<SpdzWyChunkSolveResult> {
         let tau = spdz_heads[0].len();
         let one_sh = cluster.share_authenticated(1);
         let zero_sh = SharedScalar {
@@ -2819,7 +2817,7 @@ impl DarkB61GdnResident {
         let mut gamma_chunk_all = Vec::with_capacity(self.num_heads);
         let mut inv_l_all = Vec::with_capacity(self.num_heads);
 
-        for h in 0..self.num_heads {
+        for (h, head_steps) in spdz_heads.iter().enumerate() {
             // Reassemble `[S_0^{(h)} k_{h, m}]` of length `d_v`:
             let mut s0_k: Vec<Vec<SharedScalar>> = Vec::with_capacity(tau);
             for m in 0..tau {
@@ -2833,11 +2831,11 @@ impl DarkB61GdnResident {
 
             // Compute causal decay table `decay[a][b] = prod_{a <= r < b} [gamma_{h, r}]` in SPDZ:
             let mut decay = vec![vec![one_sh; tau + 1]; tau + 1];
-            for a in 0..=tau {
+            for (a, decay_row) in decay.iter_mut().enumerate() {
                 for b in (a + 1)..=tau {
-                    let prev = decay[a][b - 1];
-                    let g = spdz_heads[h][b - 1].gamma;
-                    decay[a][b] = cluster.spdz_mul_batch(&[prev], &[g])[0];
+                    let prev = decay_row[b - 1];
+                    let g = head_steps[b - 1].gamma;
+                    decay_row[b] = cluster.spdz_mul_batch(&[prev], &[g])[0];
                 }
             }
             gamma_chunk_all.push(decay[0][tau]);
@@ -2929,7 +2927,7 @@ impl DarkB61GdnResident {
     /// 2. Multiplies secret post-episode decay gates `Gamma_post^{(h)} = prod_{c > e} Gamma_c^{(h)}` in SPDZ,
     ///    `S2E`-encrypts `Enc_{pk}(Gamma_post^{(h)} X^0)`, executes `HoistedB61` `Enc(Delta_e) * Enc(Gamma_post)`
     ///    + `Exact-Garner-15` BEHZ rescale + `cert.rs` verification + homomorphic `S_T - Gamma_post * Delta_e`,
-    ///    and emits a fresh `WhirPcs61 + GMask61` (`TVD = 0`, `>= 122`-bit soundness) state proof!
+    ///      and emits a fresh `WhirPcs61 + GMask61` (`TVD = 0`, `>= 122`-bit soundness) state proof!
     pub fn unlearn_w0_orthogonal_fast(
         &mut self,
         quorum: &mut ContinualCustodyQuorum,
@@ -3067,8 +3065,8 @@ impl DarkB61GdnResident {
                 .spdz_mac_check(&format!("w0_orth_scale_ep{episode_id}"))
                 .map_err(ContinualGdnError::InvalidSpdzMac)?;
 
-            for h in 0..self.num_heads {
-                for m in 0..tau_e {
+            for (h, u_scaled_h) in u_scaled_all.iter().enumerate() {
+                for (m, u_scaled_hm) in u_scaled_h.iter().enumerate() {
                     let k_slots: Vec<(usize, SharedScalar)> = (0..self.d_k)
                         .map(|j| (j, self.episodes[episode_id].spdz_k_dec_rows[h][m][j]))
                         .collect();
@@ -3081,7 +3079,7 @@ impl DarkB61GdnResident {
                     for s in 0..self.slices_per_head {
                         let b = h * self.slices_per_head + s;
                         let u_slots: Vec<(usize, SharedScalar)> = (0..self.slice_rows)
-                            .map(|i| (i * self.d_k, u_scaled_all[h][m][s * self.slice_rows + i]))
+                            .map(|i| (i * self.d_k, u_scaled_hm[s * self.slice_rows + i]))
                             .collect();
                         let (ctu, hu) = quorum
                             .cluster
@@ -3164,11 +3162,10 @@ impl DarkB61GdnResident {
                 .map_err(ContinualGdnError::InvalidRescaleCertificate)?;
             cert_verify_ms = t_cvfy.elapsed().as_secs_f64() * 1e3;
 
-            for h in 0..self.num_heads {
+            for (h, scaled_h) in scaled_proved.iter().enumerate() {
                 for s in 0..self.slices_per_head {
                     let b = h * self.slices_per_head + s;
-                    let sub_ct =
-                        sub_ct2_mod_q(&self.params, &self.state_cts[b], &scaled_proved[h].2[s]);
+                    let sub_ct = sub_ct2_mod_q(&self.params, &self.state_cts[b], &scaled_h.2[s]);
                     let sub_h = ct2_handle(&sub_ct);
                     for cust in &mut quorum.cluster.custodians {
                         cust.register_verified_input_handle(sub_h);
@@ -3407,10 +3404,10 @@ impl DarkB61GdnResident {
 
             let mut rev_k_cts = vec![Vec::with_capacity(tau_c); self.num_heads];
             let mut rev_k_hs = vec![Vec::with_capacity(tau_c); self.num_heads];
-            for h in 0..self.num_heads {
-                for m in 0..tau_c {
+            for (h, spdz_h) in spdz_in.iter().enumerate() {
+                for (m, step) in spdz_h.iter().enumerate() {
                     let slots: Vec<(usize, SharedScalar)> = (0..self.d_k)
-                        .map(|c| ((self.d_k - 1) - c, spdz_in[h][m].k[c]))
+                        .map(|c| ((self.d_k - 1) - c, step.k[c]))
                         .collect();
                     let (ct_kr, h_kr) = quorum
                         .cluster
@@ -3446,7 +3443,7 @@ impl DarkB61GdnResident {
             let mut rdig_h = Sha256::new();
             rdig_h.update(b"W0_REPLAY_READ|");
             for (_, w) in &read_proved {
-                rdig_h.update(&w.witness_root);
+                rdig_h.update(w.witness_root);
             }
             let rdig: [u8; 32] = rdig_h.finalize().into();
 
@@ -3874,7 +3871,7 @@ impl DarkB61GdnResident {
         let sh_all = batched_noise_flooded_e2s_ct3(quorum, &h3s, &ct3s, &sls, "audit_open_state")?;
 
         let mut heads = vec![vec![vec![0u64; self.d_k]; self.d_v]; self.num_heads];
-        for h in 0..self.num_heads {
+        for (h, head_mat) in heads.iter_mut().enumerate() {
             for s in 0..self.slices_per_head {
                 let b = h * self.slices_per_head + s;
                 let vals = quorum
@@ -3883,7 +3880,7 @@ impl DarkB61GdnResident {
                     .map_err(ContinualGdnError::InvalidSpdzMac)?;
                 for i in 0..self.slice_rows {
                     for j in 0..self.d_k {
-                        heads[h][s * self.slice_rows + i][j] = vals[i * self.d_k + j];
+                        head_mat[s * self.slice_rows + i][j] = vals[i * self.d_k + j];
                     }
                 }
             }

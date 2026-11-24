@@ -41,7 +41,7 @@ use crate::logup_gkr::{
 };
 use crate::rns_hoist::{Ct3, HoistedEngine, PrecomputedCt};
 use crate::succinct_pcs::{
-    verify_slot_claims, CommittedMatrixPcs, PcsRng, PcsShape, SlotLinearClaim,
+    verify_slot_claims, CommittedMatrixPcs, PcsRng, PcsShape, SlotClaimsQuery, SlotLinearClaim,
     SuccinctPcsOpeningProof,
 };
 use crate::{FastPrime61, HoistedParams};
@@ -90,10 +90,10 @@ impl ThresholdPubKey {
         let mut enc = [0u64; 3];
         for j in 0..n {
             rns.encode_round(m[j] % rns.t, &mut enc);
-            for k in 0..3 {
+            for (k, &enc_k) in enc.iter().enumerate() {
                 let qk = rns.qs[k];
                 let idx = k * n + j;
-                c0[idx] = addmod(addmod(c0[idx], from_i64(e0[j], qk), qk), enc[k], qk);
+                c0[idx] = addmod(addmod(c0[idx], from_i64(e0[j], qk), qk), enc_k, qk);
                 c1[idx] = addmod(c1[idx], from_i64(e1[j], qk), qk);
             }
         }
@@ -181,8 +181,9 @@ fn sample_uniform_rns_q(rns: &Rns, rng: &mut PcsRng) -> Vec<u64> {
                 for k in 0..3 {
                     let qk = rns.qs[k] as u128;
                     let r = ((limbs[0] as u128)
-                        + ((limbs[1] as u128) << 64) % qk * 1
-                        + (((limbs[2] as u128) % qk) * (((1u128 << 64) % qk) * ((1u128 << 64) % qk) % qk)))
+                        + (((limbs[1] as u128) << 64) % qk)
+                        + (((limbs[2] as u128) % qk)
+                            * (((1u128 << 64) % qk) * ((1u128 << 64) % qk) % qk)))
                         % qk;
                     out[k * n + j] = r as u64;
                 }
@@ -260,7 +261,7 @@ fn pairwise_ring_ole_2sisj(s_i: &[i64], s_j: &[i64], rng: &mut PcsRng) -> (Vec<i
 /// 2. `deg(k_q) < N - 1` for every `q in Qp`, and
 /// 3. `p_i(X) == s_i(X) c1'(X) + s2_i(X) c2'(X) + e_i(X) - (X^N + 1) k_q(X) (mod q)` for all `q in Qp`
 ///    at witness-bound Fiat–Shamir challenges `r_{PD, q}`,
-/// while leaking **zero** information about `(s_i, s2_i, e_i)`!
+///    while leaking **zero** information about `(s_i, s2_i, e_i)`!
 #[derive(Clone, Debug)]
 pub struct PdSuccinctProof {
     pub party_id: usize,
@@ -594,11 +595,11 @@ impl CustodianParty {
             }
             flat[(off_e + 5) * n + j] = top;
         }
-        for k_idx in 0..3 {
+        for (k_idx, k_poly) in k_qp.iter().enumerate() {
             let base = off_k + k_idx * 4;
             for j in 0..(n - 1) {
-                let v = k_qp[k_idx][j];
-                flat[(base + 0) * n + j] = v & ((1 << 20) - 1);
+                let v = k_poly[j];
+                flat[base * n + j] = v & ((1 << 20) - 1);
                 flat[(base + 1) * n + j] = (v >> 20) & ((1 << 20) - 1);
                 flat[(base + 2) * n + j] = (v >> 40) & ((1 << 20) - 1);
                 flat[(base + 3) * n + j] = v >> 60;
@@ -723,9 +724,9 @@ impl CustodianParty {
             let eq_hi = build_eq_poly_le(&fp0, &zw[log_n..]);
             let mut const_acc = 0u64;
             let mut map: BTreeMap<usize, u64> = BTreeMap::new();
-            for m in 0..6 {
+            for (m, &eq_val) in eq_hi.iter().enumerate().take(6) {
                 *map.entry(off_e + m).or_insert(0) =
-                    fp0.add(*map.get(&(off_e + m)).unwrap_or(&0), eq_hi[m]);
+                    fp0.add(*map.get(&(off_e + m)).unwrap_or(&0), eq_val);
             }
             // Col 6 is `flat[5] + top_shift_off`
             const_acc = fp0.add(const_acc, fp0.mul(eq_hi[6], top_shift_off));
@@ -744,9 +745,8 @@ impl CustodianParty {
             let v_zt = pd_vf_full.len();
             pd_vf_full.push(build_eq_poly_le(&fp0, &z_tab[..log_n]));
             let eq_thi = build_eq_poly_le(&fp0, &z_tab[log_n..TABLE_LOG2]);
-            let t_terms: Vec<(usize, u64)> = (0..mult_slots)
-                .map(|s| (off_mult + s, eq_thi[s]))
-                .collect();
+            let t_terms: Vec<(usize, u64)> =
+                (0..mult_slots).map(|s| (off_mult + s, eq_thi[s])).collect();
             pd_claims.push(SlotLinearClaim::single_vec(
                 v_zt,
                 t_terms,
@@ -774,18 +774,18 @@ impl CustodianParty {
             s2_sh0,
         ));
 
-        for li in 0..2 {
+        for (li, em_li) in e_map.iter().enumerate() {
             let fpl = &params.fp[li + 1];
             for b in 0..3 {
-                let vf_s = e_map[li][0][b]; // m=0 has weight 1!
+                let vf_s = em_li[0][b]; // m=0 has weight 1!
                 let ss = fp0.dot(&self.key_shifted_cols[0], &pd_vf[vf_s]);
                 key_p12_subsums[li][0][b] = ss;
                 key_claims.push(SlotLinearClaim::single_vec(vf_s, vec![(0, 1)], ss));
 
                 let mut s2s = 0u64;
                 let mut s2_terms = Vec::with_capacity(2);
-                for m in 0..2 {
-                    let vfi = e_map[li][m][b];
+                for (m, em_m) in em_li.iter().enumerate().take(2) {
+                    let vfi = em_m[b];
                     s2s += fp0.dot(&self.key_shifted_cols[1 + m], &pd_vf[vfi]);
                     s2_terms.push((vfi, vec![(1 + m, 1)]));
                 }
@@ -799,7 +799,9 @@ impl CustodianParty {
             key_evals[li + 1][1] = combine_21b_mod(fpl, &key_p12_subsums[li][1]);
         }
 
-        let key_pcs_opening = self.key_pcs.open_slot_claims(log_n, &pd_vf, &key_claims, &pd_ctx);
+        let key_pcs_opening = self
+            .key_pcs
+            .open_slot_claims(log_n, &pd_vf, &key_claims, &pd_ctx);
 
         Ok(PdSuccinctProof {
             party_id: self.party_id,
@@ -859,8 +861,7 @@ pub fn verify_pd_succinct_proof(
         expected_key_root,
         &prf.pd_pcs_root,
     );
-    let r_pd: [u64; 3] =
-        std::array::from_fn(|k_idx| derive_pd_point(&pd_ctx, params.qp[k_idx]));
+    let r_pd: [u64; 3] = std::array::from_fn(|k_idx| derive_pd_point(&pd_ctx, params.qp[k_idx]));
 
     // 1. Verify `D1b` LogUp-GKR range proof (`|e_i| <= E` & `k_q` limb bounds):
     verify_logup_gkr(&fp0, &prf.logup_proof, &pd_ctx, None)?;
@@ -887,25 +888,31 @@ pub fn verify_pd_succinct_proof(
 
     // 3. Verify `key_pcs_opening` against custodian's pinned `expected_key_root`:
     let mut key_claims = Vec::new();
-    key_claims.push(SlotLinearClaim::single_vec(0, vec![(0, 1)], prf.key_evals[0][0]));
+    key_claims.push(SlotLinearClaim::single_vec(
+        0,
+        vec![(0, 1)],
+        prf.key_evals[0][0],
+    ));
     key_claims.push(SlotLinearClaim::single_vec(
         0,
         vec![(1, 1), (2, 1u64 << 20)],
         prf.key_evals[0][1],
     ));
-    for li in 0..2 {
+    for (li, em_li) in e_map.iter().enumerate() {
         let fpl = &params.fp[li + 1];
         for b in 0..3 {
-            let vf_s = e_map[li][0][b];
+            let vf_s = em_li[0][b];
             key_claims.push(SlotLinearClaim::single_vec(
                 vf_s,
                 vec![(0, 1)],
                 prf.key_p12_subsums[li][0][b],
             ));
-            let mut s2_terms = Vec::with_capacity(2);
-            for m in 0..2 {
-                s2_terms.push((e_map[li][m][b], vec![(1 + m, 1)]));
-            }
+            let s2_terms: Vec<(usize, Vec<(usize, u64)>)> = em_li
+                .iter()
+                .take(2)
+                .enumerate()
+                .map(|(m, em_m)| (em_m[b], vec![(1 + m, 1)]))
+                .collect();
             key_claims.push(SlotLinearClaim {
                 terms: s2_terms,
                 rhs: prf.key_p12_subsums[li][1][b],
@@ -919,12 +926,14 @@ pub fn verify_pd_succinct_proof(
     }
     verify_slot_claims(
         &fp0,
-        expected_key_shape,
-        expected_key_root,
-        log_n,
-        &pd_vf,
-        &key_claims,
-        &pd_ctx,
+        &SlotClaimsQuery {
+            shape: expected_key_shape,
+            root: expected_key_root,
+            log_n,
+            v_families: &pd_vf,
+            claims: &key_claims,
+            context: &pd_ctx,
+        },
         &prf.key_pcs_opening,
     )?;
 
@@ -943,9 +952,13 @@ pub fn verify_pd_succinct_proof(
     let top_shift_off = ((1u64 << 20) - (1u64 << smudge_top_bits)) % fp0.p;
 
     let mut pd_claims = Vec::new();
-    let e_terms0: Vec<(usize, u64)> = (0..6).map(|m| (off_e + m, fp0.pow(2, (20 * m) as u64))).collect();
+    let e_terms0: Vec<(usize, u64)> = (0..6)
+        .map(|m| (off_e + m, fp0.pow(2, (20 * m) as u64)))
+        .collect();
     pd_claims.push(SlotLinearClaim::single_vec(0, e_terms0, prf.e_shifted_p0));
-    let k_terms0: Vec<(usize, u64)> = (0..4).map(|m| (off_k + m, fp0.pow(2, (20 * m) as u64))).collect();
+    let k_terms0: Vec<(usize, u64)> = (0..4)
+        .map(|m| (off_k + m, fp0.pow(2, (20 * m) as u64)))
+        .collect();
     pd_claims.push(SlotLinearClaim::single_vec(1, k_terms0, prf.k_p0));
 
     for li in 0..2 {
@@ -977,9 +990,9 @@ pub fn verify_pd_succinct_proof(
         let eq_hi = build_eq_poly_le(&fp0, &zw[log_n..]);
         let mut const_acc = 0u64;
         let mut map: BTreeMap<usize, u64> = BTreeMap::new();
-        for m in 0..6 {
+        for (m, &eq_val) in eq_hi.iter().enumerate().take(6) {
             *map.entry(off_e + m).or_insert(0) =
-                fp0.add(*map.get(&(off_e + m)).unwrap_or(&0), eq_hi[m]);
+                fp0.add(*map.get(&(off_e + m)).unwrap_or(&0), eq_val);
         }
         const_acc = fp0.add(const_acc, fp0.mul(eq_hi[6], top_shift_off));
         *map.entry(off_e + 5).or_insert(0) =
@@ -990,16 +1003,18 @@ pub fn verify_pd_succinct_proof(
         pd_claims.push(SlotLinearClaim::single_vec(
             v_zw,
             map.into_iter().collect(),
-            fp0.sub(prf.logup_proof.witness_trees[0].leaf_payload_eval, const_acc),
+            fp0.sub(
+                prf.logup_proof.witness_trees[0].leaf_payload_eval,
+                const_acc,
+            ),
         ));
     }
     {
         let v_zt = pd_vf_full.len();
         pd_vf_full.push(build_eq_poly_le(&fp0, &z_tab[..log_n]));
         let eq_thi = build_eq_poly_le(&fp0, &z_tab[log_n..TABLE_LOG2]);
-        let t_terms: Vec<(usize, u64)> = (0..mult_slots)
-            .map(|s| (off_mult + s, eq_thi[s]))
-            .collect();
+        let t_terms: Vec<(usize, u64)> =
+            (0..mult_slots).map(|s| (off_mult + s, eq_thi[s])).collect();
         pd_claims.push(SlotLinearClaim::single_vec(
             v_zt,
             t_terms,
@@ -1009,22 +1024,23 @@ pub fn verify_pd_succinct_proof(
 
     verify_slot_claims(
         &fp0,
-        &pd_shape,
-        &prf.pd_pcs_root,
-        log_n,
-        &pd_vf_full,
-        &pd_claims,
-        &pd_ctx,
+        &SlotClaimsQuery {
+            shape: &pd_shape,
+            root: &prf.pd_pcs_root,
+            log_n,
+            v_families: &pd_vf_full,
+            claims: &pd_claims,
+            context: &pd_ctx,
+        },
         &prf.pd_pcs_opening,
     )?;
 
     // 5. Check the 3-prime `R_PD` polynomial identity:
     //    `p_i(r_q) == s_i(r_q) c1'(r_q) + s2_i(r_q) c2'(r_q) + e_i(r_q) - (r_q^N + 1) k_q(r_q) (mod q)`!
     let hq_limbs = params.half_q_limbs;
-    for k_idx in 0..3 {
+    for (k_idx, &r) in r_pd.iter().enumerate() {
         let fpk = &params.fp[k_idx];
         let qk = fpk.p;
-        let r = r_pd[k_idx];
         let ones_q = fpk.ones_eval(n, r);
         let rn_plus_1 = fpk.add(fpk.pow(r, n as u64), 1);
 
@@ -1151,8 +1167,8 @@ impl ThreeCustodianCluster {
 
         // Combine public-key shares `b = b_0 + b_1 + b_2 mod Qp` (`s` is NEVER summed!):
         let mut b_coeff = vec![0u64; 3 * n];
-        for i in 0..3 {
-            rns_q.add_assign(&mut b_coeff, &b_shares[i]);
+        for b_share in &b_shares {
+            rns_q.add_assign(&mut b_coeff, b_share);
         }
         let mut pk0_ntt = b_coeff.clone();
         rns_q.fwd(&mut pk0_ntt);
@@ -1259,7 +1275,10 @@ impl ThreeCustodianCluster {
         // Compute additive shares of `alpha * v = (sum_i alpha_i) * (sum_j x_j)` pairwise:
         let alpha_sum = fp_t.add(
             self.custodians[0].alpha_share,
-            fp_t.add(self.custodians[1].alpha_share, self.custodians[2].alpha_share),
+            fp_t.add(
+                self.custodians[1].alpha_share,
+                self.custodians[2].alpha_share,
+            ),
         );
         let mac_tot = fp_t.mul(alpha_sum, v);
         let b1 = self.rng.next_block();
@@ -1340,9 +1359,9 @@ impl ThreeCustodianCluster {
             for i in 0..3 {
                 let sh = x.parties[i].val;
                 v = fp.add(v, sh);
-                self.spdz_transcript.update(&sh.to_le_bytes());
+                self.spdz_transcript.update(sh.to_le_bytes());
             }
-            self.spdz_transcript.update(&v.to_le_bytes());
+            self.spdz_transcript.update(v.to_le_bytes());
             for i in 0..3 {
                 self.spdz_logs[i].push((x.parties[i].mac, v));
             }
@@ -1352,7 +1371,11 @@ impl ThreeCustodianCluster {
     }
 
     /// Multiply `xs[k] * ys[k]` over `F_t` via authenticated Beaver triples (`([a], [b], [a*b])`).
-    pub fn spdz_mul_batch(&mut self, xs: &[SharedScalar], ys: &[SharedScalar]) -> Vec<SharedScalar> {
+    pub fn spdz_mul_batch(
+        &mut self,
+        xs: &[SharedScalar],
+        ys: &[SharedScalar],
+    ) -> Vec<SharedScalar> {
         assert_eq!(xs.len(), ys.len());
         let fp = self.params.fp_t;
         let m = xs.len();
@@ -1422,9 +1445,9 @@ impl ThreeCustodianCluster {
             let nonce = self.custodians[i].rng.next_block();
             let mut ch = Sha256::new();
             ch.update(b"DARKGDN_SIGMA_COM|");
-            ch.update(&(i as u32).to_le_bytes());
-            ch.update(&sig.to_le_bytes());
-            ch.update(&nonce);
+            ch.update((i as u32).to_le_bytes());
+            ch.update(sig.to_le_bytes());
+            ch.update(nonce);
             commits[i] = ch.finalize().into();
             reveals[i] = (sig, nonce);
             self.spdz_logs[i].clear();
@@ -1437,8 +1460,8 @@ impl ThreeCustodianCluster {
             let (sig, ref nonce) = reveals[i];
             let mut ch = Sha256::new();
             ch.update(b"DARKGDN_SIGMA_COM|");
-            ch.update(&(i as u32).to_le_bytes());
-            ch.update(&sig.to_le_bytes());
+            ch.update((i as u32).to_le_bytes());
+            ch.update(sig.to_le_bytes());
             ch.update(nonce);
             let got: [u8; 32] = ch.finalize().into();
             if got != commits[i] {
@@ -1461,7 +1484,11 @@ impl ThreeCustodianCluster {
 
     /// Dealerless generation of a correlated `(Enc_{pk}(R), [R_coefs])` crossing mask pair (`0` `sk` needed!):
     /// Each custodian `i` samples `R^{(i)}`, encrypts `Enc_{pk}(R^{(i)})`, and shares `[R^{(i)}]`.
-    fn generate_crossing_mask_pair(&mut self, coefs: &[usize], full_poly: bool) -> (Ct, Vec<SharedScalar>) {
+    fn generate_crossing_mask_pair(
+        &mut self,
+        coefs: &[usize],
+        full_poly: bool,
+    ) -> (Ct, Vec<SharedScalar>) {
         let n = self.params.n;
         let fp_t = self.params.fp_t;
         let rns = self.pub_key.rns_q.clone();
@@ -1479,9 +1506,9 @@ impl ThreeCustodianCluster {
         for i in 0..3 {
             let mut r_i = vec![0u64; n];
             if full_poly {
-                for j in 0..n {
+                for r_slot in r_i.iter_mut() {
                     let blk = self.custodians[i].rng.next_block();
-                    r_i[j] = fp_t.red128(u128::from_le_bytes(blk[0..16].try_into().unwrap()));
+                    *r_slot = fp_t.red128(u128::from_le_bytes(blk[0..16].try_into().unwrap()));
                 }
             } else {
                 for &k in coefs {
@@ -1489,7 +1516,9 @@ impl ThreeCustodianCluster {
                     r_i[k] = fp_t.red128(u128::from_le_bytes(blk[0..16].try_into().unwrap()));
                 }
             }
-            let ct_i = self.pub_key.encrypt_pk(&r_i, &mut self.custodians[i].rng.clone());
+            let ct_i = self
+                .pub_key
+                .encrypt_pk(&r_i, &mut self.custodians[i].rng.clone());
             // Advance custodian rng so repeated calls stay independent:
             let _ = self.custodians[i].rng.next_block();
             rns.add_assign(&mut ct_sum.c0, &ct_i.c0);
@@ -1530,7 +1559,7 @@ impl ThreeCustodianCluster {
         }
 
         // Every custodian verifies ALL 3 `PdSuccinctProof`s against the designated `ctm` BEFORE decoding!
-        for i in 0..3 {
+        for (i, prf) in pd_proofs.iter().enumerate() {
             verify_pd_succinct_proof(
                 &self.params,
                 i,
@@ -1540,7 +1569,7 @@ impl ThreeCustodianCluster {
                 self.custodians[i].smudge_top_bits,
                 &ctm,
                 tag,
-                &pd_proofs[i],
+                prf,
             )?;
         }
 
@@ -1597,7 +1626,11 @@ impl ThreeCustodianCluster {
     }
 
     /// Open & MAC-verify final output shares `[y_t]` cleanly at the end of a turn.
-    pub fn open_verified_output(&mut self, ys: &[SharedScalar], label: &str) -> Result<Vec<u64>, String> {
+    pub fn open_verified_output(
+        &mut self,
+        ys: &[SharedScalar],
+        label: &str,
+    ) -> Result<Vec<u64>, String> {
         let vals = self.spdz_open_batch(ys, "OUTPUT_OPEN");
         self.spdz_mac_check(label)?;
         Ok(vals)
@@ -1699,19 +1732,33 @@ pub struct DarkGdnResident {
     pub logup_cfg: LogUpConfig,
 }
 
+/// Initialization bundle for [`DarkGdnResident::initialize`].
+pub struct DarkGdnInitSpec<'a> {
+    pub embed_table: &'a [Vec<u64>],
+    pub state_0: &'a [Vec<u64>],
+    pub w_q: Vec<Vec<u64>>,
+    pub w_k: Vec<Vec<u64>>,
+    pub w_v: Vec<Vec<u64>>,
+    pub mode: LiftMode,
+    pub logup_cfg: LogUpConfig,
+}
+
 impl DarkGdnResident {
     /// Initialize `DarkGdnResident` by encrypting `embed_table` (`V x d_k`) and initial `state_0` (`d_k x d_v`)
     /// under `cluster.pub_key` (`0` secret key access!) and verifying offline PCS range proofs on all 3 custodians!
     pub fn initialize(
         cluster: &mut ThreeCustodianCluster,
-        embed_table: &[Vec<u64>], // V x d_k
-        state_0: &[Vec<u64>],     // d_k x d_v
-        w_q: Vec<Vec<u64>>,
-        w_k: Vec<Vec<u64>>,
-        w_v: Vec<Vec<u64>>,
-        mode: LiftMode,
-        logup_cfg: LogUpConfig,
+        spec: DarkGdnInitSpec<'_>,
     ) -> Result<Self, String> {
+        let DarkGdnInitSpec {
+            embed_table,
+            state_0,
+            w_q,
+            w_k,
+            w_v,
+            mode,
+            logup_cfg,
+        } = spec;
         let n = cluster.params.n;
         let vocab_size = embed_table.len();
         let d_k = w_q.len();
@@ -1720,7 +1767,7 @@ impl DarkGdnResident {
 
         let dc = d_k.min(64).min(n / 2);
         let dr = d_v.max(d_k).min(n / dc);
-        assert!(dr * dc <= n && d_k % dc == 0 && d_v % dr.min(d_v) == 0);
+        assert!(dr * dc <= n && d_k.is_multiple_of(dc) && d_v.is_multiple_of(dr.min(d_v)));
         let dr_eff = dr.min(d_k).min(d_v);
 
         let mut enc_rng = PcsRng::from_seed([0x33u8; 32]);
@@ -1732,8 +1779,15 @@ impl DarkGdnResident {
                 e_t[i][tok] = embed_table[tok][i] % cluster.params.t;
             }
         }
-        let enc_embed_grid =
-            pack_and_encrypt_matrix(&cluster.pub_key, &e_t, d_k, vocab_size, dr_eff, dc, &mut enc_rng);
+        let enc_embed_grid = pack_and_encrypt_matrix(
+            &cluster.pub_key,
+            &e_t,
+            d_k,
+            vocab_size,
+            dr_eff,
+            dc,
+            &mut enc_rng,
+        );
         let h_embed_grid: Vec<Vec<[u8; 32]>> = enc_embed_grid
             .iter()
             .map(|r| r.iter().map(ct2_handle).collect())
@@ -1741,7 +1795,11 @@ impl DarkGdnResident {
         let (embed_pre, embed_pcs) =
             commit_persistent_grid_pcs(&cluster.engine, &enc_embed_grid, mode)?;
         for cust in &mut cluster.custodians {
-            cust.ingest_verified_persistent_grid(mode, &h_embed_grid, &embed_pcs.offline_range_proof)?;
+            cust.ingest_verified_persistent_grid(
+                mode,
+                &h_embed_grid,
+                &embed_pcs.offline_range_proof,
+            )?;
         }
 
         // 2. Pack & public-key encrypt `S_0^T` (`d_v x d_k` into `(d_v / dr_eff) x (d_k / dc)` blocks):
@@ -1760,7 +1818,11 @@ impl DarkGdnResident {
         let (state_pre, state_pcs) =
             commit_persistent_grid_pcs(&cluster.engine, &enc_state_t_grid, mode)?;
         for cust in &mut cluster.custodians {
-            cust.ingest_verified_persistent_grid(mode, &h_state_t_grid, &state_pcs.offline_range_proof)?;
+            cust.ingest_verified_persistent_grid(
+                mode,
+                &h_state_t_grid,
+                &state_pcs.offline_range_proof,
+            )?;
         }
 
         Ok(DarkGdnResident {
@@ -1814,7 +1876,8 @@ impl DarkGdnResident {
         let mut q_pir_plain = vec![0u64; self.vocab_size];
         q_pir_plain[token_id] = 1;
         let mut client_rng = PcsRng::from_seed([turn_idx as u8 + 0x71; 32]);
-        let q_pir_cts = pack_and_encrypt_rev_vec(&cluster.pub_key, &q_pir_plain, self.dc, &mut client_rng);
+        let q_pir_cts =
+            pack_and_encrypt_rev_vec(&cluster.pub_key, &q_pir_plain, self.dc, &mut client_rng);
         let h_q_pir: Vec<[u8; 32]> = q_pir_cts.iter().map(ct2_handle).collect();
         for cust in &mut cluster.custodians {
             for &h in &h_q_pir {
@@ -1863,21 +1926,22 @@ impl DarkGdnResident {
         // ------------------------------------------------------------------
         // Phase 2: SPDZ Linear Projections `[q_t], [k_t], [v_t]` + `S2E` of `(k_t, q_t)`
         // ------------------------------------------------------------------
-        let spdz_matvec_pub = |cl: &ThreeCustodianCluster, w: &[Vec<u64>], x: &[SharedScalar]| -> Vec<SharedScalar> {
-            w.iter()
-                .map(|row| {
-                    let mut acc = SharedScalar {
-                        parties: [PartyShare { val: 0, mac: 0 }; 3],
-                    };
-                    for (c, &w_rc) in row.iter().enumerate() {
-                        if w_rc != 0 {
-                            acc = cl.spdz_add(acc, cl.spdz_scale(w_rc, x[c]));
+        let spdz_matvec_pub =
+            |cl: &ThreeCustodianCluster, w: &[Vec<u64>], x: &[SharedScalar]| -> Vec<SharedScalar> {
+                w.iter()
+                    .map(|row| {
+                        let mut acc = SharedScalar {
+                            parties: [PartyShare { val: 0, mac: 0 }; 3],
+                        };
+                        for (c, &w_rc) in row.iter().enumerate() {
+                            if w_rc != 0 {
+                                acc = cl.spdz_add(acc, cl.spdz_scale(w_rc, x[c]));
+                            }
                         }
-                    }
-                    acc
-                })
-                .collect()
-        };
+                        acc
+                    })
+                    .collect()
+            };
         let q_sh = spdz_matvec_pub(cluster, &self.w_q, &x_shares);
         let k_sh = spdz_matvec_pub(cluster, &self.w_k, &x_shares);
         let v_sh = spdz_matvec_pub(cluster, &self.w_v, &x_shares);
@@ -1892,14 +1956,16 @@ impl DarkGdnResident {
             let k_slots: Vec<(usize, SharedScalar)> = (0..self.dc)
                 .map(|ci| (self.dc - 1 - ci, k_sh[cb * self.dc + ci]))
                 .collect();
-            let (ct_k, hk) = cluster.s2e_encrypt_slots(&k_slots, &format!("turn{turn_idx}_s2e_k{cb}"))?;
+            let (ct_k, hk) =
+                cluster.s2e_encrypt_slots(&k_slots, &format!("turn{turn_idx}_s2e_k{cb}"))?;
             k_cts.push(ct_k);
             hk_vec.push(hk);
 
             let q_slots: Vec<(usize, SharedScalar)> = (0..self.dc)
                 .map(|ci| (self.dc - 1 - ci, q_sh[cb * self.dc + ci]))
                 .collect();
-            let (ct_q, hq) = cluster.s2e_encrypt_slots(&q_slots, &format!("turn{turn_idx}_s2e_q{cb}"))?;
+            let (ct_q, hq) =
+                cluster.s2e_encrypt_slots(&q_slots, &format!("turn{turn_idx}_s2e_q{cb}"))?;
             q_cts.push(ct_q);
             hq_vec.push(hq);
         }
@@ -2035,10 +2101,10 @@ impl DarkGdnResident {
         // Outer product `[u_eff_j] * [k_i]` (`d_v * d_k` Beaver triples in 1 batch!):
         let mut lhs_u = Vec::with_capacity(self.d_v * self.d_k);
         let mut rhs_k = Vec::with_capacity(self.d_v * self.d_k);
-        for j in 0..self.d_v {
-            for i in 0..self.d_k {
-                lhs_u.push(u_eff_sh[j]);
-                rhs_k.push(k_sh[i]);
+        for &u_sh in &u_eff_sh {
+            for &k_val in &k_sh {
+                lhs_u.push(u_sh);
+                rhs_k.push(k_val);
             }
         }
         let uk_outer = cluster.spdz_mul_batch(&lhs_u, &rhs_k);
@@ -2076,15 +2142,13 @@ impl DarkGdnResident {
                         let flat_pos = r_in * self.dc + c_in;
                         let j_glob = rb * self.dr + r_in;
                         let i_glob = cb * self.dc + c_in;
-                        let sum_sh = cluster.spdz_add(
-                            scaled_prev[flat_pos],
-                            uk_outer[j_glob * self.d_k + i_glob],
-                        );
+                        let sum_sh = cluster
+                            .spdz_add(scaled_prev[flat_pos], uk_outer[j_glob * self.d_k + i_glob]);
                         next_slots.push((block_slots[flat_pos], sum_sh));
                     }
                 }
-                let (ct_next, h_next) =
-                    cluster.s2e_encrypt_slots(&next_slots, &format!("turn{turn_idx}_st_next_{rb}_{cb}"))?;
+                let (ct_next, h_next) = cluster
+                    .s2e_encrypt_slots(&next_slots, &format!("turn{turn_idx}_st_next_{rb}_{cb}"))?;
                 new_state_grid[rb].push(ct_next);
                 new_h_grid[rb].push(h_next);
             }
@@ -2219,13 +2283,13 @@ fn compute_pd_fs_context(
 ) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKGDN_R_PD_FS_V1|");
-    h.update(&(party_id as u32).to_le_bytes());
+    h.update((party_id as u32).to_le_bytes());
     h.update(tag.as_bytes());
     h.update(ctm_handle);
     h.update(key_root);
     h.update(pd_root);
     for &v in partial_rns {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     h.finalize().into()
 }
@@ -2234,7 +2298,7 @@ fn derive_pd_point(ctx: &[u8; 32], q: u64) -> u64 {
     let mut h = Sha256::new();
     h.update(b"PD_PT|");
     h.update(ctx);
-    h.update(&q.to_le_bytes());
+    h.update(q.to_le_bytes());
     let d: [u8; 32] = h.finalize().into();
     let lo = u128::from_le_bytes(d[0..16].try_into().unwrap());
     (lo % q as u128) as u64
@@ -2256,10 +2320,9 @@ fn combine_21b_mod(fp: &FastPrime61, s: &[u64; 3]) -> u64 {
     )
 }
 
-fn build_pd_v_families(
-    params: &HoistedParams,
-    r_pd: &[u64; 3],
-) -> (Vec<Vec<u64>>, [[[usize; 3]; 6]; 2], [[[usize; 3]; 4]; 2]) {
+type PdVFamilies = (Vec<Vec<u64>>, [[[usize; 3]; 6]; 2], [[[usize; 3]; 4]; 2]);
+
+fn build_pd_v_families(params: &HoistedParams, r_pd: &[u64; 3]) -> PdVFamilies {
     let n = params.n;
     let fp0 = &params.fp[0];
     let mut v_fams = Vec::new();
@@ -2285,7 +2348,7 @@ fn build_pd_v_families(
             rl_pows.push(c);
             c = fpl.mul(c, r_pd[li + 1]);
         }
-        for m in 0..6 {
+        for (m, e_slot) in e_map[li].iter_mut().enumerate() {
             let gm = fpl.pow(2, (20 * m) as u64);
             let mut b0 = vec![0u64; n];
             let mut b1 = vec![0u64; n];
@@ -2300,9 +2363,9 @@ fn build_pd_v_families(
             v_fams.push(b0);
             v_fams.push(b1);
             v_fams.push(b2);
-            e_map[li][m] = [base, base + 1, base + 2];
+            *e_slot = [base, base + 1, base + 2];
         }
-        for m in 0..4 {
+        for (m, k_slot) in k_map[li].iter_mut().enumerate() {
             let gm = fpl.pow(2, (20 * m) as u64);
             let mut b0 = vec![0u64; n];
             let mut b1 = vec![0u64; n];
@@ -2317,7 +2380,7 @@ fn build_pd_v_families(
             v_fams.push(b0);
             v_fams.push(b1);
             v_fams.push(b2);
-            k_map[li][m] = [base, base + 1, base + 2];
+            *k_slot = [base, base + 1, base + 2];
         }
     }
     (v_fams, e_map, k_map)
@@ -2346,23 +2409,23 @@ fn replay_pd_logup_points(
     let mut st: [u8; 32] = {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_D1B_GKR|LOGUP_RANGE20");
-        h.update(&fp.p.to_le_bytes());
+        h.update(fp.p.to_le_bytes());
         h.update(ctx);
         h.finalize().into()
     };
     let absorb_u64s = |s: &mut [u8; 32], vals: &[u64]| {
         let mut h = Sha256::new();
-        h.update(&*s);
+        h.update(*s);
         for &v in vals {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         *s = h.finalize().into();
     };
     let squeeze = |s: &mut [u8; 32], tag: u64| -> u64 {
         let mut h = Sha256::new();
-        h.update(&*s);
+        h.update(*s);
         h.update(b"CHAL");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         *s = out;
         fp.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -2372,22 +2435,22 @@ fn replay_pd_logup_points(
         h.update(s);
         h.update(b"SUB|");
         h.update(label.as_bytes());
-        h.update(&idx.to_le_bytes());
+        h.update(idx.to_le_bytes());
         h.finalize().into()
     };
 
     absorb_u64s(&mut st, &[proof.total_lookups as u64, c as u64]);
     {
         let mut h = Sha256::new();
-        h.update(&st);
-        h.update(&proof.mult_commitment);
+        h.update(st);
+        h.update(proof.mult_commitment);
         st = h.finalize().into();
     }
     for ell in 0..c {
         let _ = squeeze(&mut st, ell as u64);
     }
 
-    let replay_one = |mut s: [u8; 32], tp: & crate::logup_gkr::FractionTreeProof| -> Vec<u64> {
+    let replay_one = |mut s: [u8; 32], tp: &crate::logup_gkr::FractionTreeProof| -> Vec<u64> {
         for r in &tp.roots {
             absorb_u64s(&mut s, r);
         }

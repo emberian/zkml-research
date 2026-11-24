@@ -11,7 +11,11 @@ pub fn sig(u: i64) -> i64 {
 }
 
 pub fn dsig(u: i64) -> i64 {
-    if (-28..32).contains(&u) { 1 } else { 0 }
+    if (-28..32).contains(&u) {
+        1
+    } else {
+        0
+    }
 }
 
 /// The step program as parameters (step_spec.Program; genesis pins one). `HARNESS` is the program this file always
@@ -36,9 +40,33 @@ pub struct Program {
 }
 
 impl Program {
-    pub const HARNESS: Program = Program { s1: 5, k1: 13, s2: 4, k2: 8, s3: 8, k3: 13, r3: 0, t_lo: -128, xmax: 7, wmax: Some(7), check_k: false };
+    pub const HARNESS: Program = Program {
+        s1: 5,
+        k1: 13,
+        s2: 4,
+        k2: 8,
+        s3: 8,
+        k3: 13,
+        r3: 0,
+        t_lo: -128,
+        xmax: 7,
+        wmax: Some(7),
+        check_k: false,
+    };
     /// Gen 6's pinned program at d = 4096 (step_spec.GEN6; notes/dark-learning-gen6/train.md).
-    pub const GEN6: Program = Program { s1: 11, k1: 19, s2: 7, k2: 8, s3: 8, k3: 19, r3: 1 << 7, t_lo: -128, xmax: 7, wmax: None, check_k: true };
+    pub const GEN6: Program = Program {
+        s1: 11,
+        k1: 19,
+        s2: 7,
+        k2: 8,
+        s3: 8,
+        k3: 19,
+        r3: 1 << 7,
+        t_lo: -128,
+        xmax: 7,
+        wmax: None,
+        check_k: true,
+    };
 
     /// mpc_fork.tables(p) over this program's domain: SIG and DSIG interpolated at 0..256 (input code u + t_lo).
     pub fn tables(&self, p: u64) -> Vec<Vec<u64>> {
@@ -53,13 +81,27 @@ impl Program {
         let lo = (-(1i64 << self.k1)).max(self.t_lo << self.s1);
         let hi = (1i64 << self.k1).min((self.t_lo + 256) << self.s1);
         let b = 63 - ((hi - lo) as u64).leading_zeros();
-        assert_eq!(hi - lo, 1i64 << b, "z1's interval must have power-of-two width");
-        [(lo, b), (-(1i64 << self.k1), self.k1 + 1), (-(1i64 << self.k2), self.k2 + 1), (-(1i64 << self.k3), self.k3 + 1)]
+        assert_eq!(
+            hi - lo,
+            1i64 << b,
+            "z1's interval must have power-of-two width"
+        );
+        [
+            (lo, b),
+            (-(1i64 << self.k1), self.k1 + 1),
+            (-(1i64 << self.k2), self.k2 + 1),
+            (-(1i64 << self.k3), self.k3 + 1),
+        ]
     }
 
     /// The truncation calls of run_step as (shift, bound): z1, z2, e, b * g1 + R3.
     pub fn truncs(&self) -> [(u32, u32); 4] {
-        [(self.s1, self.k1), (self.s1, self.k1), (self.s2, self.k2), (self.s3, self.k3)]
+        [
+            (self.s1, self.k1),
+            (self.s1, self.k1),
+            (self.s2, self.k2),
+            (self.s3, self.k3),
+        ]
     }
 }
 
@@ -78,13 +120,23 @@ pub struct Plain {
 /// native_ref.run's inputs: random.Random(d), W1, W2 in [-wmax, wmax], x, y in [-7, 7]. wmax = 7 up to d = 64; wider
 /// layers need smaller weights to keep u1 = z1 >> 5 inside the table's domain [-128, 128) (step_spec asserts it).
 pub fn wmax_for(d: usize) -> i64 {
-    if d <= 64 { 7 } else if d <= 256 { 2 } else { 1 }
+    if d <= 64 {
+        7
+    } else if d <= 256 {
+        2
+    } else {
+        1
+    }
 }
 
 pub fn inputs(d: usize) -> Plain {
     let wmax = wmax_for(d);
     let mut r = PyRandom::from_u64(d as u64);
-    let mat = |r: &mut PyRandom| -> Vec<Vec<i64>> { (0..d).map(|_| (0..d).map(|_| r.randint_i64(-wmax, wmax)).collect()).collect() };
+    let mat = |r: &mut PyRandom| -> Vec<Vec<i64>> {
+        (0..d)
+            .map(|_| (0..d).map(|_| r.randint_i64(-wmax, wmax)).collect())
+            .collect()
+    };
     let w1 = mat(&mut r);
     let w2 = mat(&mut r);
     let x = (0..d).map(|_| r.randint_i64(-7, 7)).collect();
@@ -104,7 +156,11 @@ pub fn inputs_for(d: usize, pg: &Program) -> Plain {
     let a2 = ((32.0 * (1u64 << pg.s1) as f64 * 1.732) / (4.0 * sd)).max(1.0) as i64;
     for k in 0..64u64 {
         let mut r = PyRandom::from_u64(d as u64 + k);
-        let mat = |r: &mut PyRandom, a: i64| -> Vec<Vec<i64>> { (0..d).map(|_| (0..d).map(|_| r.randint_i64(-a, a)).collect()).collect() };
+        let mat = |r: &mut PyRandom, a: i64| -> Vec<Vec<i64>> {
+            (0..d)
+                .map(|_| (0..d).map(|_| r.randint_i64(-a, a)).collect())
+                .collect()
+        };
         let w1 = mat(&mut r, a1);
         let w2 = mat(&mut r, a2);
         let x = (0..d).map(|_| r.randint_i64(-7, 7)).collect();
@@ -118,6 +174,8 @@ pub fn inputs_for(d: usize, pg: &Program) -> Plain {
     }
     panic!("inputs_for: no in-bound inputs for {pg:?} at d = {d}");
 }
+
+pub type StepWeights = (Vec<Vec<i64>>, Vec<Vec<i64>>);
 
 impl Plain {
     pub fn flat_mod(&self, p: u64) -> Vec<u64> {
@@ -133,37 +191,60 @@ impl Plain {
     }
 
     /// step_spec.step: the new weights, or the bound step_spec would assert on.
-    pub fn step(&self) -> Result<(Vec<Vec<i64>>, Vec<Vec<i64>>), String> {
+    pub fn step(&self) -> Result<StepWeights, String> {
         self.step_prog(&Program::HARNESS)
     }
 
     /// step_spec.step(W1, W2, x, y, prog): the new weights, or the assertion step_spec would raise.
-    pub fn step_prog(&self, pg: &Program) -> Result<(Vec<Vec<i64>>, Vec<Vec<i64>>), String> {
+    pub fn step_prog(&self, pg: &Program) -> Result<StepWeights, String> {
         let d = self.x.len();
         if let Some(v) = self.x.iter().find(|v| v.abs() > pg.xmax) {
             return Err(format!("step_spec: |x| = {} > {}", v.abs(), pg.xmax));
         }
         if let Some(w) = pg.wmax {
-            if self.w1.iter().chain(&self.w2).flatten().any(|v| v.abs() > w) {
+            if self
+                .w1
+                .iter()
+                .chain(&self.w2)
+                .flatten()
+                .any(|v| v.abs() > w)
+            {
                 return Err(format!("step_spec: |W| > {w}"));
             }
         }
-        let mv = |w: &Vec<Vec<i64>>, v: &[i64]| -> Vec<i64> { (0..d).map(|i| (0..d).map(|j| w[i][j] * v[j]).sum()).collect() };
+        let mv = |w: &Vec<Vec<i64>>, v: &[i64]| -> Vec<i64> {
+            (0..d)
+                .map(|i| (0..d).map(|j| w[i][j] * v[j]).sum())
+                .collect()
+        };
         let z1 = mv(&self.w1, &self.x);
         let u1: Vec<i64> = z1.iter().map(|z| z >> pg.s1).collect();
         if let Some(u) = u1.iter().find(|u| !(pg.t_lo..pg.t_lo + 256).contains(*u)) {
-            return Err(format!("step_spec domain: u1 = {u} outside [{}, {})", pg.t_lo, pg.t_lo + 256));
+            return Err(format!(
+                "step_spec domain: u1 = {u} outside [{}, {})",
+                pg.t_lo,
+                pg.t_lo + 256
+            ));
         }
         let h: Vec<i64> = u1.iter().map(|&u| sig(u)).collect();
         let g1: Vec<i64> = u1.iter().map(|&u| dsig(u)).collect();
         let z2 = mv(&self.w2, &h);
-        let e: Vec<i64> = z2.iter().zip(&self.y).map(|(z, y)| (z >> pg.s1) - y).collect();
+        let e: Vec<i64> = z2
+            .iter()
+            .zip(&self.y)
+            .map(|(z, y)| (z >> pg.s1) - y)
+            .collect();
         let d2: Vec<i64> = e.iter().map(|v| v >> pg.s2).collect();
-        let b: Vec<i64> = (0..d).map(|j| (0..d).map(|i| self.w2[i][j] * d2[i]).sum()).collect();
+        let b: Vec<i64> = (0..d)
+            .map(|j| (0..d).map(|i| self.w2[i][j] * d2[i]).sum())
+            .collect();
         let bg: Vec<i64> = b.iter().zip(&g1).map(|(bb, g)| bb * g + pg.r3).collect();
         if pg.check_k || pg.wmax.is_none() {
             let iv = pg.intervals();
-            let out = |v: &[i64], k: usize| v.iter().any(|x| !(iv[k].0..iv[k].0 + (1i64 << iv[k].1)).contains(x));
+            let out = |v: &[i64], k: usize| {
+                v.iter()
+                    .any(|x| !(iv[k].0..iv[k].0 + (1i64 << iv[k].1)).contains(x))
+            };
             if out(&z1, 0) || out(&z2, 1) {
                 return Err("step_spec: z1/z2 outside the truncation bound 2^K1".into());
             }
@@ -175,8 +256,12 @@ impl Plain {
             }
         }
         let d1: Vec<i64> = bg.iter().map(|v| v >> pg.s3).collect();
-        let w2n = (0..d).map(|i| (0..d).map(|j| self.w2[i][j] - d2[i] * h[j]).collect()).collect();
-        let w1n = (0..d).map(|i| (0..d).map(|j| self.w1[i][j] - d1[i] * self.x[j]).collect()).collect();
+        let w2n = (0..d)
+            .map(|i| (0..d).map(|j| self.w2[i][j] - d2[i] * h[j]).collect())
+            .collect();
+        let w1n = (0..d)
+            .map(|i| (0..d).map(|j| self.w1[i][j] - d1[i] * self.x[j]).collect())
+            .collect();
         Ok((w1n, w2n))
     }
 }
@@ -202,12 +287,25 @@ pub struct ProofRecord {
 }
 
 /// The HARNESS program's step (what this function always ran).
-pub fn run_step(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u64>]) -> Result<StepOut, String> {
+pub fn run_step(
+    pt: &mut Party,
+    he: &mut He,
+    cs: &[u64],
+    d: usize,
+    tab: &[Vec<u64>],
+) -> Result<StepOut, String> {
     run_step_prog(pt, he, cs, d, tab, &Program::HARNESS)
 }
 
 /// The step under a program; `tab` must be `pg.tables(p)`.
-pub fn run_step_prog(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[Vec<u64>], pg: &Program) -> Result<StepOut, String> {
+pub fn run_step_prog(
+    pt: &mut Party,
+    he: &mut He,
+    cs: &[u64],
+    d: usize,
+    tab: &[Vec<u64>],
+    pg: &Program,
+) -> Result<StepOut, String> {
     let t = Instant::now();
     let dd = d * d;
     let sw1 = pt.input_vec(&cs[..dd]);
@@ -227,7 +325,17 @@ pub fn run_step_prog(pt: &mut Party, he: &mut He, cs: &[u64], d: usize, tab: &[V
 /// The step from weights already held as shares (a carried step: the owner inputs only x and y, 2d openings, then
 /// this with the previous step's w1n, w2n). Everything run_step_prog does after its "input" phase.
 #[allow(clippy::too_many_arguments)]
-pub fn run_step_shares(pt: &mut Party, he: &mut He, m1: Vec<Vec<Sh>>, m2: Vec<Vec<Sh>>, sx: Vec<Sh>, sy: Vec<Sh>, d: usize, tab: &[Vec<u64>], pg: &Program) -> Result<StepOut, String> {
+pub fn run_step_shares(
+    pt: &mut Party,
+    he: &mut He,
+    m1: Vec<Vec<Sh>>,
+    m2: Vec<Vec<Sh>>,
+    sx: Vec<Sh>,
+    sy: Vec<Sh>,
+    d: usize,
+    tab: &[Vec<u64>],
+    pg: &Program,
+) -> Result<StepOut, String> {
     let mut phases = Vec::new();
     let mut t = Instant::now();
     let lap = |name: &'static str, t: &mut Instant, ph: &mut Vec<(&'static str, f64)>| {
@@ -255,34 +363,72 @@ pub fn run_step_shares(pt: &mut Party, he: &mut He, m1: Vec<Vec<Sh>>, m2: Vec<Ve
     pt.middle_mul = true;
     let bg = pt.mul_vec(&b, &g1);
     pt.middle_mul = false;
-    let bgr: Vec<Sh> = if pg.r3 == 0 { bg.clone() } else { let c = from_i64(pg.r3, pt.p); bg.iter().map(|v| pt.cadd(c, *v)).collect() };
+    let bgr: Vec<Sh> = if pg.r3 == 0 {
+        bg.clone()
+    } else {
+        let c = from_i64(pg.r3, pt.p);
+        bg.iter().map(|v| pt.cadd(c, *v)).collect()
+    };
     let d1 = pt.trunc_vec(&bgr, pg.s3, pg.k3);
     pt.xt_redo()?;
     lap("mul_trunc_d1", &mut t, &mut phases);
     let g2 = he.outer(pt, &d2, &h)?;
-    let w2n: Vec<Vec<Sh>> = (0..d).map(|i| (0..d).map(|j| pt.sub(m2[i][j], g2[i][j])).collect()).collect();
-    let mut record = ProofRecord { alpha_i: pt.alpha(), ..Default::default() };
-    for (k, v) in [("x", &sx), ("y", &sy), ("z1", &z1), ("h", &h), ("z2", &z2), ("d2", &d2), ("b", &b), ("g1", &g1), ("bg", &bg), ("d1", &d1)] {
+    let w2n: Vec<Vec<Sh>> = (0..d)
+        .map(|i| (0..d).map(|j| pt.sub(m2[i][j], g2[i][j])).collect())
+        .collect();
+    let mut record = ProofRecord {
+        alpha_i: pt.alpha(),
+        ..Default::default()
+    };
+    for (k, v) in [
+        ("x", &sx),
+        ("y", &sy),
+        ("z1", &z1),
+        ("h", &h),
+        ("z2", &z2),
+        ("d2", &d2),
+        ("b", &b),
+        ("g1", &g1),
+        ("bg", &bg),
+        ("d1", &d1),
+    ] {
         record.wires.insert(k, v.clone());
     }
     drop(g2);
     lap("outer_G2", &mut t, &mut phases);
     let g1o = he.outer(pt, &d1, &sx)?;
-    let w1n: Vec<Vec<Sh>> = (0..d).map(|i| (0..d).map(|j| pt.sub(m1[i][j], g1o[i][j])).collect()).collect();
+    let w1n: Vec<Vec<Sh>> = (0..d)
+        .map(|i| (0..d).map(|j| pt.sub(m1[i][j], g1o[i][j])).collect())
+        .collect();
     drop(g1o);
     lap("outer_G1", &mut t, &mut phases);
     let sigma = pt.mac_check("he")?;
     lap("mac_check", &mut t, &mut phases);
-    record.wires.insert("W1", m1.into_iter().flatten().collect());
-    record.wires.insert("W2", m2.into_iter().flatten().collect());
+    record
+        .wires
+        .insert("W1", m1.into_iter().flatten().collect());
+    record
+        .wires
+        .insert("W2", m2.into_iter().flatten().collect());
     record.public = pt.tr.v.clone();
     record.middle_atoms = pt
         .atom_log
         .iter()
-        .flat_map(|r| r.clone().map(|k| Sh { s: pt.tape.sh[k], m: pt.tape.mac[k] }))
+        .flat_map(|r| {
+            r.clone().map(|k| Sh {
+                s: pt.tape.sh[k],
+                m: pt.tape.mac[k],
+            })
+        })
         .collect();
     record.tape_cursor = pt.cur;
-    Ok(StepOut { w1n, w2n, sigma, phases, record })
+    Ok(StepOut {
+        w1n,
+        w2n,
+        sigma,
+        phases,
+        record,
+    })
 }
 
 /// sha256(repr((W1n_i, W2n_i))) with entries (share, mac).

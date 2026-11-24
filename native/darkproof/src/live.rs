@@ -43,8 +43,8 @@ impl Eng {
     fn cadd(&self, c: u64, x: &V) -> V {
         let mut o = *x;
         o[0].0 = field::add(o[0].0, c);
-        for i in 0..N {
-            o[i].1 = field::add(o[i].1, field::mul(self.dealer.alpha_sh[i], c));
+        for (oi, &ai) in o.iter_mut().zip(&self.dealer.alpha_sh) {
+            oi.1 = field::add(oi.1, field::mul(ai, c));
         }
         o
     }
@@ -81,7 +81,11 @@ impl Eng {
         let f = self.open(&Self::sub(y, &b));
         let s = lin(&[(1, &c), (e, &b), (f, &a)]);
         let ef = field::mul(e, f);
-        if ef != 0 { self.cadd(ef, &s) } else { s }
+        if ef != 0 {
+            self.cadd(ef, &s)
+        } else {
+            s
+        }
     }
     fn input(&mut self, vals: &[u64], orng: &mut PyRandom) -> Vec<V> {
         vals.iter()
@@ -95,16 +99,31 @@ impl Eng {
             .collect()
     }
     fn matvec(&mut self, w: &[V], v: &[V], d: usize, tp: bool) -> Vec<V> {
-        let av: Vec<u64> = (0..d * d).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
-        let bv: Vec<u64> = (0..d).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
+        let av: Vec<u64> = (0..d * d)
+            .map(|_| self.dealer.rng.randrange_u64(field::p()))
+            .collect();
+        let bv: Vec<u64> = (0..d)
+            .map(|_| self.dealer.rng.randrange_u64(field::p()))
+            .collect();
         let a: Vec<V> = av.iter().map(|&x| self.auth(x)).collect();
         let b: Vec<V> = bv.iter().map(|&x| self.auth(x)).collect();
         let cvals: Vec<u64> = (0..d)
-            .map(|i| (0..d).fold(0, |acc, r| field::add(acc, field::mul(if tp { av[r * d + i] } else { av[i * d + r] }, bv[r]))))
+            .map(|i| {
+                (0..d).fold(0, |acc, r| {
+                    field::add(
+                        acc,
+                        field::mul(if tp { av[r * d + i] } else { av[i * d + r] }, bv[r]),
+                    )
+                })
+            })
             .collect();
         let c: Vec<V> = cvals.iter().map(|&x| self.auth(x)).collect();
-        let e: Vec<u64> = (0..d * d).map(|k| self.open(&Self::sub(&w[k], &a[k]))).collect();
-        let f: Vec<u64> = (0..d).map(|r| self.open(&Self::sub(&v[r], &b[r]))).collect();
+        let e: Vec<u64> = (0..d * d)
+            .map(|k| self.open(&Self::sub(&w[k], &a[k])))
+            .collect();
+        let f: Vec<u64> = (0..d)
+            .map(|r| self.open(&Self::sub(&v[r], &b[r])))
+            .collect();
         use rayon::prelude::*;
         let alpha = self.dealer.alpha_sh.clone();
         (0..d)
@@ -113,10 +132,20 @@ impl Eng {
                 let mut o = c[i];
                 let mut cst = 0u64;
                 for r in 0..d {
-                    let (eir, air) = if tp { (e[r * d + i], &a[r * d + i]) } else { (e[i * d + r], &a[i * d + r]) };
+                    let (eir, air) = if tp {
+                        (e[r * d + i], &a[r * d + i])
+                    } else {
+                        (e[i * d + r], &a[i * d + r])
+                    };
                     for p in 0..N {
-                        o[p].0 = field::add(o[p].0, field::add(field::mul(eir, b[r][p].0), field::mul(f[r], air[p].0)));
-                        o[p].1 = field::add(o[p].1, field::add(field::mul(eir, b[r][p].1), field::mul(f[r], air[p].1)));
+                        o[p].0 = field::add(
+                            o[p].0,
+                            field::add(field::mul(eir, b[r][p].0), field::mul(f[r], air[p].0)),
+                        );
+                        o[p].1 = field::add(
+                            o[p].1,
+                            field::add(field::mul(eir, b[r][p].1), field::mul(f[r], air[p].1)),
+                        );
                     }
                     cst = field::add(cst, field::mul(eir, f[r]));
                 }
@@ -132,18 +161,26 @@ impl Eng {
     }
     fn outer(&mut self, a: &[V], x: &[V]) -> Vec<V> {
         let (d1, d2) = (a.len(), x.len());
-        let uv: Vec<u64> = (0..d1).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
-        let wv: Vec<u64> = (0..d2).map(|_| self.dealer.rng.randrange_u64(field::p())).collect();
+        let uv: Vec<u64> = (0..d1)
+            .map(|_| self.dealer.rng.randrange_u64(field::p()))
+            .collect();
+        let wv: Vec<u64> = (0..d2)
+            .map(|_| self.dealer.rng.randrange_u64(field::p()))
+            .collect();
         let u: Vec<V> = uv.iter().map(|&x| self.auth(x)).collect();
         let w: Vec<V> = wv.iter().map(|&x| self.auth(x)).collect();
         let mut uw = Vec::with_capacity(d1 * d2);
-        for i in 0..d1 {
-            for j in 0..d2 {
-                uw.push(self.auth(field::mul(uv[i], wv[j])));
+        for &uvi in &uv {
+            for &wvj in &wv {
+                uw.push(self.auth(field::mul(uvi, wvj)));
             }
         }
-        let e: Vec<u64> = (0..d1).map(|i| self.open(&Self::sub(&a[i], &u[i]))).collect();
-        let f: Vec<u64> = (0..d2).map(|j| self.open(&Self::sub(&x[j], &w[j]))).collect();
+        let e: Vec<u64> = (0..d1)
+            .map(|i| self.open(&Self::sub(&a[i], &u[i])))
+            .collect();
+        let f: Vec<u64> = (0..d2)
+            .map(|j| self.open(&Self::sub(&x[j], &w[j])))
+            .collect();
         let mut out = Vec::with_capacity(d1 * d2);
         for i in 0..d1 {
             for j in 0..d2 {
@@ -155,7 +192,11 @@ impl Eng {
         out
     }
     fn trunc(&mut self, x: &V, s: u32, k: u32) -> V {
-        let rv = if self.xt { self.dealer.rng.randbelow_u64(field::p()) } else { self.dealer.rng.randbelow_u64(1u64 << (k + KAPPA)) };
+        let rv = if self.xt {
+            self.dealer.rng.randbelow_u64(field::p())
+        } else {
+            self.dealer.rng.randbelow_u64(1u64 << (k + KAPPA))
+        };
         let r = self.auth(rv);
         let r = self.rec(r);
         let mut bits = Vec::with_capacity(s as usize);
@@ -168,10 +209,17 @@ impl Eng {
         let val = rv >> s;
         for j in 0..if self.rs { k + 1 - s } else { k + KAPPA - s } {
             let v = (val >> j) & 1;
-            let xs: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(field::p())).collect();
-            let ms: Vec<u64> = (0..N - 1).map(|_| self.prng.randrange_u64(field::p())).collect();
+            let xs: Vec<u64> = (0..N - 1)
+                .map(|_| self.prng.randrange_u64(field::p()))
+                .collect();
+            let ms: Vec<u64> = (0..N - 1)
+                .map(|_| self.prng.randrange_u64(field::p()))
+                .collect();
             let lx = field::sub(v, xs.iter().fold(0, |a, &b| field::add(a, b)));
-            let lm = field::sub(field::mul(self.dealer.alpha, v), ms.iter().fold(0, |a, &b| field::add(a, b)));
+            let lm = field::sub(
+                field::mul(self.dealer.alpha, v),
+                ms.iter().fold(0, |a, &b| field::add(a, b)),
+            );
             self.atoms.push([(xs[0], ms[0]), (xs[1], ms[1]), (lx, lm)]);
         }
         let c = self.open(&self.cadd(1u64 << k, &lin(&[(1, x), (1, &r)])));
@@ -203,7 +251,11 @@ impl Eng {
         }
         let q = field::from_i64((c >> s) as i64 - (1i64 << (k - s)));
         let o = lin(&[(field::p() - 1, &rhi), (field::p() - 1, &borrow.unwrap())]);
-        if q != 0 { self.cadd(q, &o) } else { o }
+        if q != 0 {
+            self.cadd(q, &o)
+        } else {
+            o
+        }
     }
     fn lookup2(&mut self, u: &V, offset: u64, tables: &(Vec<u64>, Vec<u64>)) -> (V, V) {
         let rv = self.dealer.rng.randrange_u64(field::p());
@@ -217,7 +269,11 @@ impl Eng {
             let tay = crate::step::taylor_shift(coeffs, c);
             let terms: Vec<(u64, &V)> = (1..tay.len()).map(|j| (tay[j], &pw[j - 1])).collect();
             let o = lin(&terms);
-            if tay[0] != 0 { me.cadd(tay[0], &o) } else { o }
+            if tay[0] != 0 {
+                me.cadd(tay[0], &o)
+            } else {
+                o
+            }
         };
         (mk(self, &tables.0), mk(self, &tables.1))
     }
@@ -226,7 +282,11 @@ impl Eng {
 /// The harness's inputs for width d: random.Random(d), randint(-7, 7) for W1, W2, x, y.
 pub fn harness_inputs(d: usize) -> (Vec<u64>, Vec<u64>, Vec<u64>, Vec<u64>) {
     let mut r = PyRandom::from_u64(d as u64);
-    let mut m = |k: usize| -> Vec<u64> { (0..k).map(|_| field::from_i64(r.randint_i64(-7, 7))).collect() };
+    let mut m = |k: usize| -> Vec<u64> {
+        (0..k)
+            .map(|_| field::from_i64(r.randint_i64(-7, 7)))
+            .collect()
+    };
     let w1 = m(d * d);
     let w2 = m(d * d);
     let x = m(d);
@@ -235,8 +295,23 @@ pub fn harness_inputs(d: usize) -> (Vec<u64>, Vec<u64>, Vec<u64>, Vec<u64>) {
 }
 
 /// mpc_fork.run_step under spdz.Dealer(p, 3, 5), owner seed 9, RecEngine seed 1.
-pub fn run_step(w1: &[u64], w2: &[u64], x: &[u64], y: &[u64], d: usize, prm: StepParams, tables: &(Vec<u64>, Vec<u64>)) -> Witness {
-    let mut e = Eng { dealer: Dealer::from_seed(5, N), prng: PyRandom::from_u64(1), rs: prm.rs, xt: prm.xt, public: Vec::new(), atoms: Vec::new() };
+pub fn run_step(
+    w1: &[u64],
+    w2: &[u64],
+    x: &[u64],
+    y: &[u64],
+    d: usize,
+    prm: StepParams,
+    tables: &(Vec<u64>, Vec<u64>),
+) -> Witness {
+    let mut e = Eng {
+        dealer: Dealer::from_seed(5, N),
+        prng: PyRandom::from_u64(1),
+        rs: prm.rs,
+        xt: prm.xt,
+        public: Vec::new(),
+        atoms: Vec::new(),
+    };
     let mut orng = PyRandom::from_u64(9);
     let sw1 = e.input(w1, &mut orng);
     let sw2 = e.input(w2, &mut orng);
@@ -248,10 +323,14 @@ pub fn run_step(w1: &[u64], w2: &[u64], x: &[u64], y: &[u64], d: usize, prm: Ste
     let h: Vec<V> = hg.iter().map(|t| t.0).collect();
     let g1: Vec<V> = hg.iter().map(|t| t.1).collect();
     let z2 = e.matvec(&sw2, &h, d, false);
-    let ev: Vec<V> = z2.iter().zip(&sy).map(|(z, yy)| {
-        let t = e.trunc(z, prm.s1, prm.k1);
-        Eng::sub(&t, yy)
-    }).collect();
+    let ev: Vec<V> = z2
+        .iter()
+        .zip(&sy)
+        .map(|(z, yy)| {
+            let t = e.trunc(z, prm.s1, prm.k1);
+            Eng::sub(&t, yy)
+        })
+        .collect();
     let d2: Vec<V> = ev.iter().map(|v| e.trunc(v, prm.s2, prm.k2)).collect();
     let b = e.matvec(&sw2, &d2, d, true);
     let bg: Vec<V> = b.iter().zip(&g1).map(|(bb, g)| e.mul(bb, g)).collect();
@@ -272,7 +351,18 @@ pub fn run_step(w1: &[u64], w2: &[u64], x: &[u64], y: &[u64], d: usize, prm: Ste
     put(&mut wires, "W1n", w1n);
     put(&mut wires, "W1", sw1);
     put(&mut wires, "W2", sw2);
-    for (k, v) in [("x", sx), ("y", sy), ("z1", z1), ("h", h), ("z2", z2), ("d2", d2), ("b", b), ("g1", g1), ("bg", bg), ("d1", d1)] {
+    for (k, v) in [
+        ("x", sx),
+        ("y", sy),
+        ("z1", z1),
+        ("h", h),
+        ("z2", z2),
+        ("d2", d2),
+        ("b", b),
+        ("g1", g1),
+        ("bg", bg),
+        ("d1", d1),
+    ] {
         put(&mut wires, k, v);
     }
     Witness {
@@ -282,6 +372,8 @@ pub fn run_step(w1: &[u64], w2: &[u64], x: &[u64], y: &[u64], d: usize, prm: Ste
         dealer_state: e.dealer.rng.state(),
         wires,
         public: e.public,
-        atoms: (0..N).map(|i| e.atoms.iter().map(|x| x[i]).collect()).collect(),
+        atoms: (0..N)
+            .map(|i| e.atoms.iter().map(|x| x[i]).collect())
+            .collect(),
     }
 }

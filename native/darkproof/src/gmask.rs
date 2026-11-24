@@ -41,7 +41,16 @@ impl GMask {
             ld.insert(name.clone(), (*l, *deg));
             n += l * (deg + 1) * e;
         }
-        GMask { specs, row0, kl, e, off, ld, ncells: n, nrows: n.div_ceil(kl) }
+        GMask {
+            specs,
+            row0,
+            kl,
+            e,
+            off,
+            ld,
+            ncells: n,
+            nrows: n.div_ceil(kl),
+        }
     }
 
     pub fn idx(&self, name: &str, j: usize, t: usize, k: usize) -> usize {
@@ -64,12 +73,26 @@ impl GMask {
     /// g(rs) = sum_j g_j(r_j).
     pub fn at_coef<const E: usize>(&self, name: &str, rs: &[[u64; E]]) -> Coef<E> {
         let (_, deg) = self.ld[name];
-        rs.iter().enumerate().flat_map(|(j, &r)| ext::lagc(deg, r).into_iter().enumerate().map(move |(t, lc)| (j, t, lc))).collect()
+        rs.iter()
+            .enumerate()
+            .flat_map(|(j, &r)| {
+                ext::lagc(deg, r)
+                    .into_iter()
+                    .enumerate()
+                    .map(move |(t, lc)| (j, t, lc))
+            })
+            .collect()
     }
 
     /// The round-i message's g part at X = t: 2^(l-1-i) (sum_{j<i} g_j(r_j) + g_i(t)) + 2^(l-2-i) sum_{j>i}
     /// (g_j(0) + g_j(1)).
-    pub fn round_coef<const E: usize>(&self, name: &str, i: usize, t: usize, rs: &[[u64; E]]) -> Coef<E> {
+    pub fn round_coef<const E: usize>(
+        &self,
+        name: &str,
+        i: usize,
+        t: usize,
+        rs: &[[u64; E]],
+    ) -> Coef<E> {
         let (l, deg) = self.ld[name];
         let a = ext::lift::<E>(pow2(l - 1 - i));
         let mut out: Coef<E> = Vec::new();
@@ -90,9 +113,18 @@ impl GMask {
     }
 
     /// The form scale * sum coef * g-cell value.
-    pub(crate) fn lin_form<const E: usize>(&self, em: &mut EEm<E>, name: &str, coefs: &Coef<E>, scale: [u64; E]) {
+    pub(crate) fn lin_form<const E: usize>(
+        &self,
+        em: &mut EEm<E>,
+        name: &str,
+        coefs: &Coef<E>,
+        scale: [u64; E],
+    ) {
         for &(j, t, c) in coefs {
-            em.var(std::array::from_fn(|k| self.cell(name, j, t, k)), ext::mul(scale, c));
+            em.var(
+                std::array::from_fn(|k| self.cell(name, j, t, k)),
+                ext::mul(scale, c),
+            );
         }
     }
 
@@ -109,7 +141,12 @@ impl GMask {
 
 /// cosnark_zk.specs: the spine's masking polynomials (sumcheck, rounds, degree).
 pub fn spine_specs(ld: usize) -> Vec<(String, usize, usize)> {
-    vec![("z1".into(), ld, 2), ("z2".into(), ld, 2), ("b".into(), ld, 2), ("bg".into(), ld, 3)]
+    vec![
+        ("z1".into(), ld, 2),
+        ("z2".into(), ld, 2),
+        ("b".into(), ld, 2),
+        ("bg".into(), ld, 3),
+    ]
 }
 
 /// cosnark_gates_zk.specs: the zerocheck, then one per linear sumcheck (sorted names).
@@ -138,16 +175,22 @@ pub fn check_rounds<const E: usize>(
     claim0: Option<[u64; E]>,
 ) -> Result<(), String> {
     if msgs.len() != rs.len() || msgs.iter().any(|m| m.len() != deg + 1) {
-        return Err(format!("sumcheck {name}: round messages of the wrong shape"));
+        return Err(format!(
+            "sumcheck {name}: round messages of the wrong shape"
+        ));
     }
     if let Some(c) = claim0 {
         if ext::add(msgs[0][0], msgs[0][1]) != c {
-            return Err(format!("sumcheck {name}: first round sum differs from the public claim"));
+            return Err(format!(
+                "sumcheck {name}: first round sum differs from the public claim"
+            ));
         }
     }
     for i in 1..msgs.len() {
         if ext::add(msgs[i][0], msgs[i][1]) != ext::interp_at(&msgs[i - 1], rs[i - 1]) {
-            return Err(format!("sumcheck {name}: round {i} sum differs from the previous round at r"));
+            return Err(format!(
+                "sumcheck {name}: round {i} sum differs from the previous round at r"
+            ));
         }
     }
     Ok(())
@@ -166,15 +209,29 @@ pub struct MaskZ<const E: usize> {
 impl<const E: usize> MaskZ<E> {
     /// The G values in spec order, flat (the transcript's and the wire's form).
     pub fn g_flat(&self) -> Vec<u64> {
-        self.gm.specs.iter().flat_map(|(nm, _, _)| self.g[nm].iter().copied()).collect()
+        self.gm
+            .specs
+            .iter()
+            .flat_map(|(nm, _, _)| self.g[nm].iter().copied())
+            .collect()
     }
 
     /// The verifier's side before the schedule: absorb the g roots and G, draw rho.
     pub fn from_wire(gm: GMask, g_roots: &[Hash], gflat: &[u64], tr: &mut Transcript) -> Self {
-        let g = gm.specs.iter().enumerate().map(|(i, (nm, _, _))| (nm.clone(), std::array::from_fn(|k| gflat[E * i + k]))).collect();
+        let g = gm
+            .specs
+            .iter()
+            .enumerate()
+            .map(|(i, (nm, _, _))| (nm.clone(), std::array::from_fn(|k| gflat[E * i + k])))
+            .collect();
         absorb_g(tr, g_roots, gflat);
         let rho = ext::chal1::<E>(tr);
-        MaskZ { gm, g, msgs: BTreeMap::new(), rho }
+        MaskZ {
+            gm,
+            g,
+            msgs: BTreeMap::new(),
+            rho,
+        }
     }
 
     /// The per-sumcheck constraints (cosnark_zk.constraints sumcheck_mask): G = the sum of g over the cube; claim + rho
@@ -188,15 +245,26 @@ impl<const E: usize> MaskZ<E> {
         fin: &dyn Fn(&mut EEm<E>),
     ) {
         let (msgs, g) = (&self.msgs[name], self.g[name]);
-        self.gm.lin_form(em, name, &self.gm.g_coef::<E>(name), ext::one());
-        em.done(&format!("sumcheck {name}: G = the sum of g over the cube"), g);
+        self.gm
+            .lin_form(em, name, &self.gm.g_coef::<E>(name), ext::one());
+        em.done(
+            &format!("sumcheck {name}: G = the sum of g over the cube"),
+            g,
+        );
         if let Some(f) = first {
             f(em);
-            em.done(&format!("sumcheck {name}: claim + rho G = first round sum"), ext::sub(ext::add(msgs[0][0], msgs[0][1]), ext::mul(self.rho, g)));
+            em.done(
+                &format!("sumcheck {name}: claim + rho G = first round sum"),
+                ext::sub(ext::add(msgs[0][0], msgs[0][1]), ext::mul(self.rho, g)),
+            );
         }
         fin(em);
-        self.gm.lin_form(em, name, &self.gm.at_coef(name, rs), self.rho);
-        em.done(&format!("sumcheck {name}: final + rho g(r) = last round at r"), ext::interp_at(msgs.last().unwrap(), *rs.last().unwrap()));
+        self.gm
+            .lin_form(em, name, &self.gm.at_coef(name, rs), self.rho);
+        em.done(
+            &format!("sumcheck {name}: final + rho g(r) = last round at r"),
+            ext::interp_at(msgs.last().unwrap(), *rs.last().unwrap()),
+        );
     }
 }
 
@@ -213,7 +281,9 @@ pub fn absorb_g(tr: &mut Transcript, g_roots: &[Hash], gflat: &[u64]) {
 fn open_all<const E: usize>(net: &mut dyn Net, mine: Vec<u64>) -> Vec<[u64; E]> {
     let all = net.all_gather(mine);
     let m = all[0].len() / E;
-    (0..m).map(|x| std::array::from_fn(|k| all.iter().fold(0, |a, v| field::add(a, v[x * E + k])))).collect()
+    (0..m)
+        .map(|x| std::array::from_fn(|k| all.iter().fold(0, |a, v| field::add(a, v[x * E + k]))))
+        .collect()
 }
 
 /// The prover's side (cosnark_zk.prove_zk pre / GMask.commit): this party draws its g shares from its own Ligero
@@ -241,11 +311,29 @@ pub fn commit<const E: usize>(
         mine.extend(v);
     }
     let gv = open_all::<E>(net, mine);
-    let g: BTreeMap<String, [u64; E]> = gm.specs.iter().zip(gv).map(|((nm, _, _), v)| (nm.clone(), v)).collect();
-    let mut mz = MaskZ { gm, g, msgs: BTreeMap::new(), rho: ext::zero() };
+    let g: BTreeMap<String, [u64; E]> = gm
+        .specs
+        .iter()
+        .zip(gv)
+        .map(|((nm, _, _), v)| (nm.clone(), v))
+        .collect();
+    let mut mz = MaskZ {
+        gm,
+        g,
+        msgs: BTreeMap::new(),
+        rho: ext::zero(),
+    };
     absorb_g(tr, &g_roots, &mz.g_flat());
     mz.rho = ext::chal1::<E>(tr);
     (mz, gsh, g_roots)
+}
+
+pub struct RoundOpen<'a, const E: usize> {
+    pub names: &'a [&'a str],
+    pub rnd: usize,
+    pub pts: &'a [[u64; E]],
+    pub vals: &'a [Vec<[u64; E]>],
+    pub bump: Option<(&'a str, usize)>,
 }
 
 /// cosnark_zk open_round: every custodian broadcasts its share of s_rnd = f part + rho g part, for each of several
@@ -256,12 +344,15 @@ pub fn open_round<const E: usize>(
     mz: &MaskZ<E>,
     gsh: &[u64],
     net: &mut dyn Net,
-    names: &[&str],
-    rnd: usize,
-    pts: &[[u64; E]],
-    vals: &[Vec<[u64; E]>],
-    bump: Option<(&str, usize)>,
+    round: RoundOpen<'_, E>,
 ) -> Vec<Vec<[u64; E]>> {
+    let RoundOpen {
+        names,
+        rnd,
+        pts,
+        vals,
+        bump,
+    } = round;
     let mut mine = Vec::new();
     for (s, nm) in names.iter().enumerate() {
         for (t, &v) in vals[s].iter().enumerate() {

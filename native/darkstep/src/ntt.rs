@@ -13,12 +13,16 @@ pub struct Ntt {
 }
 
 fn bitrev(x: usize, bits: u32) -> usize {
-    if bits == 0 { 0 } else { x.reverse_bits() >> (usize::BITS - bits) }
+    if bits == 0 {
+        0
+    } else {
+        x.reverse_bits() >> (usize::BITS - bits)
+    }
 }
 
 impl Ntt {
     pub fn new(q: u64, n: usize) -> Self {
-        assert!(n.is_power_of_two() && (q - 1) % (2 * n as u64) == 0);
+        assert!(n.is_power_of_two() && (q - 1).is_multiple_of(2 * n as u64));
         let mut psi0 = 0;
         for g in 2u64.. {
             let c = powmod(g, (q - 1) / (2 * n as u64), q);
@@ -39,7 +43,16 @@ impl Ntt {
         let psi_s = psi.iter().map(|&w| shoup(w, q)).collect();
         let ipsi_s = ipsi.iter().map(|&w| shoup(w, q)).collect();
         let ninv = invmod(n as u64, q);
-        Ntt { q, n, psi, psi_s, ipsi, ipsi_s, ninv, ninv_s: shoup(ninv, q) }
+        Ntt {
+            q,
+            n,
+            psi,
+            psi_s,
+            ipsi,
+            ipsi_s,
+            ninv,
+            ninv_s: shoup(ninv, q),
+        }
     }
 
     pub fn forward(&self, a: &mut [u64]) {

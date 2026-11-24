@@ -52,13 +52,37 @@ fn jroots(r: &BTreeMap<String, Vec<Hash>>) -> String {
 fn jpending(p: &crate::defer::Pending) -> String {
     let pts: Vec<String> = ["W1", "W2"]
         .iter()
-        .map(|k| format!("{}: [{}]", jstr(k), p.points[*k].iter().map(|v| v.to_string()).collect::<Vec<_>>().join(", ")))
+        .map(|k| {
+            format!(
+                "{}: [{}]",
+                jstr(k),
+                p.points[*k]
+                    .iter()
+                    .map(|v| v.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            )
+        })
         .collect();
     let crs: Vec<String> = crate::defer::CARRY_IN
         .iter()
-        .map(|k| format!("{}: [{}]", jstr(k), p.carry_roots[*k].iter().map(|h| jstr(&hex(h))).collect::<Vec<_>>().join(", ")))
+        .map(|k| {
+            format!(
+                "{}: [{}]",
+                jstr(k),
+                p.carry_roots[*k]
+                    .iter()
+                    .map(|h| jstr(&hex(h)))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            )
+        })
         .collect();
-    format!("{{\"points\": {{{}}}, \"carry_roots\": {{{}}}}}", pts.join(", "), crs.join(", "))
+    format!(
+        "{{\"points\": {{{}}}, \"carry_roots\": {{{}}}}}",
+        pts.join(", "),
+        crs.join(", ")
+    )
 }
 
 fn pending_of(v: &Value) -> Result<crate::defer::Pending, String> {
@@ -66,18 +90,34 @@ fn pending_of(v: &Value) -> Result<crate::defer::Pending, String> {
     let mut points = BTreeMap::new();
     for k in ["W1", "W2"] {
         let a = v["points"][k].as_array().ok_or_else(bad)?;
-        points.insert(k.to_string(), a.iter().map(|x| x.as_u64().ok_or_else(bad)).collect::<Result<Vec<u64>, String>>()?);
+        points.insert(
+            k.to_string(),
+            a.iter()
+                .map(|x| x.as_u64().ok_or_else(bad))
+                .collect::<Result<Vec<u64>, String>>()?,
+        );
     }
     let mut carry_roots = BTreeMap::new();
     for k in crate::defer::CARRY_IN {
         let a = v["carry_roots"][k].as_array().ok_or_else(bad)?;
-        carry_roots.insert(k.to_string(), a.iter().map(|h| h.as_str().and_then(unhex32).ok_or_else(bad)).collect::<Result<Vec<Hash>, String>>()?);
+        carry_roots.insert(
+            k.to_string(),
+            a.iter()
+                .map(|h| h.as_str().and_then(unhex32).ok_or_else(bad))
+                .collect::<Result<Vec<Hash>, String>>()?,
+        );
     }
-    Ok(crate::defer::Pending { points, carry_roots })
+    Ok(crate::defer::Pending {
+        points,
+        carry_roots,
+    })
 }
 
 fn jlist(xs: &[String]) -> String {
-    format!("[{}]", xs.iter().map(|s| jstr(s)).collect::<Vec<_>>().join(", "))
+    format!(
+        "[{}]",
+        xs.iter().map(|s| jstr(s)).collect::<Vec<_>>().join(", ")
+    )
 }
 
 /// PARAMS as json.dumps writes the dict (insertion order of proofwire.PROFILES; "EXT" last, and only in a profile
@@ -116,7 +156,9 @@ fn roots_of(v: &Value) -> Result<BTreeMap<String, Vec<Hash>>, String> {
         let a = o.get(k).and_then(|a| a.as_array()).ok_or("roots")?;
         out.insert(
             k.to_string(),
-            a.iter().map(|h| h.as_str().and_then(unhex32).ok_or("root hex")).collect::<Result<_, _>>()?,
+            a.iter()
+                .map(|h| h.as_str().and_then(unhex32).ok_or("root hex"))
+                .collect::<Result<_, _>>()?,
         );
     }
     Ok(out)
@@ -161,22 +203,36 @@ pub struct Genesis {
 }
 
 fn append(path: &Path, line: &str, new: bool) -> Result<(), String> {
-    let mut f = std::fs::OpenOptions::new().create(true).append(true).open(path).map_err(|e| e.to_string())?;
-    f.write_all(line.as_bytes()).and_then(|_| f.write_all(b"\n")).map_err(|e| e.to_string())?;
+    let mut f = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(path)
+        .map_err(|e| e.to_string())?;
+    f.write_all(line.as_bytes())
+        .and_then(|_| f.write_all(b"\n"))
+        .map_err(|e| e.to_string())?;
     f.flush().map_err(|e| e.to_string())?;
     f.sync_all().map_err(|e| e.to_string())?;
     if new {
         let dir = std::fs::canonicalize(path).map_err(|e| e.to_string())?;
         let dir = dir.parent().unwrap();
-        std::fs::File::open(dir).and_then(|d| d.sync_all()).map_err(|e| e.to_string())?;
+        std::fs::File::open(dir)
+            .and_then(|d| d.sync_all())
+            .map_err(|e| e.to_string())?;
     }
     Ok(())
 }
 
 impl Ledger {
-    pub fn open(path: &Path, model: &str, pr: &Profile, genesis: Option<Genesis>) -> Result<Self, String> {
+    pub fn open(
+        path: &Path,
+        model: &str,
+        pr: &Profile,
+        genesis: Option<Genesis>,
+    ) -> Result<Self, String> {
         // the context is hashed as a Python repr; native ports that exactly for printable ASCII only
-        if model.is_empty() || model.len() > 64 || !model.bytes().all(|b| (0x20..0x7f).contains(&b)) {
+        if model.is_empty() || model.len() > 64 || !model.bytes().all(|b| (0x20..0x7f).contains(&b))
+        {
             return Err("model ids are 1..64 printable ASCII characters".into());
         }
         if !path.exists() {
@@ -192,7 +248,11 @@ impl Ledger {
                     (false, true) => ", \"RC\": true",
                     (false, false) => "",
                 };
-                let ext = if (p.r3, p.t_lo) != (0, -128) { format!(", \"R3\": {}, \"T_LO\": {}", p.r3, p.t_lo) } else { String::new() };
+                let ext = if (p.r3, p.t_lo) != (0, -128) {
+                    format!(", \"R3\": {}, \"T_LO\": {}", p.r3, p.t_lo)
+                } else {
+                    String::new()
+                };
                 let mut more = String::new();
                 if p.lb {
                     more.push_str(", \"LB\": true");
@@ -249,14 +309,20 @@ impl Ledger {
         self.recs.clear();
         for (no, line) in text.lines().enumerate() {
             let v: Value = serde_json::from_str(line).map_err(|_| {
-                format!("ledger {}: line {} is not a complete record (fail closed)", self.path.display(), no + 1)
+                format!(
+                    "ledger {}: line {} is not a complete record (fail closed)",
+                    self.path.display(),
+                    no + 1
+                )
             })?;
             self.recs.push(v);
         }
         let g = self.recs.first().ok_or("ledger genesis record missing")?;
         let want: Value = serde_json::from_str(&jparams(&self.pr)).unwrap();
         if g["kind"] != "genesis" || g["model"] != self.model.as_str() || g["params"] != want {
-            return Err("ledger genesis record missing, for another model, or with other parameters".into());
+            return Err(
+                "ledger genesis record missing, for another model, or with other parameters".into(),
+            );
         }
         self.replay()
     }
@@ -279,30 +345,53 @@ impl Ledger {
                         Some(v) => v.as_i64().ok_or_else(|| format!("genesis program: {k}")),
                     }
                 };
-                crate::step::StepParams { s1: f("S1")?, k1: f("K1")?, s2: f("S2")?, k2: f("K2")?, s3: f("S3")?, k3: f("K3")?, he, rc: match p.get("RC") {
-                    None => false,
-                    Some(Value::Bool(b)) => *b,
-                    Some(_) => return Err("genesis program: RC must be a boolean".into()),
-                }, r3: gi("R3", 0)?, t_lo: gi("T_LO", -128)?, lb: match p.get("LB") {
-                    None => false,
-                    Some(Value::Bool(b)) => *b,
-                    Some(_) => return Err("genesis program: LB must be a boolean".into()),
-                }, rs: match p.get("RS") {
-                    None => false,
-                    Some(Value::Bool(b)) => *b,
-                    Some(_) => return Err("genesis program: RS must be a boolean".into()),
-                }, xt: match p.get("XT") {
-                    None => false,
-                    Some(Value::Bool(b)) => *b,
-                    Some(_) => return Err("genesis program: XT must be a boolean".into()),
-                }, pg: match p.get("PG") {
-                    None => None,
-                    Some(v) => Some(v.as_str().and_then(unhex32).ok_or("genesis program: PG must be a sha256 hex")?),
-                } }
+                crate::step::StepParams {
+                    s1: f("S1")?,
+                    k1: f("K1")?,
+                    s2: f("S2")?,
+                    k2: f("K2")?,
+                    s3: f("S3")?,
+                    k3: f("K3")?,
+                    he,
+                    rc: match p.get("RC") {
+                        None => false,
+                        Some(Value::Bool(b)) => *b,
+                        Some(_) => return Err("genesis program: RC must be a boolean".into()),
+                    },
+                    r3: gi("R3", 0)?,
+                    t_lo: gi("T_LO", -128)?,
+                    lb: match p.get("LB") {
+                        None => false,
+                        Some(Value::Bool(b)) => *b,
+                        Some(_) => return Err("genesis program: LB must be a boolean".into()),
+                    },
+                    rs: match p.get("RS") {
+                        None => false,
+                        Some(Value::Bool(b)) => *b,
+                        Some(_) => return Err("genesis program: RS must be a boolean".into()),
+                    },
+                    xt: match p.get("XT") {
+                        None => false,
+                        Some(Value::Bool(b)) => *b,
+                        Some(_) => return Err("genesis program: XT must be a boolean".into()),
+                    },
+                    pg: match p.get("PG") {
+                        None => None,
+                        Some(v) => Some(
+                            v.as_str()
+                                .and_then(unhex32)
+                                .ok_or("genesis program: PG must be a sha256 hex")?,
+                        ),
+                    },
+                }
             }
         };
         let pk = g["owner_pk"].as_str().ok_or("owner_pk")?;
-        self.owner_pk = if pk == "none" { None } else { Some(unhex32(pk).ok_or("owner_pk hex")?) };
+        self.owner_pk = if pk == "none" {
+            None
+        } else {
+            Some(unhex32(pk).ok_or("owner_pk hex")?)
+        };
         self.epoch = 0;
         self.step = 0;
         self.parent = roots_of(&g["roots"])?;
@@ -312,66 +401,130 @@ impl Ledger {
         self.pending = None;
         self.closed = false;
         self.status.clear();
-        self.custodians =
-            g["custodians"].as_array().ok_or("custodians")?.iter().map(|c| c.as_str().unwrap_or("").to_string()).collect();
+        self.custodians = g["custodians"]
+            .as_array()
+            .ok_or("custodians")?
+            .iter()
+            .map(|c| c.as_str().unwrap_or("").to_string())
+            .collect();
         for (no, rec) in self.recs[1..].iter().enumerate() {
             let no = no + 2;
             if self.released.is_some() {
-                return Err(format!("ledger line {no}: a record after the release (fail closed)"));
+                return Err(format!(
+                    "ledger line {no}: a record after the release (fail closed)"
+                ));
             }
             match rec["kind"].as_str() {
                 Some("release") => {
-                    if (rec["epoch"].as_u64(), rec["step"].as_u64()) != (Some(self.epoch), Some(self.step)) {
-                        return Err(format!("ledger line {no}: the release is not at the head (fail closed)"));
+                    if (rec["epoch"].as_u64(), rec["step"].as_u64())
+                        != (Some(self.epoch), Some(self.step))
+                    {
+                        return Err(format!(
+                            "ledger line {no}: the release is not at the head (fail closed)"
+                        ));
                     }
                     match (rec["M"].as_u64(), rec["C"].as_u64()) {
                         (Some(m), Some(c)) if c <= m => self.released = Some((m, c)),
-                        _ => return Err(format!("ledger line {no}: release record malformed (fail closed)")),
+                        _ => {
+                            return Err(format!(
+                                "ledger line {no}: release record malformed (fail closed)"
+                            ))
+                        }
                     }
-                    Self::discharge(&mut self.pending, &mut self.status, self.step, "the release opened its child");
+                    Self::discharge(
+                        &mut self.pending,
+                        &mut self.status,
+                        self.step,
+                        "the release opened its child",
+                    );
                 }
                 Some("close") => {
-                    if (rec["epoch"].as_u64(), rec["step"].as_u64()) != (Some(self.epoch), Some(self.step)) || self.pending.is_none() {
+                    if (rec["epoch"].as_u64(), rec["step"].as_u64())
+                        != (Some(self.epoch), Some(self.step))
+                        || self.pending.is_none()
+                    {
                         return Err(format!("ledger line {no}: a closing record not at a pending head (fail closed)"));
                     }
-                    Self::discharge(&mut self.pending, &mut self.status, self.step, "closing proof");
+                    Self::discharge(
+                        &mut self.pending,
+                        &mut self.status,
+                        self.step,
+                        "closing proof",
+                    );
                     self.closed = true;
                 }
                 Some("step") => {
-                    if (rec["epoch"].as_u64(), rec["step"].as_u64()) != (Some(self.epoch), Some(self.step + 1)) {
-                        return Err(format!("ledger line {no} breaks the sequence (fail closed)"));
+                    if (rec["epoch"].as_u64(), rec["step"].as_u64())
+                        != (Some(self.epoch), Some(self.step + 1))
+                    {
+                        return Err(format!(
+                            "ledger line {no} breaks the sequence (fail closed)"
+                        ));
                     }
                     if self.closed {
-                        return Err(format!("ledger line {no}: a step after the closing record (fail closed)"));
+                        return Err(format!(
+                            "ledger line {no}: a step after the closing record (fail closed)"
+                        ));
                     }
-                    Self::discharge(&mut self.pending, &mut self.status, self.step, &format!("step {} opened its child", self.step + 1));
+                    Self::discharge(
+                        &mut self.pending,
+                        &mut self.status,
+                        self.step,
+                        &format!("step {} opened its child", self.step + 1),
+                    );
                     self.step += 1;
                     self.parent = roots_of(&rec["child"])?;
                     self.pending = match rec.get("pending") {
                         None | Some(Value::Null) => None,
-                        Some(v) => Some(pending_of(v).map_err(|e| format!("ledger line {no}: {e}"))?),
+                        Some(v) => {
+                            Some(pending_of(v).map_err(|e| format!("ledger line {no}: {e}"))?)
+                        }
                     };
-                    self.status.insert(self.step, if self.pending.is_some() { "pending".into() } else { "final".into() });
+                    self.status.insert(
+                        self.step,
+                        if self.pending.is_some() {
+                            "pending".into()
+                        } else {
+                            "final".into()
+                        },
+                    );
                     // the anti-reuse counter: an owner-bound ledger needs an integer leaf above the last one, in
                     // the owner tree; an unbound one needs null (codex review, finding 5)
                     match (self.owner_pk.is_some(), &rec["leaf"]) {
                         (false, Value::Null) => {}
-                        (true, l) if l.as_u64().is_some_and(|l| l >= self.next_leaf && l < 1 << self.pr.owner_h) => {
+                        (true, l)
+                            if l.as_u64().is_some_and(|l| {
+                                l >= self.next_leaf && l < 1 << self.pr.owner_h
+                            }) =>
+                        {
                             self.next_leaf = l.as_u64().unwrap() + 1;
                         }
-                        _ => return Err(format!("ledger line {no}: step record's owner leaf is malformed (fail closed)")),
+                        _ => {
+                            return Err(format!(
+                            "ledger line {no}: step record's owner leaf is malformed (fail closed)"
+                        ))
+                        }
                     }
                 }
                 Some("rotate") => {
                     if rec["epoch"].as_u64() != Some(self.epoch + 1) {
-                        return Err(format!("ledger line {no}: rotation out of order (fail closed)"));
+                        return Err(format!(
+                            "ledger line {no}: rotation out of order (fail closed)"
+                        ));
                     }
                     if self.closed {
-                        return Err(format!("ledger line {no}: a rotation after the closing record (fail closed)"));
+                        return Err(format!(
+                            "ledger line {no}: a rotation after the closing record (fail closed)"
+                        ));
                     }
                     // cut E: the handover opened the head's W (discharging it) and leaves the new committee's W pending
                     // through its carries cN = new W(r)
-                    Self::discharge(&mut self.pending, &mut self.status, self.step, "the handover opened its child");
+                    Self::discharge(
+                        &mut self.pending,
+                        &mut self.status,
+                        self.step,
+                        "the handover opened its child",
+                    );
                     self.epoch += 1;
                     self.custodians = rec["custodians"]
                         .as_array()
@@ -382,19 +535,30 @@ impl Ledger {
                     self.parent = roots_of(&rec["roots"])?;
                     self.pending = match rec.get("pending") {
                         None | Some(Value::Null) => None,
-                        Some(v) => Some(pending_of(v).map_err(|e| format!("ledger line {no}: {e}"))?),
+                        Some(v) => {
+                            Some(pending_of(v).map_err(|e| format!("ledger line {no}: {e}"))?)
+                        }
                     };
                     if self.pending.is_some() {
                         self.status.insert(self.step, "pending".into());
                     }
                 }
-                _ => return Err(format!("ledger line {no}: unknown record kind (fail closed)")),
+                _ => {
+                    return Err(format!(
+                        "ledger line {no}: unknown record kind (fail closed)"
+                    ))
+                }
             }
         }
         Ok(())
     }
 
-    fn discharge(pending: &mut Option<crate::defer::Pending>, status: &mut BTreeMap<u64, String>, step: u64, how: &str) {
+    fn discharge(
+        pending: &mut Option<crate::defer::Pending>,
+        status: &mut BTreeMap<u64, String>,
+        step: u64,
+        how: &str,
+    ) {
         if pending.take().is_some() {
             status.insert(step, format!("final ({how})"));
         }
@@ -405,7 +569,10 @@ impl Ledger {
     pub fn close(&mut self, lp: &LigParams, blob: &[u8]) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
-        let pend = self.pending.clone().ok_or("the head is not pending: nothing to close")?;
+        let pend = self
+            .pending
+            .clone()
+            .ok_or("the head is not pending: nothing to close")?;
         let ctx = Ctx::new(&self.model, self.epoch, self.step);
         wire::verify_close(&self.pr, lp, blob, &ctx, &self.parent, &pend, self.d)?;
         let line = format!(
@@ -419,7 +586,10 @@ impl Ledger {
     }
 
     pub fn head(&self) -> (Ctx, BTreeMap<String, Vec<Hash>>) {
-        (Ctx::new(&self.model, self.epoch, self.step + 1), self.parent.clone())
+        (
+            Ctx::new(&self.model, self.epoch, self.step + 1),
+            self.parent.clone(),
+        )
     }
 
     fn lock(&self) -> Result<std::fs::File, String> {
@@ -443,14 +613,22 @@ impl Ledger {
     /// Custody rotation (proofwire.Ledger.rotate): accepted only with the bytes of a handover proof that the new
     /// committee's roots commit the same weights as the head's; the record carries sha256 of those bytes. Every
     /// refusal is "rotation refused: <reason>", the reason equal to Python's.
-    pub fn rotate(&mut self, custodians: &[String], new_roots: &BTreeMap<String, Vec<Hash>>, handover: &[u8]) -> Result<(), String> {
+    pub fn rotate(
+        &mut self,
+        custodians: &[String],
+        new_roots: &BTreeMap<String, Vec<Hash>>,
+        handover: &[u8],
+    ) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
         if self.released.is_some() {
             return Err("rotation refused: the ledger is released".into());
         }
         if self.closed {
-            return Err("rotation refused: the ledger is closed (the head's W had their one opening)".into());
+            return Err(
+                "rotation refused: the ledger is closed (the head's W had their one opening)"
+                    .into(),
+            );
         }
         if handover.is_empty() {
             return Err("rotation refused: no handover proof".into());
@@ -459,12 +637,31 @@ impl Ledger {
         let ctx = self.handover_context(custodians);
         // cut E: the handover proof discharges the head's pending claims and leaves the new head pending
         let (got, pend) = if self.pr.defer {
-            let (r, p) = crate::handover::verify_defer(&self.pr, &lp, self.d, self.custodians.len(), custodians.len(), &ctx, &self.parent, self.pending.as_ref(), handover)
-                .map_err(|e| format!("rotation refused: {e}"))?;
+            let (r, p) = crate::handover::verify_defer(
+                &self.pr,
+                &lp,
+                self.d,
+                self.custodians.len(),
+                custodians.len(),
+                &ctx,
+                &self.parent,
+                self.pending.as_ref(),
+                handover,
+            )
+            .map_err(|e| format!("rotation refused: {e}"))?;
             (r, Some(p))
         } else {
-            let r = crate::handover::verify(&self.pr, &lp, self.d, self.custodians.len(), custodians.len(), &ctx, &self.parent, handover)
-                .map_err(|e| format!("rotation refused: {e}"))?;
+            let r = crate::handover::verify(
+                &self.pr,
+                &lp,
+                self.d,
+                self.custodians.len(),
+                custodians.len(),
+                &ctx,
+                &self.parent,
+                handover,
+            )
+            .map_err(|e| format!("rotation refused: {e}"))?;
             (r, None)
         };
         if &got != new_roots {
@@ -485,7 +682,12 @@ impl Ledger {
     /// The mind's release (proofwire.Ledger.release): verified against the head's W1, W2 roots and the published
     /// policy; the record carries M, C, sha256 of the bundle and of the policy. Terminal: the head's commitments were
     /// opened at their last life.
-    pub fn release(&mut self, lp: &LigParams, blob: &[u8], pol: &crate::run::Policy) -> Result<(usize, u64), String> {
+    pub fn release(
+        &mut self,
+        lp: &LigParams,
+        blob: &[u8],
+        pol: &crate::run::Policy,
+    ) -> Result<(usize, u64), String> {
         let _l = self.lock()?;
         self.reload()?;
         self.pg_gate()?;
@@ -499,7 +701,20 @@ impl Ledger {
             return Err("the ledger is closed: the head's W have had their one opening".into());
         }
         let ctx = Ctx::new(&self.model, self.epoch, self.step);
-        let (m, c) = wire::verify_release_d(&self.pr, lp, blob, &ctx, &self.parent, &pol.x, &pol.labels, self.program, pol.ncls, self.d, pol.kc, self.pending.as_ref())?;
+        let (m, c) = wire::verify_release_d(
+            &self.pr,
+            lp,
+            blob,
+            &ctx,
+            &self.parent,
+            &pol.x,
+            &pol.labels,
+            self.program,
+            pol.ncls,
+            self.d,
+            pol.kc,
+            self.pending.as_ref(),
+        )?;
         let line = format!(
             "{{\"kind\": \"release\", \"epoch\": {}, \"step\": {}, \"M\": {}, \"C\": {}, \"digest\": {}, \"policy\": {}}}",
             ctx.epoch,
@@ -527,14 +742,19 @@ impl Ledger {
         cfg_json: &[u8],
         mnist_dir: &Path,
     ) -> Result<(usize, u64), String> {
-        let want = self.program.pg.ok_or("release refused: the genesis pins no public-genesis cfg to bind the policy to")?;
+        let want = self.program.pg.ok_or(
+            "release refused: the genesis pins no public-genesis cfg to bind the policy to",
+        )?;
         let got: [u8; 32] = Sha256::digest(cfg_json).into();
         if got != want {
             return Err("release refused: the cfg is not the one the genesis record pins".into());
         }
         let own = crate::run::mnist_policy(cfg_json, mnist_dir, pol.labels.len())?;
         if policy_digest(&own) != policy_digest(pol) {
-            return Err("release refused: the policy is not the pinned cfg's encoding of t10k 0..M-1".into());
+            return Err(
+                "release refused: the policy is not the pinned cfg's encoding of t10k 0..M-1"
+                    .into(),
+            );
         }
         self.release(lp, blob, pol)
     }
@@ -545,14 +765,22 @@ impl Ledger {
     #[cfg(feature = "tcp")]
     pub fn check_public_genesis(&mut self, cfg_json: &[u8]) -> Result<(), String> {
         use sha2::{Digest, Sha256};
-        let want = self.program.pg.ok_or("public genesis refused: the genesis program pins no PG")?;
+        let want = self
+            .program
+            .pg
+            .ok_or("public genesis refused: the genesis program pins no PG")?;
         let got: [u8; 32] = Sha256::digest(cfg_json).into();
         if got != want {
-            return Err("public genesis refused: the cfg is not the one the genesis record pins".into());
+            return Err(
+                "public genesis refused: the cfg is not the one the genesis record pins".into(),
+            );
         }
         let (d, w1, w2) = crate::run::public_weights(cfg_json)?;
         if d != self.d {
-            return Err(format!("public genesis refused: the cfg's d = {d}, the ledger's {}", self.d));
+            return Err(format!(
+                "public genesis refused: the cfg's d = {d}, the ledger's {}",
+                self.d
+            ));
         }
         let roots = crate::run::public_genesis_roots(&self.pr, d, &w1, &w2, 3);
         if roots != self.genesis_roots {
@@ -569,7 +797,12 @@ impl Ledger {
         Ok(())
     }
 
-    pub fn accept(&mut self, lp: &LigParams, blob: &[u8], tables: &(Vec<u64>, Vec<u64>)) -> Result<(), String> {
+    pub fn accept(
+        &mut self,
+        lp: &LigParams,
+        blob: &[u8],
+        tables: &(Vec<u64>, Vec<u64>),
+    ) -> Result<(), String> {
         let _l = self.lock()?;
         self.reload()?;
         self.pg_gate()?;
@@ -577,10 +810,24 @@ impl Ledger {
             return Err("the ledger is released: no further steps".into());
         }
         if self.closed {
-            return Err("the ledger is closed: the head's W were opened by the closing proof".into());
+            return Err(
+                "the ledger is closed: the head's W were opened by the closing proof".into(),
+            );
         }
         let (ctx, parent) = self.head();
-        let acc = wire::verify_step_d(&self.pr, lp, blob, &ctx, &parent, tables, self.d, self.program, self.owner_pk.as_ref(), self.next_leaf, self.pending.as_ref())?;
+        let acc = wire::verify_step_d(
+            &self.pr,
+            lp,
+            blob,
+            &ctx,
+            &parent,
+            tables,
+            self.d,
+            self.program,
+            self.owner_pk.as_ref(),
+            self.next_leaf,
+            self.pending.as_ref(),
+        )?;
         let line = format!(
             "{{\"kind\": \"step\", \"epoch\": {}, \"step\": {}, \"digest\": {}, \"child\": {}, \"leaf\": {}{}}}",
             ctx.epoch,

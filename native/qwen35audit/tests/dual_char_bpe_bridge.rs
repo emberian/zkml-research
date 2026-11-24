@@ -4,11 +4,11 @@
 
 use qwen35audit::bpe_bridge::{
     commit_t256_pcs, eval_bytes_ext4, eval_bytes_t256, make_packed_ext4_pcs_claim, open_t256_pcs,
-    pack_ext4_col_to_bb, prove_dual_char_bpe_bridge, prove_dual_char_bpe_bridge_with_explicit_bytes,
-    redact_default_secret_classes, verify_dual_char_bpe_bridge,
-    verify_dual_char_bpe_bridge_with_salts, verify_t256_pcs, warm_t256_pcs_basis,
-    DualCharBridgeProof, QwenBpeRom, Tower256, Tower256MleClaim, PAD_TOK_ID, QWEN_DEFINED_TOKENS,
-    QWEN_VOCAB_SIZE, ROM_PADDED_SIZE,
+    pack_ext4_col_to_bb, prove_dual_char_bpe_bridge,
+    prove_dual_char_bpe_bridge_with_explicit_bytes, redact_default_secret_classes,
+    verify_dual_char_bpe_bridge, verify_dual_char_bpe_bridge_with_salts, verify_t256_pcs,
+    warm_t256_pcs_basis, DualCharBridgeProof, QwenBpeRom, Tower256, Tower256MleClaim, PAD_TOK_ID,
+    QWEN_DEFINED_TOKENS, QWEN_VOCAB_SIZE, ROM_PADDED_SIZE,
 };
 use qwen35audit::ext4::{CShakeTranscript, Ext4};
 use qwen35audit::pcs_ext4::{commit_table_pcs, open_pcs_claims, PcsParams};
@@ -17,6 +17,7 @@ use qwen35audit::u1_audit::{
     verify_padded_absence_zk,
 };
 use std::collections::HashSet;
+use std::ops::{Add, Mul};
 use std::time::Instant;
 
 #[test]
@@ -91,7 +92,10 @@ fn real_qwen_248320_rom_and_dual_char_bpe_bridge_scale_and_soundness() {
     let t_basis = Instant::now();
     warm_t256_pcs_basis(&[9, 10, 11], 5);
     let basis_ms = t_basis.elapsed().as_secs_f64() * 1000.0;
-    println!("[Tower256Pcs] Parallel Lagrange-to-coset basis warmup (m=9..11, t_cols=208): {:.2} ms", basis_ms);
+    println!(
+        "[Tower256Pcs] Parallel Lagrange-to-coset basis warmup (m=9..11, t_cols=208): {:.2} ms",
+        basis_ms
+    );
 
     let base_clean_turn = concat!(
         "{\"tool\":\"query_cluster_telemetry\",\"arguments\":{\"region\":\"us-east-1\",\"service\":\"verification_gateway\",",
@@ -136,8 +140,8 @@ fn real_qwen_248320_rom_and_dual_char_bpe_bridge_scale_and_soundness() {
 
         if k == 64 {
             let mut abs_tr = CShakeTranscript::new(b"QW35-BPE-ABSENT-WELD-TEST");
-            let abs_receipt =
-                prove_padded_absence_zk(&expected_bytes, &mut abs_tr).expect("clean bytes pass Absent");
+            let abs_receipt = prove_padded_absence_zk(&expected_bytes, &mut abs_tr)
+                .expect("clean bytes pass Absent");
             let mut ver_tr = CShakeTranscript::new(b"QW35-BPE-ABSENT-WELD-TEST");
             verify_padded_absence_zk(&abs_receipt.content_root, None, &abs_receipt, &mut ver_tr)
                 .expect("zero-cleartext ZK Absent receipt verified");
@@ -176,13 +180,21 @@ fn real_qwen_248320_rom_and_dual_char_bpe_bridge_scale_and_soundness() {
     let tok_bear = rom.lookup_bpe_id(b"Bear").unwrap(); // 85536
     let tok_er = rom.lookup_bpe_id(b"er").unwrap(); // 261
     assert_eq!(
-        (tok_s, tok_k, tok_sk, tok_dash_pro, tok_proj, tok_bearer_full, tok_bear, tok_er),
+        (
+            tok_s,
+            tok_k,
+            tok_sk,
+            tok_dash_pro,
+            tok_proj,
+            tok_bearer_full,
+            tok_bear,
+            tok_er
+        ),
         (82, 74, 4729, 9546, 29397, 25555, 85536, 261)
     );
 
-    let prefix_toks = rom.encode_qwen_bpe(
-        b"{\"status\":\"ok\",\"trace\":\"checking deployment env; auth=",
-    );
+    let prefix_toks =
+        rom.encode_qwen_bpe(b"{\"status\":\"ok\",\"trace\":\"checking deployment env; auth=");
     let suffix_toks = rom.encode_qwen_bpe(
         b"\",\"region\":\"eu-central-1\",\"retries\":0,\"healthy\":true,\"latency_ms\":14}\n",
     );
@@ -200,8 +212,10 @@ fn real_qwen_248320_rom_and_dual_char_bpe_bridge_scale_and_soundness() {
     };
 
     let canonical_turn = build_smuggled_turn(&[tok_sk, tok_dash_pro, tok_j], &[tok_bearer_full]);
-    let split_turn_1 = build_smuggled_turn(&[tok_s, tok_k, tok_dash_pro, tok_j], &[tok_bear, tok_er]);
-    let split_turn_2 = build_smuggled_turn(&[tok_s, tok_k, tok_dash, tok_proj], &[tok_bear, tok_er]);
+    let split_turn_1 =
+        build_smuggled_turn(&[tok_s, tok_k, tok_dash_pro, tok_j], &[tok_bear, tok_er]);
+    let split_turn_2 =
+        build_smuggled_turn(&[tok_s, tok_k, tok_dash, tok_proj], &[tok_bear, tok_er]);
     let mut char_sk_proj = Vec::new();
     for &b in b"sk-proj" {
         char_sk_proj.push(rom.lookup_bpe_id(&[b]).unwrap());
@@ -212,7 +226,10 @@ fn real_qwen_248320_rom_and_dual_char_bpe_bridge_scale_and_soundness() {
     let expected_dirty_bytes = rom.detokenize(&canonical_turn).unwrap();
     assert!(canonical_turn.len() >= 64 && split_turn_1.len() >= 64);
 
-    for (idx, split_ts) in [&split_turn_1, &split_turn_2, &split_turn_3].iter().enumerate() {
+    for (idx, split_ts) in [&split_turn_1, &split_turn_2, &split_turn_3]
+        .iter()
+        .enumerate()
+    {
         assert_ne!(*split_ts, &canonical_turn);
         // 1. Naive token-ID ban (`4729 "sk"`, `25555 "Bearer"`) AND per-token `Absent("sk-")` BOTH PASS!
         assert!(
@@ -235,21 +252,27 @@ fn real_qwen_248320_rom_and_dual_char_bpe_bridge_scale_and_soundness() {
 
         // 3. Byte-level `Absent("sk-...")` DFA & `redact_default_secret_classes` catch it 100% of the time!
         let (dfa_final, _) = run_padded_complement_sk_dfa(&detok_split);
-        assert_eq!(dfa_final, 4, "byte-level DFA enters sink state 4 on split #{idx}");
+        assert_eq!(
+            dfa_final, 4,
+            "byte-level DFA enters sink state 4 on split #{idx}"
+        );
         let mut abs_tr = CShakeTranscript::new(b"SPLIT-REJECT");
         assert!(
             prove_padded_absence_zk(&detok_split, &mut abs_tr).is_err(),
             "ZK Absent prover refuses unredacted split #{idx}"
         );
         let (redacted, red_hits) = redact_default_secret_classes(&detok_split);
-        assert_eq!(red_hits, 2, "scrubbed both sk-proj-... and Bearer ... on split #{idx}");
+        assert_eq!(
+            red_hits, 2,
+            "scrubbed both sk-proj-... and Bearer ... on split #{idx}"
+        );
         assert!(!redacted.windows(3).any(|w| w == b"sk-"));
         assert!(!redacted.windows(7).any(|w| w == b"Bearer "));
         let (sk_redacted, sk_hits) = redact_sk_secrets(&detok_split);
         assert_eq!(sk_hits, 1);
         let mut clean_tr = CShakeTranscript::new(b"POST-REDACT-OK");
-        let clean_rcpt =
-            prove_padded_absence_zk(&sk_redacted, &mut clean_tr).expect("redacted bytes pass Absent");
+        let clean_rcpt = prove_padded_absence_zk(&sk_redacted, &mut clean_tr)
+            .expect("redacted bytes pass Absent");
         let mut clean_vtr = CShakeTranscript::new(b"POST-REDACT-OK");
         verify_padded_absence_zk(&clean_rcpt.content_root, None, &clean_rcpt, &mut clean_vtr)
             .expect("post-redaction ZK Absent receipt verifies");
@@ -317,7 +340,9 @@ fn real_qwen_248320_rom_and_dual_char_bpe_bridge_scale_and_soundness() {
     // --- Attack (3): Leading-`\0` length-mismatch alias (`[0x00] ++ bytes` vs `bytes`) ---
     // Qwen token `188` (`'Ā'`) decodes to `[0x00]`! Verify algebraically that `[0x00] ++ base_bytes`
     // collides on `evalBytes` in BOTH `Ext4` AND `Tower256` at EVERY base, yet our bridge rejects!
-    let tok_null_byte = rom.lookup_bpe_id(&[0x00]).expect("Qwen ByteLevel null byte token 188");
+    let tok_null_byte = rom
+        .lookup_bpe_id(&[0x00])
+        .expect("Qwen ByteLevel null byte token 188");
     assert_eq!(tok_null_byte, 188);
     let mut leading_zero_toks = vec![tok_null_byte];
     leading_zero_toks.extend_from_slice(&base_toks[..61]); // 62 tokens <= 64 pad_len

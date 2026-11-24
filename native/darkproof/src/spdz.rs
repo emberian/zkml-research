@@ -27,22 +27,38 @@ impl Dealer {
         let mut rng = PyRandom::from_u64(seed);
         let alpha_sh: Vec<u64> = (0..n).map(|_| rng.randrange_u64(field::p())).collect();
         let alpha = alpha_sh.iter().fold(0, |a, &b| field::add(a, b));
-        Dealer { rng, alpha_sh, alpha }
+        Dealer {
+            rng,
+            alpha_sh,
+            alpha,
+        }
     }
     pub fn from_state(state: &[u64], alpha_sh: Vec<u64>) -> Self {
         let alpha = alpha_sh.iter().fold(0, |a, &b| field::add(a, b));
-        Dealer { rng: PyRandom::from_state(state), alpha_sh, alpha }
+        Dealer {
+            rng: PyRandom::from_state(state),
+            alpha_sh,
+            alpha,
+        }
     }
     pub fn clone_dealer(&self) -> Self {
-        Dealer { rng: self.rng.clone(), alpha_sh: self.alpha_sh.clone(), alpha: self.alpha }
+        Dealer {
+            rng: self.rng.clone(),
+            alpha_sh: self.alpha_sh.clone(),
+            alpha: self.alpha,
+        }
     }
     /// dealer.auth(v): every party's (share, MAC share).
     pub fn auth_all(&mut self, v: u64) -> Vec<Sh> {
         let n = self.alpha_sh.len();
-        let mut xs: Vec<u64> = (0..n - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
+        let mut xs: Vec<u64> = (0..n - 1)
+            .map(|_| self.rng.randrange_u64(field::p()))
+            .collect();
         let sx = xs.iter().fold(0, |a, &b| field::add(a, b));
         xs.push(field::sub(v, sx));
-        let mut ms: Vec<u64> = (0..n - 1).map(|_| self.rng.randrange_u64(field::p())).collect();
+        let mut ms: Vec<u64> = (0..n - 1)
+            .map(|_| self.rng.randrange_u64(field::p()))
+            .collect();
         let sm = ms.iter().fold(0, |a, &b| field::add(a, b));
         ms.push(field::sub(field::mul(self.alpha, v), sm));
         xs.into_iter().zip(ms).collect()
@@ -62,7 +78,10 @@ pub enum Triples {
     Dealer(Dealer),
     /// the tape's triples in REVERSE order (the next one last): a drawn triple is popped and the spent part of the
     /// buffer returned as it empties (memory: a release's proof section is 47.7M triples, 2.3 GB, at M = 52)
-    Tape { t: Vec<Triple>, pos: usize },
+    Tape {
+        t: Vec<Triple>,
+        pos: usize,
+    },
     /// the tape's triples in order from a reader (the deployed release streams its proof section from the tape file)
     Iter(Box<dyn Iterator<Item = Triple> + Send>),
 }
@@ -141,7 +160,12 @@ impl Spdz {
     }
 
     /// Party i with its proof-section triples drawn in order from `it`.
-    pub fn from_iter(i: usize, n: usize, alpha_i: u64, it: Box<dyn Iterator<Item = Triple> + Send>) -> Self {
+    pub fn from_iter(
+        i: usize,
+        n: usize,
+        alpha_i: u64,
+        it: Box<dyn Iterator<Item = Triple> + Send>,
+    ) -> Self {
         Self::with_source(i, n, alpha_i, Triples::Iter(it))
     }
 
@@ -156,7 +180,10 @@ impl Spdz {
             nopen: 0,
             triples: 0,
             wire: Default::default(),
-            mac_every: std::env::var("DP_MAC_EVERY").ok().and_then(|v| v.parse().ok()).unwrap_or(1 << 22),
+            mac_every: std::env::var("DP_MAC_EVERY")
+                .ok()
+                .and_then(|v| v.parse().ok())
+                .unwrap_or(1 << 22),
             mac_bad: None,
         }
     }
@@ -164,7 +191,10 @@ impl Spdz {
     /// x + public c (party 0 adds c to its share; every party adds alpha_i c to its MAC share).
     #[inline]
     pub fn cadd(&self, c: u64, x: Sh) -> Sh {
-        (if self.i == 0 { field::add(x.0, c) } else { x.0 }, field::add(x.1, field::mul(self.alpha_i, c)))
+        (
+            if self.i == 0 { field::add(x.0, c) } else { x.0 },
+            field::add(x.1, field::mul(self.alpha_i, c)),
+        )
     }
 
     /// Open a batch of shared values in one exchange. Returns the opened values.
@@ -228,7 +258,11 @@ impl Spdz {
                 let (e, f) = (opened[2 * k], opened[2 * k + 1]);
                 let s = shadd(c, shadd(cmul(e, b), cmul(f, a)));
                 let ef = field::mul(e, f);
-                if ef != 0 { self.cadd(ef, s) } else { s }
+                if ef != 0 {
+                    self.cadd(ef, s)
+                } else {
+                    s
+                }
             })
             .collect()
     }
@@ -253,13 +287,19 @@ impl Spdz {
         let mut sig = 0u64;
         for &(m, v) in &self.open_log {
             let r = rng.randrange_u64(field::p());
-            sig = field::add(sig, field::mul(r, field::sub(m, field::mul(self.alpha_i, v))));
+            sig = field::add(
+                sig,
+                field::mul(r, field::sub(m, field::mul(self.alpha_i, v))),
+            );
         }
         // the log and its coins are spent on sigma (pass or fail)
         self.open_log.clear();
         self.coins = Sha256::new();
         let nonce = crate::rng::secret_bytes(16);
-        let nw: Vec<u64> = nonce.chunks(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+        let nw: Vec<u64> = nonce
+            .chunks(8)
+            .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
+            .collect();
         let com = sigma_commit(self.i, sig, &nw);
         let coms = net.all_gather(com.to_vec());
         let opened = net.all_gather(vec![sig, nw[0], nw[1]]);
@@ -267,7 +307,9 @@ impl Spdz {
         let mut tot = 0u64;
         for (j, o) in opened.iter().enumerate() {
             if sigma_commit(j, o[0], &o[1..3]).to_vec() != coms[j] {
-                return Err(format!("MAC check: party {j}'s opened sigma does not match its commitment"));
+                return Err(format!(
+                    "MAC check: party {j}'s opened sigma does not match its commitment"
+                ));
             }
             tot = field::add(tot, o[0]);
         }

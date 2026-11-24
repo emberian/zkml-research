@@ -36,7 +36,7 @@ fn limbs_of(x: &BigUint) -> Vec<u64> {
 impl BigPoly {
     /// N coefficients of nl limbs each; refuses nl = 0 or a ragged length.
     pub fn from_limbs(nl: usize, data: Vec<u64>) -> Result<BigPoly, String> {
-        if nl == 0 || data.len() % nl != 0 {
+        if nl == 0 || !data.len().is_multiple_of(nl) {
             return Err("BigPoly: limb layout".into());
         }
         Ok(BigPoly { nl, data })
@@ -54,7 +54,12 @@ impl BigPoly {
         self.data.is_empty()
     }
     pub fn from_big(v: &[BigUint]) -> BigPoly {
-        let nl = v.iter().map(|x| limbs_of(x).len()).max().unwrap_or(1).max(1);
+        let nl = v
+            .iter()
+            .map(|x| limbs_of(x).len())
+            .max()
+            .unwrap_or(1)
+            .max(1);
         let mut data = vec![0u64; nl * v.len()];
         for (i, x) in v.iter().enumerate() {
             for (j, d) in x.to_u64_digits().iter().enumerate() {
@@ -70,7 +75,9 @@ impl BigPoly {
         let crt = Crt::new(primes);
         let nl = crt.ql.len();
         let mut data = vec![0u64; n * nl];
-        data.par_chunks_mut(nl).enumerate().for_each(|(k, out)| crt.combine_limbs(&res.iter().map(|r| r[k]).collect::<Vec<_>>(), out));
+        data.par_chunks_mut(nl).enumerate().for_each(|(k, out)| {
+            crt.combine_limbs(&res.iter().map(|r| r[k]).collect::<Vec<_>>(), out)
+        });
         BigPoly { nl, data }
     }
     pub fn coeff(&self, i: usize) -> &[u64] {
@@ -109,7 +116,11 @@ impl BigPoly {
         let c = self.coeff(i);
         for b in (0..wb).rev() {
             let limb = b / 8;
-            out.push(if limb < c.len() { (c[limb] >> (8 * (b % 8))) as u8 } else { 0 });
+            out.push(if limb < c.len() {
+                (c[limb] >> (8 * (b % 8))) as u8
+            } else {
+                0
+            });
         }
     }
 }
@@ -155,8 +166,18 @@ impl Crt {
                 v
             })
             .collect();
-        let inv = primes.iter().map(|&p| inv_mod_u64(((&q / p) % p).to_u64().unwrap(), p)).collect();
-        Crt { q, terms, primes: primes.to_vec(), ql, mi, inv }
+        let inv = primes
+            .iter()
+            .map(|&p| inv_mod_u64(((&q / p) % p).to_u64().unwrap(), p))
+            .collect();
+        Crt {
+            q,
+            terms,
+            primes: primes.to_vec(),
+            ql,
+            mi,
+            inv,
+        }
     }
     /// sum_i ((r_i inv_i) mod q_i) (Q/q_i) mod Q, into out (ql.len() limbs). The sum is below L Q.
     pub fn combine_limbs(&self, r: &[u64], out: &mut [u64]) {
@@ -165,9 +186,9 @@ impl Crt {
         for (i, &ri) in r.iter().enumerate() {
             let y = mul_mod(ri % self.primes[i], self.inv[i], self.primes[i]);
             let mut c: u128 = 0;
-            for k in 0..nl {
-                let v = acc[k] as u128 + self.mi[i][k] as u128 * y as u128 + c;
-                acc[k] = v as u64;
+            for (a, &mk) in acc[..nl].iter_mut().zip(&self.mi[i][..nl]) {
+                let v = *a as u128 + mk as u128 * y as u128 + c;
+                *a = v as u64;
                 c = v >> 64;
             }
             acc[nl] = acc[nl].wrapping_add(c as u64);
@@ -179,9 +200,9 @@ impl Crt {
                 break;
             }
             let mut br = 0u128;
-            for k in 0..nl {
-                let v = (acc[k] as u128).wrapping_sub(self.ql[k] as u128).wrapping_sub(br);
-                acc[k] = v as u64;
+            for (a, &qk) in acc[..nl].iter_mut().zip(&self.ql[..nl]) {
+                let v = (*a as u128).wrapping_sub(qk as u128).wrapping_sub(br);
+                *a = v as u64;
                 br = (v >> 127) & 1;
             }
             acc[nl] = acc[nl].wrapping_sub(br as u64);
@@ -223,7 +244,7 @@ pub fn is_prime_u64(n: u64) -> bool {
     }
     const SMALL: [u64; 12] = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37];
     for p in SMALL {
-        if n % p == 0 {
+        if n.is_multiple_of(p) {
             return n == p;
         }
     }
@@ -263,10 +284,16 @@ pub fn ntt_primes(bits: u32, count: usize, two_n: u64) -> Vec<u64> {
 
 /// scholar_zkpopk.public_a(seed, N, Q): rejection sampling from SHAKE-256 over canonical([DOMAIN, "key-a", seed, ctr]).
 pub fn public_a(seed: &str, n: usize, q: &BigUint) -> Vec<BigUint> {
-    let width = ((q.bits() + 7) / 8) as usize;
+    let width = q.bits().div_ceil(8) as usize;
     let limit = (BigUint::one() << (8 * width)) / q * q;
     let draw = |ctr: usize| -> Option<BigUint> {
-        let c = Json::list(vec![Json::s(SCHOLAR_DOMAIN), Json::s("key-a"), Json::s(seed), Json::i(ctr as i64)]).canonical();
+        let c = Json::list(vec![
+            Json::s(SCHOLAR_DOMAIN),
+            Json::s("key-a"),
+            Json::s(seed),
+            Json::i(ctr as i64),
+        ])
+        .canonical();
         let x = BigUint::from_bytes_be(&shake256(&[&c], width));
         if x < limit {
             Some(x % q)
@@ -307,13 +334,28 @@ pub struct KeyRegistry {
 }
 
 impl KeyRegistry {
-    pub fn new(n: usize, primes: &[u64], t: u64, seed: &str, key_id: &str, b: BigPoly) -> KeyRegistry {
+    pub fn new(
+        n: usize,
+        primes: &[u64],
+        t: u64,
+        seed: &str,
+        key_id: &str,
+        b: BigPoly,
+    ) -> KeyRegistry {
         let q: BigUint = primes.iter().map(|&p| BigUint::from(p)).product();
         let a = BigPoly::from_big(&public_a(seed, n, &q));
         KeyRegistry::with_a(n, primes, t, seed, key_id, b, a)
     }
 
-    pub fn with_a(n: usize, primes: &[u64], t: u64, seed: &str, key_id: &str, b: BigPoly, a: BigPoly) -> KeyRegistry {
+    pub fn with_a(
+        n: usize,
+        primes: &[u64],
+        t: u64,
+        seed: &str,
+        key_id: &str,
+        b: BigPoly,
+        a: BigPoly,
+    ) -> KeyRegistry {
         let q: BigUint = primes.iter().map(|&p| BigUint::from(p)).product();
         let res_b = OnceLock::new();
         let res_a = OnceLock::new();
@@ -345,7 +387,10 @@ impl KeyRegistry {
             && self.n <= 1 << 31
             && !self.primes.is_empty()
             && ps.len() == self.primes.len()
-            && self.primes.iter().all(|&q| inr(q) && q % (2 * self.n as u64) == 1 && is_prime_u64(q))
+            && self
+                .primes
+                .iter()
+                .all(|&q| inr(q) && q % (2 * self.n as u64) == 1 && is_prime_u64(q))
             && inr(self.t)
             && self.t % 2 == 1
             && is_prime_u64(self.t)
@@ -356,10 +401,21 @@ impl KeyRegistry {
     }
 
     pub fn public(&self) -> Vec<u8> {
-        let b = Json::List(self.b.to_big().into_iter().map(|x| Json::Int(BigInt::from(x))).collect());
+        let b = Json::List(
+            self.b
+                .to_big()
+                .into_iter()
+                .map(|x| Json::Int(BigInt::from(x)))
+                .collect(),
+        );
         Json::list(vec![
             Json::Int(BigInt::from(self.n)),
-            Json::List(self.primes.iter().map(|&p| Json::Int(BigInt::from(p))).collect()),
+            Json::List(
+                self.primes
+                    .iter()
+                    .map(|&p| Json::Int(BigInt::from(p)))
+                    .collect(),
+            ),
             Json::Int(BigInt::from(self.t)),
             Json::s(&self.seed),
             Json::s(&self.key_id),
@@ -370,10 +426,12 @@ impl KeyRegistry {
 
     pub fn b_res(&self) -> &Vec<Vec<u64>> {
         // no rayon inside a OnceLock initializer: a worker stealing a task that re-enters it would deadlock
-        self.res_b.get_or_init(|| self.primes.iter().map(|&q| self.b.residues(q)).collect())
+        self.res_b
+            .get_or_init(|| self.primes.iter().map(|&q| self.b.residues(q)).collect())
     }
     pub fn a_res(&self) -> &Vec<Vec<u64>> {
-        self.res_a.get_or_init(|| self.primes.iter().map(|&q| self.a.residues(q)).collect())
+        self.res_a
+            .get_or_init(|| self.primes.iter().map(|&q| self.a.residues(q)).collect())
     }
 }
 
@@ -411,6 +469,8 @@ impl Kind {
 
 /// Immutable once built: the digest and residue caches are computed from these fields, so they are private
 /// (a statement whose context could be changed after `new` would keep a stale digest).
+type CtResidues = Vec<Vec<(Vec<u64>, Vec<u64>)>>;
+
 pub struct Statement {
     reg: Arc<KeyRegistry>,
     kind: Kind,
@@ -421,11 +481,17 @@ pub struct Statement {
     context: Json,
     digest: [u8; 32],
     /// [prime][ct] -> (c0 mod q, c1 mod q)
-    res: OnceLock<Vec<Vec<(Vec<u64>, Vec<u64>)>>>,
+    res: OnceLock<CtResidues>,
 }
 
 impl Statement {
-    pub fn new(reg: Arc<KeyRegistry>, kind: Kind, cts: Vec<(BigPoly, BigPoly)>, slots: Vec<Vec<usize>>, context: Json) -> Result<Statement, String> {
+    pub fn new(
+        reg: Arc<KeyRegistry>,
+        kind: Kind,
+        cts: Vec<(BigPoly, BigPoly)>,
+        slots: Vec<Vec<usize>>,
+        context: Json,
+    ) -> Result<Statement, String> {
         if (kind == Kind::Key) != cts.is_empty() || slots.len() != cts.len() {
             return Err("batch shape".into());
         }
@@ -441,11 +507,28 @@ impl Statement {
                 return Err("slot layout".into());
             }
         }
-        let mut st = Statement { reg, kind, cts, slots, context, digest: [0; 32], res: OnceLock::new() };
+        let mut st = Statement {
+            reg,
+            kind,
+            cts,
+            slots,
+            context,
+            digest: [0; 32],
+            res: OnceLock::new(),
+        };
         st.digest = st.compute_digest();
         // residues eagerly and in parallel here, outside any OnceLock initializer
-        let res: Vec<Vec<(Vec<u64>, Vec<u64>)>> =
-            st.reg.primes.par_iter().map(|&q| st.cts.par_iter().map(|(c0, c1)| (c0.residues(q), c1.residues(q))).collect()).collect();
+        let res: Vec<Vec<(Vec<u64>, Vec<u64>)>> = st
+            .reg
+            .primes
+            .par_iter()
+            .map(|&q| {
+                st.cts
+                    .par_iter()
+                    .map(|(c0, c1)| (c0.residues(q), c1.residues(q)))
+                    .collect()
+            })
+            .collect();
         let _ = st.res.set(res);
         let _ = (st.reg.a_res(), st.reg.b_res());
         Ok(st)
@@ -455,9 +538,16 @@ impl Statement {
         let mut h = Sha256::new();
         h.update(DOMAIN);
         h.update(self.reg.public());
-        let slots = Json::List(self.slots.iter().map(|s| Json::List(s.iter().map(|&k| Json::Int(BigInt::from(k))).collect())).collect());
-        h.update(Json::list(vec![Json::s(self.kind.name()), self.context.clone(), slots]).canonical());
-        let wb = ((self.reg.q.bits() + 7) / 8) as usize;
+        let slots = Json::List(
+            self.slots
+                .iter()
+                .map(|s| Json::List(s.iter().map(|&k| Json::Int(BigInt::from(k))).collect()))
+                .collect(),
+        );
+        h.update(
+            Json::list(vec![Json::s(self.kind.name()), self.context.clone(), slots]).canonical(),
+        );
+        let wb = self.reg.q.bits().div_ceil(8) as usize;
         let bufs: Vec<Vec<u8>> = self
             .cts
             .par_iter()
@@ -499,7 +589,16 @@ impl Statement {
 
     pub fn ct_res(&self) -> &Vec<Vec<(Vec<u64>, Vec<u64>)>> {
         self.res.get_or_init(|| {
-            self.reg.primes.iter().map(|&q| self.cts.iter().map(|(c0, c1)| (c0.residues(q), c1.residues(q))).collect()).collect()
+            self.reg
+                .primes
+                .iter()
+                .map(|&q| {
+                    self.cts
+                        .iter()
+                        .map(|(c0, c1)| (c0.residues(q), c1.residues(q)))
+                        .collect()
+                })
+                .collect()
         })
     }
 }
@@ -516,7 +615,12 @@ pub struct Group {
 
 impl Group {
     fn small(name: String, n: usize, lo: i64, hi: i64) -> Group {
-        Group { name, n, lo: BigInt::from(lo), hi: BigInt::from(hi) }
+        Group {
+            name,
+            n,
+            lo: BigInt::from(lo),
+            hi: BigInt::from(hi),
+        }
     }
     pub fn range(&self) -> BigUint {
         (&self.hi - &self.lo).to_biguint().unwrap()
@@ -529,7 +633,9 @@ impl Group {
 /// zkpopk_ligero.weights(U): 1, 2, 4, ..., and a top digit of adjusted weight so [0, U] is covered exactly.
 pub fn weights(u: &BigUint) -> Vec<BigUint> {
     let w = u.bits() as usize;
-    let mut out: Vec<BigUint> = (0..w.saturating_sub(1)).map(|j| BigUint::one() << j).collect();
+    let mut out: Vec<BigUint> = (0..w.saturating_sub(1))
+        .map(|j| BigUint::one() << j)
+        .collect();
     if w >= 1 {
         out.push(u - (BigUint::one() << (w - 1)) + 1u32);
     }
@@ -543,16 +649,29 @@ pub fn folds_for(t: usize) -> usize {
 }
 
 /// zkpopk_ligero.quotient_bounds: |F_i| <= B_i for any in-range witness and any rho.
-pub fn quotient_bounds(kind: Kind, n: usize, primes: &[u64], t: u64, m: usize) -> Result<Vec<BigUint>, String> {
+pub fn quotient_bounds(
+    kind: Kind,
+    n: usize,
+    primes: &[u64],
+    t: u64,
+    m: usize,
+) -> Result<Vec<BigUint>, String> {
     let mut out = vec![];
     let t = BigUint::from(t);
     for &q in primes {
         let q = BigUint::from(q);
         let ring = (&q - 1u32) * (n + 1) + 8u32;
         let ct0 = &t * &ring + (&t - 1u32) / 2u32;
-        let b = if kind.secret() { (&q - 1u32) * n * (&ring + &ct0 * m) } else { (&q - 1u32) * n * m * (&ct0 + &ring) };
+        let b = if kind.secret() {
+            (&q - 1u32) * n * (&ring + &ct0 * m)
+        } else {
+            (&q - 1u32) * n * m * (&ct0 + &ring)
+        };
         if (&b * 2u32 + &q) >= *p_big() {
-            return Err("field too small for this batch: the folded limb equation could wrap modulo P".into());
+            return Err(
+                "field too small for this batch: the folded limb equation could wrap modulo P"
+                    .into(),
+            );
         }
         out.push(b);
     }
@@ -560,7 +679,14 @@ pub fn quotient_bounds(kind: Kind, n: usize, primes: &[u64], t: u64, m: usize) -
 }
 
 /// zkpopk_ligero.layout: round-1 groups in wire order, round-2 quotient groups (one per fold and prime).
-pub fn layout(kind: Kind, n: usize, primes: &[u64], t: u64, slot_sizes: &[usize], f: usize) -> Result<(Vec<Group>, Vec<Group>), String> {
+pub fn layout(
+    kind: Kind,
+    n: usize,
+    primes: &[u64],
+    t: u64,
+    slot_sizes: &[usize],
+    f: usize,
+) -> Result<(Vec<Group>, Vec<Group>), String> {
     let r = ((t - 1) / 2) as i64;
     let mut g1 = vec![];
     if kind.secret() {
@@ -583,7 +709,12 @@ pub fn layout(kind: Kind, n: usize, primes: &[u64], t: u64, slot_sizes: &[usize]
     for fi in 0..f {
         for (i, (b, &q)) in bs.iter().zip(primes).enumerate() {
             let kb = BigInt::from(b / q + 1u32);
-            g2.push(Group { name: format!("K{fi}_{i}"), n: 1, lo: -kb.clone(), hi: kb });
+            g2.push(Group {
+                name: format!("K{fi}_{i}"),
+                n: 1,
+                lo: -kb.clone(),
+                hi: kb,
+            });
         }
     }
     Ok((g1, g2))
@@ -616,7 +747,14 @@ pub struct Shape {
 }
 
 /// zkpopk_ligero.shape: th = T, F = folds_for(T), and the k (16 .. 2^19) that minimizes the proof's bytes.
-pub fn shape_of(kind: Kind, n: usize, primes: &[u64], t: u64, slot_sizes: &[usize], tcols: usize) -> Result<Shape, String> {
+pub fn shape_of(
+    kind: Kind,
+    n: usize,
+    primes: &[u64],
+    t: u64,
+    slot_sizes: &[usize],
+    tcols: usize,
+) -> Result<Shape, String> {
     let th = tcols;
     let f = folds_for(tcols);
     let (g1, g2) = layout(kind, n, primes, t, slot_sizes, f)?;
@@ -631,7 +769,18 @@ pub fn shape_of(kind: Kind, n: usize, primes: &[u64], t: u64, slot_sizes: &[usiz
         }
     }
     let (_, k, m1, m2) = best.unwrap();
-    Ok(Shape { k, th, t: tcols, f, m1, m2, n1, n2, g1, g2 })
+    Ok(Shape {
+        k,
+        th,
+        t: tcols,
+        f,
+        m1,
+        m2,
+        n1,
+        n2,
+        g1,
+        g2,
+    })
 }
 
 pub fn shape(st: &Statement, tcols: usize) -> Result<Shape, String> {
@@ -640,7 +789,14 @@ pub fn shape(st: &Statement, tcols: usize) -> Result<Shape, String> {
 }
 
 /// zkpopk_ligero.batch_proof_bits: (bits, shape) from the batch's shape alone.
-pub fn batch_proof_bits(kind: Kind, n: usize, primes: &[u64], t: u64, slot_sizes: &[usize], tcols: usize) -> Result<(usize, Shape), String> {
+pub fn batch_proof_bits(
+    kind: Kind,
+    n: usize,
+    primes: &[u64],
+    t: u64,
+    slot_sizes: &[usize],
+    tcols: usize,
+) -> Result<(usize, Shape), String> {
     let sh = shape_of(kind, n, primes, t, slot_sizes, tcols)?;
     Ok((8 * proof_bytes(sh.k, sh.th, tcols, sh.m1, sh.m2), sh))
 }
@@ -656,5 +812,8 @@ pub fn exact_nega(nega: &Nega, a: &[u64], v: &[i64]) -> Option<Vec<i128>> {
     }
     let fa: Vec<Fe> = a.iter().map(|&x| Fe::from_u64(x)).collect();
     let fv: Vec<Fe> = v.iter().map(|&x| Fe::from_i64(x)).collect();
-    nega.mul(&fa, &fv).into_iter().map(|x| x.to_i128_centered()).collect()
+    nega.mul(&fa, &fv)
+        .into_iter()
+        .map(|x| x.to_i128_centered())
+        .collect()
 }

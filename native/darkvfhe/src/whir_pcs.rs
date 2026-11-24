@@ -26,8 +26,8 @@
 use crate::cert::{compute_statement_digest, ct2_handle, ct3_handle, derive_fs_point};
 use crate::digits::{DigitCols, DirectDigitSpec, ExactGarnerSpec, LiftMode};
 use crate::logup_gkr::{
-    count_multiplicities_parallel, prove_logup_gkr_with_mults, verify_logup_gkr,
-    FractionTreeProof, GkrLayerProof, LogUpConfig, LogUpGkrProof, TABLE_LOG2, TABLE_SIZE,
+    count_multiplicities_parallel, prove_logup_gkr_with_mults, verify_logup_gkr, FractionTreeProof,
+    GkrLayerProof, LogUpConfig, LogUpGkrProof, TABLE_LOG2, TABLE_SIZE,
 };
 use crate::rns_hoist::{Ct3, HoistedEngine, PrecomputedCt};
 use crate::succinct_pcs::{
@@ -62,7 +62,7 @@ pub const HOISTED_WHIR_VERSION: u32 = 1;
 // ================================================================================================
 
 pub fn pack_u64_bits_le(vals: &[u64], bits: usize, out: &mut Vec<u8>) {
-    assert!(bits >= 1 && bits <= 64);
+    assert!((1..=64).contains(&bits));
     out.extend_from_slice(&(vals.len() as u32).to_le_bytes());
     out.push(bits as u8);
     let total_bits = vals.len() * bits;
@@ -70,7 +70,11 @@ pub fn pack_u64_bits_le(vals: &[u64], bits: usize, out: &mut Vec<u8>) {
     let start = out.len();
     out.resize(start + byte_len, 0u8);
     let dst = &mut out[start..];
-    let mask = if bits == 64 { u64::MAX } else { (1u64 << bits) - 1 };
+    let mask = if bits == 64 {
+        u64::MAX
+    } else {
+        (1u64 << bits) - 1
+    };
     let mut bit_pos = 0usize;
     for &raw in vals {
         let v = raw & mask;
@@ -216,10 +220,7 @@ impl GMask61 {
         }
         let mut raw_fp = vec![0u64; total_ext * 3];
         rng.fill_fp_row(&ef.fp, 0x474D_4153_4B36_3100, &mut raw_fp);
-        let coeffs: Vec<Ext3> = raw_fp
-            .chunks_exact(3)
-            .map(|c| [c[0], c[1], c[2]])
-            .collect();
+        let coeffs: Vec<Ext3> = raw_fp.chunks_exact(3).map(|c| [c[0], c[1], c[2]]).collect();
         GMask61 {
             ef,
             specs,
@@ -492,7 +493,9 @@ impl GMask61 {
             let vf_c: Vec<u64> = eq_r.iter().map(|e| e[coord]).collect();
             let vf_idx = v_families.len();
             v_families.push(vf_c);
-            claims[prev_len + coord].terms.push((vf_idx, vec![(wit_slot, 1u64)]));
+            claims[prev_len + coord]
+                .terms
+                .push((vf_idx, vec![(wit_slot, 1u64)]));
         }
     }
 }
@@ -514,13 +517,13 @@ fn emit_ext3_linear_form_as_slot_claims(
     let e1: Ext3 = [0, 1, 0];
     let e2: Ext3 = [0, 0, 1];
 
-    for out_coord in 0..3 {
+    for (out_coord, &rhs_coord) in rhs.iter().enumerate() {
         let mut per_slot: BTreeMap<usize, Vec<u64>> = BTreeMap::new();
         for (u, &wu) in weights.iter().enumerate() {
             let m0 = ef.mul(wu, e0)[out_coord];
             let m1 = ef.mul(wu, e1)[out_coord];
             let m2 = ef.mul(wu, e2)[out_coord];
-            for ( limb, coef ) in [(0usize, m0), (1usize, m1), (2usize, m2)] {
+            for (limb, coef) in [(0usize, m0), (1usize, m1), (2usize, m2)] {
                 if coef == 0 {
                     continue;
                 }
@@ -539,7 +542,7 @@ fn emit_ext3_linear_form_as_slot_claims(
         }
         claims.push(SlotLinearClaim {
             terms,
-            rhs: rhs[out_coord],
+            rhs: rhs_coord,
         });
     }
 }
@@ -668,10 +671,7 @@ impl CosetLevel61 {
         let stride = 1usize << k_next;
         let tt = f_idx >> k_next;
         let i_base = f_idx & (stride - 1);
-        let x0 = fp.mul(
-            fp.pow(self.z, tt as u64),
-            fp.pow(self.omega, i_base as u64),
-        );
+        let x0 = fp.mul(fp.pow(self.z, tt as u64), fp.pow(self.omega, i_base as u64));
         let zeta = fp.pow(self.omega, 1u64 << k_next);
         (x0, zeta)
     }
@@ -738,7 +738,7 @@ fn build_whir_k_schedule(k_max: usize, w0: usize, k0: usize) -> (Vec<usize>, usi
         used_k += kr;
         w_cur >>= kr;
     }
-    if w_cur > 256 && used_k + 1 <= k_max {
+    if w_cur > 256 && used_k < k_max {
         k_schedule.push(1);
         w_cur >>= 1;
     }
@@ -747,7 +747,13 @@ fn build_whir_k_schedule(k_max: usize, w0: usize, k0: usize) -> (Vec<usize>, usi
 
 impl WhirShape61 {
     /// Choose optimal `(mr, mc, k_schedule)` for `num_elems` field elements minimizing WHIR proof bytes!
-    pub fn for_len(fp: &FastPrime61, num_elems: usize, min_mc: usize, t_queries: usize, blow: usize) -> Self {
+    pub fn for_len(
+        fp: &FastPrime61,
+        num_elems: usize,
+        min_mc: usize,
+        t_queries: usize,
+        blow: usize,
+    ) -> Self {
         let min_mc = min_mc.max(9); // C >= 512
         let hide_floor = t_queries.saturating_mul(16).next_power_of_two();
         let max_c_cap = (num_elems.max(1 << min_mc) / 6)
@@ -771,7 +777,7 @@ impl WhirShape61 {
                 continue;
             }
             let est_bytes = cand.estimated_proof_bytes();
-            if best.map_or(true, |b| est_bytes < b.0) {
+            if best.is_none_or(|b| est_bytes < b.0) {
                 best = Some((est_bytes, mr, mc));
             }
         }
@@ -884,7 +890,7 @@ impl WhirShape61 {
 fn hash_whir_s0_fiber(f_idx: usize, salt: &[u8; 16], fiber_cols: &[u64]) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_WHIR61_S0_LEAF_V1|");
-    h.update(&(f_idx as u32).to_le_bytes());
+    h.update((f_idx as u32).to_le_bytes());
     h.update(salt);
     let mut raw = Vec::with_capacity(fiber_cols.len() * 8);
     for &v in fiber_cols {
@@ -898,12 +904,12 @@ fn hash_whir_s0_fiber(f_idx: usize, salt: &[u8; 16], fiber_cols: &[u64]) -> [u8;
 fn hash_whir_fold_fiber(round: usize, f_idx: usize, fiber_vals: &[Ext3]) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_WHIR61_FOLD_LEAF_V1|");
-    h.update(&(round as u8).to_le_bytes());
-    h.update(&(f_idx as u32).to_le_bytes());
+    h.update((round as u8).to_le_bytes());
+    h.update((f_idx as u32).to_le_bytes());
     for e in fiber_vals {
-        h.update(&e[0].to_le_bytes());
-        h.update(&e[1].to_le_bytes());
-        h.update(&e[2].to_le_bytes());
+        h.update(e[0].to_le_bytes());
+        h.update(e[1].to_le_bytes());
+        h.update(e[2].to_le_bytes());
     }
     h.finalize().into()
 }
@@ -921,7 +927,7 @@ fn hash_whir_node(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
 fn hash_whir_pad(j: usize) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_WHIR61_PAD_V1|");
-    h.update(&(j as u32).to_le_bytes());
+    h.update((j as u32).to_le_bytes());
     h.finalize().into()
 }
 
@@ -977,8 +983,11 @@ fn verify_whir_tree_multiproof(
     if siblings.len() != needed.len() {
         return Err("WHIR Merkle multiproof sibling count mismatch".into());
     }
-    let mut known: BTreeMap<usize, [u8; 32]> =
-        indices.iter().copied().zip(leaf_hashes.iter().copied()).collect();
+    let mut known: BTreeMap<usize, [u8; 32]> = indices
+        .iter()
+        .copied()
+        .zip(leaf_hashes.iter().copied())
+        .collect();
     let mut sib_it = siblings.iter();
     for _l in 0..levels {
         let mut next = BTreeMap::new();
@@ -1001,7 +1010,10 @@ fn verify_whir_tree_multiproof(
         }
         known = next;
     }
-    if sib_it.next().is_some() || known.len() != 1 || known.values().next().unwrap() != expected_root {
+    if sib_it.next().is_some()
+        || known.len() != 1
+        || known.values().next().unwrap() != expected_root
+    {
         return Err("WHIR Merkle multiproof root mismatch (tampered fiber or path)".into());
     }
     Ok(())
@@ -1285,11 +1297,8 @@ impl WhirCommittedPcs61 {
         );
 
         let m_bits = shape.mc + shape.mr;
-        let internal_gmask = GMask61::sample(
-            ef,
-            vec![GMaskSpec61::new("pcs_sc", m_bits, 2)],
-            &mut rng,
-        );
+        let internal_gmask =
+            GMask61::sample(ef, vec![GMaskSpec61::new("pcs_sc", m_bits, 2)], &mut rng);
         let n_gm_ext = internal_gmask.coeffs.len();
         assert!(n_gm_ext < c, "internal GMask61 fits inside C");
 
@@ -1341,14 +1350,14 @@ impl WhirCommittedPcs61 {
         let n_leaves_0 = shape.n0 >> k0;
         let mut salt_mid = Sha256::new();
         salt_mid.update(b"WHIR61_FIBER_SALT_V1|");
-        salt_mid.update(&root_seed);
+        salt_mid.update(root_seed);
         let mut fiber_salts = vec![[0u8; 16]; n_leaves_0];
         fiber_salts
             .par_chunks_mut(2)
             .enumerate()
             .for_each(|(pair_idx, pair_dst)| {
                 let mut h = salt_mid.clone();
-                h.update(&(pair_idx as u64).to_le_bytes());
+                h.update((pair_idx as u64).to_le_bytes());
                 let d: [u8; 32] = h.finalize().into();
                 pair_dst[0].copy_from_slice(&d[0..16]);
                 if pair_dst.len() > 1 {
@@ -1404,7 +1413,10 @@ impl WhirCommittedPcs61 {
         Self::commit_with_shape(fp, shape, data, rng)
     }
 
-    fn open_stage0_fibers(&self, fiber_indices: &[usize]) -> (Vec<u64>, Vec<[u8; 16]>, Vec<[u8; 32]>) {
+    fn open_stage0_fibers(
+        &self,
+        fiber_indices: &[usize],
+    ) -> (Vec<u64>, Vec<[u8; 16]>, Vec<[u8; 32]>) {
         let sh = &self.shape;
         let k0 = sh.k_schedule[0];
         let b0 = 1usize << k0;
@@ -1463,12 +1475,7 @@ fn eval_slot_u64_61(
 }
 
 #[inline]
-fn eval_slot_ext3_61(
-    ef: &Ext3Field,
-    sw: &[(usize, Ext3)],
-    vf_ext: &[Vec<Ext3>],
-    j: usize,
-) -> Ext3 {
+fn eval_slot_ext3_61(ef: &Ext3Field, sw: &[(usize, Ext3)], vf_ext: &[Vec<Ext3>], j: usize) -> Ext3 {
     let mut acc = ef.zero();
     for &(vi, w_ext) in sw {
         let vj = vf_ext[vi][j];
@@ -1507,7 +1514,7 @@ impl WhirCommittedPcs61 {
         let ef = &self.ef;
         let sh = &self.shape;
         let n_poly = 1usize << log_n;
-        assert!(log_n <= sh.mc && sh.c % n_poly == 0);
+        assert!(log_n <= sh.mc && sh.c.is_multiple_of(n_poly));
         let polys_per_row = sh.c / n_poly;
         let usable_slots = sh.usable_rows * polys_per_row;
 
@@ -1639,13 +1646,9 @@ impl WhirCommittedPcs61 {
                     || [ef.zero(), ef.zero(), ef.zero()],
                     |a, b| [ef.add(a[0], b[0]), ef.add(a[1], b[1]), ef.add(a[2], b[2])],
                 );
-            let m1_v = self.internal_gmask.blind_round_poly(
-                "pcs_sc",
-                1,
-                &z_challenges,
-                rho,
-                &unmasked1,
-            );
+            let m1_v =
+                self.internal_gmask
+                    .blind_round_poly("pcs_sc", 1, &z_challenges, rho, &unmasked1);
             let m1_arr = [m1_v[0], m1_v[1], m1_v[2]];
             for ck in &m1_arr {
                 tr.absorb_ext3(ck);
@@ -1694,13 +1697,9 @@ impl WhirCommittedPcs61 {
                     || [ef.zero(), ef.zero(), ef.zero()],
                     |a, b| [ef.add(a[0], b[0]), ef.add(a[1], b[1]), ef.add(a[2], b[2])],
                 );
-            let m2_v = self.internal_gmask.blind_round_poly(
-                "pcs_sc",
-                2,
-                &z_challenges,
-                rho,
-                &unmasked2,
-            );
+            let m2_v =
+                self.internal_gmask
+                    .blind_round_poly("pcs_sc", 2, &z_challenges, rho, &unmasked2);
             let m2_arr = [m2_v[0], m2_v[1], m2_v[2]];
             for ck in &m2_arr {
                 tr.absorb_ext3(ck);
@@ -1738,8 +1737,8 @@ impl WhirCommittedPcs61 {
                     if sw.is_empty() {
                         return;
                     }
-                    for j in 0..n_3 {
-                        dst[j] = eval_slot_ext3_61(ef, sw, &vf_ext, j);
+                    for (j, slot) in dst.iter_mut().enumerate() {
+                        *slot = eval_slot_ext3_61(ef, sw, &vf_ext, j);
                     }
                 });
             (a_tbl3, m_tbl3, len3, 3usize)
@@ -1753,8 +1752,8 @@ impl WhirCommittedPcs61 {
                     if sw.is_empty() {
                         return;
                     }
-                    for j in 0..n_poly {
-                        dst[j] = eval_slot_u64_61(fp, sw, v_families, j);
+                    for (j, slot) in dst.iter_mut().enumerate() {
+                        *slot = eval_slot_u64_61(fp, sw, v_families, j);
                     }
                 });
 
@@ -1778,7 +1777,13 @@ impl WhirCommittedPcs61 {
             let unmasked0 = if half0 >= 2048 {
                 (0..half0).into_par_iter().map(eval_r0).reduce(
                     || [ef.zero(), ef.zero(), ef.zero()],
-                    |acc, x| [ef.add(acc[0], x[0]), ef.add(acc[1], x[1]), ef.add(acc[2], x[2])],
+                    |acc, x| {
+                        [
+                            ef.add(acc[0], x[0]),
+                            ef.add(acc[1], x[1]),
+                            ef.add(acc[2], x[2]),
+                        ]
+                    },
                 )
             } else {
                 let mut acc = [ef.zero(), ef.zero(), ef.zero()];
@@ -1840,7 +1845,13 @@ impl WhirCommittedPcs61 {
             let unmasked = if half >= 2048 {
                 (0..half).into_par_iter().map(eval_pair).reduce(
                     || [ef.zero(), ef.zero(), ef.zero()],
-                    |acc, x| [ef.add(acc[0], x[0]), ef.add(acc[1], x[1]), ef.add(acc[2], x[2])],
+                    |acc, x| {
+                        [
+                            ef.add(acc[0], x[0]),
+                            ef.add(acc[1], x[1]),
+                            ef.add(acc[2], x[2]),
+                        ]
+                    },
                 )
             } else {
                 let mut acc = [ef.zero(), ef.zero(), ef.zero()];
@@ -1906,7 +1917,11 @@ impl WhirCommittedPcs61 {
         let y_g = self.internal_gmask.eval_at("pcs_sc", &z_challenges);
         debug_assert_eq!(
             ef.add(ef.mul(a_tbl[0], m_eval), ef.mul(rho, y_g)),
-            eval_poly_ext3(ef, sumcheck_rounds.last().unwrap(), *z_challenges.last().unwrap())
+            eval_poly_ext3(
+                ef,
+                sumcheck_rounds.last().unwrap(),
+                *z_challenges.last().unwrap()
+            )
         );
         tr.absorb_ext3(&m_eval);
 
@@ -2002,7 +2017,13 @@ impl WhirCommittedPcs61 {
             let poly = if half >= 2048 {
                 (0..half).into_par_iter().map(eval_c).reduce(
                     || [ef.zero(), ef.zero(), ef.zero()],
-                    |acc, x| [ef.add(acc[0], x[0]), ef.add(acc[1], x[1]), ef.add(acc[2], x[2])],
+                    |acc, x| {
+                        [
+                            ef.add(acc[0], x[0]),
+                            ef.add(acc[1], x[1]),
+                            ef.add(acc[2], x[2]),
+                        ]
+                    },
                 )
             } else {
                 let mut acc = [ef.zero(), ef.zero(), ef.zero()];
@@ -2071,10 +2092,7 @@ impl WhirCommittedPcs61 {
             .map(|k| {
                 ef.add(
                     u_prox[k],
-                    ef.add(
-                        ef.mul(theta1, u_eval[k]),
-                        ef.mul(theta2, p_gmask_hat[k]),
-                    ),
+                    ef.add(ef.mul(theta1, u_eval[k]), ef.mul(theta2, p_gmask_hat[k])),
                 )
             })
             .collect();
@@ -2111,6 +2129,30 @@ impl WhirShape61 {
     }
 }
 
+type WhirMatrixHeaderEval = (Vec<Ext3>, Ext3, Ext3, Ext3, Ext3, Vec<Ext3>, Ext3);
+type WhirCascadeProof = (
+    Vec<WhirFoldRoundProof61>,
+    Vec<Vec<[Ext3; 3]>>,
+    Ext3,
+    Vec<Ext3>,
+    Vec<usize>,
+);
+type WhirRowSumcheckOutput = (
+    WhirRowSumcheckPart61,
+    Vec<Ext3>,
+    Ext3,
+    Vec<Ext3>,
+    Vec<Ext3>,
+    Vec<Ext3>,
+    Vec<Ext3>,
+);
+type WhirHoistedEvalVFamilies = (
+    Vec<Vec<u64>>,
+    [[[usize; 3]; 15]; 7],
+    [[[usize; 3]; 14]; 7],
+    [[[usize; 3]; 4]; 7],
+);
+
 /// Replay `WhirMatrixHeader61` on the verifier (`0` `O(w0)` allocations! Evaluates `V_eval(zeta)` in `O(mc)` muls
 /// and `V_gm(zeta)` in `O(mr + mc)` muls!).
 /// Returns `(z_row, beta_gm, gamma, theta1, theta2, zeta, f0_at_zeta)`.
@@ -2123,10 +2165,10 @@ fn verify_matrix_header_61(
     claims: &[SlotLinearClaim],
     hdr: &WhirMatrixHeader61,
     tr: &mut PcsTranscript,
-) -> Result<(Vec<Ext3>, Ext3, Ext3, Ext3, Ext3, Vec<Ext3>, Ext3), String> {
+) -> Result<WhirMatrixHeaderEval, String> {
     let fp = &ef.fp;
     let n_poly = 1usize << log_n;
-    if log_n > shape.mc || shape.c % n_poly != 0 {
+    if log_n > shape.mc || !shape.c.is_multiple_of(n_poly) {
         return Err("invalid log_n vs shape.mc".into());
     }
     let m_bits = shape.mc + shape.mr;
@@ -2159,7 +2201,10 @@ fn verify_matrix_header_61(
         tr,
         y_batch,
         hdr.gmask_sum,
-        &hdr.sumcheck_rounds.iter().map(|r| r.to_vec()).collect::<Vec<_>>(),
+        &hdr.sumcheck_rounds
+            .iter()
+            .map(|r| r.to_vec())
+            .collect::<Vec<_>>(),
         2,
         50,
     )?;
@@ -2327,13 +2372,7 @@ fn prove_whir_cascade_core_61(
     mut cur_poly: Vec<Ext3>,
     init_mle_pts: &[Vec<Ext3>],
     tr: &mut PcsTranscript,
-) -> (
-    Vec<WhirFoldRoundProof61>,
-    Vec<Vec<[Ext3; 3]>>,
-    Ext3,
-    Vec<Ext3>,
-    Vec<usize>,
-) {
+) -> WhirCascadeProof {
     let fp = &ef.fp;
     let num_rounds = shape.k_schedule.len();
     let mut cur_level = shape.level0;
@@ -2417,7 +2456,12 @@ fn prove_whir_cascade_core_61(
             if half >= 4096 {
                 w_acc = (0..half)
                     .into_par_iter()
-                    .map(|u| ef.add(w_acc[2 * u], ef.mul(alpha, ef.sub(w_acc[2 * u + 1], w_acc[2 * u]))))
+                    .map(|u| {
+                        ef.add(
+                            w_acc[2 * u],
+                            ef.mul(alpha, ef.sub(w_acc[2 * u + 1], w_acc[2 * u])),
+                        )
+                    })
                     .collect();
                 cur_poly = (0..half)
                     .into_par_iter()
@@ -2488,7 +2532,8 @@ fn prove_whir_cascade_core_61(
                     uniq_set.insert(f_next);
                 }
                 let uniq_fibers: Vec<usize> = uniq_set.into_iter().collect();
-                let mut opened_fibers = Vec::with_capacity(uniq_fibers.len() * (1usize << pt.kr_next));
+                let mut opened_fibers =
+                    Vec::with_capacity(uniq_fibers.len() * (1usize << pt.kr_next));
                 for &f_idx in &uniq_fibers {
                     for j in pt.level.fiber_point_indices(pt.kr_next, f_idx) {
                         opened_fibers.push(pt.cw_ext3[j]);
@@ -2503,7 +2548,13 @@ fn prove_whir_cascade_core_61(
                 });
                 cur_pts = uniq_fibers;
             }
-            return (fold_proofs, round_lockstep_scs, ood_eval, cur_poly, s0_fibers);
+            return (
+                fold_proofs,
+                round_lockstep_scs,
+                ood_eval,
+                cur_poly,
+                s0_fibers,
+            );
         }
     }
     unreachable!()
@@ -2625,9 +2676,16 @@ impl WhirCommittedPcs61 {
         // Extract `zeta` by replaying the deterministic transcript? Even simpler: return `zeta` from `prove_matrix_to_f0`!
         // Let's recover `zeta` directly by replaying `verify_matrix_header_61` on a cloned initial transcript!
         let mut tr_check = PcsTranscript::new("WHIR61_OPEN", self.ef.fp.p, &self.root, context);
-        let (_, _, _, _, _, zeta, _) =
-            verify_matrix_header_61(&self.ef, &self.shape, log_n, v_families, claims, &header, &mut tr_check)
-                .expect("honest matrix header must self-verify");
+        let (_, _, _, _, _, zeta, _) = verify_matrix_header_61(
+            &self.ef,
+            &self.shape,
+            log_n,
+            v_families,
+            claims,
+            &header,
+            &mut tr_check,
+        )
+        .expect("honest matrix header must self-verify");
 
         let (fold_rounds, lockstep_scs, final_ood_eval, final_poly, s0_fibers) =
             prove_whir_cascade_core_61(&self.ef, &self.shape, f0_poly, &[zeta], &mut tr);
@@ -2763,7 +2821,9 @@ fn verify_whir_cascade_replay_and_trajectories_61(
             let p0 = poly[0];
             let p1 = ef.add(poly[0], ef.add(poly[1], poly[2]));
             if ef.add(p0, p1) != running {
-                return Err(format!("WHIR lockstep sumcheck failed at round {r} step {step}"));
+                return Err(format!(
+                    "WHIR lockstep sumcheck failed at round {r} step {step}"
+                ));
             }
             for ck in poly {
                 tr.absorb_ext3(ck);
@@ -2818,8 +2878,8 @@ fn verify_whir_cascade_replay_and_trajectories_61(
         }
         // Now `z_pow == z_ood^{2^{tot_k - alpha_offset}}`! Remaining `q in 0..w_final` has factor `z_pow^q`:
         let mut cur_z = prefix_prod;
-        for q in 0..shape.w_final {
-            final_weights[q] = ef.add(final_weights[q], cur_z);
+        for fw in &mut final_weights {
+            *fw = ef.add(*fw, cur_z);
             cur_z = ef.mul(cur_z, z_pow);
         }
         alpha_offset += shape.k_schedule[r];
@@ -2871,14 +2931,20 @@ fn verify_stage0_matrix_fibers_61(
             hash_whir_s0_fiber(s0_fibers[qi], &s0_salts[qi], slice)
         })
         .collect();
-    verify_whir_tree_multiproof(expected_root, n_leaves_0, s0_fibers, &leaf_hashes, s0_siblings)?;
+    verify_whir_tree_multiproof(
+        expected_root,
+        n_leaves_0,
+        s0_fibers,
+        &leaf_hashes,
+        s0_siblings,
+    )?;
 
     // Build combined row weight `w_row[0..r_total]` so `F^{(0)}(x) == <w_row, col(x)>` in ONE dot product!
     let eq_row = ef.build_eq_le(z_row);
     let mut w_row = vec![ef.zero(); shape.r_total];
     let mut g_pw = ef.one();
-    for r in 0..(shape.rd + 6) {
-        w_row[r] = g_pw;
+    for w_slot in w_row.iter_mut().take(shape.rd + 6) {
+        *w_slot = g_pw;
         g_pw = ef.mul(g_pw, gamma);
     }
     w_row[shape.rd + 6] = [1, 0, 0];
@@ -2953,15 +3019,7 @@ fn verify_whir_trajectories_full_61(
             .into_par_iter()
             .map(|i| {
                 let slice = &cur_fiber_evals[i * b_len..(i + 1) * b_len];
-                fold_fiber_evals_ext3(
-                    ef,
-                    slice,
-                    kr,
-                    x0_invs[i],
-                    &zeta_inv_pows,
-                    b_inv,
-                    &eq_alpha,
-                )
+                fold_fiber_evals_ext3(ef, slice, kr, x0_invs[i], &zeta_inv_pows, b_inv, &eq_alpha)
             })
             .collect();
 
@@ -2983,7 +3041,10 @@ fn verify_whir_trajectories_full_61(
             }
             let uniq_fibers: Vec<usize> = uniq_set.into_iter().collect();
             if fr.opened_fibers.len() != uniq_fibers.len() * b_next {
-                return Err(format!("WHIR round {} opened_fibers length mismatch", r + 1));
+                return Err(format!(
+                    "WHIR round {} opened_fibers length mismatch",
+                    r + 1
+                ));
             }
 
             let leaf_hashes: Vec<[u8; 32]> = (0..uniq_fibers.len())
@@ -3030,7 +3091,9 @@ fn verify_whir_trajectories_full_61(
                 let y = next_level.point(fp, p_idx);
                 let want = eval_poly_ext3_at_base_whir(fp, final_poly, y);
                 if folded_vals[i] != want {
-                    Some(format!("WHIR final_poly consistency failed at point {p_idx}"))
+                    Some(format!(
+                        "WHIR final_poly consistency failed at point {p_idx}"
+                    ))
                 } else {
                     None
                 }
@@ -3333,15 +3396,7 @@ impl WhirCommittedPcs61 {
         v_families: &[Vec<u64>],
         claims: &[SlotLinearClaim],
         tr: &mut PcsTranscript,
-    ) -> (
-        WhirRowSumcheckPart61,
-        Vec<Ext3>,
-        Ext3,
-        Vec<Ext3>,
-        Vec<Ext3>,
-        Vec<Ext3>,
-        Vec<Ext3>,
-    ) {
+    ) -> WhirRowSumcheckOutput {
         let fp = &self.ef.fp;
         let ef = &self.ef;
         let sh = &self.shape;
@@ -3409,8 +3464,8 @@ pub fn open_shared_two_matrix_whir61(
     let c = wit_pcs.shape.c;
 
     let mut bh = Sha256::new();
-    bh.update(&wit_pcs.root);
-    bh.update(&a_pcs.root);
+    bh.update(wit_pcs.root);
+    bh.update(a_pcs.root);
     let joint_root: [u8; 32] = bh.finalize().into();
 
     let mut tr = PcsTranscript::new("WHIR61_SHARED2", fp.p, &joint_root, context);
@@ -3596,7 +3651,7 @@ fn verify_row_sumcheck_part_61(
 ) -> Result<(Vec<Ext3>, Ext3, Ext3, Ext3), String> {
     let fp = &ef.fp;
     let n_poly = 1usize << log_n;
-    if log_n > shape.mc || shape.c % n_poly != 0 {
+    if log_n > shape.mc || !shape.c.is_multiple_of(n_poly) {
         return Err("invalid log_n vs shape.mc".into());
     }
     let m_bits = shape.mc + shape.mr;
@@ -3626,7 +3681,11 @@ fn verify_row_sumcheck_part_61(
         tr,
         y_batch,
         part.gmask_sum,
-        &part.sumcheck_rounds.iter().map(|r| r.to_vec()).collect::<Vec<_>>(),
+        &part
+            .sumcheck_rounds
+            .iter()
+            .map(|r| r.to_vec())
+            .collect::<Vec<_>>(),
         2,
         50,
     )?;
@@ -3660,7 +3719,10 @@ fn verify_row_sumcheck_part_61(
         }
         a_eval = ef.add(a_eval, ef.mul(beta_pows[q_idx], cl_ev));
     }
-    let y_g = ef.mul(ef.inv(rho), ef.sub(masked_term, ef.mul(a_eval, part.m_eval)));
+    let y_g = ef.mul(
+        ef.inv(rho),
+        ef.sub(masked_term, ef.mul(a_eval, part.m_eval)),
+    );
 
     tr.absorb_ext3(&part.m_eval);
     tr.absorb_ext3(&part.z_gm_masks[0]);
@@ -3708,15 +3770,8 @@ pub fn verify_shared_two_matrix_whir61(
         &prf.wit_sc,
         &mut tr,
     )?;
-    let (z_a, bgm_a, gh_a, ygh_a) = verify_row_sumcheck_part_61(
-        &ef,
-        a_shape,
-        log_n,
-        a_vf,
-        a_claims,
-        &prf.a_sc,
-        &mut tr,
-    )?;
+    let (z_a, bgm_a, gh_a, ygh_a) =
+        verify_row_sumcheck_part_61(&ef, a_shape, log_n, a_vf, a_claims, &prf.a_sc, &mut tr)?;
 
     let lams: [Ext3; 5] = std::array::from_fn(|k| tr.squeeze_ext3(&ef, 350 + k as u64));
     let lg_w0 = wit_shape.mc + 1;
@@ -3896,13 +3951,19 @@ fn verify_stage0_matrix_fibers_scaled_61(
             hash_whir_s0_fiber(s0_fibers[qi], &s0_salts[qi], slice)
         })
         .collect();
-    verify_whir_tree_multiproof(expected_root, n_leaves_0, s0_fibers, &leaf_hashes, s0_siblings)?;
+    verify_whir_tree_multiproof(
+        expected_root,
+        n_leaves_0,
+        s0_fibers,
+        &leaf_hashes,
+        s0_siblings,
+    )?;
 
     let eq_row = ef.build_eq_le(z_row);
     let mut w_row = vec![ef.zero(); shape.r_total];
     let mut g_pw = prox_scale;
-    for r in 0..(shape.rd + 6) {
-        w_row[r] = g_pw;
+    for w_slot in w_row.iter_mut().take(shape.rd + 6) {
+        *w_slot = g_pw;
         g_pw = ef.mul(g_pw, gamma);
     }
     let e_basis: [Ext3; 3] = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
@@ -4002,7 +4063,8 @@ pub fn canonical_joint_whir_shapes(
     let log_n = n.trailing_zeros() as usize;
     let lq = mode.q_cols();
     let mult_slots = TABLE_SIZE / n;
-    let wit_slots = (2 * k_blk) * lq + (3 * r_blk) * 14 + (3 * r_blk) * lq + (3 * r_blk * 8) * 4 + mult_slots;
+    let wit_slots =
+        (2 * k_blk) * lq + (3 * r_blk) * 14 + (3 * r_blk) * lq + (3 * r_blk * 8) * 4 + mult_slots;
     let a_slots = (2 * r_blk * k_blk) * lq + mult_slots;
     let wit_elems = wit_slots * n;
     let a_elems = a_slots * n;
@@ -4049,7 +4111,7 @@ pub fn canonical_joint_whir_shapes(
             + sh_a.t_queries * 16
             + sh_a.t_queries * lg0_a.saturating_sub(6) * 32;
         let joint_est = sh_w.estimated_proof_bytes() + s0_a;
-        if best.map_or(true, |b| joint_est < b.0) {
+        if best.is_none_or(|b| joint_est < b.0) {
             best = Some((joint_est, mc, mr_w, mr_a));
         }
     }
@@ -4210,29 +4272,29 @@ fn extract_logup_terminal_points_61(
     let mut tr_state: [u8; 32] = {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_D1B_GKR|LOGUP_RANGE20");
-        h.update(&fp.p.to_le_bytes());
+        h.update(fp.p.to_le_bytes());
         h.update(context_digest);
         h.finalize().into()
     };
     let absorb_u64s = |st: &mut [u8; 32], vals: &[u64]| {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         for &v in vals {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         *st = h.finalize().into();
     };
     let absorb_bytes = |st: &mut [u8; 32], data: &[u8]| {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         h.update(data);
         *st = h.finalize().into();
     };
     let squeeze_fp = |st: &mut [u8; 32], tag: u64| -> u64 {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         h.update(b"CHAL");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         *st = out;
         fp.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -4242,7 +4304,7 @@ fn extract_logup_terminal_points_61(
         h.update(st);
         h.update(b"SUB|");
         h.update(label.as_bytes());
-        h.update(&idx.to_le_bytes());
+        h.update(idx.to_le_bytes());
         h.finalize().into()
     };
 
@@ -4365,12 +4427,7 @@ fn build_hoisted_eval_v_families_61(
     params: &HoistedParams,
     mode: LiftMode,
     r_fs: &[u64; 8],
-) -> (
-    Vec<Vec<u64>>,
-    [[[usize; 3]; 15]; 7],
-    [[[usize; 3]; 14]; 7],
-    [[[usize; 3]; 4]; 7],
-) {
+) -> WhirHoistedEvalVFamilies {
     let n = params.n;
     let mut v_fams = Vec::new();
     let fp0 = &params.fp[0];
@@ -4484,12 +4541,12 @@ fn append_folded_p17_claims_61(
     for (p_idx, &(base_slot, is_y)) in poly_specs.iter().enumerate() {
         let tw = tau_pows[p_idx];
         if !is_y {
-            for m in 0..lq {
-                q_limb_slots[m].push((base_slot + m, tw));
+            for (m, q_slot) in q_limb_slots.iter_mut().enumerate() {
+                q_slot.push((base_slot + m, tw));
             }
         } else {
-            for m in 0..14 {
-                y_limb_slots[m].push((base_slot + m, tw));
+            for (m, y_slot) in y_limb_slots.iter_mut().enumerate() {
+                y_slot.push((base_slot + m, tw));
             }
         }
     }
@@ -4501,8 +4558,8 @@ fn append_folded_p17_claims_61(
             let tw = tau_pows[poly_specs.len() + rk];
             let k_idx = rk * 8 + l;
             let base_slot = off_k + k_idx * 4;
-            for m in 0..4 {
-                k_limb_slots[m].push((base_slot + m, tw));
+            for (m, k_slot) in k_limb_slots.iter_mut().enumerate() {
+                k_slot.push((base_slot + m, tw));
             }
         }
 
@@ -4565,12 +4622,12 @@ fn derive_whir_subsum_tau(
     h.update(stmt_h);
     h.update(pcs_root);
     for &v in p0_poly.iter().chain(p0_k.iter()) {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     for s in p17_poly.iter().chain(p17_k.iter()) {
-        h.update(&s[0].to_le_bytes());
-        h.update(&s[1].to_le_bytes());
-        h.update(&s[2].to_le_bytes());
+        h.update(s[0].to_le_bytes());
+        h.update(s[1].to_le_bytes());
+        h.update(s[2].to_le_bytes());
     }
     let out: [u8; 32] = h.finalize().into();
     fp0.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -4581,8 +4638,8 @@ fn derive_whir_open_ctx(stmt_h: &[u8; 32], fs_wroot: &[u8; 32], tau1: u64, tau2:
     h.update(b"HOISTED_WHIR_OPEN_CTX_V1|");
     h.update(stmt_h);
     h.update(fs_wroot);
-    h.update(&tau1.to_le_bytes());
-    h.update(&tau2.to_le_bytes());
+    h.update(tau1.to_le_bytes());
+    h.update(tau2.to_le_bytes());
     h.finalize().into()
 }
 
@@ -4632,7 +4689,9 @@ pub fn commit_persistent_whir_grid(
             LiftMode::Direct20 => {
                 append_direct_lookup_descs_61(base, lq, dspec.top_x_bits, fp0.p, &mut descs)
             }
-            LiftMode::ExactGarner15 => append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs),
+            LiftMode::ExactGarner15 => {
+                append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs)
+            }
         }
     }
 
@@ -4643,15 +4702,8 @@ pub fn commit_persistent_whir_grid(
             .copy_from_slice(&mults[s * n..(s + 1) * n]);
     }
 
-    let (_, shape_a) = canonical_joint_whir_shapes(
-        &fp0,
-        n,
-        r_blk,
-        k_blk,
-        mode,
-        WHIR_T_QUERIES_128,
-        WHIR_BLOWUP,
-    );
+    let (_, shape_a) =
+        canonical_joint_whir_shapes(&fp0, n, r_blk, k_blk, mode, WHIR_T_QUERIES_128, WHIR_BLOWUP);
     let pcs = WhirCommittedPcs61::commit_with_shape(fp0, shape_a, &flat_data, PcsRng::from_os());
 
     let chunk_log2 = (log_n + 5).max(18);
@@ -4782,10 +4834,9 @@ pub fn prove_hoisted_whir(
                 let aux = a_pre_ref[r][c].prover_aux.as_ref().unwrap();
                 match mode {
                     LiftMode::Direct20 => (dspec.encode_u192(&aux.u0), dspec.encode_u192(&aux.u1)),
-                    LiftMode::ExactGarner15 => (
-                        gspec.encode_u_exact(&aux.u0),
-                        gspec.encode_u_exact(&aux.u1),
-                    ),
+                    LiftMode::ExactGarner15 => {
+                        (gspec.encode_u_exact(&aux.u0), gspec.encode_u_exact(&aux.u1))
+                    }
                 }
             })
             .collect();
@@ -4868,7 +4919,7 @@ pub fn prove_hoisted_whir(
                 let src = &raw.k_res[r][k_comp][l];
                 for j in 0..(n - 1) {
                     let v = src[j];
-                    flat_data[(base_slot + 0) * n + j] = v & ((1u64 << 20) - 1);
+                    flat_data[base_slot * n + j] = v & ((1u64 << 20) - 1);
                     flat_data[(base_slot + 1) * n + j] = (v >> 20) & ((1u64 << 20) - 1);
                     flat_data[(base_slot + 2) * n + j] = (v >> 40) & ((1u64 << 20) - 1);
                     flat_data[(base_slot + 3) * n + j] = v >> 60;
@@ -4884,7 +4935,9 @@ pub fn prove_hoisted_whir(
             LiftMode::Direct20 => {
                 append_direct_lookup_descs_61(base, lq, dspec.top_x_bits, fp0.p, &mut descs)
             }
-            LiftMode::ExactGarner15 => append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs),
+            LiftMode::ExactGarner15 => {
+                append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs)
+            }
         }
     }
     for i in 0..n_b {
@@ -4893,7 +4946,9 @@ pub fn prove_hoisted_whir(
             LiftMode::Direct20 => {
                 append_direct_lookup_descs_61(base, lq, dspec.top_x_bits, fp0.p, &mut descs)
             }
-            LiftMode::ExactGarner15 => append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs),
+            LiftMode::ExactGarner15 => {
+                append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs)
+            }
         }
     }
     for i in 0..n_y {
@@ -4906,7 +4961,9 @@ pub fn prove_hoisted_whir(
             LiftMode::Direct20 => {
                 append_direct_lookup_descs_61(base, lq, dspec.top_x_bits, fp0.p, &mut descs)
             }
-            LiftMode::ExactGarner15 => append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs),
+            LiftMode::ExactGarner15 => {
+                append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs)
+            }
         }
     }
     for i in 0..n_k {
@@ -4958,13 +5015,8 @@ pub fn prove_hoisted_whir(
         derive_fs_point(&stmt_h, &fs_witness_root, params.all_primes[l], false)
     });
 
-    let logup_proof = prove_logup_gkr_with_mults(
-        &fp0,
-        &lookup_entries,
-        &mults,
-        logup_cfg,
-        &fs_witness_root,
-    );
+    let logup_proof =
+        prove_logup_gkr_with_mults(&fp0, &lookup_entries, &mults, logup_cfg, &fs_witness_root);
 
     let (mut v_fams, q_map, y_map, k_map) = build_hoisted_eval_v_families_61(params, mode, &r_fs);
     let base_vf_len = v_fams.len();
@@ -4992,7 +5044,10 @@ pub fn prove_hoisted_whir(
             for m in 0..limbs {
                 let w0 = if is_y { yw0[m] } else { qw0[m] };
                 if w0 != 0 {
-                    ev0 = fp0.add(ev0, fp0.mul(w0, eval_slot_dot(base_slot + m, 0, &flat_data)));
+                    ev0 = fp0.add(
+                        ev0,
+                        fp0.mul(w0, eval_slot_dot(base_slot + m, 0, &flat_data)),
+                    );
                 }
             }
             let mut subs = [[0u64; 3]; 7];
@@ -5000,7 +5055,11 @@ pub fn prove_hoisted_whir(
                 for b in 0..3 {
                     let mut sum_int = 0u64;
                     for m in 0..limbs {
-                        let vf_idx = if is_y { y_map[li][m][b] } else { q_map[li][m][b] };
+                        let vf_idx = if is_y {
+                            y_map[li][m][b]
+                        } else {
+                            q_map[li][m][b]
+                        };
                         sum_int += eval_slot_dot(base_slot + m, vf_idx, &flat_data);
                     }
                     subs[li][b] = sum_int;
@@ -5028,9 +5087,7 @@ pub fn prove_hoisted_whir(
             })
             .collect();
         claims.push(SlotLinearClaim::single_vec(0, terms0, ev0));
-        for li in 0..7 {
-            p17_poly_subsums.push(subs[li]);
-        }
+        p17_poly_subsums.extend_from_slice(&subs);
     }
 
     let mut p0_k_evals = Vec::with_capacity(3 * r_blk);
@@ -5038,10 +5095,10 @@ pub fn prove_hoisted_whir(
         let base_slot = off_k + (rk * 8) * 4;
         let mut ev0 = 0u64;
         let mut terms0 = Vec::with_capacity(4);
-        for m in 0..4 {
+        for (m, &kw) in kw0.iter().enumerate() {
             let dm_ev = eval_slot_dot(base_slot + m, 1, &flat_data);
-            ev0 = fp0.add(ev0, fp0.mul(kw0[m], dm_ev));
-            terms0.push((base_slot + m, kw0[m]));
+            ev0 = fp0.add(ev0, fp0.mul(kw, dm_ev));
+            terms0.push((base_slot + m, kw));
         }
         p0_k_evals.push(ev0);
         claims.push(SlotLinearClaim::single_vec(1, terms0, ev0));
@@ -5056,12 +5113,12 @@ pub fn prove_hoisted_whir(
             let l = li + 1;
             let base_slot = off_k + (rk * 8 + l) * 4;
             let mut subs = [0u64; 3];
-            for b in 0..3 {
+            for (b, sub_slot) in subs.iter_mut().enumerate() {
                 let mut s_int = 0u64;
-                for m in 0..4 {
-                    s_int += eval_slot_dot(base_slot + m, k_map[li][m][b], &flat_data);
+                for (m, km) in k_map[li].iter().enumerate() {
+                    s_int += eval_slot_dot(base_slot + m, km[b], &flat_data);
                 }
-                subs[b] = s_int;
+                *sub_slot = s_int;
             }
             subs
         })
@@ -5143,8 +5200,7 @@ pub fn prove_hoisted_whir(
             .par_iter()
             .map(|&(base_slot, _)| {
                 let mut ev0 = 0u64;
-                for m in 0..lq {
-                    let w0 = qw0[m];
+                for (m, &w0) in qw0.iter().enumerate().take(lq) {
                     if w0 != 0 {
                         let col = &pg.poly_lifts[base_slot / lq].cols[m];
                         let mut acc = 0u64;
@@ -5181,12 +5237,16 @@ pub fn prove_hoisted_whir(
             let (ev0, subs) = a_res[idx];
             a_p0.push(ev0);
             let terms0: Vec<(usize, u64)> = (0..lq)
-                .filter_map(|m| if qw0[m] != 0 { Some((base_slot + m, qw0[m])) } else { None })
+                .filter_map(|m| {
+                    if qw0[m] != 0 {
+                        Some((base_slot + m, qw0[m]))
+                    } else {
+                        None
+                    }
+                })
                 .collect();
             a_claims.push(SlotLinearClaim::single_vec(0, terms0, ev0));
-            for li in 0..7 {
-                a_p17.push(subs[li]);
-            }
+            a_p17.extend_from_slice(&subs);
         }
         let tau_a = derive_whir_subsum_tau(&fp0, &stmt_h, &pg.pcs.root, &a_p0, &[], &a_p17, &[]);
         append_folded_p17_claims_61(
@@ -5221,9 +5281,12 @@ pub fn prove_hoisted_whir(
         } else {
             HoistedWhirPcsPayload::SeparateTwo {
                 wit_open: witness_pcs.open_whir_slot_claims(log_n, &v_fams, &claims, &ctx),
-                a_open: pg
-                    .pcs
-                    .open_whir_slot_claims(log_n, &v_fams[..base_vf_len], &a_claims, &ctx),
+                a_open: pg.pcs.open_whir_slot_claims(
+                    log_n,
+                    &v_fams[..base_vf_len],
+                    &a_claims,
+                    &ctx,
+                ),
             }
         };
         (
@@ -5320,7 +5383,11 @@ fn validate_whir_shape_meta_61(
     }
     let r_total = (1usize << mr) + WHIR_EXTRA_EXT3_MASK_ROWS;
     let w0 = 2usize << mc;
-    let k0 = if r_total >= 45 && w0 >= 2048 { 0usize } else { 1usize };
+    let k0 = if r_total >= 45 && w0 >= 2048 {
+        0usize
+    } else {
+        1usize
+    };
     let n_leaves_0 = (blow * w0) >> k0;
     let req_hide = t_queries.saturating_mul(1usize << k0);
     if req_hide > (1usize << mc) || t_queries > n_leaves_0 {
@@ -5413,7 +5480,11 @@ pub fn verify_hoisted_whir_bundle(
     }
 
     let lq = bundle.mode.q_cols();
-    let n_a = if bundle.persistent_a { 0 } else { 2 * r_blk * k_blk };
+    let n_a = if bundle.persistent_a {
+        0
+    } else {
+        2 * r_blk * k_blk
+    };
     let n_b = 2 * k_blk;
     let n_y = 3 * r_blk;
     let n_s = 3 * r_blk;
@@ -5466,7 +5537,9 @@ pub fn verify_hoisted_whir_bundle(
             LiftMode::Direct20 => {
                 append_direct_lookup_descs_61(base, lq, dspec.top_x_bits, fp0.p, &mut descs)
             }
-            LiftMode::ExactGarner15 => append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs),
+            LiftMode::ExactGarner15 => {
+                append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs)
+            }
         }
     }
     for i in 0..n_b {
@@ -5475,7 +5548,9 @@ pub fn verify_hoisted_whir_bundle(
             LiftMode::Direct20 => {
                 append_direct_lookup_descs_61(base, lq, dspec.top_x_bits, fp0.p, &mut descs)
             }
-            LiftMode::ExactGarner15 => append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs),
+            LiftMode::ExactGarner15 => {
+                append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs)
+            }
         }
     }
     for i in 0..n_y {
@@ -5488,7 +5563,9 @@ pub fn verify_hoisted_whir_bundle(
             LiftMode::Direct20 => {
                 append_direct_lookup_descs_61(base, lq, dspec.top_x_bits, fp0.p, &mut descs)
             }
-            LiftMode::ExactGarner15 => append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs),
+            LiftMode::ExactGarner15 => {
+                append_garner_lookup_descs_61(&gspec, &fp0, base, &mut descs)
+            }
         }
     }
     for i in 0..n_k {
@@ -5504,7 +5581,8 @@ pub fn verify_hoisted_whir_bundle(
         return Err("LogUp total_lookups != expected online digit lookup count".into());
     }
 
-    let (mut v_fams, q_map, y_map, k_map) = build_hoisted_eval_v_families_61(params, bundle.mode, &r_fs);
+    let (mut v_fams, q_map, y_map, k_map) =
+        build_hoisted_eval_v_families_61(params, bundle.mode, &r_fs);
     let base_vf_len = v_fams.len();
     let qw0 = q_limb_weights_mod_p_61(params, bundle.mode, 0);
     let yw0 = y_limb_weights_mod_p_61(params, 0);
@@ -5530,12 +5608,20 @@ pub fn verify_hoisted_whir_bundle(
                 }
             })
             .collect();
-        claims.push(SlotLinearClaim::single_vec(0, terms0, bundle.p0_poly_evals[idx]));
+        claims.push(SlotLinearClaim::single_vec(
+            0,
+            terms0,
+            bundle.p0_poly_evals[idx],
+        ));
     }
     for rk in 0..(3 * r_blk) {
         let base_slot = off_k + (rk * 8) * 4;
         let terms0: Vec<(usize, u64)> = (0..4).map(|m| (base_slot + m, kw0[m])).collect();
-        claims.push(SlotLinearClaim::single_vec(1, terms0, bundle.p0_k_evals[rk]));
+        claims.push(SlotLinearClaim::single_vec(
+            1,
+            terms0,
+            bundle.p0_k_evals[rk],
+        ));
     }
 
     let tau_sub = derive_whir_subsum_tau(
@@ -5567,7 +5653,8 @@ pub fn verify_hoisted_whir_bundle(
         LogUpConfig::MonolithicC4 => bundle.logup_proof.total_lookups.max(2).next_power_of_two(),
     };
     let cols_per_chunk = chunk_cap / n;
-    let (wit_zs, z_tab) = extract_logup_terminal_points_61(&fp0, &bundle.logup_proof, &fs_witness_root)?;
+    let (wit_zs, z_tab) =
+        extract_logup_terminal_points_61(&fp0, &bundle.logup_proof, &fs_witness_root)?;
 
     for (b_idx, w_prf) in bundle.logup_proof.witness_trees.iter().enumerate() {
         let zw = &wit_zs[b_idx];
@@ -5608,7 +5695,11 @@ pub fn verify_hoisted_whir_bundle(
     ));
 
     // Verify WHIR PCS opening payload (`Single`, `SharedTwo`, or `SeparateTwo`):
-    match (&bundle.a_pcs_meta, &bundle.persistent_a_evals, &bundle.pcs_payload) {
+    match (
+        &bundle.a_pcs_meta,
+        &bundle.persistent_a_evals,
+        &bundle.pcs_payload,
+    ) {
         (None, None, HoistedWhirPcsPayload::Single(wit_open)) => {
             let wit_shape = WhirShape61::from_mr_mc(
                 &fp0,
@@ -5657,7 +5748,13 @@ pub fn verify_hoisted_whir_bundle(
             let mut a_claims = Vec::new();
             for (idx, &(base_slot, _)) in a_specs.iter().enumerate() {
                 let terms0: Vec<(usize, u64)> = (0..lq)
-                    .filter_map(|m| if qw0[m] != 0 { Some((base_slot + m, qw0[m])) } else { None })
+                    .filter_map(|m| {
+                        if qw0[m] != 0 {
+                            Some((base_slot + m, qw0[m]))
+                        } else {
+                            None
+                        }
+                    })
                     .collect();
                 a_claims.push(SlotLinearClaim::single_vec(0, terms0, a_p0[idx]));
             }
@@ -5806,7 +5903,9 @@ pub fn verify_hoisted_whir_bundle(
                     if a0_ev != fp.dot(&ct.c0[l * n..(l + 1) * n], &r_pows)
                         || a1_ev != fp.dot(&ct.c1[l * n..(l + 1) * n], &r_pows)
                     {
-                        return Some(format!("A WHIR opening != ciphertext limb mod {p} at ({r},{c})"));
+                        return Some(format!(
+                            "A WHIR opening != ciphertext limb mod {p} at ({r},{c})"
+                        ));
                     }
                 }
             }
@@ -5825,7 +5924,9 @@ pub fn verify_hoisted_whir_bundle(
                 if b0_ev != fp.dot(&ct.c0[l * n..(l + 1) * n], &r_pows)
                     || b1_ev != fp.dot(&ct.c1[l * n..(l + 1) * n], &r_pows)
                 {
-                    return Some(format!("B WHIR opening != ciphertext limb mod {p} at ({c})"));
+                    return Some(format!(
+                        "B WHIR opening != ciphertext limb mod {p} at ({c})"
+                    ));
                 }
             }
             v0[c] = b0_ev;
@@ -6257,7 +6358,12 @@ fn eval_poly_ext3_at_base_whir(fp: &FastPrime61, coeffs: &[Ext3], x: u64) -> Ext
     [a0, a1, a2]
 }
 
-fn combine_rows_ext3_whir(fp: &FastPrime61, ext: &[u64], w0: usize, row_weights: &[Ext3]) -> Vec<Ext3> {
+fn combine_rows_ext3_whir(
+    fp: &FastPrime61,
+    ext: &[u64],
+    w0: usize,
+    row_weights: &[Ext3],
+) -> Vec<Ext3> {
     let r_cnt = row_weights.len();
     let mut out = vec![[0u64; 3]; w0];
     out.par_chunks_mut(512).enumerate().for_each(|(blk, dst)| {
@@ -6295,13 +6401,13 @@ fn fill_whir_mask_slice_61(fp: &FastPrime61, root_seed: &[u8; 32], row_tag: u64,
     let mut mid = Sha256::new();
     mid.update(b"WHIR61_MASK_PRF_V1|");
     mid.update(root_seed);
-    mid.update(&row_tag.to_le_bytes());
+    mid.update(row_tag.to_le_bytes());
     let mask61 = (1u128 << 61) - 1;
     let p = fp.p;
     let mut ctr = 0u64;
     for chunk in dst.chunks_mut(4) {
         let mut h = mid.clone();
-        h.update(&ctr.to_le_bytes());
+        h.update(ctr.to_le_bytes());
         ctr += 1;
         let d: [u8; 32] = h.finalize().into();
         let lo = u128::from_le_bytes(d[0..16].try_into().unwrap());
@@ -6316,7 +6422,7 @@ fn fill_whir_mask_slice_61(fp: &FastPrime61, root_seed: &[u8; 32], row_tag: u64,
             let mut v = cands[k];
             while v >= p {
                 let mut h_fb = mid.clone();
-                h_fb.update(&(u64::MAX - ctr).to_le_bytes());
+                h_fb.update((u64::MAX - ctr).to_le_bytes());
                 ctr += 1;
                 let dfb: [u8; 32] = h_fb.finalize().into();
                 v = (u64::from_le_bytes(dfb[0..8].try_into().unwrap())) & ((1u64 << 61) - 1);
@@ -6338,7 +6444,12 @@ fn precompute_twiddles_61(fp: &FastPrime61, lvl: &CosetLevel61) -> Vec<u64> {
 }
 
 #[inline]
-fn build_coset_z_pows_61(fp: &FastPrime61, z_t: u64, n_sub: usize, max_w: usize) -> (Vec<u64>, Vec<u64>) {
+fn build_coset_z_pows_61(
+    fp: &FastPrime61,
+    z_t: u64,
+    n_sub: usize,
+    max_w: usize,
+) -> (Vec<u64>, Vec<u64>) {
     let mut z_i_pows = Vec::with_capacity(n_sub);
     let mut cur = 1u64;
     for _ in 0..n_sub {

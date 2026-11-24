@@ -15,8 +15,8 @@
 //!          with full `D1b` operand & quotient bounds guaranteeing `0` `mod P` wraparound in every sumcheck!
 //!   2. Fixed-point integer Gram–Schmidt rank-`r` (`r = 4..8`) subspace unlearning (`M_GS = 16384 = 128^2`,
 //!      centered 2-limb split `U_int = U_lo + 128 * U_hi`):
-//!        `P_proj = round(M_GS * (U_int^T U_int)^{-1} (U_int^T S_before))`,
-//!        `S_unlearned = S_before - round((U_int * P_proj) / M_GS)`,
+//!      `P_proj = round(M_GS * (U_int^T U_int)^{-1} (U_int^T S_before))`,
+//!      `S_unlearned = S_before - round((U_int * P_proj) / M_GS)`,
 //!      achieving `< 10^-4` relative residual norm on forgotten Episode B (`0.000` recall) while
 //!      preserving `100%` recall (`cos > 0.999`) and `> 50 dB` (`> 35 dB`) SNR vs counterfactual `Train(A + C)`.
 //!   3. Zero-Knowledge Unlearning Certificate (`BabyBear Ext4` + `ProverVaultKey`-salted `SuccinctExt4Pcs` +
@@ -48,6 +48,7 @@ use crate::safetensors_mmap::{
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fs;
+use std::ops::{Add, Mul, Sub};
 use std::path::Path;
 
 /// Fixed-point WY key/operator scale `CMEM_WY_SCALE = 128 = 2^7` (`|K|, |W| <= 256`, `|L|, |D_U| <= 256` -> `0` wraparound!).
@@ -200,7 +201,7 @@ impl QwenBpeTokenizer {
         let mut byte_to_char = ['\0'; 256];
         let mut n_extra = 0u32;
         for b in 0..=255u8 {
-            let direct = (b >= b'!' && b <= b'~') || (b >= 0xA1 && b <= 0xAC) || (b >= 0xAE);
+            let direct = (b'!'..=b'~').contains(&b) || (0xA1..=0xAC).contains(&b) || (b >= 0xAE);
             if direct {
                 byte_to_char[b as usize] = char::from_u32(b as u32).unwrap();
             } else {
@@ -244,7 +245,7 @@ impl QwenBpeTokenizer {
             for i in 0..(parts.len() - 1) {
                 let key = (parts[i].clone(), parts[i + 1].clone());
                 if let Some(&rk) = self.merge_ranks.get(&key) {
-                    if best.map_or(true, |(brk, _)| rk < brk) {
+                    if best.is_none_or(|(brk, _)| rk < brk) {
                         best = Some((rk, i));
                     }
                 }
@@ -443,6 +444,12 @@ impl MmrInclusionProof {
     }
 }
 
+impl Default for ContinualEpisodeMmr {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ContinualEpisodeMmr {
     pub fn new() -> Self {
         Self {
@@ -466,7 +473,13 @@ impl ContinualEpisodeMmr {
         while cur.len() > 1 {
             let mut next = Vec::with_capacity(cur.len() / 2);
             for (j, pair) in cur.chunks_exact(2).enumerate() {
-                next.push(merkle_node_cshake(MMR_NODE_DOM, lvl, j as u32, &pair[0], &pair[1]));
+                next.push(merkle_node_cshake(
+                    MMR_NODE_DOM,
+                    lvl,
+                    j as u32,
+                    &pair[0],
+                    &pair[1],
+                ));
             }
             cur = next;
             lvl += 1;
@@ -519,7 +532,13 @@ impl ContinualEpisodeMmr {
                     siblings_in_peak.push(cur[idx ^ 1]);
                     let mut next = Vec::with_capacity(cur.len() / 2);
                     for (j, pair) in cur.chunks_exact(2).enumerate() {
-                        next.push(merkle_node_cshake(MMR_NODE_DOM, lvl, j as u32, &pair[0], &pair[1]));
+                        next.push(merkle_node_cshake(
+                            MMR_NODE_DOM,
+                            lvl,
+                            j as u32,
+                            &pair[0],
+                            &pair[1],
+                        ));
                     }
                     cur = next;
                     idx >>= 1;
@@ -714,11 +733,11 @@ pub fn project_qwen_key_domain(raw_128: &[f32], domain: MemoryDomain) -> [f64; 1
         MemoryDomain::UnisolatedRaw => unreachable!(),
     };
     let sub_mean = buf[lo..hi].iter().sum::<f64>() / 32.0;
-    for idx in 0..128 {
+    for (idx, cell) in buf.iter_mut().enumerate() {
         if idx >= lo && idx < hi {
-            buf[idx] -= sub_mean;
+            *cell -= sub_mean;
         } else {
-            buf[idx] = 0.0;
+            *cell = 0.0;
         }
     }
     fwht_128_ortho_in_place(&mut buf);
@@ -817,7 +836,8 @@ impl<'a> PreloadedQwen35Model<'a> {
             .map(|l| {
                 let pfx = format!("model.language_model.layers.{l}");
                 let (_, ln1_w) = mmap.read_f32(&format!("{pfx}.input_layernorm.weight"))?;
-                let (_, ln2_w) = mmap.read_f32(&format!("{pfx}.post_attention_layernorm.weight"))?;
+                let (_, ln2_w) =
+                    mmap.read_f32(&format!("{pfx}.post_attention_layernorm.weight"))?;
                 let gate_mat =
                     Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.mlp.gate_proj.weight"))?;
                 let up_mat =
@@ -908,10 +928,14 @@ impl<'a> PreloadedQwen35Model<'a> {
         out
     }
 
-    pub fn eval_vocab_top1_and_margin(&self, h_vec_1024: &[f32], target_tid: u32) -> (u32, f32, f32) {
+    pub fn eval_vocab_top1_and_margin(
+        &self,
+        h_vec_1024: &[f32],
+        target_tid: u32,
+    ) -> (u32, f32, f32) {
         assert_eq!(h_vec_1024.len(), 1024);
         let chunk_rows = 4096usize;
-        let num_chunks = (248320 + chunk_rows - 1) / chunk_rows;
+        let num_chunks = 248320_usize.div_ceil(chunk_rows);
 
         let partials: Vec<(u32, f32, f32, f32)> = (0..num_chunks)
             .into_par_iter()
@@ -1090,7 +1114,8 @@ impl<'a> PreloadedQwen35Model<'a> {
                             for kw in 0..4usize {
                                 let src_t = (t as isize) - 3 + (kw as isize);
                                 if src_t >= 0 {
-                                    s += qkv_f32[(src_t as usize) * 6144 + ch] * conv_w[ch * 4 + kw];
+                                    s +=
+                                        qkv_f32[(src_t as usize) * 6144 + ch] * conv_w[ch * 4 + kw];
                                 }
                             }
                             conv_out[t * 6144 + ch] = silu_f32(s);
@@ -1124,7 +1149,18 @@ impl<'a> PreloadedQwen35Model<'a> {
                     }
 
                     let wy = crate::qwen35_layer::solve_real_gdn_wy_chunk64(
-                        &q_f32, &k_f32, &v_f32, &g_f32, &beta_f32, 16, 16, seq_len, 128, 128,
+                        &q_f32,
+                        &k_f32,
+                        &v_f32,
+                        &g_f32,
+                        &beta_f32,
+                        crate::qwen35_layer::GdnWyShape {
+                            h_k: 16,
+                            h_v: 16,
+                            c_len: seq_len,
+                            d_k: 128,
+                            d_v: 128,
+                        },
                     );
                     let mut gated_f32 = vec![0.0f32; seq_len * 2048];
                     for t in 0..seq_len {
@@ -1135,13 +1171,15 @@ impl<'a> PreloadedQwen35Model<'a> {
                             let inv_rms =
                                 1.0 / (ys.iter().map(|&v| v * v).sum::<f32>() / 128.0 + eps).sqrt();
                             for d in 0..128 {
-                                gated_f32[off + d] = norm_w[d] * (ys[d] * inv_rms) * silu_f32(zs[d]);
+                                gated_f32[off + d] =
+                                    norm_w[d] * (ys[d] * inv_rms) * silu_f32(zs[d]);
                             }
                         }
                     }
                     let gated_i16 = quantize_act_i16(&gated_f32);
                     let out_raw = eval_mxfp4_int_contraction(&gated_i16, seq_len, 2048, out_mat);
-                    let out_f32 = dequant_y_raw_to_f32(&out_raw, seq_len, d_model, out_mat.rows_pad);
+                    let out_f32 =
+                        dequant_y_raw_to_f32(&out_raw, seq_len, d_model, out_mat.rows_pad);
                     quantize_act_i16(&out_f32)
                 }
                 PreloadedLayer::Gqa {
@@ -1285,9 +1323,14 @@ impl<'a> PreloadedQwen35Model<'a> {
             for d in 0..1024 {
                 dir_1024[d] = raw_emb[d] - emb_mean;
             }
-            let dir_norm = dir_1024.iter().map(|&x| x * x).sum::<f32>().sqrt().max(1e-8);
-            for d in 0..1024 {
-                dir_1024[d] /= dir_norm;
+            let dir_norm = dir_1024
+                .iter()
+                .map(|&x| x * x)
+                .sum::<f32>()
+                .sqrt()
+                .max(1e-8);
+            for v in &mut dir_1024 {
+                *v /= dir_norm;
             }
             target_dir_1024.extend_from_slice(&dir_1024);
 
@@ -1312,11 +1355,15 @@ impl<'a> PreloadedQwen35Model<'a> {
             }
         }
 
-        let (keys_f64, vals_f64, active_steps) =
-            build_consolidated_chunk_kv(&raw_per_fact_k, &per_fact_v, domain, h_v, seq_len, n_facts);
-        for c in 0..active_steps {
-            beta_mask[c] = 1;
-        }
+        let (keys_f64, vals_f64, active_steps) = build_consolidated_chunk_kv(
+            &raw_per_fact_k,
+            &per_fact_v,
+            domain,
+            h_v,
+            seq_len,
+            n_facts,
+        );
+        beta_mask[..active_steps].fill(1);
         let canonical_slots: Vec<usize> = (0..n_facts).collect();
 
         Ok(ExtractedContinualEpisode {
@@ -1352,7 +1399,10 @@ fn build_consolidated_chunk_kv(
     // 1 raw correlated Kaczmarz sweep (`6` steps -> non-zero `L`!) + 1 Gram-orthogonalized consolidation
     // sweep (`6` steps inside `span(k_0..k_5)`) = `12` active WY steps (`0` backprop!):
     assert_eq!(seq_len, 64, "continual WY chunk length must equal 64");
-    assert!(n_facts >= 1 && 2 * n_facts <= seq_len, "2 * n_facts must fit in C=64");
+    assert!(
+        n_facts >= 1 && 2 * n_facts <= seq_len,
+        "2 * n_facts must fit in C=64"
+    );
     let raw_sweeps = n_facts;
     let active_steps = raw_sweeps + n_facts;
 
@@ -1367,10 +1417,10 @@ fn build_consolidated_chunk_kv(
         for a in 0..n_facts {
             let mut w = k_mat[a];
             for _p in 0..2 {
-                for b in 0..a {
-                    let dot: f64 = w.iter().zip(u_gs[b].iter()).map(|(x, y)| x * y).sum();
+                for prev_u in &u_gs[..a] {
+                    let dot: f64 = w.iter().zip(prev_u.iter()).map(|(x, y)| x * y).sum();
                     for d in 0..128 {
-                        w[d] -= dot * u_gs[b][d];
+                        w[d] -= dot * prev_u[d];
                     }
                 }
             }
@@ -1383,7 +1433,11 @@ fn build_consolidated_chunk_kv(
         for f in 0..n_facts {
             let mut rhs = v_mat[f];
             for b in 0..f {
-                let r_bf: f64 = u_gs[b].iter().zip(k_mat[f].iter()).map(|(x, y)| x * y).sum();
+                let r_bf: f64 = u_gs[b]
+                    .iter()
+                    .zip(k_mat[f].iter())
+                    .map(|(x, y)| x * y)
+                    .sum();
                 for d in 0..128 {
                     rhs[d] -= r_bf * v_gs[b][d];
                 }
@@ -1453,9 +1507,7 @@ impl ExtractedContinualEpisode {
             n_facts,
         );
         let mut beta_mask = vec![0u8; 64];
-        for c in 0..active_steps {
-            beta_mask[c] = 1;
-        }
+        beta_mask[..active_steps].fill(1);
         Self {
             name: new_name.to_string(),
             domain,
@@ -1526,9 +1578,9 @@ impl FastWeightMemoryState {
             for j_v in 0..128 {
                 let mut dot = 0.0f64;
                 let base_jv = h + (j_v << (log_h + 7));
-                for i_k in 0..128 {
+                for (i_k, &qv) in q.iter().enumerate() {
                     let s_val = self.s_int_lsb[base_jv + (i_k << log_h)] as f64;
-                    dot += s_val * q[i_k];
+                    dot += s_val * qv;
                 }
                 out_1024[slice_idx * 128 + j_v] += dot * head_scale;
             }
@@ -1692,12 +1744,14 @@ pub struct GramSchmidtSubspaceBasis {
     pub max_abs_gram_err: i64,
 }
 
-pub fn build_gram_schmidt_subspace_basis(ep: &ExtractedContinualEpisode) -> GramSchmidtSubspaceBasis {
+pub fn build_gram_schmidt_subspace_basis(
+    ep: &ExtractedContinualEpisode,
+) -> GramSchmidtSubspaceBasis {
     let h_v = ep.h_v;
     let h_pad = ep.h_pad;
     let log_h = h_pad.trailing_zeros() as usize;
     let rank_r = ep.fact_cue_positions.len();
-    assert!(rank_r >= 1 && rank_r <= R_PAD);
+    assert!((1..=R_PAD).contains(&rank_r));
     let len = h_pad * 128 * R_PAD;
 
     let mut u_int_lsb = vec![0i64; len];
@@ -1711,10 +1765,10 @@ pub fn build_gram_schmidt_subspace_basis(ep: &ExtractedContinualEpisode) -> Gram
             let mut v = [0.0f64; 128];
             v.copy_from_slice(&ep.keys_f64[(h * 64 + cue_pos) * 128..(h * 64 + cue_pos + 1) * 128]);
             for _pass in 0..2 {
-                for b in 0..a {
-                    let dot: f64 = v.iter().zip(basis_f64[b].iter()).map(|(x, y)| x * y).sum();
+                for prev_b in &basis_f64[..a] {
+                    let dot: f64 = v.iter().zip(prev_b.iter()).map(|(x, y)| x * y).sum();
                     for d in 0..128 {
-                        v[d] -= dot * basis_f64[b][d];
+                        v[d] -= dot * prev_b[d];
                     }
                 }
             }
@@ -1731,7 +1785,8 @@ pub fn build_gram_schmidt_subspace_basis(ep: &ExtractedContinualEpisode) -> Gram
             for d in 0..128 {
                 cols_i64[a][d] = ((M_GS as f64) * basis_f64[a][d])
                     .round()
-                    .clamp(-max_coord as f64, max_coord as f64) as i64;
+                    .clamp(-max_coord as f64, max_coord as f64)
+                    as i64;
             }
             for _step in 0..16 {
                 let diag_err = cols_i64[a].iter().map(|&x| x * x).sum::<i64>() - (M_GS * M_GS);
@@ -1766,8 +1821,7 @@ pub fn build_gram_schmidt_subspace_basis(ep: &ExtractedContinualEpisode) -> Gram
                             let new_off = old_off + delta * cols_i64[b][d];
                             cand_cost += (new_off as i128) * (new_off as i128);
                         }
-                        if cand_cost < cur_cost
-                            && best_move.map_or(true, |(bc, _, _)| cand_cost < bc)
+                        if cand_cost < cur_cost && best_move.is_none_or(|(bc, _, _)| cand_cost < bc)
                         {
                             best_move = Some((cand_cost, d, delta));
                         }
@@ -1799,9 +1853,8 @@ pub fn build_gram_schmidt_subspace_basis(ep: &ExtractedContinualEpisode) -> Gram
                     LIMB_RADIX * (TAU_ORTH - 2)
                 );
             }
-            for i_k in 0..128 {
+            for (i_k, &uv) in cols_i64[a].iter().enumerate() {
                 let idx_u = h + (i_k << log_h) + (a << (log_h + 7));
-                let uv = cols_i64[a][i_k];
                 let u_lo = (uv + ULO_HALF).rem_euclid(LIMB_RADIX) - ULO_HALF;
                 let u_hi = (uv + ULO_HALF).div_euclid(LIMB_RADIX);
                 assert_eq!(uv, u_lo + LIMB_RADIX * u_hi);
@@ -1918,7 +1971,7 @@ pub fn apply_continual_wy_episode(
                 let num_kk = dot_kk + half_wy;
                 let q_kk = num_kk.div_euclid(CMEM_WY_SCALE);
                 let r_kk = num_kk.rem_euclid(CMEM_WY_SCALE) as u32;
-                assert!(q_kk >= -SMALL512_HALF && q_kk < SMALL512_HALF);
+                assert!((-SMALL512_HALF..SMALL512_HALF).contains(&q_kk));
                 let idx_hcj = h + (c << log_h) + (j << (log_h + 6));
                 if j < c {
                     l_mat[c * c_len + j] = q_kk;
@@ -1957,12 +2010,12 @@ pub fn apply_continual_wy_episode(
                 let uw_v = num.div_euclid(CMEM_WY_SCALE);
                 let r_wy = num.rem_euclid(CMEM_WY_SCALE) as u32;
                 assert!(
-                    uw_v >= -QUOT_WY_HALF && uw_v < QUOT_WY_HALF,
+                    (-QUOT_WY_HALF..QUOT_WY_HALF).contains(&uw_v),
                     "UW {uw_v} outside [-32768, 32768)"
                 );
                 if col >= 128 {
                     assert!(
-                        uw_v >= -SMALL512_HALF && uw_v < SMALL512_HALF,
+                        (-SMALL512_HALF..SMALL512_HALF).contains(&uw_v),
                         "W {uw_v} outside [-256, 256)"
                     );
                 }
@@ -1991,7 +2044,7 @@ pub fn apply_continual_wy_episode(
                 let num = CMEM_WY_SCALE * u_val - sum_ws + half_wy;
                 let d_val = num.div_euclid(CMEM_WY_SCALE);
                 let r_eff = num.rem_euclid(CMEM_WY_SCALE) as u32;
-                assert!(d_val >= -QUOT_WY_HALF && d_val < QUOT_WY_HALF);
+                assert!((-QUOT_WY_HALF..QUOT_WY_HALF).contains(&d_val));
                 delta_eff[c * 128 + j_v] = d_val;
                 let idx_eff = h + (c << log_h) + (j_v << (log_h + 6));
                 delta_eff_lsb_hcj[idx_eff] = bb_from_i64(d_val);
@@ -2013,7 +2066,7 @@ pub fn apply_continual_wy_episode(
                 let s_new = num.div_euclid(CMEM_WY_SCALE);
                 let r_st = num.rem_euclid(CMEM_WY_SCALE) as u32;
                 let ds = s_new - sp;
-                assert!(ds >= -QUOT_WY_HALF && ds < QUOT_WY_HALF);
+                assert!((-QUOT_WY_HALF..QUOT_WY_HALF).contains(&ds));
                 assert!(
                     s_new.abs() <= S_BND_HALF,
                     "S_post {s_new} exceeds S_BND_HALF = {S_BND_HALF}"
@@ -2076,7 +2129,10 @@ pub fn apply_rank_r_subspace_unlearning(
         return Err("head dimension mismatch".to_string());
     }
     if basis.rank_r == 0 || basis.rank_r > R_PAD {
-        return Err(format!("invalid rank_r {} outside 1..={R_PAD}", basis.rank_r));
+        return Err(format!(
+            "invalid rank_r {} outside 1..={R_PAD}",
+            basis.rank_r
+        ));
     }
     let h_v = s_before.h_v;
     let h_pad = s_before.h_pad;
@@ -2115,7 +2171,9 @@ pub fn apply_rank_r_subspace_unlearning(
                 let idx_u = h + (i_k << log_h) + (a << (log_h + 7));
                 let uv = basis.u_int_lsb[idx_u];
                 if !is_active && uv != 0 {
-                    return Err(format!("non-zero entry {uv} in inactive U column (h={h}, a={a})"));
+                    return Err(format!(
+                        "non-zero entry {uv} in inactive U column (h={h}, a={a})"
+                    ));
                 }
                 if basis.u_lo_shift_lsb[idx_u] >= 256 || basis.u_hi_shift_lsb[idx_u] >= 256 {
                     return Err("U limb shift out of range".to_string());
@@ -2153,7 +2211,7 @@ pub fn apply_rank_r_subspace_unlearning(
                 let num_glo = dot_ulo + half_limb;
                 let g_lo = num_glo.div_euclid(LIMB_RADIX);
                 let r_glo = num_glo.rem_euclid(LIMB_RADIX) as u32;
-                if g_lo < -QUOT_UNL_HALF || g_lo >= QUOT_UNL_HALF {
+                if !(-QUOT_UNL_HALF..QUOT_UNL_HALF).contains(&g_lo) {
                     return Err(format!("G_lo {g_lo} out of bounds"));
                 }
                 let diag_id = if h < h_v && a == b && a < basis.rank_r {
@@ -2162,7 +2220,7 @@ pub fn apply_rank_r_subspace_unlearning(
                     0
                 };
                 let g_shift = (dot_uhi + g_lo) - diag_id + TAU_ORTH;
-                if g_shift < 0 || g_shift >= (1i64 << M_TAB_ORTH) {
+                if !(0..(1i64 << M_TAB_ORTH)).contains(&g_shift) {
                     return Err(format!(
                         "Gram orthogonality violation at head {h} ({a},{b}): g_shift={g_shift}"
                     ));
@@ -2180,19 +2238,19 @@ pub fn apply_rank_r_subspace_unlearning(
             let r = basis.rank_r;
             for j_v in 0..128 {
                 let mut rhs_r = vec![0.0f64; r];
-                for a in 0..r {
+                for (a, rhs_slot) in rhs_r.iter_mut().enumerate() {
                     let mut sum_us = 0i64;
                     for i_k in 0..128 {
                         let uv = basis.u_int_lsb[h + (i_k << log_h) + (a << (log_h + 7))];
                         let sv = s_before.s_int_lsb[h + (i_k << log_h) + (j_v << (log_h + 7))];
                         sum_us += uv * sv;
                     }
-                    rhs_r[a] = (M_GS as f64) * (sum_us as f64);
+                    *rhs_slot = (M_GS as f64) * (sum_us as f64);
                 }
                 let p_sol = solve_spd_small(r, &gram_rr, &rhs_r);
-                for a in 0..r {
-                    let pv = p_sol[a].round() as i64;
-                    if pv < -QUOT_UNL_HALF || pv >= QUOT_UNL_HALF {
+                for (a, &ps) in p_sol.iter().enumerate() {
+                    let pv = ps.round() as i64;
+                    if !(-QUOT_UNL_HALF..QUOT_UNL_HALF).contains(&pv) {
                         return Err(format!("|P_proj| = {} >= {QUOT_UNL_HALF}", pv.abs()));
                     }
                     let idx_p = h + (a << log_h) + (j_v << (log_h + 3));
@@ -2221,7 +2279,7 @@ pub fn apply_rank_r_subspace_unlearning(
                 let num_p2_lo = sum_ulo_p + half_gs;
                 let q_p2_lo = num_p2_lo.div_euclid(LIMB_RADIX);
                 let r_p2_lo = num_p2_lo.rem_euclid(LIMB_RADIX) as u32;
-                if q_p2_lo < -QUOT_UNL_HALF || q_p2_lo >= QUOT_UNL_HALF {
+                if !(-QUOT_UNL_HALF..QUOT_UNL_HALF).contains(&q_p2_lo) {
                     return Err(format!("Q_p2_lo {q_p2_lo} out of bounds"));
                 }
                 let num_p2_hi = sum_uhi_p + q_p2_lo;
@@ -2261,7 +2319,7 @@ pub fn apply_rank_r_subspace_unlearning(
                 let num_u3_lo = sum_s_ulo + half_gs;
                 let q_u3_lo = num_u3_lo.div_euclid(LIMB_RADIX);
                 let r_u3_lo = num_u3_lo.rem_euclid(LIMB_RADIX) as u32;
-                if q_u3_lo < -QUOT_UNL_HALF || q_u3_lo >= QUOT_UNL_HALF {
+                if !(-QUOT_UNL_HALF..QUOT_UNL_HALF).contains(&q_u3_lo) {
                     return Err(format!("Q_u3_lo {q_u3_lo} out of bounds"));
                 }
                 let num_u3_hi = sum_s_uhi + q_u3_lo;
@@ -2271,7 +2329,7 @@ pub fn apply_rank_r_subspace_unlearning(
                     max_abs_residual_int = res_int.abs();
                 }
                 let res_shift = res_int + TAU_ZERO;
-                if res_shift < 0 || res_shift >= (1i64 << M_TAB_ZERO) {
+                if !(0..(1i64 << M_TAB_ZERO)).contains(&res_shift) {
                     return Err(format!(
                         "Unlearned residual overflow at head {h} (j_v={j_v}, a={a}): res_int={res_int}"
                     ));
@@ -2317,10 +2375,7 @@ fn eval_active_gram_identity_mle(
     let eq_h = build_eq_table_lsb_ext4(z_h);
     let eq_a = build_eq_table_lsb_ext4(z_a);
     let eq_b = build_eq_table_lsb_ext4(z_b);
-    let mut h_sum = Ext4::ZERO;
-    for h in 0..h_v {
-        h_sum = h_sum.add(eq_h[h]);
-    }
+    let h_sum = eq_h.iter().take(h_v).fold(Ext4::ZERO, |acc, &e| acc.add(e));
     let mut ab_sum = Ext4::ZERO;
     for a in 0..rank_r {
         ab_sum = ab_sum.add(eq_a[a].mul(eq_b[a]));
@@ -2328,22 +2383,14 @@ fn eval_active_gram_identity_mle(
     h_sum.mul(ab_sum)
 }
 
-fn eval_inactive_u_indicator_mle(
-    h_v: usize,
-    rank_r: usize,
-    pt_h: &[Ext4],
-    pt_a: &[Ext4],
-) -> Ext4 {
+fn eval_inactive_u_indicator_mle(h_v: usize, rank_r: usize, pt_h: &[Ext4], pt_a: &[Ext4]) -> Ext4 {
     let eq_h = build_eq_table_lsb_ext4(pt_h);
     let eq_a = build_eq_table_lsb_ext4(pt_a);
-    let mut active_h = Ext4::ZERO;
-    for h in 0..h_v {
-        active_h = active_h.add(eq_h[h]);
-    }
-    let mut active_a = Ext4::ZERO;
-    for a in 0..rank_r {
-        active_a = active_a.add(eq_a[a]);
-    }
+    let active_h = eq_h.iter().take(h_v).fold(Ext4::ZERO, |acc, &e| acc.add(e));
+    let active_a = eq_a
+        .iter()
+        .take(rank_r)
+        .fold(Ext4::ZERO, |acc, &e| acc.add(e));
     Ext4::ONE.sub(active_h.mul(active_a))
 }
 
@@ -2573,8 +2620,7 @@ impl ZkContinualUpdateProof {
         let h_pad = cur.read_u32()? as usize;
         let rank_r = cur.read_u32()? as usize;
         if !h_pad.is_power_of_two()
-            || h_pad < 16
-            || h_pad > 64
+            || !(16..=64).contains(&h_pad)
             || h_v == 0
             || h_v > h_pad
             || rank_r == 0
@@ -2766,13 +2812,16 @@ impl ZkContinualUpdateProof {
     }
 }
 
+/// `(proof_bytes, s_prev_root, s_post_root, k_pcs_root, forget_request_root)` returned by [`prove_continual_wy_update_zk`].
+pub type ContinualUpdateZkResult = (Vec<u8>, [u8; 32], [u8; 32], [u8; 32], [u8; 32]);
+
 pub fn prove_continual_wy_update_zk(
     vault_key: &ProverVaultKey,
     wit: &ContinualWyUpdateWitness,
     basis_for_future_forget: &GramSchmidtSubspaceBasis,
     request_nonce: &[u8; 32],
     mmr: &mut ContinualEpisodeMmr,
-) -> Result<(Vec<u8>, [u8; 32], [u8; 32], [u8; 32], [u8; 32]), String> {
+) -> Result<ContinualUpdateZkResult, String> {
     if wit.h_v != basis_for_future_forget.h_v || wit.h_pad != basis_for_future_forget.h_pad {
         return Err("update witness vs basis head count mismatch".to_string());
     }
@@ -2818,8 +2867,10 @@ pub fn prove_continual_wy_update_zk(
                 for b in 0..rank_r {
                     let mut dot = 0i64;
                     for i_k in 0..128 {
-                        let ua = basis_for_future_forget.u_int_lsb[h + (i_k << log_h) + (a << (log_h + 7))];
-                        let ub = basis_for_future_forget.u_int_lsb[h + (i_k << log_h) + (b << (log_h + 7))];
+                        let ua = basis_for_future_forget.u_int_lsb
+                            [h + (i_k << log_h) + (a << (log_h + 7))];
+                        let ub = basis_for_future_forget.u_int_lsb
+                            [h + (i_k << log_h) + (b << (log_h + 7))];
                         dot += ua * ub;
                     }
                     gram_rr[a * rank_r + b] = dot as f64;
@@ -2827,19 +2878,20 @@ pub fn prove_continual_wy_update_zk(
             }
             for c in 0..64 {
                 let mut rhs_r = vec![0.0f64; rank_r];
-                for a in 0..rank_r {
+                for (a, rhs_slot) in rhs_r.iter_mut().enumerate() {
                     let mut uk = 0i64;
                     for i_k in 0..128 {
-                        let ua = basis_for_future_forget.u_int_lsb[h + (i_k << log_h) + (a << (log_h + 7))];
+                        let ua = basis_for_future_forget.u_int_lsb
+                            [h + (i_k << log_h) + (a << (log_h + 7))];
                         let kv = wit.k_int_lsb_hci[h + (c << log_h) + (i_k << (log_h + 6))];
                         uk += ua * kv;
                     }
-                    rhs_r[a] = (M_GS as f64) * (uk as f64);
+                    *rhs_slot = (M_GS as f64) * (uk as f64);
                 }
                 let sol = solve_spd_small(rank_r, &gram_rr, &rhs_r);
-                for a in 0..rank_r {
-                    let cv = sol[a].round() as i64;
-                    if cv < -SMALL512_HALF || cv >= SMALL512_HALF {
+                for (a, &cv_f) in sol.iter().enumerate() {
+                    let cv = cv_f.round() as i64;
+                    if !(-SMALL512_HALF..SMALL512_HALF).contains(&cv) {
                         return Err(format!("C_ep {cv} outside [-256, 256)"));
                     }
                     let idx_c = h + (c << log_h) + (a << (log_h + 6));
@@ -2852,7 +2904,8 @@ pub fn prove_continual_wy_update_zk(
             for i_k in 0..128 {
                 let mut sum_uc = 0i64;
                 for a in 0..R_PAD {
-                    let ua = basis_for_future_forget.u_int_lsb[h + (i_k << log_h) + (a << (log_h + 7))];
+                    let ua =
+                        basis_for_future_forget.u_int_lsb[h + (i_k << log_h) + (a << (log_h + 7))];
                     let cv = c_ep_int[h + (c << log_h) + (a << (log_h + 6))];
                     sum_uc += ua * cv;
                 }
@@ -2863,7 +2916,7 @@ pub fn prove_continual_wy_update_zk(
                 let kv = wit.k_int_lsb_hci[idx_k];
                 let e_sp = kv - q_k;
                 let e_shift = e_sp + TAU_SPAN;
-                if e_shift < 0 || e_shift >= (1i64 << M_TAB_SPAN) {
+                if !(0..(1i64 << M_TAB_SPAN)).contains(&e_shift) {
                     return Err(format!(
                         "Episode key K[h={h}, c={c}, i_k={i_k}] outside span(U): e_sp={e_sp}"
                     ));
@@ -2914,9 +2967,21 @@ pub fn prove_continual_wy_update_zk(
     let s_post_seed = vault_key.state_pcs_seed(&wit.s_post.s_bb_lsb);
     let u_seed = vault_key.basis_pcs_seed(&basis_for_future_forget.u_bb_lsb, request_nonce);
 
-    let s_prev_st = commit_table_pcs(&wit.s_prev.s_bb_lsb, PcsParams::default_zk(4), Some(&s_prev_seed));
-    let s_post_st = commit_table_pcs(&wit.s_post.s_bb_lsb, PcsParams::default_zk(4), Some(&s_post_seed));
-    let u_st = commit_table_pcs(&basis_for_future_forget.u_bb_lsb, PcsParams::default_zk(4), Some(&u_seed));
+    let s_prev_st = commit_table_pcs(
+        &wit.s_prev.s_bb_lsb,
+        PcsParams::default_zk(4),
+        Some(&s_prev_seed),
+    );
+    let s_post_st = commit_table_pcs(
+        &wit.s_post.s_bb_lsb,
+        PcsParams::default_zk(4),
+        Some(&s_post_seed),
+    );
+    let u_st = commit_table_pcs(
+        &basis_for_future_forget.u_bb_lsb,
+        PcsParams::default_zk(4),
+        Some(&u_seed),
+    );
     let k_st = commit_table_pcs(&wit.k_lsb_hci, PcsParams::default_zk(5), None);
     let c_ep_st = commit_table_pcs(&c_ep_lsb_hca, PcsParams::default_zk(2), None);
     let espan_st = commit_table_pcs(&espan_shift_hci, PcsParams::default_zk(2), None);
@@ -3026,13 +3091,16 @@ pub fn prove_continual_wy_update_zk(
     for a in 0..R_PAD {
         for h in 0..h_pad {
             let mut al = Ext4::ZERO;
-            for i_k in 0..128 {
-                al = al.add(eq_zksik[i_k].scale_bb(basis_for_future_forget.u_bb_lsb[h + (i_k << log_h) + (a << (log_h + 7))]));
+            for (i_k, &eq_v) in eq_zksik.iter().enumerate() {
+                al = al.add(eq_v.scale_bb(
+                    basis_for_future_forget.u_bb_lsb[h + (i_k << log_h) + (a << (log_h + 7))],
+                ));
             }
             ksp_left[h + (a << log_h)] = al;
             let mut ar = Ext4::ZERO;
             for c in 0..64 {
-                ar = ar.add(eq_zksc[c].scale_bb(c_ep_lsb_hca[h + (c << log_h) + (a << (log_h + 6))]));
+                ar = ar
+                    .add(eq_zksc[c].scale_bb(c_ep_lsb_hca[h + (c << log_h) + (a << (log_h + 6))]));
             }
             ksp_right[h + (a << log_h)] = ar;
         }
@@ -3116,13 +3184,14 @@ pub fn prove_continual_wy_update_zk(
     for j in 0..64 {
         for h in 0..h_pad {
             let mut al = Ext4::ZERO;
-            for c in 0..64 {
-                al = al.add(eq_z1c[c].scale_bb(wit.l_lsb_hcj[h + (c << log_h) + (j << (log_h + 6))]));
+            for (c, &eq_v) in eq_z1c.iter().enumerate() {
+                al = al.add(eq_v.scale_bb(wit.l_lsb_hcj[h + (c << log_h) + (j << (log_h + 6))]));
             }
             wy_left[h + (j << log_h)] = al;
             let mut ar = Ext4::ZERO;
-            for col in 0..256 {
-                ar = ar.add(eq_z1col[col].scale_bb(wit.uw_lsb_hccol[h + (j << log_h) + (col << (log_h + 6))]));
+            for (col, &eq_v) in eq_z1col.iter().enumerate() {
+                ar = ar
+                    .add(eq_v.scale_bb(wit.uw_lsb_hccol[h + (j << log_h) + (col << (log_h + 6))]));
             }
             wy_right[h + (j << log_h)] = ar;
         }
@@ -3156,13 +3225,17 @@ pub fn prove_continual_wy_update_zk(
         for h in 0..h_pad {
             let mut al = Ext4::ZERO;
             let col_w = 128 + i_k;
-            for c in 0..64 {
-                al = al.add(eq_z2c[c].scale_bb(wit.uw_lsb_hccol[h + (c << log_h) + (col_w << (log_h + 6))]));
+            for (c, &eq_v) in eq_z2c.iter().enumerate() {
+                al = al.add(
+                    eq_v.scale_bb(wit.uw_lsb_hccol[h + (c << log_h) + (col_w << (log_h + 6))]),
+                );
             }
             ws_left[h + (i_k << log_h)] = al;
             let mut ar = Ext4::ZERO;
-            for j_v in 0..128 {
-                ar = ar.add(eq_z2jv[j_v].scale_bb(wit.s_prev.s_bb_lsb[h + (i_k << log_h) + (j_v << (log_h + 7))]));
+            for (j_v, &eq_v) in eq_z2jv.iter().enumerate() {
+                ar = ar.add(
+                    eq_v.scale_bb(wit.s_prev.s_bb_lsb[h + (i_k << log_h) + (j_v << (log_h + 7))]),
+                );
             }
             ws_right[h + (i_k << log_h)] = ar;
         }
@@ -3193,13 +3266,15 @@ pub fn prove_continual_wy_update_zk(
     for c in 0..64 {
         for h in 0..h_pad {
             let mut al = Ext4::ZERO;
-            for i_k in 0..128 {
-                al = al.add(eq_z3ik[i_k].scale_bb(wit.k_lsb_hci[h + (c << log_h) + (i_k << (log_h + 6))]));
+            for (i_k, &eq_v) in eq_z3ik.iter().enumerate() {
+                al = al.add(eq_v.scale_bb(wit.k_lsb_hci[h + (c << log_h) + (i_k << (log_h + 6))]));
             }
             kd_left[h + (c << log_h)] = al;
             let mut ar = Ext4::ZERO;
-            for j_v in 0..128 {
-                ar = ar.add(eq_z3jv[j_v].scale_bb(wit.delta_eff_lsb_hcj[h + (c << log_h) + (j_v << (log_h + 6))]));
+            for (j_v, &eq_v) in eq_z3jv.iter().enumerate() {
+                ar = ar.add(
+                    eq_v.scale_bb(wit.delta_eff_lsb_hcj[h + (c << log_h) + (j_v << (log_h + 6))]),
+                );
             }
             kd_right[h + (c << log_h)] = ar;
         }
@@ -3212,14 +3287,34 @@ pub fn prove_continual_wy_update_zk(
         prove_d1b_range_ext4(&espan_shift_hci, &mult_espan, m_k, M_TAB_SPAN, &mut tr);
     let (rspan_d1b, rsp_d1b_pt) =
         prove_d1b_range_ext4(&rspan_hci, &mult_rspan, m_k, GS_SHIFT as usize, &mut tr);
-    let (rem_d1b, d1b_pt) =
-        prove_d1b_range_ext4(&wit.rem_packed_128, &mult_wy, m_rem, CMEM_WY_SHIFT as usize, &mut tr);
-    let (quot_wy_d1b, qwy_d1b_pt) =
-        prove_d1b_range_ext4(&wit.quot_wy_packed, &mult_qwy, m_rem, M_TAB_QUOT_WY, &mut tr);
-    let (sbnd_wy_d1b, sbnd_d1b_pt) =
-        prove_d1b_range_ext4(&wit.s_bnd_wy_packed, &mult_sbnd, m_rem, M_TAB_S_BND, &mut tr);
-    let (small512_d1b, sm512_d1b_pt) =
-        prove_d1b_range_ext4(&small512_packed, &mult_sm512, m_sbnd, M_TAB_SMALL512, &mut tr);
+    let (rem_d1b, d1b_pt) = prove_d1b_range_ext4(
+        &wit.rem_packed_128,
+        &mult_wy,
+        m_rem,
+        CMEM_WY_SHIFT as usize,
+        &mut tr,
+    );
+    let (quot_wy_d1b, qwy_d1b_pt) = prove_d1b_range_ext4(
+        &wit.quot_wy_packed,
+        &mult_qwy,
+        m_rem,
+        M_TAB_QUOT_WY,
+        &mut tr,
+    );
+    let (sbnd_wy_d1b, sbnd_d1b_pt) = prove_d1b_range_ext4(
+        &wit.s_bnd_wy_packed,
+        &mult_sbnd,
+        m_rem,
+        M_TAB_S_BND,
+        &mut tr,
+    );
+    let (small512_d1b, sm512_d1b_pt) = prove_d1b_range_ext4(
+        &small512_packed,
+        &mult_sm512,
+        m_sbnd,
+        M_TAB_SMALL512,
+        &mut tr,
+    );
 
     // Random weld points for operand bounds:
     let zs_bnd = tr.squeeze_ext4_vec(b"zs_bnd", m_q, true);
@@ -3238,8 +3333,10 @@ pub fn prove_continual_wy_update_zk(
     let du_at_zlbnd = mle_eval_bb_at_ext4(&wit.du_lsb_hcj, &zl_bnd);
     let cep_at_zcepbnd = mle_eval_bb_at_ext4(&c_ep_lsb_hca, &zcep_bnd);
     let u_at_zulimb = mle_eval_bb_at_ext4(&basis_for_future_forget.u_bb_lsb, &zu_limb);
-    let ulo_shift_at_zulimb = mle_eval_bb_at_ext4(&basis_for_future_forget.u_lo_shift_lsb, &zu_limb);
-    let uhi_shift_at_zulimb = mle_eval_bb_at_ext4(&basis_for_future_forget.u_hi_shift_lsb, &zu_limb);
+    let ulo_shift_at_zulimb =
+        mle_eval_bb_at_ext4(&basis_for_future_forget.u_lo_shift_lsb, &zu_limb);
+    let uhi_shift_at_zulimb =
+        mle_eval_bb_at_ext4(&basis_for_future_forget.u_hi_shift_lsb, &zu_limb);
 
     for e in [
         s_prev_at_zsbnd,
@@ -3264,17 +3361,32 @@ pub fn prove_continual_wy_update_zk(
     let s_prev_pcs = open_pcs_claims(
         &s_prev_st,
         &[
-            MleEvalClaim { point: s_prev_pt_ws, value: ws_gruen.terminal_openings.1 },
-            MleEvalClaim { point: z3_hij.clone(), value: s_prev_at_z3 },
-            MleEvalClaim { point: zs_bnd.clone(), value: s_prev_at_zsbnd },
+            MleEvalClaim {
+                point: s_prev_pt_ws,
+                value: ws_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: z3_hij.clone(),
+                value: s_prev_at_z3,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: s_prev_at_zsbnd,
+            },
         ],
         &mut tr,
     );
     let s_post_pcs = open_pcs_claims(
         &s_post_st,
         &[
-            MleEvalClaim { point: z3_hij, value: s_post_at_z3 },
-            MleEvalClaim { point: zs_bnd.clone(), value: s_post_at_zsbnd },
+            MleEvalClaim {
+                point: z3_hij,
+                value: s_post_at_z3,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: s_post_at_zsbnd,
+            },
         ],
         &mut tr,
     );
@@ -3286,9 +3398,18 @@ pub fn prove_continual_wy_update_zk(
     let u_pcs = open_pcs_claims(
         &u_st,
         &[
-            MleEvalClaim { point: u_inact_pt, value: u_inactive_zero.terminal_openings.1 },
-            MleEvalClaim { point: u_pt_kspan, value: kspan_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zu_limb.clone(), value: u_at_zulimb },
+            MleEvalClaim {
+                point: u_inact_pt,
+                value: u_inactive_zero.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: u_pt_kspan,
+                value: kspan_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zu_limb.clone(),
+                value: u_at_zulimb,
+            },
         ],
         &mut tr,
     );
@@ -3308,11 +3429,26 @@ pub fn prove_continual_wy_update_zk(
     let k_pcs = open_pcs_claims(
         &k_st,
         &[
-            MleEvalClaim { point: zk_span.clone(), value: k_at_zkspan },
-            MleEvalClaim { point: build_k_kk_pt(&zkk_c), value: kk_gruen.terminal_openings.0 },
-            MleEvalClaim { point: build_k_kk_pt(&zkk_j), value: kk_gruen.terminal_openings.1 },
-            MleEvalClaim { point: k_pt_kd.clone(), value: kd_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zk_bnd.clone(), value: k_at_zkbnd },
+            MleEvalClaim {
+                point: zk_span.clone(),
+                value: k_at_zkspan,
+            },
+            MleEvalClaim {
+                point: build_k_kk_pt(&zkk_c),
+                value: kk_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: build_k_kk_pt(&zkk_j),
+                value: kk_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: k_pt_kd.clone(),
+                value: kd_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zk_bnd.clone(),
+                value: k_at_zkbnd,
+            },
         ],
         &mut tr,
     );
@@ -3324,8 +3460,14 @@ pub fn prove_continual_wy_update_zk(
     let c_ep_pcs = open_pcs_claims(
         &c_ep_st,
         &[
-            MleEvalClaim { point: cep_pt_kspan, value: kspan_gruen.terminal_openings.1 },
-            MleEvalClaim { point: zcep_bnd.clone(), value: cep_at_zcepbnd },
+            MleEvalClaim {
+                point: cep_pt_kspan,
+                value: kspan_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: zcep_bnd.clone(),
+                value: cep_at_zcepbnd,
+            },
         ],
         &mut tr,
     );
@@ -3333,27 +3475,45 @@ pub fn prove_continual_wy_update_zk(
     let espan_pcs = open_pcs_claims(
         &espan_st,
         &[
-            MleEvalClaim { point: zk_span.clone(), value: espan_at_zkspan },
-            MleEvalClaim { point: esp_d1b_pt.clone(), value: espan_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zk_span.clone(),
+                value: espan_at_zkspan,
+            },
+            MleEvalClaim {
+                point: esp_d1b_pt.clone(),
+                value: espan_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_espan_pcs = open_pcs_claims(
         &mult_espan_st,
-        &[MleEvalClaim { point: esp_d1b_pt[..M_TAB_SPAN].to_vec(), value: espan_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: esp_d1b_pt[..M_TAB_SPAN].to_vec(),
+            value: espan_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
     let rspan_pcs = open_pcs_claims(
         &rspan_st,
         &[
-            MleEvalClaim { point: zk_span, value: rspan_at_zkspan },
-            MleEvalClaim { point: rsp_d1b_pt.clone(), value: rspan_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zk_span,
+                value: rspan_at_zkspan,
+            },
+            MleEvalClaim {
+                point: rsp_d1b_pt.clone(),
+                value: rspan_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_rspan_pcs = open_pcs_claims(
         &mult_rspan_st,
-        &[MleEvalClaim { point: rsp_d1b_pt[..GS_SHIFT as usize].to_vec(), value: rspan_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: rsp_d1b_pt[..GS_SHIFT as usize].to_vec(),
+            value: rspan_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -3364,19 +3524,40 @@ pub fn prove_continual_wy_update_zk(
     let l_pcs = open_pcs_claims(
         &l_st,
         &[
-            MleEvalClaim { point: zkk_hcj.clone(), value: l_at_zkk },
-            MleEvalClaim { point: l_pt1, value: wy_gruen.terminal_openings.0 },
-            MleEvalClaim { point: slt_pt, value: slt_zero.terminal_openings.1 },
-            MleEvalClaim { point: zl_bnd.clone(), value: l_at_zlbnd },
+            MleEvalClaim {
+                point: zkk_hcj.clone(),
+                value: l_at_zkk,
+            },
+            MleEvalClaim {
+                point: l_pt1,
+                value: wy_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: slt_pt,
+                value: slt_zero.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: zl_bnd.clone(),
+                value: l_at_zlbnd,
+            },
         ],
         &mut tr,
     );
     let du_pcs = open_pcs_claims(
         &du_st,
         &[
-            MleEvalClaim { point: zkk_hcj, value: du_at_zkk },
-            MleEvalClaim { point: du_slt_pt, value: du_slt_zero.terminal_openings.1 },
-            MleEvalClaim { point: zl_bnd.clone(), value: du_at_zlbnd },
+            MleEvalClaim {
+                point: zkk_hcj,
+                value: du_at_zkk,
+            },
+            MleEvalClaim {
+                point: du_slt_pt,
+                value: du_slt_zero.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: zl_bnd.clone(),
+                value: du_at_zlbnd,
+            },
         ],
         &mut tr,
     );
@@ -3386,8 +3567,14 @@ pub fn prove_continual_wy_update_zk(
     let rhs_pcs = open_pcs_claims(
         &rhs_st,
         &[
-            MleEvalClaim { point: z1_all.clone(), value: rhs_at_z1 },
-            MleEvalClaim { point: rhs_pt_k, value: kd_gruen.terminal_openings.0 },
+            MleEvalClaim {
+                point: z1_all.clone(),
+                value: rhs_at_z1,
+            },
+            MleEvalClaim {
+                point: rhs_pt_k,
+                value: kd_gruen.terminal_openings.0,
+            },
         ],
         &mut tr,
     );
@@ -3404,11 +3591,26 @@ pub fn prove_continual_wy_update_zk(
     let uw_pcs = open_pcs_claims(
         &uw_st,
         &[
-            MleEvalClaim { point: z1_all, value: uw_at_z1 },
-            MleEvalClaim { point: uw_pt_wy, value: wy_gruen.terminal_openings.1 },
-            MleEvalClaim { point: z2_u_pt, value: u_at_z2 },
-            MleEvalClaim { point: uw_pt_w, value: ws_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zkbnd_w, value: w_at_zkbnd },
+            MleEvalClaim {
+                point: z1_all,
+                value: uw_at_z1,
+            },
+            MleEvalClaim {
+                point: uw_pt_wy,
+                value: wy_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: z2_u_pt,
+                value: u_at_z2,
+            },
+            MleEvalClaim {
+                point: uw_pt_w,
+                value: ws_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zkbnd_w,
+                value: w_at_zkbnd,
+            },
         ],
         &mut tr,
     );
@@ -3420,8 +3622,14 @@ pub fn prove_continual_wy_update_zk(
     let delta_eff_pcs = open_pcs_claims(
         &deff_st,
         &[
-            MleEvalClaim { point: z2_hcj, value: delta_eff_at_z2 },
-            MleEvalClaim { point: deff_pt_kd, value: kd_gruen.terminal_openings.1 },
+            MleEvalClaim {
+                point: z2_hcj,
+                value: delta_eff_at_z2,
+            },
+            MleEvalClaim {
+                point: deff_pt_kd,
+                value: kd_gruen.terminal_openings.1,
+            },
         ],
         &mut tr,
     );
@@ -3429,17 +3637,35 @@ pub fn prove_continual_wy_update_zk(
     let rem_pcs = open_pcs_claims(
         &rem_st,
         &[
-            MleEvalClaim { point: z1_rem.clone(), value: r_wy_at_z1 },
-            MleEvalClaim { point: z2_rem.clone(), value: r_eff_at_z2 },
-            MleEvalClaim { point: z3_rem.clone(), value: r_state_at_z3 },
-            MleEvalClaim { point: zkk_rem, value: r_kk_at_zkk },
-            MleEvalClaim { point: d1b_pt.clone(), value: rem_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: z1_rem.clone(),
+                value: r_wy_at_z1,
+            },
+            MleEvalClaim {
+                point: z2_rem.clone(),
+                value: r_eff_at_z2,
+            },
+            MleEvalClaim {
+                point: z3_rem.clone(),
+                value: r_state_at_z3,
+            },
+            MleEvalClaim {
+                point: zkk_rem,
+                value: r_kk_at_zkk,
+            },
+            MleEvalClaim {
+                point: d1b_pt.clone(),
+                value: rem_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_pcs = open_pcs_claims(
         &mult_st,
-        &[MleEvalClaim { point: d1b_pt[..CMEM_WY_SHIFT as usize].to_vec(), value: rem_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: d1b_pt[..CMEM_WY_SHIFT as usize].to_vec(),
+            value: rem_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -3447,16 +3673,31 @@ pub fn prove_continual_wy_update_zk(
     let quot_wy_pcs = open_pcs_claims(
         &qwy_st,
         &[
-            MleEvalClaim { point: z1_rem, value: uw_at_z1.add(shift_wy_ext) },
-            MleEvalClaim { point: z2_rem, value: delta_eff_at_z2.add(shift_wy_ext) },
-            MleEvalClaim { point: z3_rem, value: s_post_at_z3.sub(s_prev_at_z3).add(shift_wy_ext) },
-            MleEvalClaim { point: qwy_d1b_pt.clone(), value: quot_wy_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: z1_rem,
+                value: uw_at_z1.add(shift_wy_ext),
+            },
+            MleEvalClaim {
+                point: z2_rem,
+                value: delta_eff_at_z2.add(shift_wy_ext),
+            },
+            MleEvalClaim {
+                point: z3_rem,
+                value: s_post_at_z3.sub(s_prev_at_z3).add(shift_wy_ext),
+            },
+            MleEvalClaim {
+                point: qwy_d1b_pt.clone(),
+                value: quot_wy_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_quot_wy_pcs = open_pcs_claims(
         &mult_qwy_st,
-        &[MleEvalClaim { point: qwy_d1b_pt[..M_TAB_QUOT_WY].to_vec(), value: quot_wy_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: qwy_d1b_pt[..M_TAB_QUOT_WY].to_vec(),
+            value: quot_wy_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -3472,17 +3713,35 @@ pub fn prove_continual_wy_update_zk(
     let sbnd_wy_pcs = open_pcs_claims(
         &sbnd_st,
         &[
-            MleEvalClaim { point: zsb00, value: s_prev_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb10, value: sbnd_ext.sub(s_prev_at_zsbnd) },
-            MleEvalClaim { point: zsb01, value: s_post_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb11, value: sbnd_ext.sub(s_post_at_zsbnd) },
-            MleEvalClaim { point: sbnd_d1b_pt.clone(), value: sbnd_wy_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zsb00,
+                value: s_prev_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb10,
+                value: sbnd_ext.sub(s_prev_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: zsb01,
+                value: s_post_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb11,
+                value: sbnd_ext.sub(s_post_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: sbnd_d1b_pt.clone(),
+                value: sbnd_wy_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_sbnd_wy_pcs = open_pcs_claims(
         &mult_sbnd_st,
-        &[MleEvalClaim { point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(), value: sbnd_wy_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(),
+            value: sbnd_wy_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -3496,7 +3755,14 @@ pub fn prove_continual_wy_update_zk(
     let mut p_du512 = zl_bnd;
     p_du512.extend_from_slice(&[Ext4::ONE, Ext4::ZERO, Ext4::ONE]);
     let mut p_cep512 = zcep_bnd;
-    p_cep512.extend_from_slice(&[Ext4::ZERO, Ext4::ZERO, Ext4::ZERO, Ext4::ZERO, Ext4::ONE, Ext4::ONE]);
+    p_cep512.extend_from_slice(&[
+        Ext4::ZERO,
+        Ext4::ZERO,
+        Ext4::ZERO,
+        Ext4::ZERO,
+        Ext4::ONE,
+        Ext4::ONE,
+    ]);
     let mut p_ulo512 = zu_limb.clone();
     p_ulo512.extend_from_slice(&[Ext4::ONE, Ext4::ZERO, Ext4::ZERO, Ext4::ONE, Ext4::ONE]);
     let mut p_uhi512 = zu_limb;
@@ -3505,20 +3771,47 @@ pub fn prove_continual_wy_update_zk(
     let small512_pcs = open_pcs_claims(
         &sm512_st,
         &[
-            MleEvalClaim { point: p_k512, value: k_at_zkbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_w512, value: w_at_zkbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_l512, value: l_at_zlbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_du512, value: du_at_zlbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_cep512, value: cep_at_zcepbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_ulo512, value: ulo_shift_at_zulimb },
-            MleEvalClaim { point: p_uhi512, value: uhi_shift_at_zulimb },
-            MleEvalClaim { point: sm512_d1b_pt.clone(), value: small512_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: p_k512,
+                value: k_at_zkbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_w512,
+                value: w_at_zkbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_l512,
+                value: l_at_zlbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_du512,
+                value: du_at_zlbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_cep512,
+                value: cep_at_zcepbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_ulo512,
+                value: ulo_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: p_uhi512,
+                value: uhi_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: sm512_d1b_pt.clone(),
+                value: small512_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_small512_pcs = open_pcs_claims(
         &mult_sm512_st,
-        &[MleEvalClaim { point: sm512_d1b_pt[..M_TAB_SMALL512].to_vec(), value: small512_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: sm512_d1b_pt[..M_TAB_SMALL512].to_vec(),
+            value: small512_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -3662,7 +3955,10 @@ pub fn verify_continual_wy_update_zk(
         k_pcs_root: pf.k_pcs_root,
         forget_request_root: pf.forget_request_root,
     };
-    if !pf.mmr_proof.verify(&entry.leaf_hash(), expected_episode_mmr_root) {
+    if !pf
+        .mmr_proof
+        .verify(&entry.leaf_hash(), expected_episode_mmr_root)
+    {
         return Err("episode_mmr_root inclusion verification failed".to_string());
     }
 
@@ -3722,8 +4018,12 @@ pub fn verify_continual_wy_update_zk(
     let zi_all = tr.squeeze_ext4_vec(b"u_inact_zs", m_small, true);
     let u_inact_pt =
         verify_gruen_einsum_mode2_ext4(Ext4::ZERO, &zi_all, &pf.u_inactive_zero, &mut tr)?;
-    let exp_inact =
-        eval_inactive_u_indicator_mle(pf.h_v, pf.rank_r, &u_inact_pt[..log_h], &u_inact_pt[log_h + 7..]);
+    let exp_inact = eval_inactive_u_indicator_mle(
+        pf.h_v,
+        pf.rank_r,
+        &u_inact_pt[..log_h],
+        &u_inact_pt[log_h + 7..],
+    );
     if pf.u_inactive_zero.terminal_openings.0 != exp_inact {
         return Err("update u_inactive_zero indicator eval mismatch".to_string());
     }
@@ -3778,8 +4078,7 @@ pub fn verify_continual_wy_update_zk(
         return Err("du_slt_zero header invalid".to_string());
     }
     let zdu_s = tr.squeeze_ext4_vec(b"duslt_zs", m_l, true);
-    let du_slt_pt =
-        verify_gruen_einsum_mode2_ext4(Ext4::ZERO, &zdu_s, &pf.du_slt_zero, &mut tr)?;
+    let du_slt_pt = verify_gruen_einsum_mode2_ext4(Ext4::ZERO, &zdu_s, &pf.du_slt_zero, &mut tr)?;
     let exp_slt_ind = Ext4::ONE.sub(eval_upper_or_diag_indicator_mle(
         &du_slt_pt[log_h..log_h + 6],
         &du_slt_pt[log_h + 6..],
@@ -3912,9 +4211,18 @@ pub fn verify_continual_wy_update_zk(
         &pf.s_prev_root,
         PcsShape::new(m_q, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: s_prev_pt_ws, value: pf.ws_gruen.terminal_openings.1 },
-            MleEvalClaim { point: z3_hij.clone(), value: pf.s_prev_at_z3 },
-            MleEvalClaim { point: zs_bnd.clone(), value: pf.s_prev_at_zsbnd },
+            MleEvalClaim {
+                point: s_prev_pt_ws,
+                value: pf.ws_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: z3_hij.clone(),
+                value: pf.s_prev_at_z3,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: pf.s_prev_at_zsbnd,
+            },
         ],
         &pf.s_prev_pcs,
         &mut tr,
@@ -3923,8 +4231,14 @@ pub fn verify_continual_wy_update_zk(
         &pf.s_post_root,
         PcsShape::new(m_q, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: z3_hij.clone(), value: pf.s_post_at_z3 },
-            MleEvalClaim { point: zs_bnd.clone(), value: pf.s_post_at_zsbnd },
+            MleEvalClaim {
+                point: z3_hij.clone(),
+                value: pf.s_post_at_z3,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: pf.s_post_at_zsbnd,
+            },
         ],
         &pf.s_post_pcs,
         &mut tr,
@@ -3938,9 +4252,18 @@ pub fn verify_continual_wy_update_zk(
         &pf.u_pcs_root,
         PcsShape::new(m_small, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: u_inact_pt, value: pf.u_inactive_zero.terminal_openings.1 },
-            MleEvalClaim { point: u_pt_kspan, value: pf.kspan_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zu_limb.clone(), value: pf.u_at_zulimb },
+            MleEvalClaim {
+                point: u_inact_pt,
+                value: pf.u_inactive_zero.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: u_pt_kspan,
+                value: pf.kspan_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zu_limb.clone(),
+                value: pf.u_at_zulimb,
+            },
         ],
         &pf.u_pcs,
         &mut tr,
@@ -3961,11 +4284,26 @@ pub fn verify_continual_wy_update_zk(
         &pf.k_pcs_root,
         PcsShape::new(m_k, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: zk_span.clone(), value: pf.k_at_zkspan },
-            MleEvalClaim { point: build_k_kk_pt(&zkk_c), value: pf.kk_gruen.terminal_openings.0 },
-            MleEvalClaim { point: build_k_kk_pt(&zkk_j), value: pf.kk_gruen.terminal_openings.1 },
-            MleEvalClaim { point: k_pt_kd.clone(), value: pf.kd_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zk_bnd.clone(), value: pf.k_at_zkbnd },
+            MleEvalClaim {
+                point: zk_span.clone(),
+                value: pf.k_at_zkspan,
+            },
+            MleEvalClaim {
+                point: build_k_kk_pt(&zkk_c),
+                value: pf.kk_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: build_k_kk_pt(&zkk_j),
+                value: pf.kk_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: k_pt_kd.clone(),
+                value: pf.kd_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zk_bnd.clone(),
+                value: pf.k_at_zkbnd,
+            },
         ],
         &pf.k_pcs,
         &mut tr,
@@ -3979,8 +4317,14 @@ pub fn verify_continual_wy_update_zk(
         &pf.c_ep_pcs_root,
         PcsShape::new(m_cep, PcsParams::default_zk(2)),
         &[
-            MleEvalClaim { point: cep_pt_kspan, value: pf.kspan_gruen.terminal_openings.1 },
-            MleEvalClaim { point: zcep_bnd.clone(), value: pf.cep_at_zcepbnd },
+            MleEvalClaim {
+                point: cep_pt_kspan,
+                value: pf.kspan_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: zcep_bnd.clone(),
+                value: pf.cep_at_zcepbnd,
+            },
         ],
         &pf.c_ep_pcs,
         &mut tr,
@@ -3990,8 +4334,14 @@ pub fn verify_continual_wy_update_zk(
         &pf.espan_pcs_root,
         PcsShape::new(m_k, PcsParams::default_zk(2)),
         &[
-            MleEvalClaim { point: zk_span.clone(), value: pf.espan_at_zkspan },
-            MleEvalClaim { point: esp_d1b_pt.clone(), value: pf.espan_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zk_span.clone(),
+                value: pf.espan_at_zkspan,
+            },
+            MleEvalClaim {
+                point: esp_d1b_pt.clone(),
+                value: pf.espan_d1b.rem_leaf_eval,
+            },
         ],
         &pf.espan_pcs,
         &mut tr,
@@ -3999,7 +4349,10 @@ pub fn verify_continual_wy_update_zk(
     verify_pcs_claims(
         &pf.mult_espan_pcs_root,
         PcsShape::new(M_TAB_SPAN, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: esp_d1b_pt[..M_TAB_SPAN].to_vec(), value: pf.espan_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: esp_d1b_pt[..M_TAB_SPAN].to_vec(),
+            value: pf.espan_d1b.mult_leaf_eval,
+        }],
         &pf.mult_espan_pcs,
         &mut tr,
     )?;
@@ -4007,8 +4360,14 @@ pub fn verify_continual_wy_update_zk(
         &pf.rspan_pcs_root,
         PcsShape::new(m_k, PcsParams::default_zk(2)),
         &[
-            MleEvalClaim { point: zk_span, value: pf.rspan_at_zkspan },
-            MleEvalClaim { point: rsp_d1b_pt.clone(), value: pf.rspan_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zk_span,
+                value: pf.rspan_at_zkspan,
+            },
+            MleEvalClaim {
+                point: rsp_d1b_pt.clone(),
+                value: pf.rspan_d1b.rem_leaf_eval,
+            },
         ],
         &pf.rspan_pcs,
         &mut tr,
@@ -4016,7 +4375,10 @@ pub fn verify_continual_wy_update_zk(
     verify_pcs_claims(
         &pf.mult_rspan_pcs_root,
         PcsShape::new(GS_SHIFT as usize, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: rsp_d1b_pt[..GS_SHIFT as usize].to_vec(), value: pf.rspan_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: rsp_d1b_pt[..GS_SHIFT as usize].to_vec(),
+            value: pf.rspan_d1b.mult_leaf_eval,
+        }],
         &pf.mult_rspan_pcs,
         &mut tr,
     )?;
@@ -4029,10 +4391,22 @@ pub fn verify_continual_wy_update_zk(
         &pf.l_pcs_root,
         PcsShape::new(m_l, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: zkk_hcj.clone(), value: pf.l_at_zkk },
-            MleEvalClaim { point: l_pt1, value: pf.wy_gruen.terminal_openings.0 },
-            MleEvalClaim { point: slt_pt, value: slt_l_ev },
-            MleEvalClaim { point: zl_bnd.clone(), value: pf.l_at_zlbnd },
+            MleEvalClaim {
+                point: zkk_hcj.clone(),
+                value: pf.l_at_zkk,
+            },
+            MleEvalClaim {
+                point: l_pt1,
+                value: pf.wy_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: slt_pt,
+                value: slt_l_ev,
+            },
+            MleEvalClaim {
+                point: zl_bnd.clone(),
+                value: pf.l_at_zlbnd,
+            },
         ],
         &pf.l_pcs,
         &mut tr,
@@ -4041,9 +4415,18 @@ pub fn verify_continual_wy_update_zk(
         &pf.du_pcs_root,
         PcsShape::new(m_l, PcsParams::default_zk(3)),
         &[
-            MleEvalClaim { point: zkk_hcj.clone(), value: pf.du_at_zkk },
-            MleEvalClaim { point: du_slt_pt, value: pf.du_slt_zero.terminal_openings.1 },
-            MleEvalClaim { point: zl_bnd.clone(), value: pf.du_at_zlbnd },
+            MleEvalClaim {
+                point: zkk_hcj.clone(),
+                value: pf.du_at_zkk,
+            },
+            MleEvalClaim {
+                point: du_slt_pt,
+                value: pf.du_slt_zero.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: zl_bnd.clone(),
+                value: pf.du_at_zlbnd,
+            },
         ],
         &pf.du_pcs,
         &mut tr,
@@ -4055,8 +4438,14 @@ pub fn verify_continual_wy_update_zk(
         &pf.rhs_pcs_root,
         PcsShape::new(m_q, PcsParams::default_zk(2)),
         &[
-            MleEvalClaim { point: z1_all.clone(), value: pf.rhs_at_z1 },
-            MleEvalClaim { point: rhs_pt_k, value: pf.kd_gruen.terminal_openings.0 },
+            MleEvalClaim {
+                point: z1_all.clone(),
+                value: pf.rhs_at_z1,
+            },
+            MleEvalClaim {
+                point: rhs_pt_k,
+                value: pf.kd_gruen.terminal_openings.0,
+            },
         ],
         &pf.rhs_pcs,
         &mut tr,
@@ -4079,11 +4468,26 @@ pub fn verify_continual_wy_update_zk(
         &pf.uw_pcs_root,
         PcsShape::new(m_q, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: z1_all.clone(), value: pf.uw_at_z1 },
-            MleEvalClaim { point: uw_pt_wy, value: pf.wy_gruen.terminal_openings.1 },
-            MleEvalClaim { point: z2_u_pt, value: pf.u_at_z2 },
-            MleEvalClaim { point: uw_pt_w, value: pf.ws_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zkbnd_w, value: pf.w_at_zkbnd },
+            MleEvalClaim {
+                point: z1_all.clone(),
+                value: pf.uw_at_z1,
+            },
+            MleEvalClaim {
+                point: uw_pt_wy,
+                value: pf.wy_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: z2_u_pt,
+                value: pf.u_at_z2,
+            },
+            MleEvalClaim {
+                point: uw_pt_w,
+                value: pf.ws_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zkbnd_w,
+                value: pf.w_at_zkbnd,
+            },
         ],
         &pf.uw_pcs,
         &mut tr,
@@ -4097,8 +4501,14 @@ pub fn verify_continual_wy_update_zk(
         &pf.delta_eff_pcs_root,
         PcsShape::new(m_k, PcsParams::default_zk(2)),
         &[
-            MleEvalClaim { point: z2_hcj.clone(), value: pf.delta_eff_at_z2 },
-            MleEvalClaim { point: deff_pt_kd, value: pf.kd_gruen.terminal_openings.1 },
+            MleEvalClaim {
+                point: z2_hcj.clone(),
+                value: pf.delta_eff_at_z2,
+            },
+            MleEvalClaim {
+                point: deff_pt_kd,
+                value: pf.kd_gruen.terminal_openings.1,
+            },
         ],
         &pf.delta_eff_pcs,
         &mut tr,
@@ -4116,11 +4526,26 @@ pub fn verify_continual_wy_update_zk(
         &pf.rem_pcs_root,
         PcsShape::new(m_rem, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: z1_rem.clone(), value: pf.r_wy_at_z1 },
-            MleEvalClaim { point: z2_rem.clone(), value: pf.r_eff_at_z2 },
-            MleEvalClaim { point: z3_rem.clone(), value: pf.r_state_at_z3 },
-            MleEvalClaim { point: zkk_rem, value: pf.r_kk_at_zkk },
-            MleEvalClaim { point: d1b_pt.clone(), value: pf.rem_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: z1_rem.clone(),
+                value: pf.r_wy_at_z1,
+            },
+            MleEvalClaim {
+                point: z2_rem.clone(),
+                value: pf.r_eff_at_z2,
+            },
+            MleEvalClaim {
+                point: z3_rem.clone(),
+                value: pf.r_state_at_z3,
+            },
+            MleEvalClaim {
+                point: zkk_rem,
+                value: pf.r_kk_at_zkk,
+            },
+            MleEvalClaim {
+                point: d1b_pt.clone(),
+                value: pf.rem_d1b.rem_leaf_eval,
+            },
         ],
         &pf.rem_pcs,
         &mut tr,
@@ -4128,7 +4553,10 @@ pub fn verify_continual_wy_update_zk(
     verify_pcs_claims(
         &pf.mult_pcs_root,
         PcsShape::new(CMEM_WY_SHIFT as usize, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: d1b_pt[..CMEM_WY_SHIFT as usize].to_vec(), value: pf.rem_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: d1b_pt[..CMEM_WY_SHIFT as usize].to_vec(),
+            value: pf.rem_d1b.mult_leaf_eval,
+        }],
         &pf.mult_pcs,
         &mut tr,
     )?;
@@ -4138,10 +4566,22 @@ pub fn verify_continual_wy_update_zk(
         &pf.quot_wy_pcs_root,
         PcsShape::new(m_rem, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: z1_rem, value: pf.uw_at_z1.add(shift_wy_ext) },
-            MleEvalClaim { point: z2_rem, value: pf.delta_eff_at_z2.add(shift_wy_ext) },
-            MleEvalClaim { point: z3_rem, value: pf.s_post_at_z3.sub(pf.s_prev_at_z3).add(shift_wy_ext) },
-            MleEvalClaim { point: qwy_d1b_pt.clone(), value: pf.quot_wy_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: z1_rem,
+                value: pf.uw_at_z1.add(shift_wy_ext),
+            },
+            MleEvalClaim {
+                point: z2_rem,
+                value: pf.delta_eff_at_z2.add(shift_wy_ext),
+            },
+            MleEvalClaim {
+                point: z3_rem,
+                value: pf.s_post_at_z3.sub(pf.s_prev_at_z3).add(shift_wy_ext),
+            },
+            MleEvalClaim {
+                point: qwy_d1b_pt.clone(),
+                value: pf.quot_wy_d1b.rem_leaf_eval,
+            },
         ],
         &pf.quot_wy_pcs,
         &mut tr,
@@ -4149,7 +4589,10 @@ pub fn verify_continual_wy_update_zk(
     verify_pcs_claims(
         &pf.mult_quot_wy_pcs_root,
         PcsShape::new(M_TAB_QUOT_WY, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: qwy_d1b_pt[..M_TAB_QUOT_WY].to_vec(), value: pf.quot_wy_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: qwy_d1b_pt[..M_TAB_QUOT_WY].to_vec(),
+            value: pf.quot_wy_d1b.mult_leaf_eval,
+        }],
         &pf.mult_quot_wy_pcs,
         &mut tr,
     )?;
@@ -4167,11 +4610,26 @@ pub fn verify_continual_wy_update_zk(
         &pf.sbnd_wy_pcs_root,
         PcsShape::new(m_rem, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: zsb00, value: pf.s_prev_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb10, value: sbnd_ext.sub(pf.s_prev_at_zsbnd) },
-            MleEvalClaim { point: zsb01, value: pf.s_post_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb11, value: sbnd_ext.sub(pf.s_post_at_zsbnd) },
-            MleEvalClaim { point: sbnd_d1b_pt.clone(), value: pf.sbnd_wy_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zsb00,
+                value: pf.s_prev_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb10,
+                value: sbnd_ext.sub(pf.s_prev_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: zsb01,
+                value: pf.s_post_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb11,
+                value: sbnd_ext.sub(pf.s_post_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: sbnd_d1b_pt.clone(),
+                value: pf.sbnd_wy_d1b.rem_leaf_eval,
+            },
         ],
         &pf.sbnd_wy_pcs,
         &mut tr,
@@ -4179,7 +4637,10 @@ pub fn verify_continual_wy_update_zk(
     verify_pcs_claims(
         &pf.mult_sbnd_wy_pcs_root,
         PcsShape::new(M_TAB_S_BND, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(), value: pf.sbnd_wy_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(),
+            value: pf.sbnd_wy_d1b.mult_leaf_eval,
+        }],
         &pf.mult_sbnd_wy_pcs,
         &mut tr,
     )?;
@@ -4194,7 +4655,14 @@ pub fn verify_continual_wy_update_zk(
     let mut p_du512 = zl_bnd;
     p_du512.extend_from_slice(&[Ext4::ONE, Ext4::ZERO, Ext4::ONE]);
     let mut p_cep512 = zcep_bnd;
-    p_cep512.extend_from_slice(&[Ext4::ZERO, Ext4::ZERO, Ext4::ZERO, Ext4::ZERO, Ext4::ONE, Ext4::ONE]);
+    p_cep512.extend_from_slice(&[
+        Ext4::ZERO,
+        Ext4::ZERO,
+        Ext4::ZERO,
+        Ext4::ZERO,
+        Ext4::ONE,
+        Ext4::ONE,
+    ]);
     let mut p_ulo512 = zu_limb.clone();
     p_ulo512.extend_from_slice(&[Ext4::ONE, Ext4::ZERO, Ext4::ZERO, Ext4::ONE, Ext4::ONE]);
     let mut p_uhi512 = zu_limb;
@@ -4204,14 +4672,38 @@ pub fn verify_continual_wy_update_zk(
         &pf.small512_pcs_root,
         PcsShape::new(m_sbnd, PcsParams::default_zk(8)),
         &[
-            MleEvalClaim { point: p_k512, value: pf.k_at_zkbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_w512, value: pf.w_at_zkbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_l512, value: pf.l_at_zlbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_du512, value: pf.du_at_zlbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_cep512, value: pf.cep_at_zcepbnd.add(sm512_ext) },
-            MleEvalClaim { point: p_ulo512, value: pf.ulo_shift_at_zulimb },
-            MleEvalClaim { point: p_uhi512, value: pf.uhi_shift_at_zulimb },
-            MleEvalClaim { point: sm512_d1b_pt.clone(), value: pf.small512_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: p_k512,
+                value: pf.k_at_zkbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_w512,
+                value: pf.w_at_zkbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_l512,
+                value: pf.l_at_zlbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_du512,
+                value: pf.du_at_zlbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_cep512,
+                value: pf.cep_at_zcepbnd.add(sm512_ext),
+            },
+            MleEvalClaim {
+                point: p_ulo512,
+                value: pf.ulo_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: p_uhi512,
+                value: pf.uhi_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: sm512_d1b_pt.clone(),
+                value: pf.small512_d1b.rem_leaf_eval,
+            },
         ],
         &pf.small512_pcs,
         &mut tr,
@@ -4219,7 +4711,10 @@ pub fn verify_continual_wy_update_zk(
     verify_pcs_claims(
         &pf.mult_small512_pcs_root,
         PcsShape::new(M_TAB_SMALL512, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: sm512_d1b_pt[..M_TAB_SMALL512].to_vec(), value: pf.small512_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: sm512_d1b_pt[..M_TAB_SMALL512].to_vec(),
+            value: pf.small512_d1b.mult_leaf_eval,
+        }],
         &pf.mult_small512_pcs,
         &mut tr,
     )?;
@@ -4435,8 +4930,7 @@ impl ZkUnlearningCertificate {
         let h_pad = cur.read_u32()? as usize;
         let rank_r = cur.read_u32()? as usize;
         if !h_pad.is_power_of_two()
-            || h_pad < 16
-            || h_pad > 64
+            || !(16..=64).contains(&h_pad)
             || h_v == 0
             || h_v > h_pad
             || rank_r == 0
@@ -4616,12 +5110,15 @@ impl ZkUnlearningCertificate {
     }
 }
 
+/// `(cert_bytes, s_before_root, s_unlearned_root, forget_request_root)` returned by [`prove_zk_unlearning_certificate`].
+pub type ZkUnlearningCertResult = (Vec<u8>, [u8; 32], [u8; 32], [u8; 32]);
+
 pub fn prove_zk_unlearning_certificate(
     vault_key: &ProverVaultKey,
     wit: &RankRUnlearnWitness,
     request_nonce: &[u8; 32],
     opt_mmr_tie: Option<(EpisodeMmrEntry, MmrInclusionProof, [u8; 32])>,
-) -> Result<(Vec<u8>, [u8; 32], [u8; 32], [u8; 32]), String> {
+) -> Result<ZkUnlearningCertResult, String> {
     let h_pad = wit.h_pad;
     let log_h = h_pad.trailing_zeros() as usize;
     let m_s = log_h + 14;
@@ -4642,8 +5139,16 @@ pub fn prove_zk_unlearning_certificate(
     let s_unl_seed = vault_key.state_pcs_seed(&wit.s_unlearned.s_bb_lsb);
     let u_seed = vault_key.basis_pcs_seed(&wit.basis.u_bb_lsb, request_nonce);
 
-    let s_bef_st = commit_table_pcs(&wit.s_before.s_bb_lsb, PcsParams::default_zk(4), Some(&s_bef_seed));
-    let s_unl_st = commit_table_pcs(&wit.s_unlearned.s_bb_lsb, PcsParams::default_zk(4), Some(&s_unl_seed));
+    let s_bef_st = commit_table_pcs(
+        &wit.s_before.s_bb_lsb,
+        PcsParams::default_zk(4),
+        Some(&s_bef_seed),
+    );
+    let s_unl_st = commit_table_pcs(
+        &wit.s_unlearned.s_bb_lsb,
+        PcsParams::default_zk(4),
+        Some(&s_unl_seed),
+    );
     let u_st = commit_table_pcs(&wit.basis.u_bb_lsb, PcsParams::default_zk(4), Some(&u_seed));
     let ulo_st = commit_table_pcs(&wit.basis.u_lo_shift_lsb, PcsParams::default_zk(5), None);
     let mult_ulo_st = commit_table_pcs(&mult_ulo, PcsParams::default_zk(1), None);
@@ -4839,16 +5344,18 @@ pub fn prove_zk_unlearning_certificate(
         for h in 0..h_pad {
             let mut al_lo = Ext4::ZERO;
             let mut al_hi = Ext4::ZERO;
-            for i_k in 0..128 {
+            for (i_k, &eq_v) in eq_zp2ik.iter().enumerate() {
                 let idx = h + (i_k << log_h) + (a << (log_h + 7));
-                al_lo = al_lo.add(eq_zp2ik[i_k].scale_bb(ulo_signed_bb[idx]));
-                al_hi = al_hi.add(eq_zp2ik[i_k].scale_bb(uhi_signed_bb[idx]));
+                al_lo = al_lo.add(eq_v.scale_bb(ulo_signed_bb[idx]));
+                al_hi = al_hi.add(eq_v.scale_bb(uhi_signed_bb[idx]));
             }
             p2_ulo_left[h + (a << log_h)] = al_lo;
             p2_uhi_left[h + (a << log_h)] = al_hi;
             let mut ar = Ext4::ZERO;
-            for j_v in 0..128 {
-                ar = ar.add(eq_zp2jv[j_v].scale_bb(wit.p_proj_lsb_haj[h + (a << log_h) + (j_v << (log_h + 3))]));
+            for (j_v, &eq_v) in eq_zp2jv.iter().enumerate() {
+                ar = ar.add(
+                    eq_v.scale_bb(wit.p_proj_lsb_haj[h + (a << log_h) + (j_v << (log_h + 3))]),
+                );
             }
             p2_right[h + (a << log_h)] = ar;
         }
@@ -4911,16 +5418,19 @@ pub fn prove_zk_unlearning_certificate(
     for i_k in 0..128 {
         for h in 0..h_pad {
             let mut al = Ext4::ZERO;
-            for j_v in 0..128 {
-                al = al.add(eq_zrjv[j_v].scale_bb(wit.s_unlearned.s_bb_lsb[h + (i_k << log_h) + (j_v << (log_h + 7))]));
+            for (j_v, &eq_v) in eq_zrjv.iter().enumerate() {
+                al =
+                    al.add(eq_v.scale_bb(
+                        wit.s_unlearned.s_bb_lsb[h + (i_k << log_h) + (j_v << (log_h + 7))],
+                    ));
             }
             rz_left[h + (i_k << log_h)] = al;
             let mut ar_lo = Ext4::ZERO;
             let mut ar_hi = Ext4::ZERO;
-            for a in 0..R_PAD {
+            for (a, &eq_v) in eq_zra.iter().enumerate() {
                 let idx = h + (i_k << log_h) + (a << (log_h + 7));
-                ar_lo = ar_lo.add(eq_zra[a].scale_bb(ulo_signed_bb[idx]));
-                ar_hi = ar_hi.add(eq_zra[a].scale_bb(uhi_signed_bb[idx]));
+                ar_lo = ar_lo.add(eq_v.scale_bb(ulo_signed_bb[idx]));
+                ar_hi = ar_hi.add(eq_v.scale_bb(uhi_signed_bb[idx]));
             }
             rz_ulo_right[h + (i_k << log_h)] = ar_lo;
             rz_uhi_right[h + (i_k << log_h)] = ar_hi;
@@ -4932,20 +5442,50 @@ pub fn prove_zk_unlearning_certificate(
         prove_gruen_einsum_mode2_ext4(&rz_left, &rz_uhi_right, log_h, 7, &zr_h, &mut tr);
 
     // 7 `D1b` Range Proofs:
-    let (ulo_d1b, ulo_d1b_pt) =
-        prove_d1b_range_ext4(&wit.basis.u_lo_shift_lsb, &mult_ulo, m_small, LIMB_SHIFT, &mut tr);
-    let (uhi_d1b, uhi_d1b_pt) =
-        prove_d1b_range_ext4(&wit.basis.u_hi_shift_lsb, &mult_uhi, m_small, LIMB_SHIFT, &mut tr);
+    let (ulo_d1b, ulo_d1b_pt) = prove_d1b_range_ext4(
+        &wit.basis.u_lo_shift_lsb,
+        &mult_ulo,
+        m_small,
+        LIMB_SHIFT,
+        &mut tr,
+    );
+    let (uhi_d1b, uhi_d1b_pt) = prove_d1b_range_ext4(
+        &wit.basis.u_hi_shift_lsb,
+        &mult_uhi,
+        m_small,
+        LIMB_SHIFT,
+        &mut tr,
+    );
     let (gram_d1b, gram_d1b_pt) =
         prove_d1b_range_ext4(&wit.gram_shift_pad, &mult_gram, m_gram, M_TAB_ORTH, &mut tr);
-    let (res_zero_d1b, res_d1b_pt) =
-        prove_d1b_range_ext4(&wit.res_shift_lsb_hja, &mult_res, m_small, M_TAB_ZERO, &mut tr);
-    let (sbnd_unl_d1b, sbnd_d1b_pt) =
-        prove_d1b_range_ext4(&wit.s_bnd_unl_packed, &mult_sbnd, m_4s, M_TAB_S_BND, &mut tr);
-    let (qlo_unl_d1b, qlo_d1b_pt) =
-        prove_d1b_range_ext4(&wit.qlo_unl_packed, &mult_qlo, m_2s, M_TAB_QUOT_UNL, &mut tr);
-    let (rem128_unl_d1b, rem128_d1b_pt) =
-        prove_d1b_range_ext4(&wit.rem128_unl_packed, &mult_rem128, m_4s, LIMB_SHIFT, &mut tr);
+    let (res_zero_d1b, res_d1b_pt) = prove_d1b_range_ext4(
+        &wit.res_shift_lsb_hja,
+        &mult_res,
+        m_small,
+        M_TAB_ZERO,
+        &mut tr,
+    );
+    let (sbnd_unl_d1b, sbnd_d1b_pt) = prove_d1b_range_ext4(
+        &wit.s_bnd_unl_packed,
+        &mult_sbnd,
+        m_4s,
+        M_TAB_S_BND,
+        &mut tr,
+    );
+    let (qlo_unl_d1b, qlo_d1b_pt) = prove_d1b_range_ext4(
+        &wit.qlo_unl_packed,
+        &mult_qlo,
+        m_2s,
+        M_TAB_QUOT_UNL,
+        &mut tr,
+    );
+    let (rem128_unl_d1b, rem128_d1b_pt) = prove_d1b_range_ext4(
+        &wit.rem128_unl_packed,
+        &mult_rem128,
+        m_4s,
+        LIMB_SHIFT,
+        &mut tr,
+    );
 
     let zs_bnd = tr.squeeze_ext4_vec(b"zs_unl_bnd", m_s, true);
     let z_pbnd = tr.squeeze_ext4_vec(b"zp_unl_bnd", m_small, true);
@@ -4971,8 +5511,14 @@ pub fn prove_zk_unlearning_certificate(
     let s_before_pcs = open_pcs_claims(
         &s_bef_st,
         &[
-            MleEvalClaim { point: zp2_hij.clone(), value: s_before_at_zp2 },
-            MleEvalClaim { point: zs_bnd.clone(), value: s_before_at_zsbnd },
+            MleEvalClaim {
+                point: zp2_hij.clone(),
+                value: s_before_at_zp2,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: s_before_at_zsbnd,
+            },
         ],
         &mut tr,
     );
@@ -4987,10 +5533,22 @@ pub fn prove_zk_unlearning_certificate(
     let s_unlearned_pcs = open_pcs_claims(
         &s_unl_st,
         &[
-            MleEvalClaim { point: zp2_hij, value: s_unlearned_at_zp2 },
-            MleEvalClaim { point: build_su_pt(&rz_lo_ch), value: rz_lo_gruen.terminal_openings.0 },
-            MleEvalClaim { point: build_su_pt(&rz_hi_ch), value: rz_hi_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zs_bnd.clone(), value: s_unlearned_at_zsbnd },
+            MleEvalClaim {
+                point: zp2_hij,
+                value: s_unlearned_at_zp2,
+            },
+            MleEvalClaim {
+                point: build_su_pt(&rz_lo_ch),
+                value: rz_lo_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: build_su_pt(&rz_hi_ch),
+                value: rz_hi_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: s_unlearned_at_zsbnd,
+            },
         ],
         &mut tr,
     );
@@ -5005,10 +5563,22 @@ pub fn prove_zk_unlearning_certificate(
     let u_pcs = open_pcs_claims(
         &u_st,
         &[
-            MleEvalClaim { point: u_inact_pt, value: u_inactive_zero.terminal_openings.1 },
-            MleEvalClaim { point: build_u_pt(&gram_lo_ch, &zg_a), value: gram_lo_gruen.terminal_openings.0 },
-            MleEvalClaim { point: build_u_pt(&gram_hi_ch, &zg_a), value: gram_hi_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zu_limb.clone(), value: u_at_zulimb },
+            MleEvalClaim {
+                point: u_inact_pt,
+                value: u_inactive_zero.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_lo_ch, &zg_a),
+                value: gram_lo_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_hi_ch, &zg_a),
+                value: gram_hi_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zu_limb.clone(),
+                value: u_at_zulimb,
+            },
         ],
         &mut tr,
     );
@@ -5025,34 +5595,70 @@ pub fn prove_zk_unlearning_certificate(
     let ulo_pcs = open_pcs_claims(
         &ulo_st,
         &[
-            MleEvalClaim { point: zu_limb.clone(), value: ulo_shift_at_zulimb },
-            MleEvalClaim { point: build_u_pt(&gram_lo_ch, &zg_b), value: gram_lo_gruen.terminal_openings.1.add(ulo_off) },
-            MleEvalClaim { point: build_up2_pt(&p2_lo_ch), value: proj2_lo_gruen.terminal_openings.0.add(ulo_off) },
-            MleEvalClaim { point: build_u_pt(&rz_lo_ch, &zr_a), value: rz_lo_gruen.terminal_openings.1.add(ulo_off) },
-            MleEvalClaim { point: ulo_d1b_pt.clone(), value: ulo_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zu_limb.clone(),
+                value: ulo_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_lo_ch, &zg_b),
+                value: gram_lo_gruen.terminal_openings.1.add(ulo_off),
+            },
+            MleEvalClaim {
+                point: build_up2_pt(&p2_lo_ch),
+                value: proj2_lo_gruen.terminal_openings.0.add(ulo_off),
+            },
+            MleEvalClaim {
+                point: build_u_pt(&rz_lo_ch, &zr_a),
+                value: rz_lo_gruen.terminal_openings.1.add(ulo_off),
+            },
+            MleEvalClaim {
+                point: ulo_d1b_pt.clone(),
+                value: ulo_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_ulo_pcs = open_pcs_claims(
         &mult_ulo_st,
-        &[MleEvalClaim { point: ulo_d1b_pt[..LIMB_SHIFT].to_vec(), value: ulo_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: ulo_d1b_pt[..LIMB_SHIFT].to_vec(),
+            value: ulo_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
     let uhi_pcs = open_pcs_claims(
         &uhi_st,
         &[
-            MleEvalClaim { point: zu_limb, value: uhi_shift_at_zulimb },
-            MleEvalClaim { point: build_u_pt(&gram_hi_ch, &zg_b), value: gram_hi_gruen.terminal_openings.1.add(uhi_off) },
-            MleEvalClaim { point: build_up2_pt(&p2_hi_ch), value: proj2_hi_gruen.terminal_openings.0.add(uhi_off) },
-            MleEvalClaim { point: build_u_pt(&rz_hi_ch, &zr_a), value: rz_hi_gruen.terminal_openings.1.add(uhi_off) },
-            MleEvalClaim { point: uhi_d1b_pt.clone(), value: uhi_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zu_limb,
+                value: uhi_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_hi_ch, &zg_b),
+                value: gram_hi_gruen.terminal_openings.1.add(uhi_off),
+            },
+            MleEvalClaim {
+                point: build_up2_pt(&p2_hi_ch),
+                value: proj2_hi_gruen.terminal_openings.0.add(uhi_off),
+            },
+            MleEvalClaim {
+                point: build_u_pt(&rz_hi_ch, &zr_a),
+                value: rz_hi_gruen.terminal_openings.1.add(uhi_off),
+            },
+            MleEvalClaim {
+                point: uhi_d1b_pt.clone(),
+                value: uhi_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_uhi_pcs = open_pcs_claims(
         &mult_uhi_st,
-        &[MleEvalClaim { point: uhi_d1b_pt[..LIMB_SHIFT].to_vec(), value: uhi_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: uhi_d1b_pt[..LIMB_SHIFT].to_vec(),
+            value: uhi_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -5066,9 +5672,18 @@ pub fn prove_zk_unlearning_certificate(
     let p_proj_pcs = open_pcs_claims(
         &p_proj_st,
         &[
-            MleEvalClaim { point: build_pproj_pt(&p2_lo_ch), value: proj2_lo_gruen.terminal_openings.1 },
-            MleEvalClaim { point: build_pproj_pt(&p2_hi_ch), value: proj2_hi_gruen.terminal_openings.1 },
-            MleEvalClaim { point: z_pbnd.clone(), value: pproj_at_zpbnd },
+            MleEvalClaim {
+                point: build_pproj_pt(&p2_lo_ch),
+                value: proj2_lo_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: build_pproj_pt(&p2_hi_ch),
+                value: proj2_hi_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: z_pbnd.clone(),
+                value: pproj_at_zpbnd,
+            },
         ],
         &mut tr,
     );
@@ -5076,28 +5691,46 @@ pub fn prove_zk_unlearning_certificate(
     let gram_shift_pcs = open_pcs_claims(
         &gram_st,
         &[
-            MleEvalClaim { point: zg_pad, value: gram_shift_at_zg },
-            MleEvalClaim { point: gram_d1b_pt.clone(), value: gram_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zg_pad,
+                value: gram_shift_at_zg,
+            },
+            MleEvalClaim {
+                point: gram_d1b_pt.clone(),
+                value: gram_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_gram_pcs = open_pcs_claims(
         &mult_gram_st,
-        &[MleEvalClaim { point: gram_d1b_pt[..M_TAB_ORTH].to_vec(), value: gram_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: gram_d1b_pt[..M_TAB_ORTH].to_vec(),
+            value: gram_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
     let res_shift_pcs = open_pcs_claims(
         &res_st,
         &[
-            MleEvalClaim { point: zr_hja, value: res_shift_at_zr },
-            MleEvalClaim { point: res_d1b_pt.clone(), value: res_zero_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zr_hja,
+                value: res_shift_at_zr,
+            },
+            MleEvalClaim {
+                point: res_d1b_pt.clone(),
+                value: res_zero_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_res_pcs = open_pcs_claims(
         &mult_res_st,
-        &[MleEvalClaim { point: res_d1b_pt[..M_TAB_ZERO].to_vec(), value: res_zero_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: res_d1b_pt[..M_TAB_ZERO].to_vec(),
+            value: res_zero_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -5113,17 +5746,35 @@ pub fn prove_zk_unlearning_certificate(
     let sbnd_unl_pcs = open_pcs_claims(
         &sbnd_st,
         &[
-            MleEvalClaim { point: zsb00, value: s_before_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb10, value: sbnd_ext.sub(s_before_at_zsbnd) },
-            MleEvalClaim { point: zsb01, value: s_unlearned_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb11, value: sbnd_ext.sub(s_unlearned_at_zsbnd) },
-            MleEvalClaim { point: sbnd_d1b_pt.clone(), value: sbnd_unl_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zsb00,
+                value: s_before_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb10,
+                value: sbnd_ext.sub(s_before_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: zsb01,
+                value: s_unlearned_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb11,
+                value: sbnd_ext.sub(s_unlearned_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: sbnd_d1b_pt.clone(),
+                value: sbnd_unl_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_sbnd_unl_pcs = open_pcs_claims(
         &mult_sbnd_st,
-        &[MleEvalClaim { point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(), value: sbnd_unl_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(),
+            value: sbnd_unl_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -5133,35 +5784,74 @@ pub fn prove_zk_unlearning_certificate(
     let qlo_unl_pcs = open_pcs_claims(
         &qlo_st,
         &[
-            MleEvalClaim { point: zp2_qlo, value: q_p2_lo_shift_at_zp2 },
-            MleEvalClaim { point: zp_qlo, value: pproj_at_zpbnd.add(qunl_ext) },
-            MleEvalClaim { point: zr_qlo, value: q_u3_lo_shift_at_zr },
-            MleEvalClaim { point: zg_qlo, value: g_lo_shift_at_zg },
-            MleEvalClaim { point: qlo_d1b_pt.clone(), value: qlo_unl_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zp2_qlo,
+                value: q_p2_lo_shift_at_zp2,
+            },
+            MleEvalClaim {
+                point: zp_qlo,
+                value: pproj_at_zpbnd.add(qunl_ext),
+            },
+            MleEvalClaim {
+                point: zr_qlo,
+                value: q_u3_lo_shift_at_zr,
+            },
+            MleEvalClaim {
+                point: zg_qlo,
+                value: g_lo_shift_at_zg,
+            },
+            MleEvalClaim {
+                point: qlo_d1b_pt.clone(),
+                value: qlo_unl_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_qlo_unl_pcs = open_pcs_claims(
         &mult_qlo_st,
-        &[MleEvalClaim { point: qlo_d1b_pt[..M_TAB_QUOT_UNL].to_vec(), value: qlo_unl_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: qlo_d1b_pt[..M_TAB_QUOT_UNL].to_vec(),
+            value: qlo_unl_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
     let rem128_unl_pcs = open_pcs_claims(
         &rem128_st,
         &[
-            MleEvalClaim { point: zp2_rlo, value: r_p2_lo_at_zp2 },
-            MleEvalClaim { point: zp2_rhi, value: r_p2_hi_at_zp2 },
-            MleEvalClaim { point: zr_rlo, value: r_u3_lo_at_zr },
-            MleEvalClaim { point: zr_rhi, value: r_u3_hi_at_zr },
-            MleEvalClaim { point: zg_rglo, value: r_glo_at_zg },
-            MleEvalClaim { point: rem128_d1b_pt.clone(), value: rem128_unl_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zp2_rlo,
+                value: r_p2_lo_at_zp2,
+            },
+            MleEvalClaim {
+                point: zp2_rhi,
+                value: r_p2_hi_at_zp2,
+            },
+            MleEvalClaim {
+                point: zr_rlo,
+                value: r_u3_lo_at_zr,
+            },
+            MleEvalClaim {
+                point: zr_rhi,
+                value: r_u3_hi_at_zr,
+            },
+            MleEvalClaim {
+                point: zg_rglo,
+                value: r_glo_at_zg,
+            },
+            MleEvalClaim {
+                point: rem128_d1b_pt.clone(),
+                value: rem128_unl_d1b.rem_leaf_eval,
+            },
         ],
         &mut tr,
     );
     let mult_rem128_unl_pcs = open_pcs_claims(
         &mult_rem128_st,
-        &[MleEvalClaim { point: rem128_d1b_pt[..LIMB_SHIFT].to_vec(), value: rem128_unl_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: rem128_d1b_pt[..LIMB_SHIFT].to_vec(),
+            value: rem128_unl_d1b.mult_leaf_eval,
+        }],
         &mut tr,
     );
 
@@ -5375,7 +6065,11 @@ pub fn verify_zk_unlearning_certificate(
     while zg_pad.len() < m_gram {
         zg_pad.push(Ext4::ZERO);
     }
-    for e in [cert.g_lo_shift_at_zg, cert.r_glo_at_zg, cert.gram_shift_at_zg] {
+    for e in [
+        cert.g_lo_shift_at_zg,
+        cert.r_glo_at_zg,
+        cert.gram_shift_at_zg,
+    ] {
         tr.absorb_ext4(b"gram_ev", e);
     }
     if cert.gram_lo_gruen.kappa != 7 || cert.gram_hi_gruen.kappa != 7 {
@@ -5518,8 +6212,14 @@ pub fn verify_zk_unlearning_certificate(
         &cert.s_before_root,
         PcsShape::new(m_s, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: zp2_hij.clone(), value: cert.s_before_at_zp2 },
-            MleEvalClaim { point: zs_bnd.clone(), value: cert.s_before_at_zsbnd },
+            MleEvalClaim {
+                point: zp2_hij.clone(),
+                value: cert.s_before_at_zp2,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: cert.s_before_at_zsbnd,
+            },
         ],
         &cert.s_before_pcs,
         &mut tr,
@@ -5536,10 +6236,22 @@ pub fn verify_zk_unlearning_certificate(
         &cert.s_unlearned_root,
         PcsShape::new(m_s, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: zp2_hij.clone(), value: cert.s_unlearned_at_zp2 },
-            MleEvalClaim { point: build_su_pt(&rz_lo_ch), value: cert.rz_lo_gruen.terminal_openings.0 },
-            MleEvalClaim { point: build_su_pt(&rz_hi_ch), value: cert.rz_hi_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zs_bnd.clone(), value: cert.s_unlearned_at_zsbnd },
+            MleEvalClaim {
+                point: zp2_hij.clone(),
+                value: cert.s_unlearned_at_zp2,
+            },
+            MleEvalClaim {
+                point: build_su_pt(&rz_lo_ch),
+                value: cert.rz_lo_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: build_su_pt(&rz_hi_ch),
+                value: cert.rz_hi_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zs_bnd.clone(),
+                value: cert.s_unlearned_at_zsbnd,
+            },
         ],
         &cert.s_unlearned_pcs,
         &mut tr,
@@ -5556,10 +6268,22 @@ pub fn verify_zk_unlearning_certificate(
         &cert.u_pcs_root,
         PcsShape::new(m_small, PcsParams::default_zk(4)),
         &[
-            MleEvalClaim { point: u_inact_pt, value: cert.u_inactive_zero.terminal_openings.1 },
-            MleEvalClaim { point: build_u_pt(&gram_lo_ch, &zg_a), value: cert.gram_lo_gruen.terminal_openings.0 },
-            MleEvalClaim { point: build_u_pt(&gram_hi_ch, &zg_a), value: cert.gram_hi_gruen.terminal_openings.0 },
-            MleEvalClaim { point: zu_limb.clone(), value: cert.u_at_zulimb },
+            MleEvalClaim {
+                point: u_inact_pt,
+                value: cert.u_inactive_zero.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_lo_ch, &zg_a),
+                value: cert.gram_lo_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_hi_ch, &zg_a),
+                value: cert.gram_hi_gruen.terminal_openings.0,
+            },
+            MleEvalClaim {
+                point: zu_limb.clone(),
+                value: cert.u_at_zulimb,
+            },
         ],
         &cert.u_pcs,
         &mut tr,
@@ -5578,11 +6302,26 @@ pub fn verify_zk_unlearning_certificate(
         &cert.ulo_pcs_root,
         PcsShape::new(m_small, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: zu_limb.clone(), value: cert.ulo_shift_at_zulimb },
-            MleEvalClaim { point: build_u_pt(&gram_lo_ch, &zg_b), value: cert.gram_lo_gruen.terminal_openings.1.add(ulo_off) },
-            MleEvalClaim { point: build_up2_pt(&p2_lo_ch), value: cert.proj2_lo_gruen.terminal_openings.0.add(ulo_off) },
-            MleEvalClaim { point: build_u_pt(&rz_lo_ch, &zr_a), value: cert.rz_lo_gruen.terminal_openings.1.add(ulo_off) },
-            MleEvalClaim { point: ulo_d1b_pt.clone(), value: cert.ulo_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zu_limb.clone(),
+                value: cert.ulo_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_lo_ch, &zg_b),
+                value: cert.gram_lo_gruen.terminal_openings.1.add(ulo_off),
+            },
+            MleEvalClaim {
+                point: build_up2_pt(&p2_lo_ch),
+                value: cert.proj2_lo_gruen.terminal_openings.0.add(ulo_off),
+            },
+            MleEvalClaim {
+                point: build_u_pt(&rz_lo_ch, &zr_a),
+                value: cert.rz_lo_gruen.terminal_openings.1.add(ulo_off),
+            },
+            MleEvalClaim {
+                point: ulo_d1b_pt.clone(),
+                value: cert.ulo_d1b.rem_leaf_eval,
+            },
         ],
         &cert.ulo_pcs,
         &mut tr,
@@ -5590,7 +6329,10 @@ pub fn verify_zk_unlearning_certificate(
     verify_pcs_claims(
         &cert.mult_ulo_pcs_root,
         PcsShape::new(LIMB_SHIFT, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: ulo_d1b_pt[..LIMB_SHIFT].to_vec(), value: cert.ulo_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: ulo_d1b_pt[..LIMB_SHIFT].to_vec(),
+            value: cert.ulo_d1b.mult_leaf_eval,
+        }],
         &cert.mult_ulo_pcs,
         &mut tr,
     )?;
@@ -5599,11 +6341,26 @@ pub fn verify_zk_unlearning_certificate(
         &cert.uhi_pcs_root,
         PcsShape::new(m_small, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: zu_limb, value: cert.uhi_shift_at_zulimb },
-            MleEvalClaim { point: build_u_pt(&gram_hi_ch, &zg_b), value: cert.gram_hi_gruen.terminal_openings.1.add(uhi_off) },
-            MleEvalClaim { point: build_up2_pt(&p2_hi_ch), value: cert.proj2_hi_gruen.terminal_openings.0.add(uhi_off) },
-            MleEvalClaim { point: build_u_pt(&rz_hi_ch, &zr_a), value: cert.rz_hi_gruen.terminal_openings.1.add(uhi_off) },
-            MleEvalClaim { point: uhi_d1b_pt.clone(), value: cert.uhi_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zu_limb,
+                value: cert.uhi_shift_at_zulimb,
+            },
+            MleEvalClaim {
+                point: build_u_pt(&gram_hi_ch, &zg_b),
+                value: cert.gram_hi_gruen.terminal_openings.1.add(uhi_off),
+            },
+            MleEvalClaim {
+                point: build_up2_pt(&p2_hi_ch),
+                value: cert.proj2_hi_gruen.terminal_openings.0.add(uhi_off),
+            },
+            MleEvalClaim {
+                point: build_u_pt(&rz_hi_ch, &zr_a),
+                value: cert.rz_hi_gruen.terminal_openings.1.add(uhi_off),
+            },
+            MleEvalClaim {
+                point: uhi_d1b_pt.clone(),
+                value: cert.uhi_d1b.rem_leaf_eval,
+            },
         ],
         &cert.uhi_pcs,
         &mut tr,
@@ -5611,7 +6368,10 @@ pub fn verify_zk_unlearning_certificate(
     verify_pcs_claims(
         &cert.mult_uhi_pcs_root,
         PcsShape::new(LIMB_SHIFT, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: uhi_d1b_pt[..LIMB_SHIFT].to_vec(), value: cert.uhi_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: uhi_d1b_pt[..LIMB_SHIFT].to_vec(),
+            value: cert.uhi_d1b.mult_leaf_eval,
+        }],
         &cert.mult_uhi_pcs,
         &mut tr,
     )?;
@@ -5627,9 +6387,18 @@ pub fn verify_zk_unlearning_certificate(
         &cert.p_proj_pcs_root,
         PcsShape::new(m_small, PcsParams::default_zk(3)),
         &[
-            MleEvalClaim { point: build_pproj_pt(&p2_lo_ch), value: cert.proj2_lo_gruen.terminal_openings.1 },
-            MleEvalClaim { point: build_pproj_pt(&p2_hi_ch), value: cert.proj2_hi_gruen.terminal_openings.1 },
-            MleEvalClaim { point: z_pbnd.clone(), value: cert.pproj_at_zpbnd },
+            MleEvalClaim {
+                point: build_pproj_pt(&p2_lo_ch),
+                value: cert.proj2_lo_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: build_pproj_pt(&p2_hi_ch),
+                value: cert.proj2_hi_gruen.terminal_openings.1,
+            },
+            MleEvalClaim {
+                point: z_pbnd.clone(),
+                value: cert.pproj_at_zpbnd,
+            },
         ],
         &cert.p_proj_pcs,
         &mut tr,
@@ -5639,8 +6408,14 @@ pub fn verify_zk_unlearning_certificate(
         &cert.gram_shift_pcs_root,
         PcsShape::new(m_gram, PcsParams::default_zk(2)),
         &[
-            MleEvalClaim { point: zg_pad, value: cert.gram_shift_at_zg },
-            MleEvalClaim { point: gram_d1b_pt.clone(), value: cert.gram_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zg_pad,
+                value: cert.gram_shift_at_zg,
+            },
+            MleEvalClaim {
+                point: gram_d1b_pt.clone(),
+                value: cert.gram_d1b.rem_leaf_eval,
+            },
         ],
         &cert.gram_shift_pcs,
         &mut tr,
@@ -5648,7 +6423,10 @@ pub fn verify_zk_unlearning_certificate(
     verify_pcs_claims(
         &cert.mult_gram_pcs_root,
         PcsShape::new(M_TAB_ORTH, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: gram_d1b_pt[..M_TAB_ORTH].to_vec(), value: cert.gram_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: gram_d1b_pt[..M_TAB_ORTH].to_vec(),
+            value: cert.gram_d1b.mult_leaf_eval,
+        }],
         &cert.mult_gram_pcs,
         &mut tr,
     )?;
@@ -5657,8 +6435,14 @@ pub fn verify_zk_unlearning_certificate(
         &cert.res_shift_pcs_root,
         PcsShape::new(m_small, PcsParams::default_zk(2)),
         &[
-            MleEvalClaim { point: zr_hja.clone(), value: cert.res_shift_at_zr },
-            MleEvalClaim { point: res_d1b_pt.clone(), value: cert.res_zero_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zr_hja.clone(),
+                value: cert.res_shift_at_zr,
+            },
+            MleEvalClaim {
+                point: res_d1b_pt.clone(),
+                value: cert.res_zero_d1b.rem_leaf_eval,
+            },
         ],
         &cert.res_shift_pcs,
         &mut tr,
@@ -5666,7 +6450,10 @@ pub fn verify_zk_unlearning_certificate(
     verify_pcs_claims(
         &cert.mult_res_pcs_root,
         PcsShape::new(M_TAB_ZERO, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: res_d1b_pt[..M_TAB_ZERO].to_vec(), value: cert.res_zero_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: res_d1b_pt[..M_TAB_ZERO].to_vec(),
+            value: cert.res_zero_d1b.mult_leaf_eval,
+        }],
         &cert.mult_res_pcs,
         &mut tr,
     )?;
@@ -5684,11 +6471,26 @@ pub fn verify_zk_unlearning_certificate(
         &cert.sbnd_unl_pcs_root,
         PcsShape::new(m_4s, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: zsb00, value: cert.s_before_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb10, value: sbnd_ext.sub(cert.s_before_at_zsbnd) },
-            MleEvalClaim { point: zsb01, value: cert.s_unlearned_at_zsbnd.add(sbnd_ext) },
-            MleEvalClaim { point: zsb11, value: sbnd_ext.sub(cert.s_unlearned_at_zsbnd) },
-            MleEvalClaim { point: sbnd_d1b_pt.clone(), value: cert.sbnd_unl_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zsb00,
+                value: cert.s_before_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb10,
+                value: sbnd_ext.sub(cert.s_before_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: zsb01,
+                value: cert.s_unlearned_at_zsbnd.add(sbnd_ext),
+            },
+            MleEvalClaim {
+                point: zsb11,
+                value: sbnd_ext.sub(cert.s_unlearned_at_zsbnd),
+            },
+            MleEvalClaim {
+                point: sbnd_d1b_pt.clone(),
+                value: cert.sbnd_unl_d1b.rem_leaf_eval,
+            },
         ],
         &cert.sbnd_unl_pcs,
         &mut tr,
@@ -5696,7 +6498,10 @@ pub fn verify_zk_unlearning_certificate(
     verify_pcs_claims(
         &cert.mult_sbnd_unl_pcs_root,
         PcsShape::new(M_TAB_S_BND, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(), value: cert.sbnd_unl_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: sbnd_d1b_pt[..M_TAB_S_BND].to_vec(),
+            value: cert.sbnd_unl_d1b.mult_leaf_eval,
+        }],
         &cert.mult_sbnd_unl_pcs,
         &mut tr,
     )?;
@@ -5723,11 +6528,26 @@ pub fn verify_zk_unlearning_certificate(
         &cert.qlo_unl_pcs_root,
         PcsShape::new(m_2s, PcsParams::default_zk(5)),
         &[
-            MleEvalClaim { point: zp2_qlo, value: cert.q_p2_lo_shift_at_zp2 },
-            MleEvalClaim { point: zp_qlo, value: cert.pproj_at_zpbnd.add(qunl_ext) },
-            MleEvalClaim { point: zr_qlo, value: cert.q_u3_lo_shift_at_zr },
-            MleEvalClaim { point: zg_qlo, value: cert.g_lo_shift_at_zg },
-            MleEvalClaim { point: qlo_d1b_pt.clone(), value: cert.qlo_unl_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zp2_qlo,
+                value: cert.q_p2_lo_shift_at_zp2,
+            },
+            MleEvalClaim {
+                point: zp_qlo,
+                value: cert.pproj_at_zpbnd.add(qunl_ext),
+            },
+            MleEvalClaim {
+                point: zr_qlo,
+                value: cert.q_u3_lo_shift_at_zr,
+            },
+            MleEvalClaim {
+                point: zg_qlo,
+                value: cert.g_lo_shift_at_zg,
+            },
+            MleEvalClaim {
+                point: qlo_d1b_pt.clone(),
+                value: cert.qlo_unl_d1b.rem_leaf_eval,
+            },
         ],
         &cert.qlo_unl_pcs,
         &mut tr,
@@ -5735,7 +6555,10 @@ pub fn verify_zk_unlearning_certificate(
     verify_pcs_claims(
         &cert.mult_qlo_unl_pcs_root,
         PcsShape::new(M_TAB_QUOT_UNL, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: qlo_d1b_pt[..M_TAB_QUOT_UNL].to_vec(), value: cert.qlo_unl_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: qlo_d1b_pt[..M_TAB_QUOT_UNL].to_vec(),
+            value: cert.qlo_unl_d1b.mult_leaf_eval,
+        }],
         &cert.mult_qlo_unl_pcs,
         &mut tr,
     )?;
@@ -5772,12 +6595,30 @@ pub fn verify_zk_unlearning_certificate(
         &cert.rem128_unl_pcs_root,
         PcsShape::new(m_4s, PcsParams::default_zk(6)),
         &[
-            MleEvalClaim { point: zp2_rlo, value: cert.r_p2_lo_at_zp2 },
-            MleEvalClaim { point: zp2_rhi, value: cert.r_p2_hi_at_zp2 },
-            MleEvalClaim { point: zr_rlo, value: cert.r_u3_lo_at_zr },
-            MleEvalClaim { point: zr_rhi, value: cert.r_u3_hi_at_zr },
-            MleEvalClaim { point: zg_rglo, value: cert.r_glo_at_zg },
-            MleEvalClaim { point: rem128_d1b_pt.clone(), value: cert.rem128_unl_d1b.rem_leaf_eval },
+            MleEvalClaim {
+                point: zp2_rlo,
+                value: cert.r_p2_lo_at_zp2,
+            },
+            MleEvalClaim {
+                point: zp2_rhi,
+                value: cert.r_p2_hi_at_zp2,
+            },
+            MleEvalClaim {
+                point: zr_rlo,
+                value: cert.r_u3_lo_at_zr,
+            },
+            MleEvalClaim {
+                point: zr_rhi,
+                value: cert.r_u3_hi_at_zr,
+            },
+            MleEvalClaim {
+                point: zg_rglo,
+                value: cert.r_glo_at_zg,
+            },
+            MleEvalClaim {
+                point: rem128_d1b_pt.clone(),
+                value: cert.rem128_unl_d1b.rem_leaf_eval,
+            },
         ],
         &cert.rem128_unl_pcs,
         &mut tr,
@@ -5785,7 +6626,10 @@ pub fn verify_zk_unlearning_certificate(
     verify_pcs_claims(
         &cert.mult_rem128_unl_pcs_root,
         PcsShape::new(LIMB_SHIFT, PcsParams::default_zk(1)),
-        &[MleEvalClaim { point: rem128_d1b_pt[..LIMB_SHIFT].to_vec(), value: cert.rem128_unl_d1b.mult_leaf_eval }],
+        &[MleEvalClaim {
+            point: rem128_d1b_pt[..LIMB_SHIFT].to_vec(),
+            value: cert.rem128_unl_d1b.mult_leaf_eval,
+        }],
         &cert.mult_rem128_unl_pcs,
         &mut tr,
     )?;

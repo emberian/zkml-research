@@ -2,7 +2,9 @@
 //! and deterministic OCP `MXFP4` (`E2M1`, block-32) offline `cSHAKE256` Merkle commitment
 //! directly over the cached `Qwen/Qwen3.5-0.8B-Base` checkpoint (`0` copies, `0` downloads).
 
-use crate::ext4::{cshake256_32, merkle_root_cshake, merkle_open_single_cshake, MerkleSinglePath, P};
+use crate::ext4::{
+    cshake256_32, merkle_open_single_cshake, merkle_root_cshake, MerkleSinglePath, P,
+};
 use rayon::prelude::*;
 use serde::Deserialize;
 use std::collections::BTreeMap;
@@ -87,8 +89,12 @@ impl Drop for RawMmapGuard {
 impl MmapSafetensors {
     /// Memory-map a `safetensors` file read-only (`PROT_READ`, `MAP_PRIVATE`) and parse its header.
     pub fn open(path: impl AsRef<Path>) -> Result<Self, String> {
-        let file = File::open(path.as_ref())
-            .map_err(|e| format!("failed to open safetensors {}: {e}", path.as_ref().display()))?;
+        let file = File::open(path.as_ref()).map_err(|e| {
+            format!(
+                "failed to open safetensors {}: {e}",
+                path.as_ref().display()
+            )
+        })?;
         let len_u64 = file
             .metadata()
             .map_err(|e| format!("metadata failed: {e}"))?
@@ -132,8 +138,8 @@ impl MmapSafetensors {
             if k == "__metadata__" {
                 continue;
             }
-            let info: TensorInfo = serde_json::from_value(v)
-                .map_err(|e| format!("invalid tensor entry {k}: {e}"))?;
+            let info: TensorInfo =
+                serde_json::from_value(v).map_err(|e| format!("invalid tensor entry {k}: {e}"))?;
             let end_abs = data_start
                 .checked_add(info.data_offsets[1])
                 .ok_or_else(|| format!("offset overflow for tensor {k}"))?;
@@ -294,7 +300,9 @@ impl Mxfp4Matrix {
         let rows_orig = info.shape[0];
         let cols_orig = info.shape[1];
         if cols_orig % 32 != 0 {
-            return Err(format!("cols_orig {cols_orig} not divisible by 32 on {name}"));
+            return Err(format!(
+                "cols_orig {cols_orig} not divisible by 32 on {name}"
+            ));
         }
         let rows_pad = rows_orig.next_power_of_two();
         let blocks_per_row = cols_orig / 32;
@@ -334,7 +342,8 @@ impl Mxfp4Matrix {
                         let scale_f32 = (scale_int as f32) / W_SCALE_BASE;
                         sc_row[blk] = scale_int;
                         for b in 0..32 {
-                            nib_row[blk * 32 + b] = quantize_scalar_e2m1_nibble(vals[b] / scale_f32);
+                            nib_row[blk * 32 + b] =
+                                quantize_scalar_e2m1_nibble(vals[b] / scale_f32);
                         }
                     }
                 }
@@ -495,6 +504,10 @@ impl Qwen35WeightRegistry {
 
     /// Produce a 5-sibling `cSHAKE256` authentication path opening `layer_idx` against `weight_root`.
     pub fn open_layer(&self, layer_idx: usize) -> MerkleSinglePath {
-        merkle_open_single_cshake(b"QW35-GLOBAL-WEIGHT-TREE-V1", &self.layer_digests, layer_idx)
+        merkle_open_single_cshake(
+            b"QW35-GLOBAL-WEIGHT-TREE-V1",
+            &self.layer_digests,
+            layer_idx,
+        )
     }
 }

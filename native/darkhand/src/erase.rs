@@ -79,7 +79,12 @@ macro_rules! wipe_slice {
             fn wipe(&mut self) {
                 // the whole capacity, not only the length
                 let cap = self.capacity();
-                unsafe { zero_raw(self.as_mut_ptr() as *mut u8, cap * std::mem::size_of::<$t>()) }
+                unsafe {
+                    zero_raw(
+                        self.as_mut_ptr() as *mut u8,
+                        cap * std::mem::size_of::<$t>(),
+                    )
+                }
                 self.clear();
             }
         }

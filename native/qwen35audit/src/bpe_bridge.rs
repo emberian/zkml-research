@@ -48,6 +48,7 @@ use rayon::prelude::*;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::fs;
+use std::ops::{Add, Mul, Neg, Sub};
 use std::path::Path;
 use std::sync::OnceLock;
 
@@ -259,28 +260,12 @@ impl Tower256 {
         ])
     }
 
-    /// Fast L1-table Fan–Paar `GF(2^256)` multiplication (`243` `GF(2^8)` lookups vs `6,561` bit calls).
-    #[inline]
-    pub fn mul(self, rhs: Self) -> Self {
-        let t = gf256_tables();
-        let a0 = [self.0[0], self.0[1]];
-        let a1 = [self.0[2], self.0[3]];
-        let b0 = [rhs.0[0], rhs.0[1]];
-        let b1 = [rhs.0[2], rhs.0[3]];
-        let p0 = mul_t7(t, a0, b0);
-        let p1 = mul_t7(t, a1, b1);
-        let m_prod = mul_t7(t, [a0[0] ^ a1[0], a0[1] ^ a1[1]], [b0[0] ^ b1[0], b0[1] ^ b1[1]]);
-        let mixed = [m_prod[0] ^ p0[0] ^ p1[0], m_prod[1] ^ p0[1] ^ p1[1]];
-        let p1_y6 = mul_y6_t7(t, p1);
-        Self([p0[0] ^ p1[0], p0[1] ^ p1[1], mixed[0] ^ p1_y6[0], mixed[1] ^ p1_y6[1]])
-    }
-
     /// Reference bit-recursive multiplication matching `minidregg/prover/src/binary_tower_256.rs` line-for-line.
     pub fn mul_ref_recursive(self, rhs: Self) -> Self {
         fn mul7_ref(a: [u64; 2], b: [u64; 2]) -> [u64; 2] {
             let p0 = mul_bits_ref(6, a[0], b[0]);
             let p1 = mul_bits_ref(6, a[1], b[1]);
-            let mixed = mul_bits_ref(6, a[0] ^ a[1], a[0] ^ a[0] ^ b[0] ^ b[1]) ^ p0 ^ p1;
+            let mixed = mul_bits_ref(6, a[0] ^ a[1], b[0] ^ b[1]) ^ p0 ^ p1;
             [p0 ^ p1, mixed ^ mul_by_gen_bits_ref(6, p1)]
         }
         let a0 = [self.0[0], self.0[1]];
@@ -289,10 +274,18 @@ impl Tower256 {
         let b1 = [rhs.0[2], rhs.0[3]];
         let p0 = mul7_ref(a0, b0);
         let p1 = mul7_ref(a1, b1);
-        let m = mul7_ref([a0[0] ^ a1[0], a0[1] ^ a1[1]], [b0[0] ^ b1[0], b0[1] ^ b1[1]]);
+        let m = mul7_ref(
+            [a0[0] ^ a1[0], a0[1] ^ a1[1]],
+            [b0[0] ^ b1[0], b0[1] ^ b1[1]],
+        );
         let mixed = [m[0] ^ p0[0] ^ p1[0], m[1] ^ p0[1] ^ p1[1]];
         let py6 = [p1[1], p1[0] ^ mul_by_gen_bits_ref(6, p1[1])];
-        Self([p0[0] ^ p1[0], p0[1] ^ p1[1], mixed[0] ^ py6[0], mixed[1] ^ py6[1]])
+        Self([
+            p0[0] ^ p1[0],
+            p0[1] ^ p1[1],
+            mixed[0] ^ py6[0],
+            mixed[1] ^ py6[1],
+        ])
     }
 
     #[inline]
@@ -360,6 +353,35 @@ impl Tower256 {
     }
 }
 
+impl Mul for Tower256 {
+    type Output = Self;
+
+    /// Fast L1-table Fan–Paar `GF(2^256)` multiplication (`243` `GF(2^8)` lookups vs `6,561` bit calls).
+    #[inline]
+    fn mul(self, rhs: Self) -> Self {
+        let t = gf256_tables();
+        let a0 = [self.0[0], self.0[1]];
+        let a1 = [self.0[2], self.0[3]];
+        let b0 = [rhs.0[0], rhs.0[1]];
+        let b1 = [rhs.0[2], rhs.0[3]];
+        let p0 = mul_t7(t, a0, b0);
+        let p1 = mul_t7(t, a1, b1);
+        let m_prod = mul_t7(
+            t,
+            [a0[0] ^ a1[0], a0[1] ^ a1[1]],
+            [b0[0] ^ b1[0], b0[1] ^ b1[1]],
+        );
+        let mixed = [m_prod[0] ^ p0[0] ^ p1[0], m_prod[1] ^ p0[1] ^ p1[1]];
+        let p1_y6 = mul_y6_t7(t, p1);
+        Self([
+            p0[0] ^ p1[0],
+            p0[1] ^ p1[1],
+            mixed[0] ^ p1_y6[0],
+            mixed[1] ^ p1_y6[1],
+        ])
+    }
+}
+
 /// Squeeze a 256-bit challenge in `Tower256` (`nonzero = true` rejects `0`), drawing 3 independent
 /// `Ext4` limbs (`12` BabyBear elements = `370.88` bits `>> 256` bits) so `cSHAKE256` covers the
 /// full `2^{256}` `Tower256` carrier (`< 2^{-57.4}` statistical distance from uniform).
@@ -387,7 +409,12 @@ pub fn squeeze_t256(tr: &mut CShakeTranscript, label: &[u8], nonzero: bool) -> T
     }
 }
 
-pub fn squeeze_t256_vec(tr: &mut CShakeTranscript, label: &[u8], len: usize, nonzero: bool) -> Vec<Tower256> {
+pub fn squeeze_t256_vec(
+    tr: &mut CShakeTranscript,
+    label: &[u8],
+    len: usize,
+    nonzero: bool,
+) -> Vec<Tower256> {
     (0..len)
         .map(|i| {
             let mut l = Vec::with_capacity(label.len() + 4);
@@ -457,7 +484,7 @@ pub fn is_prime_u64_exact(n: u64) -> bool {
         if n == p {
             return true;
         }
-        if n % p == 0 {
+        if n.is_multiple_of(p) {
             return false;
         }
     }
@@ -495,7 +522,10 @@ pub fn squeeze_prime_61bit(tr: &mut CShakeTranscript, label: &[u8]) -> u64 {
         let mut lbl = Vec::with_capacity(label.len() + 4);
         lbl.extend_from_slice(label);
         lbl.extend_from_slice(&ctr.to_le_bytes());
-        let raw = cshake256_32(b"QW35-FP-PRIME61-V1", &tr.squeeze_ext4(&lbl, false).to_bytes());
+        let raw = cshake256_32(
+            b"QW35-FP-PRIME61-V1",
+            &tr.squeeze_ext4(&lbl, false).to_bytes(),
+        );
         let v = u64::from_le_bytes(raw[..8].try_into().unwrap());
         let cand = ((v & ((1u64 << 60) - 1)) | (1u64 << 60)) | 1;
         if is_prime_u64_exact(cand) {
@@ -742,7 +772,7 @@ impl Tower256PcsProof {
     pub fn read_from(cur: &mut ByteCursor) -> Result<Self, String> {
         let m = cur.read_u8()? as usize;
         let max_evals = cur.read_u8()? as usize;
-        if m < 2 || m > 20 || max_evals == 0 || max_evals > 8 {
+        if !(2..=20).contains(&m) || max_evals == 0 || max_evals > 8 {
             return Err("invalid Tower256PcsProof header".to_string());
         }
         let shape = Tower256PcsShape::new(m, max_evals);
@@ -828,7 +858,9 @@ pub fn eq_mle_t256(z: &[Tower256], x: &[Tower256]) -> Tower256 {
     assert_eq!(z.len(), x.len());
     z.iter()
         .zip(x.iter())
-        .fold(Tower256::ONE, |acc, (&zj, &xj)| acc.mul(eq_lin_t256(zj, xj)))
+        .fold(Tower256::ONE, |acc, (&zj, &xj)| {
+            acc.mul(eq_lin_t256(zj, xj))
+        })
 }
 
 pub fn mle_eval_t256(tab: &[Tower256], pt: &[Tower256]) -> Tower256 {
@@ -841,7 +873,11 @@ pub fn mle_eval_t256(tab: &[Tower256], pt: &[Tower256]) -> Tower256 {
     acc
 }
 
-pub fn commit_t256_pcs(table: &[Tower256], max_evals: usize, seed_opt: Option<[u8; 32]>) -> Tower256PcsState {
+pub fn commit_t256_pcs(
+    table: &[Tower256],
+    max_evals: usize,
+    seed_opt: Option<[u8; 32]>,
+) -> Tower256PcsState {
     assert!(table.len() >= 4 && table.len().is_power_of_two());
     let m = table.len().trailing_zeros() as usize;
     let shape = Tower256PcsShape::new(m, max_evals);
@@ -961,8 +997,12 @@ pub fn open_t256_pcs(
         let mask_row = shape.r_data + idx;
 
         let mut s_mask = Tower256::ZERO;
-        for c in 0..shape.c_data {
-            s_mask = s_mask.add(state.row_evals_h0[mask_row * shape.w_poly + c].mul(eq_col[c]));
+        for (&h0_val, &eq_c) in state.row_evals_h0
+            [mask_row * shape.w_poly..mask_row * shape.w_poly + shape.c_data]
+            .iter()
+            .zip(eq_col.iter())
+        {
+            s_mask = s_mask.add(h0_val.mul(eq_c));
         }
         // Absorb `s_mask` BEFORE squeezing `beta_zk` so `s_mask` cannot be shifted post-hoc (`< 2^{-255}` error)!
         tr.absorb_bytes(b"t256_smask", &s_mask.to_le_bytes());
@@ -973,11 +1013,12 @@ pub fn open_t256_pcs(
             .iter()
             .map(|&mc| beta_zk.mul(mc))
             .collect();
-        for r in 0..shape.r_data {
-            let w_r = eq_row[r];
-            let rc = &state.row_coeffs[r * shape.w_poly..(r + 1) * shape.w_poly];
-            for k in 0..shape.w_poly {
-                u_coeffs[k] = u_coeffs[k].add(w_r.mul(rc[k]));
+        for (rc, &w_r) in state.row_coeffs[..shape.r_data * shape.w_poly]
+            .chunks_exact(shape.w_poly)
+            .zip(eq_row.iter())
+        {
+            for (u_c, &rc_k) in u_coeffs.iter_mut().zip(rc.iter()) {
+                *u_c = u_c.add(w_r.mul(rc_k));
             }
         }
         for &uc in &u_coeffs {
@@ -989,11 +1030,12 @@ pub fn open_t256_pcs(
 
     let prox_chals = squeeze_t256_vec(tr, b"t256_prox_r", shape.r_total, true);
     let mut u_prox_poly = vec![Tower256::ZERO; shape.w_poly];
-    for r in 0..shape.r_total {
-        let gamma = prox_chals[r];
-        let rc = &state.row_coeffs[r * shape.w_poly..(r + 1) * shape.w_poly];
-        for k in 0..shape.w_poly {
-            u_prox_poly[k] = u_prox_poly[k].add(gamma.mul(rc[k]));
+    for (rc, &gamma) in state.row_coeffs[..shape.r_total * shape.w_poly]
+        .chunks_exact(shape.w_poly)
+        .zip(prox_chals.iter())
+    {
+        for (u_p, &rc_k) in u_prox_poly.iter_mut().zip(rc.iter()) {
+            *u_p = u_p.add(gamma.mul(rc_k));
         }
     }
     for &uc in &u_prox_poly {
@@ -1005,7 +1047,9 @@ pub fn open_t256_pcs(
     let mut opened_cols = Vec::with_capacity(shape.t_cols * shape.r_total);
     for &col_idx in &queried {
         opened_salts.push(state.salts[col_idx]);
-        opened_cols.extend_from_slice(&state.col_codewords[col_idx * shape.r_total..(col_idx + 1) * shape.r_total]);
+        opened_cols.extend_from_slice(
+            &state.col_codewords[col_idx * shape.r_total..(col_idx + 1) * shape.r_total],
+        );
     }
     let multiproof = MerkleMultiProof::build(&state.tree_levels, &queried);
 
@@ -1064,12 +1108,14 @@ pub fn verify_t256_pcs(
         // Check `sum_{c=0}^{c_data - 1} u_eval(h_c) * eq_col[c] == cl.value + beta_zk * s_mask`!
         let eq_col = build_eq_table_lsb_t256(&cl.point[..shape.mc]);
         let mut lhs = Tower256::ZERO;
-        for c in 0..shape.c_data {
+        for (c, &eq_c) in eq_col[..shape.c_data].iter().enumerate() {
             let hc = Tower256::from_u16_gf2_16(c as u16);
-            lhs = lhs.add(eval_poly_t256(u_coeffs, hc).mul(eq_col[c]));
+            lhs = lhs.add(eval_poly_t256(u_coeffs, hc).mul(eq_c));
         }
         if lhs != cl.value.add(beta_zk.mul(s_mask)) {
-            return Err(format!("Tower256Pcs claim {idx} H_0 evaluation identity failed"));
+            return Err(format!(
+                "Tower256Pcs claim {idx} H_0 evaluation identity failed"
+            ));
         }
         eq_rows.push(build_eq_table_lsb_t256(&cl.point[shape.mc..]));
     }
@@ -1092,7 +1138,11 @@ pub fn verify_t256_pcs(
     let mut leaf_hashes = Vec::with_capacity(shape.t_cols);
     for (q_pos, &col_idx) in queried.iter().enumerate() {
         let col_slice = &proof.opened_cols[q_pos * shape.r_total..(q_pos + 1) * shape.r_total];
-        leaf_hashes.push(t256_pcs_col_hash(col_idx, &proof.opened_salts[q_pos], col_slice));
+        leaf_hashes.push(t256_pcs_col_hash(
+            col_idx,
+            &proof.opened_salts[q_pos],
+            col_slice,
+        ));
 
         let x_pt = Tower256::from_u16_gf2_16((shape.w_poly + col_idx) as u16);
         // 1. Proximity check against `u_prox_poly(x_pt)`
@@ -1101,7 +1151,9 @@ pub fn verify_t256_pcs(
             col_prox = col_prox.add(prox_chals[r].mul(col_slice[r]));
         }
         if col_prox != eval_poly_t256(&proof.u_prox_poly, x_pt) {
-            return Err(format!("Tower256Pcs proximity check failed at column {col_idx}"));
+            return Err(format!(
+                "Tower256Pcs proximity check failed at column {col_idx}"
+            ));
         }
         // 2. Per-claim row fold check against `u_eval_polys[idx](x_pt)` (`beta_zk * mask_row + \sum eq_row * row`)
         for idx in 0..shape.max_evals {
@@ -1110,7 +1162,9 @@ pub fn verify_t256_pcs(
                 col_ev = col_ev.add(eq_rows[idx][r].mul(col_slice[r]));
             }
             if col_ev != eval_poly_t256(&proof.u_eval_polys[idx], x_pt) {
-                return Err(format!("Tower256Pcs claim {idx} column fold failed at {col_idx}"));
+                return Err(format!(
+                    "Tower256Pcs claim {idx} column fold failed at {col_idx}"
+                ));
             }
         }
     }
@@ -1261,7 +1315,9 @@ pub fn verify_t256_quad_sumcheck(
 
     for (idx, msg) in proof.rounds.iter().enumerate() {
         if msg.q0.add(msg.q1) != sigma {
-            return Err(format!("Tower256QuadSumcheck q0 + q1 != sigma at round {idx}"));
+            return Err(format!(
+                "Tower256QuadSumcheck q0 + q1 != sigma at round {idx}"
+            ));
         }
         tr.absorb_bytes(b"t256_sc_q0", &msg.q0.to_le_bytes());
         tr.absorb_bytes(b"t256_sc_q1", &msg.q1.to_le_bytes());
@@ -1361,10 +1417,7 @@ pub fn mle_eval_ext4_table(tab: &[Ext4], pt: &[Ext4]) -> Ext4 {
     let eq = build_eq_table_lsb_ext4(pt);
     eq.par_iter()
         .zip(tab.par_iter())
-        .fold(
-            || Ext4::ZERO,
-            |acc, (&w, &v)| acc.add(w.mul(v)),
-        )
+        .fold(|| Ext4::ZERO, |acc, (&w, &v)| acc.add(w.mul(v)))
         .reduce(|| Ext4::ZERO, |a, b| a.add(b))
 }
 
@@ -1492,8 +1545,7 @@ pub fn prove_d1b_ext4_table(
                         let v0 = e0.mul(pl0.mul(qr0).add(pr0.mul(ql0)).add(eta.mul(ql0.mul(qr0))));
                         let v1 = e1.mul(pl1.mul(qr1).add(pr1.mul(ql1)).add(eta.mul(ql1.mul(qr1))));
                         let v2 = e2.mul(pl2.mul(qr2).add(pr2.mul(ql2)).add(eta.mul(ql2.mul(qr2))));
-                        let vi =
-                            de.mul(dpl.mul(dqr).add(dpr.mul(dql)).add(eta.mul(dql.mul(dqr))));
+                        let vi = de.mul(dpl.mul(dqr).add(dpr.mul(dql)).add(eta.mul(dql.mul(dqr))));
                         (a0.add(v0), a1.add(v1), a2.add(v2), ainf.add(vi))
                     },
                 )
@@ -1588,7 +1640,9 @@ pub fn verify_d1b_ext4_table(
 
     for (step, lyr) in proof.layers.iter().enumerate() {
         if lyr.rounds.len() != step {
-            return Err(format!("D1bExt4TableProof round count mismatch at step {step}"));
+            return Err(format!(
+                "D1bExt4TableProof round count mismatch at step {step}"
+            ));
         }
         let eta = tr.squeeze_ext4(b"d1b_rom_eta", true);
         let mut sigma = cur_p_claim.add(eta.mul(cur_q_claim));
@@ -1596,7 +1650,9 @@ pub fn verify_d1b_ext4_table(
 
         for (r_idx, msg) in lyr.rounds.iter().enumerate() {
             if msg.p0.add(msg.p1) != sigma {
-                return Err(format!("D1bExt4TableProof cubic sumcheck failed at {step}:{r_idx}"));
+                return Err(format!(
+                    "D1bExt4TableProof cubic sumcheck failed at {step}:{r_idx}"
+                ));
             }
             tr.absorb_ext4(b"d1b_rom_c0", msg.p0);
             tr.absorb_ext4(b"d1b_rom_c1", msg.p1);
@@ -1616,7 +1672,9 @@ pub fn verify_d1b_ext4_table(
         let num_val = lyr.p_lo.mul(lyr.q_hi).add(lyr.p_hi.mul(lyr.q_lo));
         let den_val = lyr.q_lo.mul(lyr.q_hi);
         if sigma != eq_ev.mul(num_val.add(eta.mul(den_val))) {
-            return Err(format!("D1bExt4TableProof layer fold equation failed at step {step}"));
+            return Err(format!(
+                "D1bExt4TableProof layer fold equation failed at step {step}"
+            ));
         }
 
         let r_bit = tr.squeeze_ext4(b"d1b_rom_rbit", true);
@@ -1811,14 +1869,18 @@ impl QwenBpeRom {
         for (tok_str, id_val) in vocab_obj {
             let tid = id_val
                 .as_u64()
-                .ok_or_else(|| format!("non-integer token id for {tok_str:?}"))? as usize;
+                .ok_or_else(|| format!("non-integer token id for {tok_str:?}"))?
+                as usize;
             if tid >= QWEN_VOCAB_SIZE {
                 return Err(format!("token id {tid} >= {QWEN_VOCAB_SIZE}"));
             }
             let mut raw = Vec::with_capacity(tok_str.len());
             for ch in tok_str.chars() {
                 let b = u2b.get(&ch).ok_or_else(|| {
-                    format!("unmapped ByteLevel unicode char U+{:04X} in token {tid}", ch as u32)
+                    format!(
+                        "unmapped ByteLevel unicode char U+{:04X} in token {tid}",
+                        ch as u32
+                    )
                 })?;
                 raw.push(*b);
             }
@@ -1833,7 +1895,8 @@ impl QwenBpeRom {
                 let tid = item
                     .get("id")
                     .and_then(|v| v.as_u64())
-                    .ok_or_else(|| "added_token missing id".to_string())? as usize;
+                    .ok_or_else(|| "added_token missing id".to_string())?
+                    as usize;
                 let content = item
                     .get("content")
                     .and_then(|v| v.as_str())
@@ -2029,13 +2092,18 @@ impl QwenBpeRom {
         }
         let mut word: Vec<u32> = chunk_bytes
             .iter()
-            .map(|&b| *self.bytes_to_bpe_id.get(&[b][..]).expect("all 256 byte tokens exist"))
+            .map(|&b| {
+                *self
+                    .bytes_to_bpe_id
+                    .get(&[b][..])
+                    .expect("all 256 byte tokens exist")
+            })
             .collect();
         while word.len() >= 2 {
             let mut best: Option<(u32, usize, u32)> = None;
             for i in 0..(word.len() - 1) {
                 if let Some(&(rank, mid)) = self.merge_ranks.get(&(word[i], word[i + 1])) {
-                    if best.map_or(true, |b| rank < b.0) {
+                    if best.is_none_or(|b| rank < b.0) {
                         best = Some((rank, i, mid));
                     }
                 }
@@ -2233,8 +2301,8 @@ fn eval_shift_kernel_t256(z: &[Tower256], u_pt: &[Tower256]) -> Tower256 {
 fn eval_tail_indicator_ext4(active_len: usize, pad_len: usize, pt: &[Ext4]) -> Ext4 {
     let eq = build_eq_table_lsb_ext4(pt);
     let mut acc = Ext4::ZERO;
-    for i in active_len..pad_len {
-        acc = acc.add(eq[i]);
+    for &eq_i in &eq[active_len..pad_len] {
+        acc = acc.add(eq_i);
     }
     acc
 }
@@ -2532,7 +2600,10 @@ impl DualCharBridgeProof {
         let t256_h_next_pcs_proof = Tower256PcsProof::read_from(&mut cur)?;
 
         if cur.remaining() != 0 {
-            return Err(format!("trailing {} bytes in DualCharBridgeProof", cur.remaining()));
+            return Err(format!(
+                "trailing {} bytes in DualCharBridgeProof",
+                cur.remaining()
+            ));
         }
         Ok(Self {
             stmt,
@@ -2633,10 +2704,12 @@ pub fn prove_dual_char_bpe_bridge(
 
 /// Enclave-ready prover entry returning `(proof, raw_bytes, salts)` so `verify_dual_char_bpe_bridge_with_salts`
 /// binds prover-supplied `raw_bytes` directly to the pre-challenge `stmt.tower256_salted_root` commitment!
+pub type SaltedBpeBridgeResult = (DualCharBridgeProof, Vec<u8>, Vec<[u8; 31]>);
+
 pub fn prove_dual_char_bpe_bridge_salted(
     rom: &QwenBpeRom,
     tokens: &[u32],
-) -> Result<(DualCharBridgeProof, Vec<u8>, Vec<[u8; 31]>), String> {
+) -> Result<SaltedBpeBridgeResult, String> {
     if tokens.is_empty() || tokens.len() > 4096 {
         return Err("tokens length must lie in 1..=4096".to_string());
     }
@@ -2650,7 +2723,8 @@ pub fn prove_dual_char_bpe_bridge_salted(
             s
         })
         .collect();
-    let (proof, _) = prove_dual_char_bpe_bridge_with_explicit_bytes(rom, tokens, &raw_bytes, Some(&salts))?;
+    let (proof, _) =
+        prove_dual_char_bpe_bridge_with_explicit_bytes(rom, tokens, &raw_bytes, Some(&salts))?;
     Ok((proof, raw_bytes, salts))
 }
 
@@ -2736,7 +2810,8 @@ pub fn prove_dual_char_bpe_bridge_with_explicit_bytes(
     root_in[8..40].copy_from_slice(&bytes_bb_state.root);
     let content_root_bb = cshake256_32(b"QW35-CONTENT-SCHEME-ROOT-V1", &root_in);
 
-    let (tower256_salted_root, _) = commit_salted_bytes_t256(claimed_bytes, byte_pad_len, salts_ref);
+    let (tower256_salted_root, _) =
+        commit_salted_bytes_t256(claimed_bytes, byte_pad_len, salts_ref);
     let t256_bytes_state = commit_t256_pcs(&bytes_t256_col, 5, None);
 
     let stmt = DualCharBridgeStatement {
@@ -2890,14 +2965,8 @@ pub fn prove_dual_char_bpe_bridge_with_explicit_bytes(
     ] {
         tr.absorb_ext4(b"zroll_ev", e);
     }
-    let (roll_prod_gruen_proof, z_roll_prod_chals) = prove_gruen_einsum_mode2_ext4(
-        &acc_ext4_col,
-        &pow_ext4_col,
-        m_tok,
-        0,
-        &z_roll,
-        &mut tr,
-    );
+    let (roll_prod_gruen_proof, z_roll_prod_chals) =
+        prove_gruen_einsum_mode2_ext4(&acc_ext4_col, &pow_ext4_col, m_tok, 0, &z_roll, &mut tr);
 
     let z_sh_tok = tr.squeeze_ext4_vec(b"z_sh_tok", m_tok, true);
     let acc_next_at_zsh = mle_eval_ext4_table(&acc_next_ext4_col, &z_sh_tok);
@@ -2907,9 +2976,7 @@ pub fn prove_dual_char_bpe_bridge_with_explicit_bytes(
 
     let eq_zsh_tok = build_eq_table_lsb_ext4(&z_sh_tok);
     let mut shift_tok_col = vec![Ext4::ZERO; tok_pad_len];
-    for t in 0..(tok_pad_len - 1) {
-        shift_tok_col[t + 1] = eq_zsh_tok[t];
-    }
+    shift_tok_col[1..tok_pad_len].copy_from_slice(&eq_zsh_tok[..(tok_pad_len - 1)]);
     let (acc_shift_gruen_proof, z_acc_sh_chals) =
         prove_gruen_einsum_mode2_ext4(&shift_tok_col, &acc_ext4_col, 0, m_tok, &[], &mut tr);
     let cum_len_ext: Vec<Ext4> = cum_len_col.iter().map(|&v| Ext4::from_bb(v)).collect();
@@ -2975,9 +3042,7 @@ pub fn prove_dual_char_bpe_bridge_with_explicit_bytes(
     tr.absorb_bytes(b"t256_hn_zsh", &t256_h_next_at_zsh.to_le_bytes());
     let eq_zsh_256 = build_eq_table_lsb_t256(&z_sh_t256);
     let mut shift_256_col = vec![Tower256::ZERO; byte_pad_len];
-    for j in 0..(byte_pad_len - 1) {
-        shift_256_col[j + 1] = eq_zsh_256[j];
-    }
+    shift_256_col[1..byte_pad_len].copy_from_slice(&eq_zsh_256[..(byte_pad_len - 1)]);
     let (t256_shift_quad_proof, z_t256_sh_chals) =
         prove_t256_quad_sumcheck(&shift_256_col, &t256_h_col, &mut tr);
 
@@ -2996,9 +3061,7 @@ pub fn prove_dual_char_bpe_bridge_with_explicit_bytes(
     let z_tail_t256 = squeeze_t256_vec(&mut tr, b"t256_ztail", m_byte, true);
     let eq_ztail_256 = build_eq_table_lsb_t256(&z_tail_t256);
     let mut tail_weighted_256 = vec![Tower256::ZERO; byte_pad_len];
-    for j in l_bytes..byte_pad_len {
-        tail_weighted_256[j] = eq_ztail_256[j];
-    }
+    tail_weighted_256[l_bytes..byte_pad_len].copy_from_slice(&eq_ztail_256[l_bytes..byte_pad_len]);
     let (t256_tail_zero_quad_proof, z_t256_tail_chals) =
         prove_t256_quad_sumcheck(&tail_weighted_256, &bytes_t256_col, &mut tr);
 
@@ -3090,7 +3153,10 @@ pub fn prove_dual_char_bpe_bridge_with_explicit_bytes(
         &pow_state,
         &[
             make_packed_ext4_pcs_claim(&z_rom_tok, pow_at_rom_leaf),
-            make_packed_ext4_pcs_claim(&z_roll_prod_chals, roll_prod_gruen_proof.terminal_openings.1),
+            make_packed_ext4_pcs_claim(
+                &z_roll_prod_chals,
+                roll_prod_gruen_proof.terminal_openings.1,
+            ),
         ],
         &mut tr,
     );
@@ -3106,7 +3172,10 @@ pub fn prove_dual_char_bpe_bridge_with_explicit_bytes(
         &acc_state,
         &[
             make_packed_ext4_pcs_claim(&vec![Ext4::ZERO; m_tok], Ext4::ZERO), // `acc[0] == 0`!
-            make_packed_ext4_pcs_claim(&z_roll_prod_chals, roll_prod_gruen_proof.terminal_openings.0),
+            make_packed_ext4_pcs_claim(
+                &z_roll_prod_chals,
+                roll_prod_gruen_proof.terminal_openings.0,
+            ),
             make_packed_ext4_pcs_claim(&z_acc_sh_chals, acc_shift_gruen_proof.terminal_openings.1),
         ],
         &mut tr,
@@ -3503,8 +3572,12 @@ pub fn verify_dual_char_bpe_bridge_with_salts(
     }
 
     let z_eof = tr.squeeze_ext4_vec(b"z_byte_eof", m_byte, true);
-    let z_byte_eof_chals =
-        verify_gruen_einsum_mode2_ext4(Ext4::ZERO, &z_eof, &proof.byte_eof_tail_gruen_proof, &mut tr)?;
+    let z_byte_eof_chals = verify_gruen_einsum_mode2_ext4(
+        Ext4::ZERO,
+        &z_eof,
+        &proof.byte_eof_tail_gruen_proof,
+        &mut tr,
+    )?;
     if proof.byte_eof_tail_gruen_proof.terminal_openings.0
         != eval_tail_indicator_ext4(stmt.byte_len, stmt.byte_pad_len, &z_byte_eof_chals)
     {
@@ -3515,7 +3588,10 @@ pub fn verify_dual_char_bpe_bridge_with_salts(
     let z_frob = squeeze_t256_vec(&mut tr, b"t256_zfrob", m_byte, true);
     let z_frob_inv256: Vec<Tower256> = z_frob.iter().map(|&z| z.inv_pow256()).collect();
     tr.absorb_bytes(b"t256_bfrob", &proof.t256_b_at_zfrob.to_le_bytes());
-    tr.absorb_bytes(b"t256_bfrob_inv", &proof.t256_b_at_zfrob_inv256.to_le_bytes());
+    tr.absorb_bytes(
+        b"t256_bfrob_inv",
+        &proof.t256_b_at_zfrob_inv256.to_le_bytes(),
+    );
     if proof.t256_b_at_zfrob_inv256.pow256() != proof.t256_b_at_zfrob {
         return Err("Tower256 Frobenius GF(2^8) canonical-byte subfield check failed!".to_string());
     }
@@ -3534,7 +3610,11 @@ pub fn verify_dual_char_bpe_bridge_with_salts(
     let eq_zstep_256 = build_eq_table_lsb_t256(&z_step_t256);
     let mut step_mul_weighted = vec![Tower256::ZERO; stmt.byte_pad_len];
     for j in 0..stmt.byte_pad_len {
-        let m_j = if j < stmt.byte_len { beta_256 } else { Tower256::ONE };
+        let m_j = if j < stmt.byte_len {
+            beta_256
+        } else {
+            Tower256::ONE
+        };
         step_mul_weighted[j] = eq_zstep_256[j].mul(m_j);
     }
     if proof.t256_step_quad_proof.term_a != mle_eval_t256(&step_mul_weighted, &z_t256_step_chals) {
@@ -3578,9 +3658,8 @@ pub fn verify_dual_char_bpe_bridge_with_salts(
     let z_tail_t256 = squeeze_t256_vec(&mut tr, b"t256_ztail", m_byte, true);
     let eq_ztail_256 = build_eq_table_lsb_t256(&z_tail_t256);
     let mut tail_weighted_256 = vec![Tower256::ZERO; stmt.byte_pad_len];
-    for j in stmt.byte_len..stmt.byte_pad_len {
-        tail_weighted_256[j] = eq_ztail_256[j];
-    }
+    tail_weighted_256[stmt.byte_len..stmt.byte_pad_len]
+        .copy_from_slice(&eq_ztail_256[stmt.byte_len..stmt.byte_pad_len]);
     let z_t256_tail_chals = verify_t256_quad_sumcheck(
         Tower256::ZERO,
         m_byte,
@@ -3695,7 +3774,10 @@ pub fn verify_dual_char_bpe_bridge_with_salts(
         PcsShape::new(m_tok + 2, PcsParams::default_zk(2)),
         &[
             make_packed_ext4_pcs_claim(&z_rom_tok, proof.pow_at_rom_leaf),
-            make_packed_ext4_pcs_claim(&z_roll_prod_chals, proof.roll_prod_gruen_proof.terminal_openings.1),
+            make_packed_ext4_pcs_claim(
+                &z_roll_prod_chals,
+                proof.roll_prod_gruen_proof.terminal_openings.1,
+            ),
         ],
         &proof.pow_ext4_pcs_proof,
         &mut tr,
@@ -3715,8 +3797,14 @@ pub fn verify_dual_char_bpe_bridge_with_salts(
         PcsShape::new(m_tok + 2, PcsParams::default_zk(3)),
         &[
             make_packed_ext4_pcs_claim(&vec![Ext4::ZERO; m_tok], Ext4::ZERO),
-            make_packed_ext4_pcs_claim(&z_roll_prod_chals, proof.roll_prod_gruen_proof.terminal_openings.0),
-            make_packed_ext4_pcs_claim(&z_acc_sh_chals, proof.acc_shift_gruen_proof.terminal_openings.1),
+            make_packed_ext4_pcs_claim(
+                &z_roll_prod_chals,
+                proof.roll_prod_gruen_proof.terminal_openings.0,
+            ),
+            make_packed_ext4_pcs_claim(
+                &z_acc_sh_chals,
+                proof.acc_shift_gruen_proof.terminal_openings.1,
+            ),
         ],
         &proof.acc_ext4_pcs_proof,
         &mut tr,
@@ -3823,7 +3911,8 @@ pub fn redact_default_secret_classes(raw: &[u8]) -> (Vec<u8>, usize) {
         b.is_ascii_uppercase() || b.is_ascii_digit() || b == b' ' || b == b'-'
     }
 
-    let rules: [(&[u8], Option<fn(u8) -> bool>, &[u8]); 5] = [
+    type RedactRule<'a> = (&'a [u8], Option<fn(u8) -> bool>, &'a [u8]);
+    let rules: [RedactRule<'_>; 5] = [
         (b"sk-", Some(is_api_body), b"[REDACTED_API_KEY]"),
         (b"Bearer ", Some(is_bearer_body), b"[REDACTED_BEARER]"),
         (b"-----BEGIN ", Some(is_pem_body), b"[REDACTED_PEM]"),
@@ -3845,7 +3934,7 @@ pub fn redact_default_secret_classes(raw: &[u8]) -> (Vec<u8>, usize) {
                         mlen += 1;
                     }
                 }
-                if best.map_or(true, |b| mlen > b.0) {
+                if best.is_none_or(|b| mlen > b.0) {
                     best = Some((mlen, repl));
                 }
             }

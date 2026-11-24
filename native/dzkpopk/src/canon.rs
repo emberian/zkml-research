@@ -78,10 +78,14 @@ impl Json {
                 }
             }
             serde_json::Value::String(s) => Json::Str(s.clone()),
-            serde_json::Value::Array(a) => Json::List(a.iter().map(Json::from_serde).collect::<Result<_, _>>()?),
-            serde_json::Value::Object(o) => {
-                Json::Map(o.iter().map(|(k, v)| Ok((k.clone(), Json::from_serde(v)?))).collect::<Result<_, String>>()?)
+            serde_json::Value::Array(a) => {
+                Json::List(a.iter().map(Json::from_serde).collect::<Result<_, _>>()?)
             }
+            serde_json::Value::Object(o) => Json::Map(
+                o.iter()
+                    .map(|(k, v)| Ok((k.clone(), Json::from_serde(v)?)))
+                    .collect::<Result<_, String>>()?,
+            ),
         })
     }
 }

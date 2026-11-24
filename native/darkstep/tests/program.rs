@@ -29,13 +29,23 @@ fn floor_d1_custodians_do_not_refine_gen6() {
     let pl = inputs_for(64, &Program::GEN6);
     let mut floor = Program::GEN6;
     floor.r3 = 0;
-    assert_ne!(pl.step_prog(&floor).unwrap().0, pl.step_prog(&Program::GEN6).unwrap().0, "the rounding matters here");
+    assert_ne!(
+        pl.step_prog(&floor).unwrap().0,
+        pl.step_prog(&Program::GEN6).unwrap().0,
+        "the rounding matters here"
+    );
     // run_local checks each run against its own program, so compare the final shares of the two runs
     let (a, _) = run_local(&pf(Program::GEN6), None);
     let p = pf(floor);
     let (b, _) = run_local(&p, None);
-    assert_eq!(b["refines_spec"], true, "floor is itself a consistent program");
-    assert_ne!(a["parties"], b["parties"], "and its final shares differ from GEN6's");
+    assert_eq!(
+        b["refines_spec"], true,
+        "floor is itself a consistent program"
+    );
+    assert_ne!(
+        a["parties"], b["parties"],
+        "and its final shares differ from GEN6's"
+    );
 }
 
 /// darkstep under GEN6 equals the Python harness under GEN6 (`python3 native_ref.py 4096 3 118 64 --program GEN6`,
@@ -53,7 +63,8 @@ fn gen6_equals_native_ref_demo_profile() {
 
 fn gen6_vs(n: usize) {
     let path = format!("{}/../../research/dark_learning_2026_11_06/native_ref_results/native_ref_N{n}_L3_F118_d64_GEN6.json", env!("CARGO_MANIFEST_DIR"));
-    let r: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+    let r: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
     assert_eq!(r["verdict"], "ACCEPT");
     assert_eq!(r["refines_spec"], true);
     let mut p = pf(Program::GEN6);
@@ -65,18 +76,35 @@ fn gen6_vs(n: usize) {
     assert_eq!(res["refines_spec"], true);
     assert_eq!(res["transcript"], r["transcript"], "transcript digest");
     for i in 0..3 {
-        assert_eq!(res["parties"][i], r["parties"][i.to_string()], "party {i} shares digest");
-        assert_eq!(res["sigma"][i], r["sigma"][i.to_string()], "party {i} sigma");
+        assert_eq!(
+            res["parties"][i],
+            r["parties"][i.to_string()],
+            "party {i} shares digest"
+        );
+        assert_eq!(
+            res["sigma"][i],
+            r["sigma"][i.to_string()],
+            "party {i} sigma"
+        );
     }
     assert_eq!(res["detail"][0]["wire"], r["wire"], "SPDZ wire counts");
     // control: the HARNESS reference at the same size differs
-    let h: serde_json::Value = serde_json::from_str(&std::fs::read_to_string(path.replace("_GEN6", "")).unwrap()).unwrap();
+    let h: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(path.replace("_GEN6", "")).unwrap()).unwrap();
     assert_ne!(h["transcript"], r["transcript"]);
 }
 
 /// The intervals the proof proves: GEN6's are the genesis's ([a, B] for z1, z2, e, b g1 + R3).
 #[test]
 fn gen6_intervals() {
-    assert_eq!(Program::GEN6.intervals(), [(-(1 << 18), 19), (-(1 << 19), 20), (-(1 << 8), 9), (-(1 << 19), 20)]);
+    assert_eq!(
+        Program::GEN6.intervals(),
+        [
+            (-(1 << 18), 19),
+            (-(1 << 19), 20),
+            (-(1 << 8), 9),
+            (-(1 << 19), 20)
+        ]
+    );
     assert_eq!(Program::HARNESS.intervals()[0], (-(1 << 12), 13));
 }

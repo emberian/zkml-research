@@ -13,7 +13,11 @@ fn rss_mb() -> f64 {
     let mut u: libc_rusage = unsafe { std::mem::zeroed() };
     unsafe { getrusage(0, &mut u) };
     // ru_maxrss: KiB on Linux, bytes on macOS
-    if cfg!(target_os = "macos") { u.ru_maxrss as f64 / 1048576.0 } else { u.ru_maxrss as f64 / 1024.0 }
+    if cfg!(target_os = "macos") {
+        u.ru_maxrss as f64 / 1048576.0
+    } else {
+        u.ru_maxrss as f64 / 1024.0
+    }
 }
 #[repr(C)]
 struct libc_rusage {
@@ -42,14 +46,28 @@ fn main() {
     let mut r = secret_rng(); // the bench's stand-in weights only
     let old: BTreeMap<String, Vec<Vec<u64>>> = ["W1", "W2"]
         .iter()
-        .map(|k| (k.to_string(), (0..3).map(|_| (0..d * d).map(|_| r.randrange_u64(field::p())).collect()).collect()))
+        .map(|k| {
+            (
+                k.to_string(),
+                (0..3)
+                    .map(|_| (0..d * d).map(|_| r.randrange_u64(field::p())).collect())
+                    .collect(),
+            )
+        })
         .collect();
     let tr = Instant::now();
     let new: BTreeMap<String, Vec<Vec<u64>>> = old
         .iter()
         .map(|(k, v)| {
             let subs: Vec<Vec<Vec<u64>>> = v.iter().map(|s| handover::reshare_os(s, 3)).collect();
-            (k.clone(), (0..3).map(|j| handover::combine(&subs.iter().map(|p| p[j].as_slice()).collect::<Vec<_>>())).collect())
+            (
+                k.clone(),
+                (0..3)
+                    .map(|j| {
+                        handover::combine(&subs.iter().map(|p| p[j].as_slice()).collect::<Vec<_>>())
+                    })
+                    .collect(),
+            )
         })
         .collect();
     let reshare_s = tr.elapsed().as_secs_f64();
@@ -73,7 +91,8 @@ fn main() {
                             .iter()
                             .map(|k| {
                                 let c = if old_side {
-                                    let mut c = PcsParty::commit(pr, &old[*k][i], &format!("{k}n"), i, det);
+                                    let mut c =
+                                        PcsParty::commit(pr, &old[*k][i], &format!("{k}n"), i, det);
                                     c.opened_lives = 1;
                                     c
                                 } else {
@@ -103,7 +122,8 @@ fn main() {
             .map(|(mut net, mut mine)| {
                 let (pr, lp, ctx, det) = (&pr, &lp, &ctx, &det);
                 s.spawn(move || {
-                    let p = handover::prove(pr, lp, d, 3, 3, ctx, &mut mine, &mut net, det).unwrap();
+                    let p =
+                        handover::prove(pr, lp, d, 3, 3, ctx, &mut mine, &mut net, det).unwrap();
                     (p, net_sent(&net))
                 })
             })
@@ -115,7 +135,8 @@ fn main() {
     let blob = handover::encode(&pr, d, &outs[0].0);
     let encode_s = te.elapsed().as_secs_f64();
     let tv = Instant::now();
-    let nr = handover::verify(&pr, &lp, d, 3, 3, &ctx, &outs[0].0.old_roots, &blob).expect("verifier accepts");
+    let nr = handover::verify(&pr, &lp, d, 3, 3, &ctx, &outs[0].0.old_roots, &blob)
+        .expect("verifier accepts");
     let verify_s = tv.elapsed().as_secs_f64();
     assert_eq!(nr, outs[0].0.new_roots);
     assert_eq!(blob.len(), handover::byte_len(&pr, d, &outs[0].0));

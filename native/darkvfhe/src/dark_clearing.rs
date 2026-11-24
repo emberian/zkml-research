@@ -65,31 +65,86 @@ pub enum ClearingError {
     ArithmeticOverflow,
     InvalidScaleDenom,
     DimensionMismatch(String),
-    NegativeEdgeWeight { edge_idx: usize, weight: i64 },
-    NegativeDiagSlack { idx: usize, slack: i64 },
-    SddFactorMismatch { row: usize, col: usize, got: i128, expected: i128 },
-    RowDominanceRejected { row: usize },
+    NegativeEdgeWeight {
+        edge_idx: usize,
+        weight: i64,
+    },
+    NegativeDiagSlack {
+        idx: usize,
+        slack: i64,
+    },
+    SddFactorMismatch {
+        row: usize,
+        col: usize,
+        got: i128,
+        expected: i128,
+    },
+    RowDominanceRejected {
+        row: usize,
+    },
     MatrixPinMismatch,
     ScalePinMismatch,
     ProgramDigestMismatch,
-    PrimalEqualityViolation { row: usize, lhs: i128, rhs: i128 },
-    PrimalInequalityViolation { row: usize, lhs: i128, rhs: i128 },
-    PrimalBoxViolation { idx: usize, val: i64, lo: i64, hi: i64 },
-    NegativeDualMultiplier { kind: &'static str, idx: usize, val: i64 },
-    StationarityViolation { idx: usize, residual: i128 },
-    OptimalityGapExceeded { gap_num: i128, eps_num: i128 },
-    InvalidSettlementLeg { idx: usize },
-    GrossVolumeInflated { net_vol: u128, gross_vol: u128 },
-    NetBalanceMismatch { party: u32, asset: u32, net: i128, gross: i128 },
-    GlobalConservationViolation { asset: u32, sum: i128 },
+    PrimalEqualityViolation {
+        row: usize,
+        lhs: i128,
+        rhs: i128,
+    },
+    PrimalInequalityViolation {
+        row: usize,
+        lhs: i128,
+        rhs: i128,
+    },
+    PrimalBoxViolation {
+        idx: usize,
+        val: i64,
+        lo: i64,
+        hi: i64,
+    },
+    NegativeDualMultiplier {
+        kind: &'static str,
+        idx: usize,
+        val: i64,
+    },
+    StationarityViolation {
+        idx: usize,
+        residual: i128,
+    },
+    OptimalityGapExceeded {
+        gap_num: i128,
+        eps_num: i128,
+    },
+    InvalidSettlementLeg {
+        idx: usize,
+    },
+    GrossVolumeInflated {
+        net_vol: u128,
+        gross_vol: u128,
+    },
+    NetBalanceMismatch {
+        party: u32,
+        asset: u32,
+        net: i128,
+        gross: i128,
+    },
+    GlobalConservationViolation {
+        asset: u32,
+        sum: i128,
+    },
     SolverFailure(String),
     ThresholdPolicyViolation(String),
     DuplicateNullifier([u8; 32]),
     InvalidSubmissionProof(String),
     C8UnverifiedHandle([u8; 32]),
     C8IndividualCiphertextForbidden([u8; 32]),
-    EpochReplayOrStale { got: u64, latch: u64 },
-    InsufficientDecryptionShares { got: usize, threshold: usize },
+    EpochReplayOrStale {
+        got: u64,
+        latch: u64,
+    },
+    InsufficientDecryptionShares {
+        got: usize,
+        threshold: usize,
+    },
 }
 
 impl std::fmt::Display for ClearingError {
@@ -117,7 +172,9 @@ fn checked_mul_i128(a: i128, b: i128) -> Result<i128, ClearingError> {
 
 fn dot_i64_checked(u: &[i64], v: &[i64]) -> Result<i128, ClearingError> {
     if u.len() != v.len() {
-        return Err(ClearingError::DimensionMismatch("dot_i64_checked len".into()));
+        return Err(ClearingError::DimensionMismatch(
+            "dot_i64_checked len".into(),
+        ));
     }
     let mut acc = 0i128;
     for (&x, &y) in u.iter().zip(v.iter()) {
@@ -161,11 +218,15 @@ impl ExactSddFactorCertificate {
             return Err(ClearingError::InvalidScaleDenom);
         }
         if self.diag_slack.len() != self.n || self.admitted_q.len() != self.n {
-            return Err(ClearingError::DimensionMismatch("SDD cert row count".into()));
+            return Err(ClearingError::DimensionMismatch(
+                "SDD cert row count".into(),
+            ));
         }
         for row in &self.admitted_q {
             if row.len() != self.n {
-                return Err(ClearingError::DimensionMismatch("SDD cert col count".into()));
+                return Err(ClearingError::DimensionMismatch(
+                    "SDD cert col count".into(),
+                ));
             }
         }
         let mut mat = vec![vec![0i128; self.n]; self.n];
@@ -185,7 +246,9 @@ impl ExactSddFactorCertificate {
             let u = e.u as usize;
             let v = e.v as usize;
             if u >= self.n || v >= self.n {
-                return Err(ClearingError::DimensionMismatch("SDD edge vertex out of range".into()));
+                return Err(ClearingError::DimensionMismatch(
+                    "SDD edge vertex out of range".into(),
+                ));
             }
             let w = e.weight as i128;
             let a = e.alpha as i128;
@@ -204,14 +267,14 @@ impl ExactSddFactorCertificate {
                 mat[v][u] = checked_add_i128(mat[v][u], uv)?;
             }
         }
-        for i in 0..self.n {
-            for j in 0..self.n {
-                let want = self.admitted_q[i][j] as i128;
-                if mat[i][j] != want {
+        for (i, (mat_row, q_row)) in mat.iter().zip(&self.admitted_q).enumerate() {
+            for (j, (&got, &q_val)) in mat_row.iter().zip(q_row).enumerate() {
+                let want = q_val as i128;
+                if got != want {
                     return Err(ClearingError::SddFactorMismatch {
                         row: i,
                         col: j,
-                        got: mat[i][j],
+                        got,
                         expected: want,
                     });
                 }
@@ -224,14 +287,18 @@ impl ExactSddFactorCertificate {
     /// in `O(|E| + n)` exact integer arithmetic (`sddFactor_quadForm_eq`).
     pub fn eval_scaled_quad_form(&self, x: &[i64]) -> Result<i128, ClearingError> {
         if x.len() != self.n {
-            return Err(ClearingError::DimensionMismatch("eval_scaled_quad_form x len".into()));
+            return Err(ClearingError::DimensionMismatch(
+                "eval_scaled_quad_form x len".into(),
+            ));
         }
         let mut acc = 0i128;
         for e in &self.edges {
             let u = e.u as usize;
             let v = e.v as usize;
             if u >= self.n || v >= self.n {
-                return Err(ClearingError::DimensionMismatch("SDD edge out of range".into()));
+                return Err(ClearingError::DimensionMismatch(
+                    "SDD edge out of range".into(),
+                ));
             }
             let lin = checked_add_i128(
                 checked_mul_i128(e.alpha as i128, x[u] as i128)?,
@@ -250,33 +317,38 @@ impl ExactSddFactorCertificate {
 
 /// Quarried `FHSDD001` exact-integer symmetric row-diagonal-dominance checker
 /// (`Theory/ExactKktClearingCert.lean`: `checkSddRowDomInt`).
-pub fn verify_fhsdd001_row_dominant(scale_denom: i64, p_mat: &[Vec<i64>]) -> Result<(), ClearingError> {
+pub fn verify_fhsdd001_row_dominant(
+    scale_denom: i64,
+    p_mat: &[Vec<i64>],
+) -> Result<(), ClearingError> {
     if scale_denom <= 0 {
         return Err(ClearingError::InvalidScaleDenom);
     }
     let n = p_mat.len();
     for row in p_mat {
         if row.len() != n {
-            return Err(ClearingError::DimensionMismatch("FHSDD001 non-square".into()));
+            return Err(ClearingError::DimensionMismatch(
+                "FHSDD001 non-square".into(),
+            ));
         }
     }
-    for i in 0..n {
-        if p_mat[i][i] < 0 {
+    for (i, row_i) in p_mat.iter().enumerate() {
+        if row_i[i] < 0 {
             return Err(ClearingError::RowDominanceRejected { row: i });
         }
         let mut off_sum = 0i128;
-        for j in 0..n {
-            if p_mat[i][j] != p_mat[j][i] {
+        for (j, &p_ij) in row_i.iter().enumerate() {
+            if p_ij != p_mat[j][i] {
                 return Err(ClearingError::RowDominanceRejected { row: i });
             }
             if j != i {
-                let abs_ij = (p_mat[i][j] as i128)
+                let abs_ij = (p_ij as i128)
                     .checked_abs()
                     .ok_or(ClearingError::ArithmeticOverflow)?;
                 off_sum = checked_add_i128(off_sum, abs_ij)?;
             }
         }
-        if off_sum > (p_mat[i][i] as i128) {
+        if off_sum > (row_i[i] as i128) {
             return Err(ClearingError::RowDominanceRejected { row: i });
         }
     }
@@ -395,21 +467,29 @@ impl ExactQpCertificateBundle {
             || self.g_mat.len() != mineq
             || self.mu_vec.len() != mineq
         {
-            return Err(ClearingError::DimensionMismatch("FHQPB001 top-level dims".into()));
+            return Err(ClearingError::DimensionMismatch(
+                "FHQPB001 top-level dims".into(),
+            ));
         }
         for row in &self.q_mat {
             if row.len() != n {
-                return Err(ClearingError::DimensionMismatch("FHQPB001 Q row len".into()));
+                return Err(ClearingError::DimensionMismatch(
+                    "FHQPB001 Q row len".into(),
+                ));
             }
         }
         for row in &self.a_mat {
             if row.len() != n {
-                return Err(ClearingError::DimensionMismatch("FHQPB001 A row len".into()));
+                return Err(ClearingError::DimensionMismatch(
+                    "FHQPB001 A row len".into(),
+                ));
             }
         }
         for row in &self.g_mat {
             if row.len() != n {
-                return Err(ClearingError::DimensionMismatch("FHQPB001 G row len".into()));
+                return Err(ClearingError::DimensionMismatch(
+                    "FHQPB001 G row len".into(),
+                ));
             }
         }
 
@@ -522,33 +602,32 @@ impl ExactQpCertificateBundle {
             res = checked_sub_i128(res, self.lam_l_vec[i] as i128)?;
             res = checked_add_i128(res, self.lam_u_vec[i] as i128)?;
             if res != 0 {
-                return Err(ClearingError::StationarityViolation { idx: i, residual: res });
+                return Err(ClearingError::StationarityViolation {
+                    idx: i,
+                    residual: res,
+                });
             }
         }
 
         // 6. Complementarity gap & explicit Wolfe primal-dual check (`primal_sub_dual_eq_compGap`):
         let mut comp_gap = 0i128;
-        for k in 0..mineq {
-            let slack = checked_sub_i128(self.h_vec[k] as i128, gx_vec[k])?;
-            comp_gap = checked_add_i128(comp_gap, checked_mul_i128(self.mu_vec[k] as i128, slack)?)?;
+        for ((&hk, &gxk), &muk) in self.h_vec.iter().zip(&gx_vec).zip(&self.mu_vec) {
+            let slack = checked_sub_i128(hk as i128, gxk)?;
+            comp_gap = checked_add_i128(comp_gap, checked_mul_i128(muk as i128, slack)?)?;
         }
         for i in 0..n {
             let sl_l = checked_sub_i128(self.x_vec[i] as i128, self.l_vec[i] as i128)?;
             let sl_u = checked_sub_i128(self.u_vec[i] as i128, self.x_vec[i] as i128)?;
-            comp_gap = checked_add_i128(
-                comp_gap,
-                checked_mul_i128(self.lam_l_vec[i] as i128, sl_l)?,
-            )?;
-            comp_gap = checked_add_i128(
-                comp_gap,
-                checked_mul_i128(self.lam_u_vec[i] as i128, sl_u)?,
-            )?;
+            comp_gap =
+                checked_add_i128(comp_gap, checked_mul_i128(self.lam_l_vec[i] as i128, sl_l)?)?;
+            comp_gap =
+                checked_add_i128(comp_gap, checked_mul_i128(self.lam_u_vec[i] as i128, sl_u)?)?;
         }
 
         // Explicit `2 * S^3 * p*` and `2 * S^3 * d*`:
         let mut x_qx = 0i128;
-        for i in 0..n {
-            x_qx = checked_add_i128(x_qx, checked_mul_i128(self.x_vec[i] as i128, qx_vec[i])?)?;
+        for (&xi, &qxi) in self.x_vec.iter().zip(&qx_vec) {
+            x_qx = checked_add_i128(x_qx, checked_mul_i128(xi as i128, qxi)?)?;
         }
         let q_dot_x = dot_i64_checked(&self.q_vec, &self.x_vec)?;
         let b_dot_nu = dot_i64_checked(&self.b_vec, &self.nu_vec)?;
@@ -666,7 +745,9 @@ impl ExactQpCertificateBundle {
         bytes: &[u8],
     ) -> Result<(Self, VerifiedKktSummary), ClearingError> {
         if bytes.len() < 8 + 4 + 8 + 12 + 8 + 4 + 16 + 32 + 32 {
-            return Err(ClearingError::InvalidWireFormat("FHQPB001 truncated".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "FHQPB001 truncated".into(),
+            ));
         }
         let (body, tag_slice) = bytes.split_at(bytes.len() - 32);
         let mut h = Sha256::new();
@@ -680,38 +761,47 @@ impl ExactQpCertificateBundle {
         let mut cur = ByteReader::new(body);
         let magic = cur.take(8).map_err(ClearingError::InvalidWireFormat)?;
         if magic != FHQPB_MAGIC {
-            return Err(ClearingError::InvalidWireFormat("bad FHQPB001 magic".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "bad FHQPB001 magic".into(),
+            ));
         }
         let ver = cur.read_u32().map_err(ClearingError::InvalidWireFormat)?;
         if ver != WIRE_VERSION_V1 {
-            return Err(ClearingError::InvalidWireFormat("bad FHQPB001 version".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "bad FHQPB001 version".into(),
+            ));
         }
         let read_i64 = |c: &mut ByteReader<'_>| -> Result<i64, ClearingError> {
             let b = c.take(8).map_err(ClearingError::InvalidWireFormat)?;
             Ok(i64::from_le_bytes(b.try_into().unwrap()))
         };
-        let read_vec_i64 = |c: &mut ByteReader<'_>, len: usize| -> Result<Vec<i64>, ClearingError> {
-            let mut v = Vec::with_capacity(len);
-            for _ in 0..len {
-                v.push(read_i64(c)?);
-            }
-            Ok(v)
-        };
-        let read_mat_i64 =
-            |c: &mut ByteReader<'_>, rows: usize, cols: usize| -> Result<Vec<Vec<i64>>, ClearingError> {
-                let mut m = Vec::with_capacity(rows);
-                for _ in 0..rows {
-                    m.push(read_vec_i64(c, cols)?);
+        let read_vec_i64 =
+            |c: &mut ByteReader<'_>, len: usize| -> Result<Vec<i64>, ClearingError> {
+                let mut v = Vec::with_capacity(len);
+                for _ in 0..len {
+                    v.push(read_i64(c)?);
                 }
-                Ok(m)
+                Ok(v)
             };
+        let read_mat_i64 = |c: &mut ByteReader<'_>,
+                            rows: usize,
+                            cols: usize|
+         -> Result<Vec<Vec<i64>>, ClearingError> {
+            let mut m = Vec::with_capacity(rows);
+            for _ in 0..rows {
+                m.push(read_vec_i64(c, cols)?);
+            }
+            Ok(m)
+        };
 
         let scale_denom = read_i64(&mut cur)?;
         let n = cur.read_u32().map_err(ClearingError::InvalidWireFormat)? as usize;
         let meq = cur.read_u32().map_err(ClearingError::InvalidWireFormat)? as usize;
         let mineq = cur.read_u32().map_err(ClearingError::InvalidWireFormat)? as usize;
         if n > 4096 || meq > 4096 || mineq > 4096 {
-            return Err(ClearingError::InvalidWireFormat("FHQPB001 dimension cap".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "FHQPB001 dimension cap".into(),
+            ));
         }
         let sdd_scale = read_i64(&mut cur)?;
         let n_edges = cur.read_u32().map_err(ClearingError::InvalidWireFormat)? as usize;
@@ -752,7 +842,9 @@ impl ExactQpCertificateBundle {
         let eps_int = i128::from_le_bytes(eps_bytes.try_into().unwrap());
         let program_digest = cur.read_hash().map_err(ClearingError::InvalidWireFormat)?;
         if !cur.is_eof() {
-            return Err(ClearingError::InvalidWireFormat("FHQPB001 trailing bytes".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "FHQPB001 trailing bytes".into(),
+            ));
         }
 
         let bundle = ExactQpCertificateBundle {
@@ -892,7 +984,10 @@ impl PartialOrd for ExactRat {
     }
 }
 
-fn solve_exact_linear_system(mut mat: Vec<Vec<ExactRat>>, mut rhs: Vec<ExactRat>) -> Result<Vec<ExactRat>, ClearingError> {
+fn solve_exact_linear_system(
+    mut mat: Vec<Vec<ExactRat>>,
+    mut rhs: Vec<ExactRat>,
+) -> Result<Vec<ExactRat>, ClearingError> {
     let m = rhs.len();
     for col in 0..m {
         let piv = (col..m)
@@ -903,16 +998,23 @@ fn solve_exact_linear_system(mut mat: Vec<Vec<ExactRat>>, mut rhs: Vec<ExactRat>
             rhs.swap(col, piv);
         }
         let inv_p = ExactRat::one().div_val(&mat[col][col]);
-        for c in col..m {
-            mat[col][c] = mat[col][c].mul_val(&inv_p);
+        for cell in &mut mat[col][col..m] {
+            *cell = cell.mul_val(&inv_p);
         }
         rhs[col] = rhs[col].mul_val(&inv_p);
         for r in 0..m {
             if r != col && !mat[r][col].is_zero() {
                 let factor = mat[r][col].clone();
-                for c in col..m {
-                    let sub = factor.mul_val(&mat[col][c]);
-                    mat[r][c] = mat[r][c].sub_val(&sub);
+                let (row_r, row_col) = if r < col {
+                    let (head, tail) = mat.split_at_mut(col);
+                    (&mut head[r], &tail[0])
+                } else {
+                    let (head, tail) = mat.split_at_mut(r);
+                    (&mut tail[0], &head[col])
+                };
+                for (dst, src) in row_r[col..m].iter_mut().zip(&row_col[col..m]) {
+                    let sub = factor.mul_val(src);
+                    *dst = dst.sub_val(&sub);
                 }
                 let sub_r = factor.mul_val(&rhs[col]);
                 rhs[r] = rhs[r].sub_val(&sub_r);
@@ -975,17 +1077,21 @@ pub fn solve_certified_call_auction_qp(
 ) -> Result<CertifiedAuctionClearing, ClearingError> {
     let k_ticks = cfg.tick_prices.len();
     if k_ticks == 0 || agg_bids.len() != k_ticks || agg_asks.len() != k_ticks {
-        return Err(ClearingError::DimensionMismatch("call-auction tick len".into()));
+        return Err(ClearingError::DimensionMismatch(
+            "call-auction tick len".into(),
+        ));
     }
     if cfg.gamma_prox <= 0 || cfg.w_lap < 0 || cfg.surplus_weight <= 0 {
-        return Err(ClearingError::SolverFailure("invalid auction regularization params".into()));
+        return Err(ClearingError::SolverFailure(
+            "invalid auction regularization params".into(),
+        ));
     }
 
     let n = 2 * k_ticks;
     let mut edges = Vec::new();
     let mut q_base = vec![vec![0i64; n]; n];
-    for i in 0..n {
-        q_base[i][i] = cfg.gamma_prox;
+    for (i, row) in q_base.iter_mut().enumerate() {
+        row[i] = cfg.gamma_prox;
     }
     if cfg.w_lap > 0 && k_ticks >= 2 {
         for base in [0usize, k_ticks] {
@@ -1016,7 +1122,8 @@ pub fn solve_certified_call_auction_qp(
         a_row[k] = 1;
         a_row[k_ticks + k] = -1;
         u_caps[k] = i64::try_from(agg_bids[k]).map_err(|_| ClearingError::ArithmeticOverflow)?;
-        u_caps[k_ticks + k] = i64::try_from(agg_asks[k]).map_err(|_| ClearingError::ArithmeticOverflow)?;
+        u_caps[k_ticks + k] =
+            i64::try_from(agg_asks[k]).map_err(|_| ClearingError::ArithmeticOverflow)?;
     }
 
     // Start at feasible `x = 0` (`A * 0 = 0`, `0 <= 0 <= u_caps`):
@@ -1061,28 +1168,28 @@ pub fn solve_certified_call_auction_qp(
                     (BoundState::Lower, 1) => {
                         // g0[i] + nu >= 0  <=>  nu >= -g0[i]
                         let bnd = g0[i].neg_val();
-                        if lo_cand.as_ref().map_or(true, |(cur, _)| &bnd > cur) {
+                        if lo_cand.as_ref().is_none_or(|(cur, _)| &bnd > cur) {
                             lo_cand = Some((bnd, i));
                         }
                     }
                     (BoundState::Upper, -1) => {
                         // g0[i] - nu <= 0  <=>  nu >= g0[i]
                         let bnd = g0[i].clone();
-                        if lo_cand.as_ref().map_or(true, |(cur, _)| &bnd > cur) {
+                        if lo_cand.as_ref().is_none_or(|(cur, _)| &bnd > cur) {
                             lo_cand = Some((bnd, i));
                         }
                     }
                     (BoundState::Upper, 1) => {
                         // g0[i] + nu <= 0  <=>  nu <= -g0[i]
                         let bnd = g0[i].neg_val();
-                        if hi_cand.as_ref().map_or(true, |(cur, _)| &bnd < cur) {
+                        if hi_cand.as_ref().is_none_or(|(cur, _)| &bnd < cur) {
                             hi_cand = Some((bnd, i));
                         }
                     }
                     (BoundState::Lower, -1) => {
                         // g0[i] - nu >= 0  <=>  nu <= g0[i]
                         let bnd = g0[i].clone();
-                        if hi_cand.as_ref().map_or(true, |(cur, _)| &bnd < cur) {
+                        if hi_cand.as_ref().is_none_or(|(cur, _)| &bnd < cur) {
                             hi_cand = Some((bnd, i));
                         }
                     }
@@ -1149,13 +1256,13 @@ pub fn solve_certified_call_auction_qp(
                 let gi = g0[i].add_val(&ExactRat::from_i64(a_row[i]).mul_val(&nu_sub));
                 match states[i] {
                     BoundState::Lower => {
-                        if gi.is_neg() && worst_viol.as_ref().map_or(true, |(w, _)| &gi < w) {
+                        if gi.is_neg() && worst_viol.as_ref().is_none_or(|(w, _)| &gi < w) {
                             worst_viol = Some((gi, i));
                         }
                     }
                     BoundState::Upper => {
                         let neg_gi = gi.neg_val();
-                        if neg_gi.is_neg() && worst_viol.as_ref().map_or(true, |(w, _)| &neg_gi < w) {
+                        if neg_gi.is_neg() && worst_viol.as_ref().is_none_or(|(w, _)| &neg_gi < w) {
                             worst_viol = Some((neg_gi, i));
                         }
                     }
@@ -1212,9 +1319,9 @@ pub fn solve_certified_call_auction_qp(
     for xi in &x {
         scale_big = scale_big.lcm(&xi.den);
     }
-    let s_i64 = scale_big
-        .to_i64()
-        .ok_or_else(|| ClearingError::SolverFailure("rational scale denominator overflowed i64".into()))?;
+    let s_i64 = scale_big.to_i64().ok_or_else(|| {
+        ClearingError::SolverFailure("rational scale denominator overflowed i64".into())
+    })?;
     if s_i64 <= 0 {
         return Err(ClearingError::InvalidScaleDenom);
     }
@@ -1247,17 +1354,25 @@ pub fn solve_certified_call_auction_qp(
     }
     let q_vec_int: Vec<i64> = q_lin
         .iter()
-        .map(|&v| i64::try_from((v as i128) * s2_i128).map_err(|_| ClearingError::ArithmeticOverflow))
+        .map(|&v| {
+            i64::try_from((v as i128) * s2_i128).map_err(|_| ClearingError::ArithmeticOverflow)
+        })
         .collect::<Result<_, _>>()?;
     let a_mat_int = vec![a_row
         .iter()
-        .map(|&v| i64::try_from((v as i128) * (s_i64 as i128)).map_err(|_| ClearingError::ArithmeticOverflow))
+        .map(|&v| {
+            i64::try_from((v as i128) * (s_i64 as i128))
+                .map_err(|_| ClearingError::ArithmeticOverflow)
+        })
         .collect::<Result<Vec<i64>, _>>()?];
     let b_vec_int = vec![0i64];
     let l_vec_int = vec![0i64; n];
     let u_vec_int: Vec<i64> = u_caps
         .iter()
-        .map(|&v| i64::try_from((v as i128) * (s_i64 as i128)).map_err(|_| ClearingError::ArithmeticOverflow))
+        .map(|&v| {
+            i64::try_from((v as i128) * (s_i64 as i128))
+                .map_err(|_| ClearingError::ArithmeticOverflow)
+        })
         .collect::<Result<_, _>>()?;
 
     let scaled_edges: Vec<SddFactorEdgeInt> = edges
@@ -1479,10 +1594,7 @@ impl MultilateralNettingCertificate {
         }
 
         if net_vol > gross_vol {
-            return Err(ClearingError::GrossVolumeInflated {
-                net_vol,
-                gross_vol,
-            });
+            return Err(ClearingError::GrossVolumeInflated { net_vol, gross_vol });
         }
 
         for &asset in &assets {
@@ -1548,7 +1660,9 @@ impl MultilateralNettingCertificate {
         bytes: &[u8],
     ) -> Result<(Self, VerifiedNettingSummary), ClearingError> {
         if bytes.len() < 8 + 4 + 4 + 4 + 32 {
-            return Err(ClearingError::InvalidWireFormat("DBNET001 truncated".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "DBNET001 truncated".into(),
+            ));
         }
         let (body, tag_slice) = bytes.split_at(bytes.len() - 32);
         let mut h = Sha256::new();
@@ -1560,10 +1674,14 @@ impl MultilateralNettingCertificate {
         }
         let mut cur = ByteReader::new(body);
         if cur.take(8).map_err(ClearingError::InvalidWireFormat)? != DBNET_MAGIC {
-            return Err(ClearingError::InvalidWireFormat("bad DBNET001 magic".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "bad DBNET001 magic".into(),
+            ));
         }
         if cur.read_u32().map_err(ClearingError::InvalidWireFormat)? != WIRE_VERSION_V1 {
-            return Err(ClearingError::InvalidWireFormat("bad DBNET001 version".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "bad DBNET001 version".into(),
+            ));
         }
         let read_legs = |c: &mut ByteReader<'_>| -> Result<Vec<SettlementLeg>, ClearingError> {
             let cnt = c.read_u32().map_err(ClearingError::InvalidWireFormat)? as usize;
@@ -1588,7 +1706,9 @@ impl MultilateralNettingCertificate {
         let gross_legs = read_legs(&mut cur)?;
         let net_legs = read_legs(&mut cur)?;
         if !cur.is_eof() {
-            return Err(ClearingError::InvalidWireFormat("DBNET001 trailing bytes".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "DBNET001 trailing bytes".into(),
+            ));
         }
         let cert = MultilateralNettingCertificate {
             gross_legs,
@@ -1631,7 +1751,10 @@ pub enum SubmissionSpec {
 }
 
 impl SubmissionSpec {
-    pub fn validate_for_params(&self, params: &HoistedParams) -> Result<(usize, u32, u32), ClearingError> {
+    pub fn validate_for_params(
+        &self,
+        params: &HoistedParams,
+    ) -> Result<(usize, u32, u32), ClearingError> {
         let n = params.n;
         let q_mod_t = (&params.q_big % BigUint::from(params.t))
             .to_u64()
@@ -1654,7 +1777,8 @@ impl SubmissionSpec {
                 }
                 if 2u128 * (q_mod_t as u128) * (*max_qty_per_tick as u128) >= (params.t as u128) {
                     return Err(ClearingError::InvalidSubmissionProof(
-                        "params (Q mod t) * max_qty_per_tick exceeds linear encode_round regime".into(),
+                        "params (Q mod t) * max_qty_per_tick exceeds linear encode_round regime"
+                            .into(),
                     ));
                 }
                 Ok((2 * (*num_ticks), *max_qty_per_tick, 0))
@@ -1689,10 +1813,10 @@ impl SubmissionSpec {
                 max_qty_per_tick,
             } => {
                 h.update([1u8]);
-                h.update(&(*num_ticks as u32).to_le_bytes());
-                h.update(&max_qty_per_tick.to_le_bytes());
+                h.update((*num_ticks as u32).to_le_bytes());
+                h.update(max_qty_per_tick.to_le_bytes());
                 for &p in tick_prices {
-                    h.update(&p.to_le_bytes());
+                    h.update(p.to_le_bytes());
                 }
             }
             SubmissionSpec::BinaryBallot {
@@ -1701,9 +1825,9 @@ impl SubmissionSpec {
                 max_votes,
             } => {
                 h.update([2u8]);
-                h.update(&(*num_choices as u32).to_le_bytes());
-                h.update(&min_votes.to_le_bytes());
-                h.update(&max_votes.to_le_bytes());
+                h.update((*num_choices as u32).to_le_bytes());
+                h.update(min_votes.to_le_bytes());
+                h.update(max_votes.to_le_bytes());
             }
         }
         h.finalize().into()
@@ -1747,7 +1871,12 @@ fn build_rev_neg_split_ntt(p0: u64, ntt_p0: &Ntt, poly_q: &[u64]) -> (Vec<u64>, 
 }
 
 impl DarkCommitteePubKey {
-    pub fn from_coeffs(params: &HoistedParams, rns_q: Arc<Rns>, b_coeff: Vec<u64>, a_coeff: Vec<u64>) -> Self {
+    pub fn from_coeffs(
+        params: &HoistedParams,
+        rns_q: Arc<Rns>,
+        b_coeff: Vec<u64>,
+        a_coeff: Vec<u64>,
+    ) -> Self {
         let n = params.n;
         let p0 = params.qp[0];
         let ntt_p0 = Arc::new(Ntt::new(p0, n));
@@ -1768,13 +1897,13 @@ impl DarkCommitteePubKey {
 
         let mut h = Sha256::new();
         h.update(b"DARK_COMMITTEE_PK_V1|");
-        h.update(&(n as u32).to_le_bytes());
-        h.update(&params.t.to_le_bytes());
+        h.update((n as u32).to_le_bytes());
+        h.update(params.t.to_le_bytes());
         for &q in &params.qp {
-            h.update(&q.to_le_bytes());
+            h.update(q.to_le_bytes());
         }
         for &v in b_coeff.iter().chain(a_coeff.iter()) {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         let pk_digest: [u8; 32] = h.finalize().into();
 
@@ -1810,12 +1939,12 @@ impl DarkCommitteePubKey {
 pub fn bfv_ct_handle(params: &HoistedParams, ct: &Ct) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARK_CLEARING_CT2_V1|");
-    h.update(&(params.n as u32).to_le_bytes());
+    h.update((params.n as u32).to_le_bytes());
     for &q in &params.qp {
-        h.update(&q.to_le_bytes());
+        h.update(q.to_le_bytes());
     }
     for &v in ct.c0.iter().chain(ct.c1.iter()) {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     h.finalize().into()
 }
@@ -1851,27 +1980,39 @@ struct AffineLookupDesc {
 fn build_submission_lookup_descs(p0: u64, max_val: u32, max_slack: u32) -> Vec<AffineLookupDesc> {
     let mut descs = Vec::with_capacity(23);
     // Slot 0: u in [-1, 1] -> (u + 1) in [0, 2]
-    descs.push(AffineLookupDesc { const_offset: 1, slot: 0 });
+    descs.push(AffineLookupDesc {
+        const_offset: 1,
+        slot: 0,
+    });
     descs.push(AffineLookupDesc {
         const_offset: (1u64 << 20) - 2,
         slot: 0,
     });
     // Slot 1 & 2: e0, e1 in [-8, 8] -> (e + 8) in [0, 16]
     for slot in [1usize, 2usize] {
-        descs.push(AffineLookupDesc { const_offset: 8, slot });
+        descs.push(AffineLookupDesc {
+            const_offset: 8,
+            slot,
+        });
         descs.push(AffineLookupDesc {
             const_offset: (1u64 << 20) - 9,
             slot,
         });
     }
     // Slot 3: m in [0, max_val]
-    descs.push(AffineLookupDesc { const_offset: 0, slot: 3 });
+    descs.push(AffineLookupDesc {
+        const_offset: 0,
+        slot: 3,
+    });
     descs.push(AffineLookupDesc {
         const_offset: ((1u64 << 20) - 1 - (max_val as u64)) % p0,
         slot: 3,
     });
     // Slot 4: slack in [0, max_slack]
-    descs.push(AffineLookupDesc { const_offset: 0, slot: 4 });
+    descs.push(AffineLookupDesc {
+        const_offset: 0,
+        slot: 4,
+    });
     descs.push(AffineLookupDesc {
         const_offset: ((1u64 << 20) - 1 - (max_slack as u64)) % p0,
         slot: 4,
@@ -1902,7 +2043,7 @@ fn submission_statement_digest(
     h.update(b"DARK_SUBMISSION_STMT_V1|");
     h.update(pk_digest);
     h.update(spec_digest);
-    h.update(&epoch.to_le_bytes());
+    h.update(epoch.to_le_bytes());
     h.update(nullifier);
     h.update(ct_handle);
     h.finalize().into()
@@ -1928,7 +2069,7 @@ fn derive_bfv_eval_challenges(
         h.update(stmt_digest);
         h.update(pcs_root);
         h.update(mult_comm);
-        h.update(&(s as u32).to_le_bytes());
+        h.update((s as u32).to_le_bytes());
         let d: [u8; 32] = h.finalize().into();
         fp0.red128(u128::from_le_bytes(d[0..16].try_into().unwrap()))
     })
@@ -1957,29 +2098,29 @@ fn extract_submission_logup_points(
     let mut tr_state: [u8; 32] = {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_D1B_GKR|LOGUP_RANGE20");
-        h.update(&fp.p.to_le_bytes());
+        h.update(fp.p.to_le_bytes());
         h.update(context_digest);
         h.finalize().into()
     };
     let absorb_u64s = |st: &mut [u8; 32], vals: &[u64]| {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         for &v in vals {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         *st = h.finalize().into();
     };
     let absorb_bytes = |st: &mut [u8; 32], data: &[u8]| {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         h.update(data);
         *st = h.finalize().into();
     };
     let squeeze_fp = |st: &mut [u8; 32], tag: u64| -> u64 {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         h.update(b"CHAL");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         *st = out;
         fp.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -1989,7 +2130,7 @@ fn extract_submission_logup_points(
         h.update(st);
         h.update(b"SUB|");
         h.update(label.as_bytes());
-        h.update(&idx.to_le_bytes());
+        h.update(idx.to_le_bytes());
         h.finalize().into()
     };
 
@@ -1999,47 +2140,51 @@ fn extract_submission_logup_points(
         let _ = squeeze_fp(&mut tr_state, ell as u64);
     }
 
-    let replay_tree = |mut st: [u8; 32], t_prf: &FractionTreeProof| -> Result<Vec<u64>, ClearingError> {
-        for r in &t_prf.roots {
-            absorb_u64s(&mut st, r);
-        }
-        if t_prf.depth == 0 {
-            return Ok(Vec::new());
-        }
-        for v in &t_prf.layer1_vals {
-            absorb_u64s(&mut st, v);
-        }
-        let z0 = squeeze_fp(&mut st, 1);
-        let mut z_pt = vec![z0];
-        for (idx, layer) in t_prf.layers.iter().enumerate() {
-            let k = idx + 1;
-            for ell in 0..c {
-                let _ = squeeze_fp(&mut st, 100 + ell as u64);
+    let replay_tree =
+        |mut st: [u8; 32], t_prf: &FractionTreeProof| -> Result<Vec<u64>, ClearingError> {
+            for r in &t_prf.roots {
+                absorb_u64s(&mut st, r);
             }
-            for ell in 0..c {
-                let _ = squeeze_fp(&mut st, 200 + ell as u64);
+            if t_prf.depth == 0 {
+                return Ok(Vec::new());
             }
-            let mut r_vars = Vec::with_capacity(k);
-            for (round, poly) in layer.sumcheck_rounds.iter().enumerate() {
-                absorb_u64s(&mut st, poly);
-                r_vars.push(squeeze_fp(&mut st, 1000 + round as u64));
+            for v in &t_prf.layer1_vals {
+                absorb_u64s(&mut st, v);
             }
-            for ce in &layer.child_evals {
-                absorb_u64s(&mut st, ce);
+            let z0 = squeeze_fp(&mut st, 1);
+            let mut z_pt = vec![z0];
+            for (idx, layer) in t_prf.layers.iter().enumerate() {
+                let k = idx + 1;
+                for ell in 0..c {
+                    let _ = squeeze_fp(&mut st, 100 + ell as u64);
+                }
+                for ell in 0..c {
+                    let _ = squeeze_fp(&mut st, 200 + ell as u64);
+                }
+                let mut r_vars = Vec::with_capacity(k);
+                for (round, poly) in layer.sumcheck_rounds.iter().enumerate() {
+                    absorb_u64s(&mut st, poly);
+                    r_vars.push(squeeze_fp(&mut st, 1000 + round as u64));
+                }
+                for ce in &layer.child_evals {
+                    absorb_u64s(&mut st, ce);
+                }
+                let r_child = squeeze_fp(&mut st, 2000 + k as u64);
+                let mut z_next = Vec::with_capacity(k + 1);
+                z_next.push(r_child);
+                z_next.extend_from_slice(&r_vars);
+                z_pt = z_next;
             }
-            let r_child = squeeze_fp(&mut st, 2000 + k as u64);
-            let mut z_next = Vec::with_capacity(k + 1);
-            z_next.push(r_child);
-            z_next.extend_from_slice(&r_vars);
-            z_pt = z_next;
-        }
-        absorb_u64s(&mut st, &[t_prf.leaf_payload_eval]);
-        Ok(z_pt)
-    };
+            absorb_u64s(&mut st, &[t_prf.leaf_payload_eval]);
+            Ok(z_pt)
+        };
 
     let mut wit_zs = Vec::with_capacity(proof.witness_trees.len());
     for (b_idx, w_prf) in proof.witness_trees.iter().enumerate() {
-        wit_zs.push(replay_tree(fork_sub(&tr_state, "WIT_TREE", b_idx as u64), w_prf)?);
+        wit_zs.push(replay_tree(
+            fork_sub(&tr_state, "WIT_TREE", b_idx as u64),
+            w_prf,
+        )?);
     }
     let z_tab = replay_tree(fork_sub(&tr_state, "TAB_TREE", 0), &proof.table_tree)?;
     Ok((wit_zs, z_tab))
@@ -2128,12 +2273,7 @@ fn build_submission_whir_claims(
                     (idx_ub_lo, vec![(0, 1)]),
                     (
                         vf_pow_idx,
-                        vec![
-                            (1, 1),
-                            (3, d_lo),
-                            (5 + k, neg_q_lo),
-                            (11 + k, neg_two38),
-                        ],
+                        vec![(1, 1), (3, d_lo), (5 + k, neg_q_lo), (11 + k, neg_two38)],
                     ),
                 ],
                 rhs: rhs_c0_lo,
@@ -2142,10 +2282,7 @@ fn build_submission_whir_claims(
             claims.push(SlotLinearClaim {
                 terms: vec![
                     (idx_ub_hi, vec![(0, 1)]),
-                    (
-                        vf_pow_idx,
-                        vec![(3, d_hi), (5 + k, neg_q_hi), (11 + k, 1)],
-                    ),
+                    (vf_pow_idx, vec![(3, d_hi), (5 + k, neg_q_hi), (11 + k, 1)]),
                 ],
                 rhs: rhs_c0_hi,
             });
@@ -2292,7 +2429,12 @@ fn sample_bounded_i64_vec(n: usize, rng: &mut PcsRng, bound: i64) -> Vec<i64> {
     out
 }
 
-fn negacyclic_conv_u64_i64_exact(poly_q: &[u64], u_signed: &[i64], qk: u64, ntt_k: &Ntt) -> Vec<i128> {
+fn negacyclic_conv_u64_i64_exact(
+    poly_q: &[u64],
+    u_signed: &[i64],
+    qk: u64,
+    ntt_k: &Ntt,
+) -> Vec<i128> {
     // Wait: `|(poly_q ⊛ u)_j| <= N * q_k ~ 8192 * 2^61 ~ 2^74` overflows a single 61-bit modulus!
     // Compute `(poly_q ⊛ u)_j` over exact `i128` via two 31-bit halves (`poly_lo`, `poly_hi`) each convolved
     // in `O(N log N)` via `ntt_k` (`8192 * 2^31 = 2^44 << q_k / 2` -> 0 wrap, 100% exact `O(N log N)`!).
@@ -2304,8 +2446,16 @@ fn negacyclic_conv_u64_i64_exact(poly_q: &[u64], u_signed: &[i64], qk: u64, ntt_
     ntt_k.forward(&mut p_lo);
     ntt_k.forward(&mut p_hi);
     ntt_k.forward(&mut u_ntt);
-    let mut c_lo: Vec<u64> = p_lo.iter().zip(&u_ntt).map(|(&a, &b)| mulmod(a, b, qk)).collect();
-    let mut c_hi: Vec<u64> = p_hi.iter().zip(&u_ntt).map(|(&a, &b)| mulmod(a, b, qk)).collect();
+    let mut c_lo: Vec<u64> = p_lo
+        .iter()
+        .zip(&u_ntt)
+        .map(|(&a, &b)| mulmod(a, b, qk))
+        .collect();
+    let mut c_hi: Vec<u64> = p_hi
+        .iter()
+        .zip(&u_ntt)
+        .map(|(&a, &b)| mulmod(a, b, qk))
+        .collect();
     ntt_k.inverse(&mut c_lo);
     ntt_k.inverse(&mut c_hi);
 
@@ -2334,7 +2484,9 @@ pub fn encrypt_and_prove_submission_whir(
 ) -> Result<EncryptedSubmission61, ClearingError> {
     let n = params.n;
     if plaintext.len() != n {
-        return Err(ClearingError::DimensionMismatch("plaintext len != N".into()));
+        return Err(ClearingError::DimensionMismatch(
+            "plaintext len != N".into(),
+        ));
     }
     let (active_slots, max_val, _max_slack) = spec.validate_for_params(params)?;
     for (j, &v) in plaintext.iter().enumerate() {
@@ -2418,8 +2570,7 @@ pub fn prove_submission_from_raw_witness(
     for j in 0..n {
         let m_mod_t = (plaintext_signed[j] as i128).rem_euclid(pk.rns_q.t as i128) as u64;
         pk.rns_q.encode_round(m_mod_t, &mut enc);
-        for k in 0..3 {
-            let qk = params.qp[k];
+        for (k, &qk) in params.qp.iter().enumerate() {
             let idx = k * n + j;
             c0[idx] = addmod(addmod(c0[idx], from_i64(e0[j], qk), qk), enc[k], qk);
             c1[idx] = addmod(c1[idx], from_i64(e1[j], qk), qk);
@@ -2467,15 +2618,11 @@ pub fn prove_submission_from_raw_witness(
             let w0 = num0.div_euclid(qk_i128) as i64;
             let w1 = num1.div_euclid(qk_i128) as i64;
 
-            let low0 = bu_lo[j]
-                + (e0[j] as i128)
-                + d_lo * mj
+            let low0 = bu_lo[j] + (e0[j] as i128) + d_lo * mj
                 - ((c0_kj & SPLIT_MASK) as i128)
                 - q_lo * (w0 as i128);
-            let low1 = au_lo[j]
-                + (e1[j] as i128)
-                - ((c1_kj & SPLIT_MASK) as i128)
-                - q_lo * (w1 as i128);
+            let low1 =
+                au_lo[j] + (e1[j] as i128) - ((c1_kj & SPLIT_MASK) as i128) - q_lo * (w1 as i128);
             let carry0 = (low0 >> SPLIT_BITS) as i64;
             let carry1 = (low1 >> SPLIT_BITS) as i64;
 
@@ -2513,8 +2660,7 @@ pub fn prove_submission_from_raw_witness(
         }
     };
     for s in 0..mult_slots {
-        flat_data[(18 + s) * n..(18 + s + 1) * n]
-            .copy_from_slice(&mults[s * n..(s + 1) * n]);
+        flat_data[(18 + s) * n..(18 + s + 1) * n].copy_from_slice(&mults[s * n..(s + 1) * n]);
     }
 
     let shape = WhirShape61::for_len(
@@ -2527,13 +2673,8 @@ pub fn prove_submission_from_raw_witness(
     let pcs = WhirCommittedPcs61::commit_with_shape(fp0, shape, &flat_data, rng.clone());
 
     let spec_digest = spec.spec_digest();
-    let stmt_digest = submission_statement_digest(
-        &pk.pk_digest,
-        &spec_digest,
-        epoch,
-        &nullifier,
-        &ct_handle,
-    );
+    let stmt_digest =
+        submission_statement_digest(&pk.pk_digest, &spec_digest, epoch, &nullifier, &ct_handle);
     let logup_ctx = derive_logup_context(&stmt_digest, &pcs.root);
     let logup_proof = prove_logup_gkr_with_mults(
         &fp0,
@@ -2544,7 +2685,8 @@ pub fn prove_submission_from_raw_witness(
     );
 
     let (wit_zs, z_tab) = extract_submission_logup_points(&fp0, &logup_proof, &logup_ctx)?;
-    let r_chals = derive_bfv_eval_challenges(&fp0, &stmt_digest, &pcs.root, &logup_proof.mult_commitment);
+    let r_chals =
+        derive_bfv_eval_challenges(&fp0, &stmt_digest, &pcs.root, &logup_proof.mult_commitment);
     let (v_families, claims) = build_submission_whir_claims(
         params,
         pk,
@@ -2592,7 +2734,9 @@ pub fn verify_encrypted_submission_whir(
     }
     let n = params.n;
     if sub.ct.c0.len() != 3 * n || sub.ct.c1.len() != 3 * n {
-        return Err(ClearingError::DimensionMismatch("ciphertext RNS limb len".into()));
+        return Err(ClearingError::DimensionMismatch(
+            "ciphertext RNS limb len".into(),
+        ));
     }
     for k in 0..3 {
         let qk = params.qp[k];
@@ -2606,7 +2750,9 @@ pub fn verify_encrypted_submission_whir(
     }
     let actual_handle = bfv_ct_handle(params, &sub.ct);
     if actual_handle != sub.ct_handle {
-        return Err(ClearingError::InvalidSubmissionProof("ct_handle mismatch".into()));
+        return Err(ClearingError::InvalidSubmissionProof(
+            "ct_handle mismatch".into(),
+        ));
     }
 
     let (active_slots, max_val, max_slack) = spec.validate_for_params(params)?;
@@ -2738,10 +2884,14 @@ impl BfvSubmissionWhirProof61 {
     pub fn from_wire_bytes(bytes: &[u8], p0: u64) -> Result<Self, ClearingError> {
         let mut cur = ByteReader::new(bytes);
         if cur.take(8).map_err(ClearingError::InvalidWireFormat)? != DBWHIR_MAGIC {
-            return Err(ClearingError::InvalidWireFormat("bad DBWHIR61 magic".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "bad DBWHIR61 magic".into(),
+            ));
         }
         if cur.read_u32().map_err(ClearingError::InvalidWireFormat)? != WIRE_VERSION_V1 {
-            return Err(ClearingError::InvalidWireFormat("bad DBWHIR61 version".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "bad DBWHIR61 version".into(),
+            ));
         }
         let mr = cur.read_u8().map_err(ClearingError::InvalidWireFormat)?;
         let mc = cur.read_u8().map_err(ClearingError::InvalidWireFormat)?;
@@ -2752,7 +2902,9 @@ impl BfvSubmissionWhirProof61 {
         let mult_commitment = cur.read_hash().map_err(ClearingError::InvalidWireFormat)?;
         let n_wt = cur.read_u8().map_err(ClearingError::InvalidWireFormat)? as usize;
         if n_wt == 0 || n_wt > 32 {
-            return Err(ClearingError::InvalidWireFormat("bad witness_trees count".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "bad witness_trees count".into(),
+            ));
         }
         let read_tree = |c: &mut ByteReader<'_>| -> Result<FractionTreeProof, ClearingError> {
             let depth = c.read_u8().map_err(ClearingError::InvalidWireFormat)? as usize;
@@ -2763,12 +2915,14 @@ impl BfvSubmissionWhirProof61 {
             for _ in 0..n_ly {
                 sc_lens.push(c.read_u8().map_err(ClearingError::InvalidWireFormat)? as usize);
             }
-            let flat = unpack_u64_bits_le(c, 61, 1 << 16, p0)
-                .map_err(ClearingError::InvalidWireFormat)?;
+            let flat =
+                unpack_u64_bits_le(c, 61, 1 << 16, p0).map_err(ClearingError::InvalidWireFormat)?;
             let mut pos = 0usize;
             let need = |p: usize, k: usize, tot: usize| -> Result<(), ClearingError> {
                 if p + k > tot {
-                    Err(ClearingError::InvalidWireFormat("tree flat underflow".into()))
+                    Err(ClearingError::InvalidWireFormat(
+                        "tree flat underflow".into(),
+                    ))
                 } else {
                     Ok(())
                 }
@@ -2809,7 +2963,9 @@ impl BfvSubmissionWhirProof61 {
             need(pos, 1, flat.len())?;
             let leaf_payload_eval = flat[pos];
             if pos + 1 != flat.len() {
-                return Err(ClearingError::InvalidWireFormat("tree flat trailing".into()));
+                return Err(ClearingError::InvalidWireFormat(
+                    "tree flat trailing".into(),
+                ));
             }
             Ok(FractionTreeProof {
                 depth,
@@ -2825,10 +2981,12 @@ impl BfvSubmissionWhirProof61 {
             witness_trees.push(read_tree(&mut cur)?);
         }
         let table_tree = read_tree(&mut cur)?;
-        let whir_opening =
-            WhirOpeningBundle61::from_bytes(&mut cur, p0).map_err(ClearingError::InvalidWireFormat)?;
+        let whir_opening = WhirOpeningBundle61::from_bytes(&mut cur, p0)
+            .map_err(ClearingError::InvalidWireFormat)?;
         if !cur.is_eof() {
-            return Err(ClearingError::InvalidWireFormat("DBWHIR61 trailing bytes".into()));
+            return Err(ClearingError::InvalidWireFormat(
+                "DBWHIR61 trailing bytes".into(),
+            ));
         }
         Ok(BfvSubmissionWhirProof61 {
             mr,
@@ -2881,11 +3039,11 @@ impl OpeningAuthorization {
         signer_custodians.dedup();
         let mut h = Sha256::new();
         h.update(b"DARK_OPENING_AUTH_V1|");
-        h.update(&epoch.to_le_bytes());
-        h.update(&spec_digest);
-        h.update(&aggregate_handle);
+        h.update(epoch.to_le_bytes());
+        h.update(spec_digest);
+        h.update(aggregate_handle);
         for &id in &signer_custodians {
-            h.update(&(id as u32).to_le_bytes());
+            h.update((id as u32).to_le_bytes());
         }
         let auth_digest: [u8; 32] = h.finalize().into();
         OpeningAuthorization {
@@ -3021,11 +3179,10 @@ impl DarkClearingCommittee {
             let mut as_prod = rns_q.mul_pw(&a_ntt, &s_p_ntt);
             rns_q.inv(&mut as_prod);
 
-            for k in 0..3 {
-                let qk = params.qp[k];
-                for j in 0..n {
+            for (j, &ej) in e_p.iter().enumerate() {
+                for (k, &qk) in params.qp.iter().enumerate() {
                     let idx = k * n + j;
-                    let b_pj = submod(0, addmod(as_prod[idx], from_i64(e_p[j], qk), qk), qk);
+                    let b_pj = submod(0, addmod(as_prod[idx], from_i64(ej, qk), qk), qk);
                     b_joint[idx] = addmod(b_joint[idx], b_pj, qk);
                 }
             }
@@ -3036,17 +3193,16 @@ impl DarkClearingCommittee {
             for _ in 1..threshold {
                 poly_coeffs.push(sample_uniform_rq_limbs(&rns_q, &mut p_rng));
             }
-            for recv in 0..num_custodians {
+            for (recv, recv_shares) in point_shares.iter_mut().enumerate() {
                 let x_eval = (recv + 1) as u64;
-                for k in 0..3 {
-                    let qk = params.qp[k];
+                for (k, &qk) in params.qp.iter().enumerate() {
                     for j in 0..n {
                         let idx = k * n + j;
                         let mut acc = 0u64;
-                        for d in (0..threshold).rev() {
-                            acc = addmod(mulmod(acc, x_eval, qk), poly_coeffs[d][idx], qk);
+                        for poly in poly_coeffs.iter().rev() {
+                            acc = addmod(mulmod(acc, x_eval, qk), poly[idx], qk);
                         }
-                        point_shares[recv][idx] = addmod(point_shares[recv][idx], acc, qk);
+                        recv_shares[idx] = addmod(recv_shares[idx], acc, qk);
                     }
                 }
             }
@@ -3094,10 +3250,9 @@ impl DarkClearingCommittee {
         verify_encrypted_submission_whir(&self.params, &self.pk, spec, epoch, sub)?;
         self.used_nullifiers.insert(sub.nullifier);
         for shard in &mut self.shards {
-            shard.admitted_handles.insert(
-                sub.ct_handle,
-                HandleRole::IndividualSubmission { epoch },
-            );
+            shard
+                .admitted_handles
+                .insert(sub.ct_handle, HandleRole::IndividualSubmission { epoch });
         }
         self.verified_pool
             .entry(epoch)
@@ -3108,12 +3263,17 @@ impl DarkClearingCommittee {
 
     /// Homomorphically sum all verified ciphertexts for `epoch` (`ct + ct` inside BFV) and register
     /// the resulting `aggregate_handle` as `BatchAggregate` in every custodian shard.
-    pub fn aggregate_verified_epoch(&mut self, epoch: u64) -> Result<([u8; 32], usize), ClearingError> {
+    pub fn aggregate_verified_epoch(
+        &mut self,
+        epoch: u64,
+    ) -> Result<([u8; 32], usize), ClearingError> {
         let cts = self.verified_pool.get(&epoch).ok_or_else(|| {
             ClearingError::InvalidSubmissionProof("no verified submissions in epoch".into())
         })?;
         if cts.is_empty() {
-            return Err(ClearingError::InvalidSubmissionProof("empty epoch pool".into()));
+            return Err(ClearingError::InvalidSubmissionProof(
+                "empty epoch pool".into(),
+            ));
         }
         let n = self.params.n;
         let mut c0_sum = vec![0u64; 3 * n];
@@ -3121,7 +3281,9 @@ impl DarkClearingCommittee {
         for ct in cts {
             let h = bfv_ct_handle(&self.params, ct);
             for shard in &self.shards {
-                if shard.admitted_handles.get(&h) != Some(&HandleRole::IndividualSubmission { epoch }) {
+                if shard.admitted_handles.get(&h)
+                    != Some(&HandleRole::IndividualSubmission { epoch })
+                {
                     return Err(ClearingError::C8UnverifiedHandle(h));
                 }
             }
@@ -3158,7 +3320,9 @@ impl DarkClearingCommittee {
         target_ct: &Ct,
     ) -> Result<ThresholdDecryptionShare, ClearingError> {
         if custodian_id >= self.num_custodians {
-            return Err(ClearingError::ThresholdPolicyViolation("bad custodian id".into()));
+            return Err(ClearingError::ThresholdPolicyViolation(
+                "bad custodian id".into(),
+            ));
         }
         if auth.signer_custodians.len() < self.threshold
             || !auth.signer_custodians.contains(&custodian_id)
@@ -3256,7 +3420,10 @@ impl DarkClearingCommittee {
 
         // Compute exact integer-cleared Lagrange coefficients `\tilde{\lambda}_{i, S} = L_fact * prod_{j != i} (-x_j)/(x_i - x_j)`:
         let l_fact = self.clearing_factorial as i128;
-        let xs: Vec<i128> = selected.iter().map(|s| (s.custodian_id + 1) as i128).collect();
+        let xs: Vec<i128> = selected
+            .iter()
+            .map(|s| (s.custodian_id + 1) as i128)
+            .collect();
         let mut cleared_lambdas = Vec::with_capacity(self.threshold);
         for i in 0..self.threshold {
             let mut num = l_fact;
@@ -3366,7 +3533,8 @@ pub fn execute_dark_bazaar_clearing_epoch(
     let aggregate_bids = opened[..k_ticks].to_vec();
     let aggregate_asks = opened[k_ticks..2 * k_ticks].to_vec();
 
-    let auction_clearing = solve_certified_call_auction_qp(qp_cfg, &aggregate_bids, &aggregate_asks)?;
+    let auction_clearing =
+        solve_certified_call_auction_qp(qp_cfg, &aggregate_bids, &aggregate_asks)?;
     let fhqpb001_wire_bytes = auction_clearing.bundle.to_wire_bytes();
     let t_kkt = Instant::now();
     let (_, _) = ExactQpCertificateBundle::from_wire_bytes_and_verify(&fhqpb001_wire_bytes)?;

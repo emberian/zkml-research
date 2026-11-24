@@ -24,7 +24,10 @@ fn c() -> u64 {
 /// Select the modulus (one of the two profile primes). Panics if a different one was already selected after use
 /// began elsewhere; tests that need both run in separate processes.
 pub fn set_p(q: u64) {
-    assert!(q == P_DEMO || q == P_LEDGER, "unsupported field modulus {q}");
+    assert!(
+        q == P_DEMO || q == P_LEDGER,
+        "unsupported field modulus {q}"
+    );
     PV.store(q, Ordering::SeqCst);
     CV.store((1u64 << 61) - q, Ordering::SeqCst);
 }
@@ -36,23 +39,39 @@ pub fn red(x: u128) -> u64 {
     let t = (x & M61) + (x >> 61) * cc;
     let t = (t & M61) + (t >> 61) * cc;
     let t = t as u64;
-    if t >= pp { t - pp } else { t }
+    if t >= pp {
+        t - pp
+    } else {
+        t
+    }
 }
 
 #[inline(always)]
 pub fn add(a: u64, b: u64) -> u64 {
     let s = a + b;
-    if s >= p() { s - p() } else { s }
+    if s >= p() {
+        s - p()
+    } else {
+        s
+    }
 }
 
 #[inline(always)]
 pub fn sub(a: u64, b: u64) -> u64 {
-    if a >= b { a - b } else { a + p() - b }
+    if a >= b {
+        a - b
+    } else {
+        a + p() - b
+    }
 }
 
 #[inline(always)]
 pub fn neg(a: u64) -> u64 {
-    if a == 0 { 0 } else { p() - a }
+    if a == 0 {
+        0
+    } else {
+        p() - a
+    }
 }
 
 #[inline(always)]
@@ -85,7 +104,7 @@ pub fn pow(mut b: u64, mut e: u64) -> u64 {
 }
 
 pub fn inv(a: u64) -> u64 {
-    assert!(a % p() != 0, "inverse of 0");
+    assert!(!a.is_multiple_of(p()), "inverse of 0");
     pow(a, p() - 2)
 }
 
@@ -131,17 +150,27 @@ mod tests {
         }
         set_p(P_DEMO);
     }
-    fn red_case(P: u64) {
-        let xs = [0u128, 1, P as u128, P as u128 * 2 + 5, u128::MAX, (P as u128 - 1) * (P as u128 - 1), 1u128 << 127];
+    fn red_case(p: u64) {
+        let xs = [
+            0u128,
+            1,
+            p as u128,
+            p as u128 * 2 + 5,
+            u128::MAX,
+            (p as u128 - 1) * (p as u128 - 1),
+            1u128 << 127,
+        ];
         for &x in &xs {
-            assert_eq!(red(x) as u128, x % P as u128, "{x}");
+            assert_eq!(red(x) as u128, x % p as u128, "{x}");
         }
         let mut s = 12345u64;
         for _ in 0..100000 {
-            s = s.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
-            let a = s % P;
-            let b = s.rotate_left(17) % P;
-            assert_eq!(mul(a, b) as u128, (a as u128 * b as u128) % P as u128);
+            s = s
+                .wrapping_mul(6364136223846793005)
+                .wrapping_add(1442695040888963407);
+            let a = s % p;
+            let b = s.rotate_left(17) % p;
+            assert_eq!(mul(a, b) as u128, (a as u128 * b as u128) % p as u128);
         }
     }
 }

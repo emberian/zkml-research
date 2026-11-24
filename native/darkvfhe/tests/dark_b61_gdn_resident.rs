@@ -39,7 +39,7 @@ fn make_deterministic_initial_state(
         .collect()
 }
 
-fn make_chunk_supported_cols(
+struct ChunkSpec {
     num_heads: usize,
     tau: usize,
     d_v: usize,
@@ -48,7 +48,19 @@ fn make_chunk_supported_cols(
     unit_gamma: bool,
     seed: u64,
     t: u64,
-) -> GdnChunkPlain {
+}
+
+fn make_chunk_supported_cols(spec: ChunkSpec) -> GdnChunkPlain {
+    let ChunkSpec {
+        num_heads,
+        tau,
+        d_v,
+        d_k,
+        col_range,
+        unit_gamma,
+        seed,
+        t,
+    } = spec;
     let heads = (0..num_heads)
         .map(|h| {
             (0..tau)
@@ -247,8 +259,26 @@ fn test_threshold_custody_epoch_gate_and_shadow_branch_refusal() {
     assert_eq!(quorum.high_water_epochs(), [0; 3]);
 
     // 5. Execute two genuine multi-step WY continual chunks (`tau = 2`, then `tau = 2` with refresh):
-    let chunk0 = make_chunk_supported_cols(2, 2, 8, 8, 0..8, false, 101, params.t);
-    let chunk1 = make_chunk_supported_cols(2, 2, 8, 8, 0..8, false, 202, params.t);
+    let chunk0 = make_chunk_supported_cols(ChunkSpec {
+        num_heads: 2,
+        tau: 2,
+        d_v: 8,
+        d_k: 8,
+        col_range: 0..8,
+        unit_gamma: false,
+        seed: 101,
+        t: params.t,
+    });
+    let chunk1 = make_chunk_supported_cols(ChunkSpec {
+        num_heads: 2,
+        tau: 2,
+        d_v: 8,
+        d_k: 8,
+        col_range: 0..8,
+        unit_gamma: false,
+        seed: 202,
+        t: params.t,
+    });
     let spdz0 = resident.share_chunk_to_custodians(&mut quorum, &chunk0);
     let (_, b0, m0) = resident
         .adapt_wy_chunk_spdz(&mut quorum, spdz0, &[0, 1], true)
@@ -360,8 +390,26 @@ fn test_w0_subspace_unlearning_orthogonal_tooth_and_wy_replay_exact() {
         let (mut resident, _, _) = DarkB61GdnResident::initialize(&mut quorum, &s0).expect("init");
 
         // Episode 0 uses columns `0..4`; Episode 1 uses disjoint columns `4..8` => `<k_0, k_1> == 0`!
-        let ep0 = make_chunk_supported_cols(2, 2, 8, 8, 0..4, unit_gamma_ep0, 303, params.t);
-        let ep1 = make_chunk_supported_cols(2, 2, 8, 8, 4..8, false, 404, params.t);
+        let ep0 = make_chunk_supported_cols(ChunkSpec {
+            num_heads: 2,
+            tau: 2,
+            d_v: 8,
+            d_k: 8,
+            col_range: 0..4,
+            unit_gamma: unit_gamma_ep0,
+            seed: 303,
+            t: params.t,
+        });
+        let ep1 = make_chunk_supported_cols(ChunkSpec {
+            num_heads: 2,
+            tau: 2,
+            d_v: 8,
+            d_k: 8,
+            col_range: 4..8,
+            unit_gamma: false,
+            seed: 404,
+            t: params.t,
+        });
 
         let spdz0 = resident.share_chunk_to_custodians(&mut quorum, &ep0);
         resident
@@ -411,9 +459,36 @@ fn test_w0_subspace_unlearning_orthogonal_tooth_and_wy_replay_exact() {
     let s0 = make_deterministic_initial_state(2, 8, 8, params.t);
     let (mut resident, _, _) = DarkB61GdnResident::initialize(&mut quorum, &s0).expect("init");
 
-    let ep0_ov = make_chunk_supported_cols(2, 2, 8, 8, 0..8, false, 505, params.t);
-    let ep1_ov = make_chunk_supported_cols(2, 2, 8, 8, 0..8, false, 606, params.t);
-    let ep2_ov = make_chunk_supported_cols(2, 1, 8, 8, 0..8, false, 707, params.t);
+    let ep0_ov = make_chunk_supported_cols(ChunkSpec {
+        num_heads: 2,
+        tau: 2,
+        d_v: 8,
+        d_k: 8,
+        col_range: 0..8,
+        unit_gamma: false,
+        seed: 505,
+        t: params.t,
+    });
+    let ep1_ov = make_chunk_supported_cols(ChunkSpec {
+        num_heads: 2,
+        tau: 2,
+        d_v: 8,
+        d_k: 8,
+        col_range: 0..8,
+        unit_gamma: false,
+        seed: 606,
+        t: params.t,
+    });
+    let ep2_ov = make_chunk_supported_cols(ChunkSpec {
+        num_heads: 2,
+        tau: 1,
+        d_v: 8,
+        d_k: 8,
+        col_range: 0..8,
+        unit_gamma: false,
+        seed: 707,
+        t: params.t,
+    });
 
     for ep in [&ep0_ov, &ep1_ov, &ep2_ov] {
         let sh = resident.share_chunk_to_custodians(&mut quorum, ep);
@@ -635,7 +710,16 @@ fn corrupted_input_mac_refuses_adaptation() {
     let mut quorum = ContinualCustodyQuorum::setup(params.clone(), engine, [9; 32], 6).unwrap();
     let s0 = make_deterministic_initial_state(1, 8, 8, params.t);
     let (mut resident, _, _) = DarkB61GdnResident::initialize(&mut quorum, &s0).unwrap();
-    let chunk = make_chunk_supported_cols(1, 1, 8, 8, 0..8, false, 8, params.t);
+    let chunk = make_chunk_supported_cols(ChunkSpec {
+        num_heads: 1,
+        tau: 1,
+        d_v: 8,
+        d_k: 8,
+        col_range: 0..8,
+        unit_gamma: false,
+        seed: 8,
+        t: params.t,
+    });
     let mut shares = resident.share_chunk_to_custodians(&mut quorum, &chunk);
     let mac = &mut shares[0][0].k[0].parties[1].mac;
     *mac = params.fp_t.add(*mac, 1);
@@ -669,16 +753,16 @@ fn bench_full_qwen35_b61_n8192_dark_gdn_resident() {
     assert_eq!(resident.slice_geometry(), (64, 2));
 
     // Episode 0 (`tau = 2` stateful multi-step WY chunk across all 16 heads = 262,144 fast weights):
-    let ep0 = make_chunk_supported_cols(
-        QWEN35_GDN_HEADS,
-        2,
-        QWEN35_GDN_DV,
-        QWEN35_GDN_DK,
-        0..64,
-        false,
-        1001,
-        params.t,
-    );
+    let ep0 = make_chunk_supported_cols(ChunkSpec {
+        num_heads: QWEN35_GDN_HEADS,
+        tau: 2,
+        d_v: QWEN35_GDN_DV,
+        d_k: QWEN35_GDN_DK,
+        col_range: 0..64,
+        unit_gamma: false,
+        seed: 1001,
+        t: params.t,
+    });
     let spdz0 = resident.share_chunk_to_custodians(&mut quorum, &ep0);
     let t_ep0 = Instant::now();
     let (_, ep0_bytes, ep0_metrics) = resident
@@ -697,16 +781,16 @@ fn bench_full_qwen35_b61_n8192_dark_gdn_resident() {
     .expect("ep0 standalone WHIR verify");
 
     // Episode 1 (`tau = 1` orthogonal-key continual write on cols `64..128`, exercising refresh + adapt):
-    let ep1 = make_chunk_supported_cols(
-        QWEN35_GDN_HEADS,
-        1,
-        QWEN35_GDN_DV,
-        QWEN35_GDN_DK,
-        64..128,
-        false,
-        2002,
-        params.t,
-    );
+    let ep1 = make_chunk_supported_cols(ChunkSpec {
+        num_heads: QWEN35_GDN_HEADS,
+        tau: 1,
+        d_v: QWEN35_GDN_DV,
+        d_k: QWEN35_GDN_DK,
+        col_range: 64..128,
+        unit_gamma: false,
+        seed: 2002,
+        t: params.t,
+    });
     let spdz1 = resident.share_chunk_to_custodians(&mut quorum, &ep1);
     let t_ep1 = Instant::now();
     let (_, ep1_bytes, ep1_metrics) = resident
@@ -760,16 +844,16 @@ fn bench_full_qwen35_b61_n8192_dark_gdn_resident() {
     );
 
     // Append Episode 2 (`tau = 1`, overlapping keys `64..128` with Episode 1 -> `K_2^T K_1 != 0`!):
-    let ep2 = make_chunk_supported_cols(
-        QWEN35_GDN_HEADS,
-        1,
-        QWEN35_GDN_DV,
-        QWEN35_GDN_DK,
-        64..128,
-        false,
-        3003,
-        params.t,
-    );
+    let ep2 = make_chunk_supported_cols(ChunkSpec {
+        num_heads: QWEN35_GDN_HEADS,
+        tau: 1,
+        d_v: QWEN35_GDN_DV,
+        d_k: QWEN35_GDN_DK,
+        col_range: 64..128,
+        unit_gamma: false,
+        seed: 3003,
+        t: params.t,
+    });
     let spdz2 = resident.share_chunk_to_custodians(&mut quorum, &ep2);
     resident
         .adapt_wy_chunk_spdz(&mut quorum, spdz2, &[1, 2], false)

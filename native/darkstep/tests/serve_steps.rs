@@ -10,7 +10,11 @@ use std::process::Command;
 const A: [&str; 4] = ["4096", "3", "118", "64"];
 
 fn free_port() -> u16 {
-    std::net::TcpListener::bind("127.0.0.1:0").unwrap().local_addr().unwrap().port()
+    std::net::TcpListener::bind("127.0.0.1:0")
+        .unwrap()
+        .local_addr()
+        .unwrap()
+        .port()
 }
 
 struct Run {
@@ -34,24 +38,63 @@ fn setup(name: &str, k: usize) -> Run {
             (0..2 * pf.d).map(|_| r.randint_i64(-7, 7)).collect()
         })
         .collect();
-    let later_mod: Vec<Vec<u64>> = later.iter().map(|v| v.iter().map(|&x| darkstep::arith::from_i64(x, pf.t)).collect()).collect();
-    let (tapes, cs) = darkstep::tape::deal_steps_prog(pf.t, pf.d, DEALER_SEED, OWNER_SEED, &plain.flat_mod(pf.t), &later_mod, false, &Program::HARNESS);
+    let later_mod: Vec<Vec<u64>> = later
+        .iter()
+        .map(|v| {
+            v.iter()
+                .map(|&x| darkstep::arith::from_i64(x, pf.t))
+                .collect()
+        })
+        .collect();
+    let (tapes, cs) = darkstep::tape::deal_steps_prog(
+        pf.t,
+        pf.d,
+        DEALER_SEED,
+        OWNER_SEED,
+        &plain.flat_mod(pf.t),
+        &later_mod,
+        false,
+        &Program::HARNESS,
+    );
     for (i, tp) in tapes.iter().enumerate() {
-        tp.write_to(&mut std::io::BufWriter::new(std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();
+        tp.write_to(&mut std::io::BufWriter::new(
+            std::fs::File::create(dir.join(format!("tape_{i}.bin"))).unwrap(),
+        ))
+        .unwrap();
     }
     for seat in ["0", "1", "2", "owner"] {
-        let st = Command::new(env!("CARGO_BIN_EXE_darkstep")).args(["tls-keygen", seat]).arg(&tls).output().unwrap();
+        let st = Command::new(env!("CARGO_BIN_EXE_darkstep"))
+            .args(["tls-keygen", seat])
+            .arg(&tls)
+            .output()
+            .unwrap();
         assert!(st.status.success());
     }
-    Run { dir, tls, cs, later }
+    Run {
+        dir,
+        tls,
+        cs,
+        later,
+    }
 }
 
 /// Serve `steps` steps from the run's state; returns the three exit codes and the owner's log.
-fn serve(r: &Run, steps: usize, first: usize, extra: &[&str]) -> (Vec<i32>, Vec<serde_json::Value>) {
+fn serve(
+    r: &Run,
+    steps: usize,
+    first: usize,
+    extra: &[&str],
+) -> (Vec<i32>, Vec<serde_json::Value>) {
     serve_env(r, steps, first, extra, None)
 }
 
-fn serve_env(r: &Run, steps: usize, first: usize, extra: &[&str], env1: Option<(&str, &str)>) -> (Vec<i32>, Vec<serde_json::Value>) {
+fn serve_env(
+    r: &Run,
+    steps: usize,
+    first: usize,
+    extra: &[&str],
+    env1: Option<(&str, &str)>,
+) -> (Vec<i32>, Vec<serde_json::Value>) {
     let ports: Vec<u16> = (0..4).map(|_| free_port()).collect();
     let addrs: Vec<String> = (0..3).map(|j| format!("127.0.0.1:{}", ports[j])).collect();
     let owner_at = format!("127.0.0.1:{}", ports[3]);
@@ -60,9 +103,15 @@ fn serve_env(r: &Run, steps: usize, first: usize, extra: &[&str], env1: Option<(
         key_der: std::fs::read(r.tls.join("tls_owner.key")).unwrap(),
         cert_der: std::fs::read(r.tls.join("cert_owner.der")).unwrap(),
     };
-    let certs: Vec<Vec<u8>> = (0..3).map(|j| std::fs::read(r.tls.join(format!("cert_{j}.der"))).unwrap()).collect();
+    let certs: Vec<Vec<u8>> = (0..3)
+        .map(|j| std::fs::read(r.tls.join(format!("cert_{j}.der"))).unwrap())
+        .collect();
     let cs = r.cs.clone();
-    let owner = std::thread::spawn(move || darkstep::serve::owner_serve(l, &id, &certs, |k, _| cs.get(k).cloned().ok_or("no such step".into())));
+    let owner = std::thread::spawn(move || {
+        darkstep::serve::owner_serve(l, &id, &certs, |k, _| {
+            cs.get(k).cloned().ok_or("no such step".into())
+        })
+    });
     let kids: Vec<_> = (0..3)
         .map(|i| {
             // each custodian sees only its own key; certificates are public
@@ -71,14 +120,33 @@ fn serve_env(r: &Run, steps: usize, first: usize, extra: &[&str], env1: Option<(
             for f in ["cert_0.der", "cert_1.der", "cert_2.der", "cert_owner.der"] {
                 std::fs::copy(r.tls.join(f), own.join(f)).unwrap();
             }
-            std::fs::copy(r.tls.join(format!("tls_{i}.key")), own.join(format!("tls_{i}.key"))).unwrap();
+            std::fs::copy(
+                r.tls.join(format!("tls_{i}.key")),
+                own.join(format!("tls_{i}.key")),
+            )
+            .unwrap();
             Command::new(env!("CARGO_BIN_EXE_darkstep"))
                 .args(["serve", &i.to_string()])
                 .args(A)
                 .arg(&r.dir)
                 .args(&addrs)
-                .args(["--tls", own.to_str().unwrap(), "--owner", &owner_at, "--steps", &steps.to_string(), "--gate", "309"])
-                .args(["--tape", r.dir.join(format!("tape_{i}.bin")).to_str().unwrap(), "--timeout", "60", "--test-keep-shares"])
+                .args([
+                    "--tls",
+                    own.to_str().unwrap(),
+                    "--owner",
+                    &owner_at,
+                    "--steps",
+                    &steps.to_string(),
+                    "--gate",
+                    "309",
+                ])
+                .args([
+                    "--tape",
+                    r.dir.join(format!("tape_{i}.bin")).to_str().unwrap(),
+                    "--timeout",
+                    "60",
+                    "--test-keep-shares",
+                ])
                 .args(extra)
                 .env("DS_THREADS", "4")
                 .envs(env1.filter(|_| i == 1))
@@ -87,7 +155,10 @@ fn serve_env(r: &Run, steps: usize, first: usize, extra: &[&str], env1: Option<(
                 .unwrap()
         })
         .collect();
-    let codes: Vec<i32> = kids.into_iter().map(|mut k| k.wait().unwrap().code().unwrap_or(-1)).collect();
+    let codes: Vec<i32> = kids
+        .into_iter()
+        .map(|mut k| k.wait().unwrap().code().unwrap_or(-1))
+        .collect();
     let log = owner.join().unwrap().unwrap_or_default();
     let _ = first;
     (codes, log)
@@ -96,12 +167,26 @@ fn serve_env(r: &Run, steps: usize, first: usize, extra: &[&str], env1: Option<(
 fn reveal(dir: &Path, d: usize, p: u64) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
     let shares: Vec<Vec<Sh>> = (0..3)
         .map(|i| {
-            let v = darkstep::net::bytes_to_u64s(&std::fs::read(dir.join(format!("shares_{i}.bin"))).unwrap());
+            let v = darkstep::net::bytes_to_u64s(
+                &std::fs::read(dir.join(format!("shares_{i}.bin"))).unwrap(),
+            );
             v.chunks(2).map(|c| Sh { s: c[0], m: c[1] }).collect()
         })
         .collect();
-    let cen = |v: u64| if v > p / 2 { v as i64 - p as i64 } else { v as i64 };
-    let sum: Vec<i64> = (0..2 * d * d).map(|k| cen(shares.iter().fold(0, |a, s| darkstep::arith::addmod(a, s[k].s, p)))).collect();
+    let cen = |v: u64| {
+        if v > p / 2 {
+            v as i64 - p as i64
+        } else {
+            v as i64
+        }
+    };
+    let sum: Vec<i64> = (0..2 * d * d)
+        .map(|k| {
+            cen(shares
+                .iter()
+                .fold(0, |a, s| darkstep::arith::addmod(a, s[k].s, p)))
+        })
+        .collect();
     let rows: Vec<Vec<i64>> = sum.chunks(d).map(|r| r.to_vec()).collect();
     (rows[..d].to_vec(), rows[d..].to_vec())
 }
@@ -116,15 +201,25 @@ fn twin(r: &Run, steps: usize) -> (Vec<Vec<i64>>, Vec<Vec<i64>>) {
         }
         // the HARNESS program with its |W| <= 7 entry assertion lifted (carried weights grow past it); the
         // truncation bounds are then asserted instead, so a step outside the protocol's precondition fails here
-        let pg = Program { wmax: None, check_k: true, ..Program::HARNESS };
+        let pg = Program {
+            wmax: None,
+            check_k: true,
+            ..Program::HARNESS
+        };
         let (w1, w2) = pl.step_prog(&pg).unwrap();
-        pl = Plain { w1, w2, x: pl.x, y: pl.y };
+        pl = Plain {
+            w1,
+            w2,
+            x: pl.x,
+            y: pl.y,
+        };
     }
     (pl.w1, pl.w2)
 }
 
 fn report(dir: &Path, k: usize, i: usize) -> serde_json::Value {
-    serde_json::from_str(&std::fs::read_to_string(dir.join(format!("step_{k}_P{i}.json"))).unwrap()).unwrap()
+    serde_json::from_str(&std::fs::read_to_string(dir.join(format!("step_{k}_P{i}.json"))).unwrap())
+        .unwrap()
 }
 
 #[test]
@@ -138,14 +233,24 @@ fn three_steps_carried_as_shares_equal_the_plaintext_twin() {
         let reps: Vec<_> = (0..3).map(|i| report(&r.dir, k, i)).collect();
         for v in &reps {
             assert_eq!(v["verdict"], "ACCEPT", "step {k}");
-            assert_eq!(v["transcript"], reps[0]["transcript"], "step {k}: the custodians agree");
+            assert_eq!(
+                v["transcript"], reps[0]["transcript"],
+                "step {k}: the custodians agree"
+            );
             assert!(v["gate"]["prove_seconds"].as_f64().unwrap() > 0.0, "gated");
         }
     }
     // genesis opens 2d^2 + 2d inputs, carried steps 2d (the weights are not input again)
-    assert!(report(&r.dir, 0, 0)["transcript_len"].as_u64().unwrap() > report(&r.dir, 1, 0)["transcript_len"].as_u64().unwrap() + (2 * 64 * 64 - 10) as u64);
+    assert!(
+        report(&r.dir, 0, 0)["transcript_len"].as_u64().unwrap()
+            > report(&r.dir, 1, 0)["transcript_len"].as_u64().unwrap() + (2 * 64 * 64 - 10) as u64
+    );
     let got = reveal(&r.dir, pf.d, pf.t);
-    assert_eq!(got, twin(&r, 3), "revealed weights after 3 steps = plaintext twin");
+    assert_eq!(
+        got,
+        twin(&r, 3),
+        "revealed weights after 3 steps = plaintext twin"
+    );
     assert_ne!(got, twin(&r, 2), "control: not the 2-step twin");
 }
 
@@ -157,7 +262,12 @@ fn pause_checkpoint_and_resume_equal_the_straight_run() {
     assert_eq!(codes, vec![0, 0, 0]);
     // a pause window covering every minute: all three stop at the next boundary with code 3
     let (codes, log) = serve(&r, 1, 2, &["--resume", "--pause-utc", "00:00-23:59"]);
-    let now = (std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs() / 60) % 1440;
+    let now = (std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
+        / 60)
+        % 1440;
     if now < 1439 {
         assert_eq!(codes, vec![3, 3, 3], "paused");
         assert!(log.is_empty());
@@ -165,7 +275,11 @@ fn pause_checkpoint_and_resume_equal_the_straight_run() {
     let (codes, _) = serve(&r, 1, 2, &["--resume"]);
     assert_eq!(codes, vec![0, 0, 0]);
     assert_eq!(report(&r.dir, 2, 0)["verdict"], "ACCEPT");
-    assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 3), "2 steps + resume 1 = the 3-step twin");
+    assert_eq!(
+        reveal(&r.dir, pf.d, pf.t),
+        twin(&r, 3),
+        "2 steps + resume 1 = the 3-step twin"
+    );
 }
 
 /// --pause-file: custodian 2's file (not custodian 0's, who holds the window) pauses all three at the next boundary;
@@ -179,13 +293,31 @@ fn a_pause_file_at_any_custodian_pauses_the_committee() {
     let (codes, _) = serve(&r, 2, 0, &["--pause-file", pat.to_str().unwrap()]);
     assert_eq!(codes, vec![0, 0, 0], "no file: no pause");
     std::fs::write(&p2, b"").unwrap();
-    let (codes, log) = serve(&r, 1, 2, &["--resume", "--pause-file", pat.to_str().unwrap()]);
-    assert_eq!(codes, vec![3, 3, 3], "custodian 2's file pauses the committee");
+    let (codes, log) = serve(
+        &r,
+        1,
+        2,
+        &["--resume", "--pause-file", pat.to_str().unwrap()],
+    );
+    assert_eq!(
+        codes,
+        vec![3, 3, 3],
+        "custodian 2's file pauses the committee"
+    );
     assert!(log.is_empty());
     std::fs::remove_file(&p2).unwrap();
-    let (codes, _) = serve(&r, 1, 2, &["--resume", "--pause-file", pat.to_str().unwrap()]);
+    let (codes, _) = serve(
+        &r,
+        1,
+        2,
+        &["--resume", "--pause-file", pat.to_str().unwrap()],
+    );
     assert_eq!(codes, vec![0, 0, 0]);
-    assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 3), "2 steps + a paused launch + 1 = the 3-step twin");
+    assert_eq!(
+        reveal(&r.dir, pf.d, pf.t),
+        twin(&r, 3),
+        "2 steps + a paused launch + 1 = the 3-step twin"
+    );
 }
 
 /// Custodian 1's link to custodian 0 is cut mid-step (after 1 MB sent, inside the HE matvec): the link resumes under
@@ -197,7 +329,11 @@ fn a_link_cut_mid_step_resumes_and_the_steps_equal_the_twin() {
     let (codes, _) = serve_env(&r, 2, 0, &[], Some(("DS_TEST_KILL", "0,1000000")));
     assert_eq!(codes, vec![0, 0, 0]);
     let rep = report(&r.dir, 0, 1);
-    assert!(rep["reconnects"][0].as_u64().unwrap() >= 1, "the link was resumed: {}", rep["reconnects"]);
+    assert!(
+        rep["reconnects"][0].as_u64().unwrap() >= 1,
+        "the link was resumed: {}",
+        rep["reconnects"]
+    );
     assert_eq!(reveal(&r.dir, pf.d, pf.t), twin(&r, 2));
 }
 
@@ -205,11 +341,25 @@ fn a_link_cut_mid_step_resumes_and_the_steps_equal_the_twin() {
 #[test]
 fn a_link_cut_in_a_check_phase_aborts() {
     let r = setup("cutcheck", 1);
-    let (codes, log) = serve_env(&r, 1, 0, &["--timeout", "20"], Some(("DS_TEST_KILL", "0,critical")));
-    assert!(codes.iter().all(|&c| c != 0), "every custodian stops: {codes:?}");
+    let (codes, log) = serve_env(
+        &r,
+        1,
+        0,
+        &["--timeout", "20"],
+        Some(("DS_TEST_KILL", "0,critical")),
+    );
+    assert!(
+        codes.iter().all(|&c| c != 0),
+        "every custodian stops: {codes:?}"
+    );
     assert!(log.len() <= 1);
-    let reps: Vec<String> = (0..3).filter_map(|i| std::fs::read_to_string(r.dir.join(format!("step_0_P{i}.json"))).ok()).collect();
-    assert!(reps.iter().all(|t| !t.contains("\"ACCEPT\"")), "no custodian accepted the step");
+    let reps: Vec<String> = (0..3)
+        .filter_map(|i| std::fs::read_to_string(r.dir.join(format!("step_0_P{i}.json"))).ok())
+        .collect();
+    assert!(
+        reps.iter().all(|t| !t.contains("\"ACCEPT\"")),
+        "no custodian accepted the step"
+    );
 }
 
 /// Public genesis: W enters custody as a public constant (no W inputs, no preprocessing for it); both steps are
@@ -222,20 +372,48 @@ fn public_genesis_two_carried_steps_equal_the_twin() {
     // re-deal: every step carried
     let mut dl = darkstep::tape::Dealer::new(pf.t, 3, DEALER_SEED);
     let mut owner = pycompat::PyRandom::from_u64(OWNER_SEED);
-    let to = |v: &[i64]| -> Vec<u64> { v.iter().map(|&x| darkstep::arith::from_i64(x, pf.t)).collect() };
+    let to = |v: &[i64]| -> Vec<u64> {
+        v.iter()
+            .map(|&x| darkstep::arith::from_i64(x, pf.t))
+            .collect()
+    };
     let xy0: Vec<i64> = plain.x.iter().chain(plain.y.iter()).copied().collect();
-    let mut cs = vec![darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &to(&xy0), &Program::HARNESS)];
-    cs.push(darkstep::tape::deal_one_step(&mut dl, &mut owner, pf.d, &to(&r.later[0]), &Program::HARNESS));
+    let mut cs = vec![darkstep::tape::deal_one_step(
+        &mut dl,
+        &mut owner,
+        pf.d,
+        &to(&xy0),
+        &Program::HARNESS,
+    )];
+    cs.push(darkstep::tape::deal_one_step(
+        &mut dl,
+        &mut owner,
+        pf.d,
+        &to(&r.later[0]),
+        &Program::HARNESS,
+    ));
     for (i, tp) in dl.tapes.iter().enumerate() {
-        tp.write_to(&mut std::io::BufWriter::new(std::fs::File::create(r.dir.join(format!("tape_{i}.bin"))).unwrap())).unwrap();
+        tp.write_to(&mut std::io::BufWriter::new(
+            std::fs::File::create(r.dir.join(format!("tape_{i}.bin"))).unwrap(),
+        ))
+        .unwrap();
     }
     r.cs = cs;
     let gw = r.dir.parent().unwrap().join("genesis_w.bin");
-    let w: Vec<u8> = plain.w1.iter().chain(plain.w2.iter()).flatten().flat_map(|x| x.to_le_bytes()).collect();
+    let w: Vec<u8> = plain
+        .w1
+        .iter()
+        .chain(plain.w2.iter())
+        .flatten()
+        .flat_map(|x| x.to_le_bytes())
+        .collect();
     std::fs::write(&gw, w).unwrap();
     let (codes, log) = serve(&r, 2, 0, &["--genesis-public", gw.to_str().unwrap()]);
     assert_eq!(codes, vec![0, 0, 0]);
-    assert!(log.iter().all(|l| l["inputs"] == 2 * pf.d), "the owner sends only x and y, from step 0 on");
+    assert!(
+        log.iter().all(|l| l["inputs"] == 2 * pf.d),
+        "the owner sends only x and y, from step 0 on"
+    );
     let l0 = report(&r.dir, 0, 0)["transcript_len"].as_u64().unwrap();
     let l1 = report(&r.dir, 1, 0)["transcript_len"].as_u64().unwrap();
     assert_eq!(l0, l1, "step 0 is a carried step");

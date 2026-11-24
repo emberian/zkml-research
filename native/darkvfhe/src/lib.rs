@@ -69,7 +69,11 @@ impl FastPrime61 {
             let d = self.delta as u128;
             let t1 = (x & M61) + (x >> 61) * d;
             let t2 = ((t1 & M61) + (t1 >> 61) * d) as u64;
-            if t2 >= self.p { t2 - self.p } else { t2 }
+            if t2 >= self.p {
+                t2 - self.p
+            } else {
+                t2
+            }
         } else {
             (x % self.p as u128) as u64
         }
@@ -78,17 +82,29 @@ impl FastPrime61 {
     #[inline(always)]
     pub fn add(&self, a: u64, b: u64) -> u64 {
         let s = a + b;
-        if s >= self.p { s - self.p } else { s }
+        if s >= self.p {
+            s - self.p
+        } else {
+            s
+        }
     }
 
     #[inline(always)]
     pub fn sub(&self, a: u64, b: u64) -> u64 {
-        if a >= b { a - b } else { a + self.p - b }
+        if a >= b {
+            a - b
+        } else {
+            a + self.p - b
+        }
     }
 
     #[inline(always)]
     pub fn neg(&self, a: u64) -> u64 {
-        if a == 0 { 0 } else { self.p - a }
+        if a == 0 {
+            0
+        } else {
+            self.p - a
+        }
     }
 
     #[inline(always)]
@@ -246,7 +262,6 @@ impl HoistedParams {
             for i in 0..m {
                 prefix_mod[m][i] = bigint::biguint_mod_u64(&prefix_bigs[i], pm);
             }
-            inv_prefix_mod[m] = invmod(prefix_mod[m][m - 1] * (all_primes[m - 1] % pm) % pm, pm);
             // Recompute directly from exact prefix_bigs[m] mod pm to avoid any overflow in u64 product:
             let p_mod = bigint::biguint_mod_u64(&prefix_bigs[m], pm);
             inv_prefix_mod[m] = invmod(p_mod, pm);

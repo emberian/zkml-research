@@ -32,7 +32,9 @@ pub fn pmul(a: &[u64], b: &[u64]) -> Vec<u64> {
 
 pub fn padd(a: &[u64], b: &[u64]) -> Vec<u64> {
     let n = a.len().max(b.len());
-    (0..n).map(|i| field::add(*a.get(i).unwrap_or(&0), *b.get(i).unwrap_or(&0))).collect()
+    (0..n)
+        .map(|i| field::add(*a.get(i).unwrap_or(&0), *b.get(i).unwrap_or(&0)))
+        .collect()
 }
 
 pub fn padd_into(acc: &mut Vec<u64>, b: &[u64]) {

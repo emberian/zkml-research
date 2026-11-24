@@ -37,7 +37,11 @@ impl Link {
         sock.write_all(&out)
     }
     fn kill(&self) {
-        let _ = self.sock_w.lock().unwrap().shutdown(std::net::Shutdown::Both);
+        let _ = self
+            .sock_w
+            .lock()
+            .unwrap()
+            .shutdown(std::net::Shutdown::Both);
     }
 }
 
@@ -46,7 +50,13 @@ struct LinkWriter(Arc<Link>);
 impl Write for LinkWriter {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let mut sock = self.0.sock_w.lock().unwrap();
-        let n = self.0.conn.lock().unwrap().writer().write(&buf[..buf.len().min(1 << 20)])?;
+        let n = self
+            .0
+            .conn
+            .lock()
+            .unwrap()
+            .writer()
+            .write(&buf[..buf.len().min(1 << 20)])?;
         self.0.drain(&mut sock)?;
         Ok(n)
     }
@@ -78,7 +88,8 @@ impl Read for LinkReader {
                     let mut rest = &self.raw[self.at..];
                     let k = c.read_tls(&mut rest)?;
                     self.at += k;
-                    c.process_new_packets().map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+                    c.process_new_packets()
+                        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
                     let ww = c.wants_write();
                     drop(c);
                     if ww {
@@ -109,6 +120,8 @@ struct State {
     down_since: Option<Instant>,
 }
 
+type UnackedQueue = Mutex<VecDeque<(u64, u8, Arc<Vec<u8>>)>>;
+
 /// One peer's resumable session (both directions).
 pub struct Session {
     pub peer: usize,
@@ -116,7 +129,7 @@ pub struct Session {
     cv: Condvar,
     pub recv_next: AtomicU64,
     ack_pending: AtomicBool,
-    unacked: Mutex<VecDeque<(u64, u8, Arc<Vec<u8>>)>>,
+    unacked: UnackedQueue,
     pub dead: AtomicBool,
     pub closing: AtomicBool,
     critical: Arc<AtomicBool>,
@@ -131,7 +144,12 @@ impl Session {
     pub fn new(peer: usize, critical: Arc<AtomicBool>, budget: Duration) -> Arc<Session> {
         Arc::new(Session {
             peer,
-            st: Mutex::new(State { gen: 0, link: None, peer_expected: 0, down_since: Some(Instant::now()) }),
+            st: Mutex::new(State {
+                gen: 0,
+                link: None,
+                peer_expected: 0,
+                down_since: Some(Instant::now()),
+            }),
             cv: Condvar::new(),
             recv_next: AtomicU64::new(0),
             ack_pending: AtomicBool::new(false),
@@ -150,7 +168,10 @@ impl Session {
     pub fn install(&self, sock: TcpStream, conn: rustls::Connection, peer_expected: u64) {
         sock.set_nodelay(true).ok();
         let rd = sock.try_clone().unwrap();
-        let link = Arc::new(Link { conn: Mutex::new(conn), sock_w: Mutex::new(sock) });
+        let link = Arc::new(Link {
+            conn: Mutex::new(conn),
+            sock_w: Mutex::new(sock),
+        });
         let mut st = self.st.lock().unwrap();
         if let Some((old, _)) = st.link.take() {
             old.kill();
@@ -178,7 +199,10 @@ impl Session {
             return;
         }
         if self.critical.load(Ordering::Relaxed) {
-            eprintln!("link to party {}: dropped during a check phase ({why}): abort", self.peer);
+            eprintln!(
+                "link to party {}: dropped during a check phase ({why}): abort",
+                self.peer
+            );
             self.dead.store(true, Ordering::Relaxed);
         } else {
             eprintln!("link to party {}: dropped ({why}); resuming", self.peer);
@@ -205,13 +229,20 @@ impl Session {
             }
             if let Some(t) = st.down_since {
                 if t.elapsed() > self.budget {
-                    eprintln!("link to party {}: down for over {:?}: abort", self.peer, self.budget);
+                    eprintln!(
+                        "link to party {}: down for over {:?}: abort",
+                        self.peer, self.budget
+                    );
                     self.dead.store(true, Ordering::Relaxed);
                     self.cv.notify_all();
                     return None;
                 }
             }
-            st = self.cv.wait_timeout(st, Duration::from_millis(200)).unwrap().0;
+            st = self
+                .cv
+                .wait_timeout(st, Duration::from_millis(200))
+                .unwrap()
+                .0;
         }
     }
 
@@ -220,19 +251,27 @@ impl Session {
     pub fn wait_down(&self) -> bool {
         let mut st = self.st.lock().unwrap();
         loop {
-            if self.dead.load(Ordering::Relaxed) || (self.closing.load(Ordering::Relaxed) && self.peer_done.load(Ordering::Relaxed)) {
+            if self.dead.load(Ordering::Relaxed)
+                || (self.closing.load(Ordering::Relaxed) && self.peer_done.load(Ordering::Relaxed))
+            {
                 return false;
             }
             if st.link.is_none() && st.gen > 0 {
                 return true;
             }
-            st = self.cv.wait_timeout(st, Duration::from_millis(200)).unwrap().0;
+            st = self
+                .cv
+                .wait_timeout(st, Duration::from_millis(200))
+                .unwrap()
+                .0;
         }
     }
 
     pub fn out_of_budget(&self) -> bool {
         let st = self.st.lock().unwrap();
-        st.down_since.map(|t| t.elapsed() > self.budget).unwrap_or(false)
+        st.down_since
+            .map(|t| t.elapsed() > self.budget)
+            .unwrap_or(false)
     }
 
     pub fn kill_current(&self) {
@@ -252,13 +291,20 @@ fn hdr(tag: u8, seq: u64, len: u64) -> [u8; 17] {
 
 /// The writer thread of one session: frames from `wrx`, numbered, kept until acknowledged, resent after a resume.
 #[allow(clippy::type_complexity)]
-pub fn writer(s: Arc<Session>, wrx: Receiver<(u8, Vec<u8>)>, on_sent: impl Fn(u8, u64) + Send + 'static, kill_after: Option<(u64, bool)>) {
+pub fn writer(
+    s: Arc<Session>,
+    wrx: Receiver<(u8, Vec<u8>)>,
+    on_sent: impl Fn(u8, u64) + Send + 'static,
+    kill_after: Option<(u64, bool)>,
+) {
     let mut next: u64 = 0;
     let mut seen = 0u64;
     let mut sent_total = 0u64;
     let mut killed = false;
     'outer: loop {
-        let Some((gen, link, _, peer_expected)) = s.wait_link(seen) else { return };
+        let Some((gen, link, _, peer_expected)) = s.wait_link(seen) else {
+            return;
+        };
         seen = gen;
         let mut w = BufWriter::with_capacity(1 << 20, LinkWriter(link.clone()));
         // resume: drop what the peer has, resend the rest in order
@@ -270,7 +316,11 @@ pub fn writer(s: Arc<Session>, wrx: Receiver<(u8, Vec<u8>)>, on_sent: impl Fn(u8
             u.iter().cloned().collect()
         };
         for (seq, tag, buf) in resend {
-            if w.write_all(&hdr(tag, seq, buf.len() as u64)).and_then(|_| w.write_all(&buf)).and_then(|_| w.flush()).is_err() {
+            if w.write_all(&hdr(tag, seq, buf.len() as u64))
+                .and_then(|_| w.write_all(&buf))
+                .and_then(|_| w.flush())
+                .is_err()
+            {
                 s.broken(gen, "write (resend)");
                 continue 'outer;
             }
@@ -284,7 +334,10 @@ pub fn writer(s: Arc<Session>, wrx: Receiver<(u8, Vec<u8>)>, on_sent: impl Fn(u8
             }
             if s.ack_pending.swap(false, Ordering::Relaxed) {
                 let a = s.recv_next.load(Ordering::Relaxed);
-                if w.write_all(&hdr(ACK, a, 0)).and_then(|_| w.flush()).is_err() {
+                if w.write_all(&hdr(ACK, a, 0))
+                    .and_then(|_| w.flush())
+                    .is_err()
+                {
                     s.ack_pending.store(true, Ordering::Relaxed);
                     s.broken(gen, "write (ack)");
                     continue 'outer;
@@ -299,14 +352,25 @@ pub fn writer(s: Arc<Session>, wrx: Receiver<(u8, Vec<u8>)>, on_sent: impl Fn(u8
                     on_sent(tag, 17 + buf.len() as u64);
                     sent_total += 17 + buf.len() as u64;
                     if let Some((at, crit)) = kill_after {
-                        let fire = if crit { s.critical.load(Ordering::Relaxed) } else { sent_total >= at };
+                        let fire = if crit {
+                            s.critical.load(Ordering::Relaxed)
+                        } else {
+                            sent_total >= at
+                        };
                         if !killed && fire {
                             killed = true;
-                            eprintln!("TEST: killing the link to party {} after {sent_total} bytes", s.peer);
+                            eprintln!(
+                                "TEST: killing the link to party {} after {sent_total} bytes",
+                                s.peer
+                            );
                             link.kill();
                         }
                     }
-                    if w.write_all(&hdr(tag, seq, buf.len() as u64)).and_then(|_| w.write_all(&buf)).and_then(|_| w.flush()).is_err() {
+                    if w.write_all(&hdr(tag, seq, buf.len() as u64))
+                        .and_then(|_| w.write_all(&buf))
+                        .and_then(|_| w.flush())
+                        .is_err()
+                    {
                         s.broken(gen, "write");
                         continue 'outer;
                     }
@@ -320,7 +384,10 @@ pub fn writer(s: Arc<Session>, wrx: Receiver<(u8, Vec<u8>)>, on_sent: impl Fn(u8
                     // done sending: say so once per link, then keep acknowledging until the peer is done too and
                     // has everything of ours (a drop here resumes like any other)
                     s.closing.store(true, Ordering::Relaxed);
-                    if w.write_all(&hdr(BYE, next, 0)).and_then(|_| w.flush()).is_err() {
+                    if w.write_all(&hdr(BYE, next, 0))
+                        .and_then(|_| w.flush())
+                        .is_err()
+                    {
                         s.broken(gen, "write (bye)");
                         continue 'outer;
                     }
@@ -334,13 +401,19 @@ pub fn writer(s: Arc<Session>, wrx: Receiver<(u8, Vec<u8>)>, on_sent: impl Fn(u8
                         }
                         if s.ack_pending.swap(false, Ordering::Relaxed) {
                             let a = s.recv_next.load(Ordering::Relaxed);
-                            if w.write_all(&hdr(ACK, a, 0)).and_then(|_| w.flush()).is_err() {
+                            if w.write_all(&hdr(ACK, a, 0))
+                                .and_then(|_| w.flush())
+                                .is_err()
+                            {
                                 s.ack_pending.store(true, Ordering::Relaxed);
                                 s.broken(gen, "write (ack)");
                                 continue 'outer;
                             }
                         }
-                        if s.unacked.lock().unwrap().is_empty() && s.peer_done.load(Ordering::Relaxed) && !s.ack_pending.load(Ordering::Relaxed) {
+                        if s.unacked.lock().unwrap().is_empty()
+                            && s.peer_done.load(Ordering::Relaxed)
+                            && !s.ack_pending.load(Ordering::Relaxed)
+                        {
                             // both directions complete: end the TCP stream so the peer's reader sees a clean EOF
                             let _ = w.flush();
                             if let Ok(lw) = w.into_inner() {
@@ -366,9 +439,19 @@ pub fn reader(s: Arc<Session>, txs: Vec<SyncSender<Vec<u8>>>) {
         if s.peer_done.load(Ordering::Relaxed) && s.closing.load(Ordering::Relaxed) {
             return;
         }
-        let Some((gen, link, Some(sock), _)) = s.wait_link(seen) else { return };
+        let Some((gen, link, Some(sock), _)) = s.wait_link(seen) else {
+            return;
+        };
         seen = gen;
-        let mut r = BufReader::with_capacity(1 << 20, LinkReader { link, sock, raw: Vec::new(), at: 0 });
+        let mut r = BufReader::with_capacity(
+            1 << 20,
+            LinkReader {
+                link,
+                sock,
+                raw: Vec::new(),
+                at: 0,
+            },
+        );
         loop {
             let mut h = [0u8; 17];
             if r.read_exact(&mut h).is_err() {
@@ -418,7 +501,10 @@ pub fn reader(s: Arc<Session>, txs: Vec<SyncSender<Vec<u8>>>) {
                 continue;
             }
             if seq > want {
-                eprintln!("link to party {}: frame {seq} while expecting {want}: abort", s.peer);
+                eprintln!(
+                    "link to party {}: frame {seq} while expecting {want}: abort",
+                    s.peer
+                );
                 s.dead.store(true, Ordering::Relaxed);
                 return;
             }
@@ -439,7 +525,11 @@ fn c_write(c: &mut rustls::Connection, sock: &mut TcpStream, data: &[u8]) -> std
     sock.flush()
 }
 
-fn c_read_exact(c: &mut rustls::Connection, sock: &mut TcpStream, buf: &mut [u8]) -> std::io::Result<()> {
+fn c_read_exact(
+    c: &mut rustls::Connection,
+    sock: &mut TcpStream,
+    buf: &mut [u8],
+) -> std::io::Result<()> {
     let mut got = 0;
     while got < buf.len() {
         match c.reader().read(&mut buf[got..]) {
@@ -449,7 +539,8 @@ fn c_read_exact(c: &mut rustls::Connection, sock: &mut TcpStream, buf: &mut [u8]
                 if c.read_tls(sock)? == 0 {
                     return Err(std::io::ErrorKind::UnexpectedEof.into());
                 }
-                c.process_new_packets().map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+                c.process_new_packets()
+                    .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
             }
             Err(e) => return Err(e),
         }
@@ -458,14 +549,22 @@ fn c_read_exact(c: &mut rustls::Connection, sock: &mut TcpStream, buf: &mut [u8]
 }
 
 /// After the TLS handshake: the dialer states the next sequence number it expects, then the acceptor does.
-fn resume_dialer(stream: &mut TcpStream, c: &mut rustls::Connection, mine: u64) -> std::io::Result<u64> {
+fn resume_dialer(
+    stream: &mut TcpStream,
+    c: &mut rustls::Connection,
+    mine: u64,
+) -> std::io::Result<u64> {
     c_write(c, stream, &mine.to_le_bytes())?;
     let mut b = [0u8; 8];
     c_read_exact(c, stream, &mut b)?;
     Ok(u64::from_le_bytes(b))
 }
 
-fn resume_acceptor(stream: &mut TcpStream, c: &mut rustls::Connection, mine: impl Fn() -> u64) -> std::io::Result<u64> {
+fn resume_acceptor(
+    stream: &mut TcpStream,
+    c: &mut rustls::Connection,
+    mine: impl Fn() -> u64,
+) -> std::io::Result<u64> {
     let mut b = [0u8; 8];
     c_read_exact(c, stream, &mut b)?;
     c_write(c, stream, &mine().to_le_bytes())?;
@@ -473,21 +572,35 @@ fn resume_acceptor(stream: &mut TcpStream, c: &mut rustls::Connection, mine: imp
 }
 
 /// Dial party j (TLS client pinned to its certificate) and resume the session.
-pub fn dial(s: &Session, addr: SocketAddr, cfg: Arc<rustls::ClientConfig>, j: usize, timeout: Duration) -> Result<(), String> {
-    let mut sock = TcpStream::connect_timeout(&addr, timeout).map_err(|e| format!("cannot reach party {j} at {addr}: {e}"))?;
+pub fn dial(
+    s: &Session,
+    addr: SocketAddr,
+    cfg: Arc<rustls::ClientConfig>,
+    j: usize,
+    timeout: Duration,
+) -> Result<(), String> {
+    let mut sock = TcpStream::connect_timeout(&addr, timeout)
+        .map_err(|e| format!("cannot reach party {j} at {addr}: {e}"))?;
     // a port in the ephemeral range with no listener yet can connect to itself (TCP simultaneous open from the same
     // source port): that is not the peer, so drop it and let the caller retry (run 12 died of this on forge)
     if sock.local_addr().ok() == sock.peer_addr().ok() {
-        return Err(format!("cannot reach party {j} at {addr}: the socket connected to itself (no listener yet)"));
+        return Err(format!(
+            "cannot reach party {j} at {addr}: the socket connected to itself (no listener yet)"
+        ));
     }
     sock.set_read_timeout(Some(timeout)).ok();
     sock.set_write_timeout(Some(timeout)).ok();
-    let name = rustls::pki_types::ServerName::try_from(format!("custodian-{j}")).map_err(|e| e.to_string())?;
-    let mut c = rustls::Connection::Client(rustls::ClientConnection::new(cfg, name).map_err(|e| e.to_string())?);
+    let name = rustls::pki_types::ServerName::try_from(format!("custodian-{j}"))
+        .map_err(|e| e.to_string())?;
+    let mut c = rustls::Connection::Client(
+        rustls::ClientConnection::new(cfg, name).map_err(|e| e.to_string())?,
+    );
     while c.is_handshaking() {
-        c.complete_io(&mut sock).map_err(|e| format!("TLS handshake with party {j} refused: {e}"))?;
+        c.complete_io(&mut sock)
+            .map_err(|e| format!("TLS handshake with party {j} refused: {e}"))?;
     }
-    let peer_expected = resume_dialer(&mut sock, &mut c, s.recv_next.load(Ordering::Relaxed)).map_err(|e| format!("resume with party {j}: {e}"))?;
+    let peer_expected = resume_dialer(&mut sock, &mut c, s.recv_next.load(Ordering::Relaxed))
+        .map_err(|e| format!("resume with party {j}: {e}"))?;
     sock.set_read_timeout(None).ok();
     sock.set_write_timeout(Some(write_timeout())).ok();
     s.install(sock, c, peer_expected);
@@ -500,23 +613,45 @@ pub fn dial(s: &Session, addr: SocketAddr, cfg: Arc<rustls::ClientConfig>, j: us
 /// acknowledging with a zero window, so the blocked write simply waits and no link drops (a drop in a check phase
 /// would abort the step).
 fn write_timeout() -> Duration {
-    Duration::from_secs(std::env::var("DS_WRITE_TIMEOUT_SECS").ok().and_then(|s| s.parse().ok()).unwrap_or(120))
+    Duration::from_secs(
+        std::env::var("DS_WRITE_TIMEOUT_SECS")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(120),
+    )
 }
 
 /// Accept one dialer: TLS server with the pinned peer certificates; identify it; resume its session.
-pub fn accept_one(mut sock: TcpStream, scfg: Arc<rustls::ServerConfig>, idx: &[(usize, Vec<u8>)], sessions: &[Option<Arc<Session>>], timeout: Duration) -> Result<usize, String> {
+pub fn accept_one(
+    mut sock: TcpStream,
+    scfg: Arc<rustls::ServerConfig>,
+    idx: &[(usize, Vec<u8>)],
+    sessions: &[Option<Arc<Session>>],
+    timeout: Duration,
+) -> Result<usize, String> {
     sock.set_nonblocking(false).map_err(|e| e.to_string())?;
     sock.set_read_timeout(Some(timeout)).ok();
     sock.set_write_timeout(Some(timeout)).ok();
     let mut c = rustls::ServerConnection::new(scfg).map_err(|e| e.to_string())?;
     while c.is_handshaking() {
-        c.complete_io(&mut sock).map_err(|e| format!("handshake: {e}"))?;
+        c.complete_io(&mut sock)
+            .map_err(|e| format!("handshake: {e}"))?;
     }
-    let pc = c.peer_certificates().and_then(|v| v.first()).ok_or("no client certificate")?.as_ref().to_vec();
-    let j = idx.iter().find(|(_, d)| *d == pc).map(|x| x.0).ok_or("unpinned client")?;
+    let pc = c
+        .peer_certificates()
+        .and_then(|v| v.first())
+        .ok_or("no client certificate")?
+        .as_ref()
+        .to_vec();
+    let j = idx
+        .iter()
+        .find(|(_, d)| *d == pc)
+        .map(|x| x.0)
+        .ok_or("unpinned client")?;
     let s = sessions[j].as_ref().ok_or("no session")?;
     let mut c = rustls::Connection::Server(c);
-    let peer_expected = resume_acceptor(&mut sock, &mut c, || s.recv_next.load(Ordering::Relaxed)).map_err(|e| format!("resume with party {j}: {e}"))?;
+    let peer_expected = resume_acceptor(&mut sock, &mut c, || s.recv_next.load(Ordering::Relaxed))
+        .map_err(|e| format!("resume with party {j}: {e}"))?;
     sock.set_read_timeout(None).ok();
     sock.set_write_timeout(Some(write_timeout())).ok();
     s.install(sock, c, peer_expected);
@@ -524,19 +659,29 @@ pub fn accept_one(mut sock: TcpStream, scfg: Arc<rustls::ServerConfig>, idx: &[(
 }
 
 /// Keep accepting (re)connections from the higher-numbered parties until `closed`.
-pub fn acceptor(listener: TcpListener, scfg: Arc<rustls::ServerConfig>, idx: Vec<(usize, Vec<u8>)>, sessions: Vec<Option<Arc<Session>>>, closed: Arc<AtomicBool>, me: usize) {
+pub fn acceptor(
+    listener: TcpListener,
+    scfg: Arc<rustls::ServerConfig>,
+    idx: Vec<(usize, Vec<u8>)>,
+    sessions: Vec<Option<Arc<Session>>>,
+    closed: Arc<AtomicBool>,
+    me: usize,
+) {
     listener.set_nonblocking(true).ok();
     while !closed.load(Ordering::Relaxed) {
         match listener.accept() {
             Ok((sock, from)) => {
                 let (scfg, idx, sessions) = (scfg.clone(), idx.clone(), sessions.clone());
                 thread::spawn(move || {
-                    if let Err(e) = accept_one(sock, scfg, &idx, &sessions, Duration::from_secs(30)) {
+                    if let Err(e) = accept_one(sock, scfg, &idx, &sessions, Duration::from_secs(30))
+                    {
                         eprintln!("party {me}: refused a connection from {from}: {e}");
                     }
                 });
             }
-            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => thread::sleep(Duration::from_millis(20)),
+            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                thread::sleep(Duration::from_millis(20))
+            }
             Err(_) => thread::sleep(Duration::from_millis(100)),
         }
     }
@@ -557,7 +702,10 @@ pub fn reconnector(s: Arc<Session>, addr: SocketAddr, cfg: Arc<rustls::ClientCon
             }
             match dial(&s, addr, cfg.clone(), j, Duration::from_secs(15)) {
                 Ok(()) => {
-                    eprintln!("link to party {j}: resumed (reconnect {})", s.reconnects.load(Ordering::Relaxed));
+                    eprintln!(
+                        "link to party {j}: resumed (reconnect {})",
+                        s.reconnects.load(Ordering::Relaxed)
+                    );
                     break;
                 }
                 Err(e) => {

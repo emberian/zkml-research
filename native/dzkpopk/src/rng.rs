@@ -20,7 +20,12 @@ pub struct OsHiding {
 
 impl OsHiding {
     pub fn new() -> OsHiding {
-        OsHiding { f: std::io::BufReader::with_capacity(1 << 16, std::fs::File::open("/dev/urandom").expect("/dev/urandom")) }
+        OsHiding {
+            f: std::io::BufReader::with_capacity(
+                1 << 16,
+                std::fs::File::open("/dev/urandom").expect("/dev/urandom"),
+            ),
+        }
     }
     fn bytes32(&mut self) -> [u8; 32] {
         let mut b = [0u8; 32];
@@ -71,7 +76,10 @@ pub struct DetHiding(pub PyRandom);
 impl DetHiding {
     /// zkpopk_ligero.det_rng(label, st): random.Random(f"dl-zkpopk|{seed}|{label}|{digest hex}").
     pub fn for_statement(seed: &str, label: &str, digest: &[u8; 32]) -> DetHiding {
-        DetHiding(PyRandom::from_str_seed(&format!("dl-zkpopk|{seed}|{label}|{}", pycompat::repr::hex(digest))))
+        DetHiding(PyRandom::from_str_seed(&format!(
+            "dl-zkpopk|{seed}|{label}|{}",
+            pycompat::repr::hex(digest)
+        )))
     }
 }
 

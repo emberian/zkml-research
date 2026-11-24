@@ -2,22 +2,26 @@
 //! VRF Layer Selection) + Deterministic `sk-...` Secret Redaction Transducer + Content-Bound `cSHAKE256`
 //! Zero-Knowledge Padded-Complement (`¬(Σ* · "sk-" · KeyChar · Σ*)`) `Absent` Verification (`CERTIFICATES.md` `L3` / `P4` / `P6`).
 
-use crate::ext4::{build_eq_table_lsb_ext4, cshake256_32, mle_eval_bb_at_ext4, ByteCursor, CShakeTranscript, Ext4};
+use crate::ext4::{
+    build_eq_table_lsb_ext4, cshake256_32, mle_eval_bb_at_ext4, ByteCursor, CShakeTranscript, Ext4,
+};
 use crate::gruen_ext4::{
-    compute_d1b_multiplicities, compute_d1b_public_table_multiplicities, prove_d1b_public_table_ext4,
-    prove_d1b_range_ext4, prove_gruen_einsum_mode2_ext4, verify_d1b_public_table_ext4,
-    verify_d1b_range_ext4, verify_gruen_einsum_mode2_ext4, D1bRangeExt4Proof, GruenMode2Ext4Proof,
+    compute_d1b_multiplicities, compute_d1b_public_table_multiplicities,
+    prove_d1b_public_table_ext4, prove_d1b_range_ext4, prove_gruen_einsum_mode2_ext4,
+    verify_d1b_public_table_ext4, verify_d1b_range_ext4, verify_gruen_einsum_mode2_ext4,
+    D1bRangeExt4Proof, GruenMode2Ext4Proof,
 };
 use crate::pcs_ext4::{
     commit_table_pcs, open_pcs_claims, verify_pcs_claims, MleEvalClaim, PcsOpeningProof, PcsParams,
     PcsProverState, PcsShape,
 };
 use crate::qwen35_layer::{
-    prove_audited_gdn_layer, verify_audited_gdn_layer_standalone, PrecommittedMxfp4Pcs,
-    Qwen35TurnExecution, SuccinctGdnLayerProof,
+    prove_audited_gdn_layer, verify_audited_gdn_layer_standalone, AuditedGdnLayerVerifyStmt,
+    AuditedGdnLayerWitness, PrecommittedMxfp4Pcs, Qwen35TurnExecution, SuccinctGdnLayerProof,
 };
 use crate::safetensors_mmap::Qwen35WeightRegistry;
 use rayon::prelude::*;
+use std::ops::{Add, Mul, Sub};
 
 const U1_BUNDLE_MAGIC: &[u8; 8] = b"QW35U1P1";
 
@@ -315,7 +319,11 @@ pub fn prove_padded_absence_zk(
     let mut q_next_vec = vec![final_state as u32; pad_len];
     let mut tuples = vec![0u32; pad_len];
     for t in 0..pad_len {
-        let qt = if t < trace.len() { trace[t] as u32 } else { final_state as u32 };
+        let qt = if t < trace.len() {
+            trace[t] as u32
+        } else {
+            final_state as u32
+        };
         let qn = if t + 1 < trace.len() {
             trace[t + 1] as u32
         } else {
@@ -378,9 +386,7 @@ pub fn prove_padded_absence_zk(
 
     let eq_zsh = build_eq_table_lsb_ext4(&z_sh);
     let mut shift_col = vec![Ext4::ZERO; pad_len];
-    for t in 0..(pad_len - 1) {
-        shift_col[t + 1] = eq_zsh[t];
-    }
+    shift_col[1..pad_len].copy_from_slice(&eq_zsh[..(pad_len - 1)]);
     let q_ext: Vec<Ext4> = q_vec.iter().map(|&v| Ext4::from_bb(v)).collect();
     let (shift_gruen_proof, shift_chals) =
         prove_gruen_einsum_mode2_ext4(&shift_col, &q_ext, 0, m, &[], tr);
@@ -524,7 +530,9 @@ pub fn verify_padded_absence_zk(
         }
         let (q_end, _) = run_padded_complement_sk_dfa(clear);
         if q_end >= 4 || q_end != receipt.final_state {
-            return Err("cleartext bytes fail padded-complement Absent(\"sk-...\") DFA!".to_string());
+            return Err(
+                "cleartext bytes fail padded-complement Absent(\"sk-...\") DFA!".to_string(),
+            );
         }
     }
 
@@ -576,16 +584,11 @@ pub fn verify_padded_absence_zk(
     let z_sh = tr.squeeze_ext4_vec(b"abs_zsh", m, true);
     tr.absorb_ext4(b"abs_qn_zsh", receipt.q_next_at_zsh);
     let eq_last = crate::ext4::eq_mle_ext4(&z_sh, &vec![Ext4::ONE; m]);
-    let expected_shift_claim =
-        receipt
-            .q_next_at_zsh
-            .sub(eq_last.scale_bb(receipt.final_state as u32));
-    let shift_chals = verify_gruen_einsum_mode2_ext4(
-        expected_shift_claim,
-        &[],
-        &receipt.shift_gruen_proof,
-        tr,
-    )?;
+    let expected_shift_claim = receipt
+        .q_next_at_zsh
+        .sub(eq_last.scale_bb(receipt.final_state as u32));
+    let shift_chals =
+        verify_gruen_einsum_mode2_ext4(expected_shift_claim, &[], &receipt.shift_gruen_proof, tr)?;
     if receipt.shift_gruen_proof.terminal_openings.0 != eval_shift_kernel_mle(&z_sh, &shift_chals) {
         return Err("DFA shift kernel public evaluation mismatch".to_string());
     }
@@ -775,7 +778,10 @@ impl Qwen35U1AuditBundle {
         let layer_proof = SuccinctGdnLayerProof::read_from(&mut cur)?;
         let absence_receipt = PaddedAbsenceZkReceipt::read_from(&mut cur)?;
         if cur.remaining() != 0 {
-            return Err(format!("trailing {} bytes in Qwen35U1AuditBundle", cur.remaining()));
+            return Err(format!(
+                "trailing {} bytes in Qwen35U1AuditBundle",
+                cur.remaining()
+            ));
         }
         Ok(Self {
             audited_layer,
@@ -786,6 +792,9 @@ impl Qwen35U1AuditBundle {
     }
 }
 
+/// `(proof_bytes, content_root, qs_binding)` returned by [`prove_u1_audit_bundle`].
+pub type U1AuditBundleResult = (Vec<u8>, [u8; 32], [u8; 32]);
+
 pub fn prove_u1_audit_bundle(
     registry: &Qwen35WeightRegistry,
     layer_tensor_digests: Vec<[u8; 32]>,
@@ -794,7 +803,7 @@ pub fn prove_u1_audit_bundle(
     u1_online: &U1OnlineCommitment,
     turn: &Qwen35TurnExecution,
     redacted_output_bytes: &[u8],
-) -> Result<(Vec<u8>, [u8; 32], [u8; 32]), String> {
+) -> Result<U1AuditBundleResult, String> {
     let mut abs_tr = CShakeTranscript::new(b"QW35-U1-ABSENCE-V1");
     let absence_receipt = prove_padded_absence_zk(redacted_output_bytes, &mut abs_tr)?;
 
@@ -810,20 +819,22 @@ pub fn prove_u1_audit_bundle(
     let mut lyr_tr = CShakeTranscript::new(b"QW35-U1-LAYER-AUDIT-V1");
     let layer_proof = prove_audited_gdn_layer(
         &registry.weight_root,
-        layer_path,
-        layer_tensor_digests,
-        gate_proj_slot,
-        gate_pcs,
-        &u1_online.boundary_states[l_idx],
-        &u1_online.boundary_states[l_idx + 1],
-        &turn.boundaries_bb[l_idx],
-        &turn.boundaries_bb[l_idx + 1],
-        &turn.delta_gdn_bb,
-        &turn.delta_mlp_bb,
-        &turn.wy_witness,
-        &turn.x_ln2_i16,
-        &turn.gate_proj_y_raw,
         l_idx,
+        AuditedGdnLayerWitness {
+            layer_weight_path: layer_path,
+            layer_tensor_digests,
+            gate_proj_tensor_slot: gate_proj_slot,
+            gate_pcs,
+            b_in_state: &u1_online.boundary_states[l_idx],
+            b_out_state: &u1_online.boundary_states[l_idx + 1],
+            b_in_bb: &turn.boundaries_bb[l_idx],
+            b_out_bb: &turn.boundaries_bb[l_idx + 1],
+            delta_gdn_bb: &turn.delta_gdn_bb,
+            delta_mlp_bb: &turn.delta_mlp_bb,
+            wy: &turn.wy_witness,
+            x_ln2_i16: &turn.x_ln2_i16,
+            gate_y_raw: &turn.gate_proj_y_raw,
+        },
         &mut lyr_tr,
     )?;
 
@@ -864,12 +875,14 @@ pub fn verify_u1_audit_bundle_standalone(
 
     let mut lyr_tr = CShakeTranscript::new(b"QW35-U1-LAYER-AUDIT-V1");
     verify_audited_gdn_layer_standalone(
-        weight_root,
-        &boundary_roots[expected_audited_layer],
-        &boundary_roots[expected_audited_layer + 1],
-        expected_audited_layer,
-        expected_qs_binding,
-        bundle.bnd_vars,
+        &AuditedGdnLayerVerifyStmt {
+            expected_weight_root: weight_root,
+            expected_b_in_root: &boundary_roots[expected_audited_layer],
+            expected_b_out_root: &boundary_roots[expected_audited_layer + 1],
+            expected_audited_layer,
+            expected_q_s_binding: expected_qs_binding,
+            bnd_vars: bundle.bnd_vars,
+        },
         &bundle.layer_proof,
         &mut lyr_tr,
     )?;

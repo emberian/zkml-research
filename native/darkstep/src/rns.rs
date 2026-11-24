@@ -35,7 +35,21 @@ impl Rns {
         let t_shoup = qs.iter().map(|&q| shoup(t % q, q)).collect();
         // floor(2^125 / q): f 2^64 / q ~ (f R) >> 61, error under 2 ulps of 2^-64
         let recip = qs.iter().map(|&q| (1u128 << 125) / q as u128).collect();
-        Rns { n, qs: qs.to_vec(), md, md_t: Modulus::new(t), t_shoup, recip, ntts: qs.iter().map(|&q| Ntt::new(q, n)).collect(), t, q_big, inv_k, q_mod_t, inv2t, qhat }
+        Rns {
+            n,
+            qs: qs.to_vec(),
+            md,
+            md_t: Modulus::new(t),
+            t_shoup,
+            recip,
+            ntts: qs.iter().map(|&q| Ntt::new(q, n)).collect(),
+            t,
+            q_big,
+            inv_k,
+            q_mod_t,
+            inv2t,
+            qhat,
+        }
     }
 
     pub fn l(&self) -> usize {
@@ -91,8 +105,8 @@ impl Rns {
         } else {
             // exact: floor(sum f_k / q_k + 1/2) = floor((2 sum f_k Qhat_k + Q) / (2 Q))
             let mut s = BigUint::from(0u32);
-            for k in 0..self.l() {
-                s += BigUint::from(f[k]) * &self.qhat[k];
+            for (&fk, qhk) in f.iter().zip(&self.qhat).take(self.l()) {
+                s += BigUint::from(fk) * qhk;
             }
             let v: BigUint = (s * 2u32 + &self.q_big) / (&self.q_big * 2u32);
             v.to_u64_digits().first().copied().unwrap_or(0)
@@ -156,14 +170,22 @@ impl Rns {
     /// The coefficient as an integer in [0, Q) (tests and dumps).
     pub fn crt_big(&self, res: &[u64]) -> BigUint {
         let mut s = BigUint::from(0u32);
-        for k in 0..self.l() {
-            s += BigUint::from(mulmod(res[k], self.inv_k[k], self.qs[k])) * &self.qhat[k];
+        for (((&rk, &ik), &qk), qhk) in res
+            .iter()
+            .zip(&self.inv_k)
+            .zip(&self.qs)
+            .zip(&self.qhat)
+            .take(self.l())
+        {
+            s += BigUint::from(mulmod(rk, ik, qk)) * qhk;
         }
         s % &self.q_big
     }
 
     pub fn poly_big(&self, p: &[u64]) -> Vec<BigUint> {
         let (n, l) = (self.n, self.l());
-        (0..n).map(|i| self.crt_big(&(0..l).map(|k| p[k * n + i]).collect::<Vec<_>>())).collect()
+        (0..n)
+            .map(|i| self.crt_big(&(0..l).map(|k| p[k * n + i]).collect::<Vec<_>>()))
+            .collect()
     }
 }

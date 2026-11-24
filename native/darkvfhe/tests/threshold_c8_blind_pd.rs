@@ -52,15 +52,7 @@ fn temp_test_dir(tag: &str) -> PathBuf {
     dir
 }
 
-/// Stand up a complete `t`-of-`n` distributed committee (`0` central dealer secret; independent `/dev/urandom` per party!).
-fn run_distributed_committee_setup(
-    params: Arc<HoistedParams>,
-    n_parties: usize,
-    threshold: usize,
-    policy_digest: [u8; 32],
-    tvd_40b_strict: bool,
-    dir: &std::path::Path,
-) -> (
+type DistributedCommitteeSetup = (
     Arc<HoistedEngine>,
     EnrolledThresholdRoster,
     Vec<ThresholdCustodianParty>,
@@ -69,7 +61,17 @@ fn run_distributed_committee_setup(
     Arc<darkvfhe::rns_hoist::RelinearizationKey>,
     f64,
     f64,
-) {
+);
+
+/// Stand up a complete `t`-of-`n` distributed committee (`0` central dealer secret; independent `/dev/urandom` per party!).
+fn run_distributed_committee_setup(
+    params: Arc<HoistedParams>,
+    n_parties: usize,
+    threshold: usize,
+    policy_digest: [u8; 32],
+    tvd_40b_strict: bool,
+    dir: &std::path::Path,
+) -> DistributedCommitteeSetup {
     std::fs::create_dir_all(dir).unwrap();
     let engine = Arc::new(HoistedEngine::new(params.clone()));
 
@@ -106,8 +108,8 @@ fn run_distributed_committee_setup(
     let mut own_rows = Vec::with_capacity(n_parties);
     let mut relin_secrets = Vec::with_capacity(n_parties);
 
-    for d in 0..n_parties {
-        let (bcast, own_row, sealed, rsec) = dkg.deal_from_os(&mut identities[d]).unwrap();
+    for (d, identity) in identities.iter_mut().enumerate() {
+        let (bcast, own_row, sealed, rsec) = dkg.deal_from_os(identity).unwrap();
         for (rec, env) in sealed {
             inbox[rec].push((d, env));
         }
@@ -126,20 +128,24 @@ fn run_distributed_committee_setup(
                 .unwrap();
             by_dealer.insert(*d, row);
         }
-        accepted_per_party.push((0..n_parties).map(|d| by_dealer.remove(&d).unwrap()).collect());
+        accepted_per_party.push(
+            (0..n_parties)
+                .map(|d| by_dealer.remove(&d).unwrap())
+                .collect(),
+        );
     }
 
     // Phase 2: Pairwise bivariate cross-evaluation check across all `(i, j)`:
     let mut cross_msgs: Vec<Vec<(usize, Vec<u8>)>> = (0..n_parties).map(|_| Vec::new()).collect();
-    for sender in 0..n_parties {
-        for peer in 0..n_parties {
+    for (sender, sender_id) in identities.iter_mut().enumerate() {
+        for (peer, peer_inbox) in cross_msgs.iter_mut().enumerate() {
             if sender == peer {
                 continue;
             }
             let env = dkg
-                .seal_cross_evaluations(&mut identities[sender], &accepted_per_party[sender], peer)
+                .seal_cross_evaluations(sender_id, &accepted_per_party[sender], peer)
                 .unwrap();
-            cross_msgs[peer].push((sender, env));
+            peer_inbox.push((sender, env));
         }
     }
     let mut cross_receipts_per_party: Vec<Vec<_>> = Vec::with_capacity(n_parties);
@@ -180,9 +186,8 @@ fn run_distributed_committee_setup(
                 .unwrap()
         })
         .collect();
-    let rlk = Arc::new(
-        assemble_distributed_relin_key(&params, &roster, &r1_agg, &r2_shares).unwrap(),
-    );
+    let rlk =
+        Arc::new(assemble_distributed_relin_key(&params, &roster, &r1_agg, &r2_shares).unwrap());
     let rlk_ms = t_rlk0.elapsed().as_secs_f64() * 1e3;
 
     // Phase 3: Local custody assembly per custodian (each deriving identical `pub_key` and `dkg_transcript`):
@@ -192,8 +197,8 @@ fn run_distributed_committee_setup(
 
     for (i, ((id, rows), cross_rcs)) in identities
         .into_iter()
-        .zip(accepted_per_party.into_iter())
-        .zip(cross_receipts_per_party.into_iter())
+        .zip(accepted_per_party)
+        .zip(cross_receipts_per_party)
         .enumerate()
     {
         let log_path = dir.join(format!("custodian_{i}.audit.log"));
@@ -211,7 +216,10 @@ fn run_distributed_committee_setup(
             .unwrap();
         if let Some(ref prev_tr) = tr_opt {
             let prev: &VerifiedThresholdDkgTranscript = prev_tr;
-            assert_eq!(prev.digest, tr.digest, "every custodian must derive identical DKG digest");
+            assert_eq!(
+                prev.digest, tr.digest,
+                "every custodian must derive identical DKG digest"
+            );
         } else {
             pub_key_opt = Some(pk);
             tr_opt = Some(tr);
@@ -339,7 +347,8 @@ fn test_deployed_n8192_2of3_and_3of5_threshold_dkg_relin_c8_and_blind_pd() {
     let params = Arc::new(params_n8192_homo());
     let n = params.n;
     assert_eq!(n, 8192);
-    let policy_digest: [u8; 32] = Sha256::digest(b"OBEND_SELVAGE_DARKVFHE_G10_STRICT_POLICY").into();
+    let policy_digest: [u8; 32] =
+        Sha256::digest(b"OBEND_SELVAGE_DARKVFHE_G10_STRICT_POLICY").into();
 
     println!("\n==================== G10 DEPLOYED N=8192 THRESHOLD CUSTODY & BLIND R_PD ====================");
 
@@ -636,22 +645,32 @@ fn test_gmask61_blind_r_pd_exact_tvd_zero_and_t_minus_1_secrecy() {
             if let Some(piv) = (rank..4).find(|&r| jac[r][col] != 0) {
                 jac.swap(rank, piv);
                 let inv = fp0.inv(jac[rank][col]);
-                for c in col..cols {
-                    jac[rank][c] = fp0.mul(jac[rank][c], inv);
+                for cell in &mut jac[rank][col..cols] {
+                    *cell = fp0.mul(*cell, inv);
                 }
                 for r in 0..4 {
                     if r != rank && jac[r][col] != 0 {
                         let f = jac[r][col];
-                        for c in col..cols {
-                            let sub = fp0.mul(f, jac[rank][c]);
-                            jac[r][c] = fp0.sub(jac[r][c], sub);
+                        let (row_r, row_rank) = if r < rank {
+                            let (head, tail) = jac.split_at_mut(rank);
+                            (&mut head[r], &tail[0])
+                        } else {
+                            let (head, tail) = jac.split_at_mut(r);
+                            (&mut tail[0], &head[rank])
+                        };
+                        for (dst, &src) in row_r[col..cols].iter_mut().zip(&row_rank[col..cols]) {
+                            let sub = fp0.mul(f, src);
+                            *dst = fp0.sub(*dst, sub);
                         }
                     }
                 }
                 rank += 1;
             }
         }
-        assert_eq!(rank, 4, "Auxiliary blinding map must have exact rank 4 => TVD == 0!");
+        assert_eq!(
+            rank, 4,
+            "Auxiliary blinding map must have exact rank 4 => TVD == 0!"
+        );
     }
 
     // (b) Multi-trial empirical witness-indistinguishability across independent decryptions by the same custodian:
@@ -769,15 +788,13 @@ fn test_gmask61_blind_r_pd_exact_tvd_zero_and_t_minus_1_secrecy() {
         let eval_at = |x: u64| -> u64 {
             let pts = [(0u64, s_cand), (1u64, y1), (2u64, y2)];
             let mut acc = 0u64;
-            for i in 0..3 {
-                let (xi, yi) = pts[i];
+            for (i, &(xi, yi)) in pts.iter().enumerate() {
                 let mut num = 1u64;
                 let mut den = 1u64;
-                for j in 0..3 {
+                for (j, &(xj, _)) in pts.iter().enumerate() {
                     if i == j {
                         continue;
                     }
-                    let xj = pts[j].0;
                     num = fp0.mul(num, fp0.sub(x, xj));
                     den = fp0.mul(den, fp0.sub(xi, xj));
                 }
@@ -820,11 +837,17 @@ fn test_15_adversarial_attacks_deterministically_refused() {
         let enrs: Vec<_> = ids.iter().map(|x| x.enrollment()).collect();
         assert!(matches!(
             EnrolledThresholdRoster::new(1, enrs.clone()),
-            Err(ThresholdCustodyError::InvalidThreshold { threshold: 1, n_parties: 3 })
+            Err(ThresholdCustodyError::InvalidThreshold {
+                threshold: 1,
+                n_parties: 3
+            })
         ));
         assert!(matches!(
             EnrolledThresholdRoster::new(3, enrs),
-            Err(ThresholdCustodyError::InvalidThreshold { threshold: 3, n_parties: 3 })
+            Err(ThresholdCustodyError::InvalidThreshold {
+                threshold: 3,
+                n_parties: 3
+            })
         ));
         rejected_attacks += 1;
     }
@@ -843,7 +866,10 @@ fn test_15_adversarial_attacks_deterministically_refused() {
         let env_for_1 = &sealed.iter().find(|(r, _)| *r == 1).unwrap().1;
         assert!(matches!(
             dkg.accept_dealing(&ids[1], &bcast, env_for_1),
-            Err(ThresholdCustodyError::VssRowCommitmentMismatch { dealer: 0, recipient: 1 })
+            Err(ThresholdCustodyError::VssRowCommitmentMismatch {
+                dealer: 0,
+                recipient: 1
+            })
         ));
         rejected_attacks += 1;
     }
@@ -860,12 +886,11 @@ fn test_15_adversarial_attacks_deterministically_refused() {
         let mut bcasts = Vec::new();
         let mut inbox: Vec<Vec<(usize, Vec<u8>)>> = (0..3).map(|_| Vec::new()).collect();
         let mut own = Vec::new();
-        for d in 0..3 {
+        for (d, id) in ids.iter_mut().enumerate() {
             let (bc, o, s, _) = if d == 0 {
-                dkg.deal_adversarial_for_test(&mut ids[d], None, Some(1))
-                    .unwrap()
+                dkg.deal_adversarial_for_test(id, None, Some(1)).unwrap()
             } else {
-                dkg.deal_from_os(&mut ids[d]).unwrap()
+                dkg.deal_from_os(id).unwrap()
             };
             for (r, e) in s {
                 inbox[r].push((d, e));
@@ -885,7 +910,11 @@ fn test_15_adversarial_attacks_deterministically_refused() {
         let cross_1_to_2 = dkg.seal_cross_evaluations(&mut ids[1], &acc[1], 2).unwrap();
         assert!(matches!(
             dkg.verify_cross_evaluations(&ids[2], &acc[2], 1, &cross_1_to_2),
-            Err(ThresholdCustodyError::VssInconsistentRows { dealer: 0, left: 1, right: 2 })
+            Err(ThresholdCustodyError::VssInconsistentRows {
+                dealer: 0,
+                left: 1,
+                right: 2
+            })
         ));
         rejected_attacks += 1;
     }
@@ -1082,7 +1111,12 @@ fn test_15_adversarial_attacks_deterministically_refused() {
             sel.clone(),
         );
         assert!(matches!(
-            parties[0].partial_decrypt_relinearized_ct2_gated(&auth_bad_comp, &bad_prov, &ct2, None),
+            parties[0].partial_decrypt_relinearized_ct2_gated(
+                &auth_bad_comp,
+                &bad_prov,
+                &ct2,
+                None
+            ),
             Err(ThresholdCustodyError::InvalidWhirComputeProof(_))
         ));
         assert_eq!(
@@ -1107,7 +1141,12 @@ fn test_15_adversarial_attacks_deterministically_refused() {
             sel.clone(),
         );
         assert!(matches!(
-            parties[0].partial_decrypt_relinearized_ct2_gated(&auth_forged_relin, &prov, &forged_ct2, None),
+            parties[0].partial_decrypt_relinearized_ct2_gated(
+                &auth_forged_relin,
+                &prov,
+                &forged_ct2,
+                None
+            ),
             Err(ThresholdCustodyError::InvalidWhirComputeProof(_))
         ));
         rejected_attacks += 1;
@@ -1154,8 +1193,16 @@ fn test_15_adversarial_attacks_deterministically_refused() {
             sel.clone(),
         );
         assert!(matches!(
-            parties[0].partial_decrypt_relinearized_ct2_gated(&auth_stale, &prov, &ct2, Some(&mask_ct)),
-            Err(ThresholdCustodyError::StaleEpoch { got: 9, high_water: 10 })
+            parties[0].partial_decrypt_relinearized_ct2_gated(
+                &auth_stale,
+                &prov,
+                &ct2,
+                Some(&mask_ct)
+            ),
+            Err(ThresholdCustodyError::StaleEpoch {
+                got: 9,
+                high_water: 10
+            })
         ));
         rejected_attacks += 1;
     }

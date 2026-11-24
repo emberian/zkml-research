@@ -12,14 +12,14 @@ use crate::gruen_ext4::{
     compute_d1b_multiplicities, prove_d1b_range_ext4, prove_gruen_einsum_mode2_ext4,
     prove_mxfp4_delayed_bjk_horner_ext4, prove_strict_lower_tri_ext4, verify_d1b_range_ext4,
     verify_gruen_einsum_mode2_ext4, verify_mxfp4_delayed_bjk_horner_ext4,
-    verify_strict_lower_tri_ext4, D1bRangeExt4Proof, GruenMode2Ext4Proof,
-    Mxfp4DelayedBjkExt4Proof,
+    verify_strict_lower_tri_ext4, D1bRangeExt4Proof, GruenMode2Ext4Proof, Mxfp4DelayedBjkExt4Proof,
 };
 use crate::pcs_ext4::{
     commit_table_pcs, open_pcs_claims, verify_pcs_claims, MleEvalClaim, PcsOpeningProof, PcsParams,
     PcsShape,
 };
 use crate::safetensors_mmap::{decode_e2m1_x2_bb, WY_SCALE, WY_SHIFT};
+use std::ops::{Add, Sub};
 
 /// Witness for `Qwen3.8-Flash-Next` (`qwen4_exp`) `QSA` `C3 + C5` Threshold Top-`K_B` across `T` queries and `B_max` blocks.
 /// Enforces:
@@ -335,10 +335,10 @@ pub struct Qwen38FnSliceProofBundle {
 /// + `[640 -> 1024, 2560 -> 4096]` routed `MXFP4` MoE expert + `QSA` `C3 + C5` Top-`K_B`!
 pub fn prove_and_verify_qwen38fn_real_slice(
     wy_48: &crate::qwen35_layer::RealGdnWyWitness,
-    expert_x_i16: &[i16],       // `[64, 2560]`
-    expert_nibs_pad: &[u8],     // `[1024 * 128 * 32]` (`j_pad = 1024, k_pad = 128`)
-    expert_scs_pad: &[u32],     // `[1024 * 128]`
-    expert_y_raw: &[i64],       // `[64 * 1024]`
+    expert_x_i16: &[i16],   // `[64, 2560]`
+    expert_nibs_pad: &[u8], // `[1024 * 128 * 32]` (`j_pad = 1024, k_pad = 128`)
+    expert_scs_pad: &[u32], // `[1024 * 128]`
+    expert_y_raw: &[i64],   // `[64 * 1024]`
     qsa_wit: &QsaTopKbWitness,
 ) -> Result<Qwen38FnSliceProofBundle, String> {
     assert_eq!(wy_48.h_v_orig, 48);
@@ -434,13 +434,13 @@ pub fn prove_and_verify_qwen38fn_real_slice(
     for j in 0..64 {
         for h in 0..64 {
             let mut al = Ext4::ZERO;
-            for i in 0..64 {
-                al = al.add(eq_i[i].scale_bb(wy_48.l_lsb_hij[h + (i << 6) + (j << 12)]));
+            for (i, &eq_iv) in eq_i.iter().enumerate() {
+                al = al.add(eq_iv.scale_bb(wy_48.l_lsb_hij[h + (i << 6) + (j << 12)]));
             }
             left_hj[h + (j << 6)] = al;
             let mut ar = Ext4::ZERO;
-            for k in 0..256 {
-                ar = ar.add(eq_k[k].scale_bb(wy_48.uw_lsb_hik[h + (j << 6) + (k << 12)]));
+            for (k, &eq_kv) in eq_k.iter().enumerate() {
+                ar = ar.add(eq_kv.scale_bb(wy_48.uw_lsb_hik[h + (j << 6) + (k << 12)]));
             }
             right_hj[h + (j << 6)] = ar;
         }
@@ -722,8 +722,7 @@ pub fn verify_qwen38fn_wy_moe_bytes(
 
     let r_i_moe = tr.squeeze_ext4_vec(b"moe_ri", 6, true);
     let r_j_moe = tr.squeeze_ext4_vec(b"moe_rj", 10, true);
-    let moe_ch =
-        verify_mxfp4_delayed_bjk_horner_ext4(moe_pf.claim, &r_j_moe, &moe_pf, &mut tr)?;
+    let moe_ch = verify_mxfp4_delayed_bjk_horner_ext4(moe_pf.claim, &r_j_moe, &moe_pf, &mut tr)?;
 
     let mut l_pt1 = Vec::new();
     l_pt1.extend_from_slice(&wy_ch[..6]);

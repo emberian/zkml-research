@@ -31,7 +31,7 @@ pub fn shake256(data: &[&[u8]], n: usize) -> Vec<u8> {
 pub fn hh(parts: &[&[u8]]) -> [u8; 32] {
     let mut h = Sha256::new();
     for p in parts {
-        Digest::update(&mut h, &(p.len() as u64).to_be_bytes());
+        Digest::update(&mut h, (p.len() as u64).to_be_bytes());
         Digest::update(&mut h, p);
     }
     h.finalize().into()
@@ -46,11 +46,15 @@ pub struct Transcript {
 /// Rejection-sampled draws below a modulus < 2^64 from one SHAKE stream (Transcript.ints' inner loop).
 fn expand_u64(state: &[u8; 32], label: &str, count: usize, m: u64) -> Vec<u64> {
     let bl = 64 - m.leading_zeros() as usize;
-    let nb = (bl + 7) / 8 + 8;
+    let nb = bl.div_ceil(8) + 8;
     assert!(nb <= 16);
     // lim = (2^(8 nb) // m) * m; at nb = 16 a power-of-two m divides 2^128 and every draw is accepted
     let all = nb == 16 && m.is_power_of_two();
-    let lim: u128 = if nb == 16 { (u128::MAX / m as u128) * m as u128 } else { ((1u128 << (8 * nb)) / m as u128) * m as u128 };
+    let lim: u128 = if nb == 16 {
+        (u128::MAX / m as u128) * m as u128
+    } else {
+        ((1u128 << (8 * nb)) / m as u128) * m as u128
+    };
     let mut out = Vec::with_capacity(count);
     let mut ctr: u64 = 0;
     while out.len() < count {
@@ -72,7 +76,10 @@ fn expand_u64(state: &[u8; 32], label: &str, count: usize, m: u64) -> Vec<u64> {
 
 impl Transcript {
     pub fn new(statement_digest: &[u8; 32], legacy: bool) -> Transcript {
-        Transcript { legacy, state: sha256(&[DOMAIN, b"|statement|", statement_digest]) }
+        Transcript {
+            legacy,
+            state: sha256(&[DOMAIN, b"|statement|", statement_digest]),
+        }
     }
 
     pub fn absorb(&mut self, label: &str, data: &[u8]) {
@@ -101,19 +108,26 @@ impl Transcript {
             states.push(self.state);
             self.advance(label);
         }
-        calls.par_iter().zip(states.par_iter()).map(|((l, c, m), s)| expand_u64(s, l, *c, *m)).collect()
+        calls
+            .par_iter()
+            .zip(states.par_iter())
+            .map(|((l, c, m), s)| expand_u64(s, l, *c, *m))
+            .collect()
     }
 
     /// Transcript.ints(label, count, P).
     pub fn ints_p(&mut self, label: &str, count: usize) -> Vec<Fe> {
         let p = p_big();
-        let nb = (255 + 7) / 8 + 8;
+        let nb = 255_usize.div_ceil(8) + 8;
         let lim = (BigUint::from(1u32) << (8 * nb)) / p * p;
         let mut out = Vec::with_capacity(count);
         let mut ctr: u64 = 0;
         while out.len() < count {
             let need = count - out.len();
-            let raw = shake256(&[&self.state, label.as_bytes(), &ctr.to_be_bytes()], nb * need);
+            let raw = shake256(
+                &[&self.state, label.as_bytes(), &ctr.to_be_bytes()],
+                nb * need,
+            );
             ctr += 1;
             for i in 0..need {
                 let x = BigUint::from_bytes_be(&raw[i * nb..(i + 1) * nb]);
@@ -178,7 +192,11 @@ pub fn leaf(salt: &[u8], col: &[u8]) -> [u8; 32] {
 pub fn mverify(root: &[u8], colb: &[u8], salt: &[u8], mut j: usize, path: &[&[u8]]) -> bool {
     let mut h = leaf(salt, colb);
     for sib in path {
-        h = if j % 2 == 0 { hh(&[&h, sib]) } else { hh(&[sib, &h]) };
+        h = if j.is_multiple_of(2) {
+            hh(&[&h, sib])
+        } else {
+            hh(&[sib, &h])
+        };
         j /= 2;
     }
     h[..] == *root

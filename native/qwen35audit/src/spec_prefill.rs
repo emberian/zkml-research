@@ -22,10 +22,13 @@ use crate::pcs_ext4::{
     PcsProverState, PcsShape,
 };
 use crate::qwen35_layer::{eval_mxfp4_int_contraction, pad_mxfp4_cols_pow2, PrecommittedMxfp4Pcs};
-use crate::safetensors_mmap::{decode_e2m1_x2_bb, decode_e2m1_x2_i32, MmapSafetensors, Mxfp4Matrix};
+use crate::safetensors_mmap::{
+    decode_e2m1_x2_bb, decode_e2m1_x2_i32, MmapSafetensors, Mxfp4Matrix,
+};
 use rayon::prelude::*;
 use serde::Deserialize;
 use std::fs;
+use std::ops::{Add, Mul};
 use std::path::Path;
 use std::process::Command;
 use std::time::Instant;
@@ -77,7 +80,12 @@ fn read_npy_from_npz(npz_path: &Path, entry_name: &str) -> Result<Vec<u8>, Strin
         .arg(npz_path)
         .arg(entry_name)
         .output()
-        .map_err(|e| format!("failed to run /usr/bin/unzip on {}: {e}", npz_path.display()))?;
+        .map_err(|e| {
+            format!(
+                "failed to run /usr/bin/unzip on {}: {e}",
+                npz_path.display()
+            )
+        })?;
     if !out.status.success() {
         return Err(format!(
             "unzip -p {} {} failed: {}",
@@ -218,10 +226,7 @@ pub fn load_qwen38_27b_slice_and_receipt(
 /// 7-bucket 0-mul Horner evaluations across every block of the slice.
 pub fn verify_raw_neg_zero_horner_invariance(slice: &Qwen38SliceAndReceipt) -> Result<(), String> {
     let mut tr = CShakeTranscript::new(b"NEG-ZERO-HORNER-CHECK");
-    let chals_b: [Ext4; 5] = tr
-        .squeeze_ext4_vec(b"b", 5, true)
-        .try_into()
-        .unwrap();
+    let chals_b: [Ext4; 5] = tr.squeeze_ext4_vec(b"b", 5, true).try_into().unwrap();
     let eq_b = build_eq_table_lsb_ext4(&chals_b);
     let n_blks = slice.mat_mxfp4.rows_pad * slice.mat_mxfp4.blocks_per_row;
     for blk_idx in 0..n_blks {
@@ -281,7 +286,13 @@ impl Mxfp4BatchContractionProof {
         let log_t = cur.read_u8()? as usize;
         let log_j = cur.read_u8()? as usize;
         let log_k = cur.read_u8()? as usize;
-        if log_t > 16 || log_j == 0 || log_j > 20 || log_k == 0 || log_k > 16 || 5 + log_j + log_k > 26 {
+        if log_t > 16
+            || log_j == 0
+            || log_j > 20
+            || log_k == 0
+            || log_k > 16
+            || 5 + log_j + log_k > 26
+        {
             return Err("invalid Mxfp4BatchContractionProof dimensions".to_string());
         }
         let x_pcs_root = cur.read_arr32()?;
@@ -509,7 +520,9 @@ pub fn verify_mxfp4_batch_contraction_standalone(
         || proof.log_t + 5 + proof.log_k > 26
         || proof.log_t + proof.log_j > 26
     {
-        return Err("out-of-range dimensions in verify_mxfp4_batch_contraction_standalone".to_string());
+        return Err(
+            "out-of-range dimensions in verify_mxfp4_batch_contraction_standalone".to_string(),
+        );
     }
     if proof.mxfp4_proof.log_j != proof.log_j || proof.mxfp4_proof.log_k != proof.log_k {
         return Err("inner MXFP4 proof dimension mismatch".to_string());
@@ -523,7 +536,12 @@ pub fn verify_mxfp4_batch_contraction_standalone(
     tr.absorb_u32(b"log_t", proof.log_t as u32);
     tr.absorb_u32(b"log_j", proof.log_j as u32);
     tr.absorb_u32(b"log_k", proof.log_k as u32);
-    for r in [expected_q_root, expected_s_root, expected_x_root, expected_y_root] {
+    for r in [
+        expected_q_root,
+        expected_s_root,
+        expected_x_root,
+        expected_y_root,
+    ] {
         tr.absorb_root(b"pcs_root", r);
     }
 
@@ -654,11 +672,7 @@ pub fn benchmark_seq_decode_vs_spec_prefill_mxfp4(
         let x_s = &x_64_i16[s * mat.cols_orig..(s + 1) * mat.cols_orig];
         let y_s = &y_64_raw[s * mat.rows_pad..(s + 1) * mat.rows_pad];
         seq_proofs.push(prove_mxfp4_batch_contraction_ext4(
-            &weights,
-            x_s,
-            y_s,
-            1,
-            s as u32,
+            &weights, x_s, y_s, 1, s as u32,
         ));
     }
     let seq_64_prove_ms = ts0.elapsed().as_secs_f64() * 1000.0;
@@ -785,8 +799,9 @@ pub fn eval_public_onehot_draft_mle(y_hat: &[usize], c_t: &[Ext4], c_j: &[Ext4])
 /// Self-contained PCS-masked `123.7`-bit `Ext4` (`>= 103.5`-bit AHIV17 UD PCS) Argmax Dominance
 /// Certificate (`2 × D1b` LogUp-GKR + `Gruen` Mode-2 one-hot selector sumcheck + `SuccinctExt4Pcs`)
 /// proving **unconditionally over `ℤ`** (with zero external logit-headroom assumption!):
-///   1. `forall t, j: shifted_logit[t, j] = logit[t, j] + 32768 in [0, 2^16)` (`logit_d1b_proof`),
-///   2. `forall t, j: Delta[t, j] = (shifted_logit[t, y_hat[t]] - shifted_logit[t, j]) - 1[j < y_hat[t]] in [0, 2^16)` (`gap_d1b_proof`)!
+/// 1. `forall t, j: shifted_logit[t, j] = logit[t, j] + 32768 in [0, 2^16)` (`logit_d1b_proof`),
+/// 2. `forall t, j: Delta[t, j] = (shifted_logit[t, y_hat[t]] - shifted_logit[t, j]) - 1[j < y_hat[t]] in [0, 2^16)` (`gap_d1b_proof`)!
+///
 /// Because `shifted_logit in [0, 65536)` is proved in-circuit via `D1b`, `tieBrokenGap in [-65536, 65535]`,
 /// discharging `SpeculativePrefillAudit.zmod_gap_range_implies_isGreedyDom` unconditionally!
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -840,7 +855,13 @@ impl ArgmaxDominanceExt4Proof {
         let mut cur = ByteCursor::new(bytes);
         let log_t = cur.read_u8()? as usize;
         let log_v = cur.read_u8()? as usize;
-        if log_t == 0 || log_t > 16 || log_v == 0 || log_v > 20 || log_t + log_v < 16 || log_t + log_v > 24 {
+        if log_t == 0
+            || log_t > 16
+            || log_v == 0
+            || log_v > 20
+            || log_t + log_v < 16
+            || log_t + log_v > 24
+        {
             return Err("invalid ArgmaxDominanceExt4Proof log_t/log_v dimensions".to_string());
         }
         let logit_pcs_root = cur.read_arr32()?;
@@ -894,12 +915,20 @@ pub fn prove_argmax_dominance_d1b_ext4(
     vocab_size: usize,
     y_hat: &[usize],
 ) -> Result<ArgmaxDominanceExt4Proof, String> {
-    assert!(seq_len >= 2 && seq_len.is_power_of_two() && vocab_size >= 2 && vocab_size.is_power_of_two());
+    assert!(
+        seq_len >= 2
+            && seq_len.is_power_of_two()
+            && vocab_size >= 2
+            && vocab_size.is_power_of_two()
+    );
     let log_t = seq_len.trailing_zeros() as usize;
     let log_v = vocab_size.trailing_zeros() as usize;
     let m_wit = log_t + log_v;
     let m_tab = 16usize; // `[0, 65536)` range for BOTH `shifted_logit` and `Delta`!
-    assert!((m_tab..=24).contains(&m_wit), "require 2^16 <= T * V <= 2^24 for D1b subdomain projection");
+    assert!(
+        (m_tab..=24).contains(&m_wit),
+        "require 2^16 <= T * V <= 2^24 for D1b subdomain projection"
+    );
     assert_eq!(logits_i64.len(), seq_len * vocab_size);
     assert_eq!(y_hat.len(), seq_len);
 
@@ -915,13 +944,17 @@ pub fn prove_argmax_dominance_d1b_ext4(
         }
         let win_l = logits_i64[t * vocab_size + yh];
         if !(-32_768..=32_767).contains(&win_l) {
-            return Err(format!("winning logit {win_l} outside signed i16 [-32768, 32767]"));
+            return Err(format!(
+                "winning logit {win_l} outside signed i16 [-32768, 32767]"
+            ));
         }
         let win_sh = win_l + LOGIT_OFFSET_U16;
         for j in 0..vocab_size {
             let l_tj = logits_i64[t * vocab_size + j];
             if !(-32_768..=32_767).contains(&l_tj) {
-                return Err(format!("competitor logit {l_tj} outside signed i16 [-32768, 32767]"));
+                return Err(format!(
+                    "competitor logit {l_tj} outside signed i16 [-32768, 32767]"
+                ));
             }
             let l_sh = l_tj + LOGIT_OFFSET_U16;
             let tie = if j < yh { 1i64 } else { 0i64 };
@@ -976,14 +1009,8 @@ pub fn prove_argmax_dominance_d1b_ext4(
     tr.absorb_ext4(b"dom_logit_z", logit_at_z);
     tr.absorb_ext4(b"dom_gap_z", gap_at_z);
 
-    let (win_sel_gruen, sel_chals) = prove_gruen_einsum_mode2_ext4(
-        &sel_ext4_tj,
-        &logit_ext4_tj,
-        log_t,
-        log_v,
-        &z_t,
-        &mut tr,
-    );
+    let (win_sel_gruen, sel_chals) =
+        prove_gruen_einsum_mode2_ext4(&sel_ext4_tj, &logit_ext4_tj, log_t, log_v, &z_t, &mut tr);
 
     let (logit_d1b_proof, z_d1b_logit) =
         prove_d1b_range_ext4(&logit_lsb_tj, &logit_mult_tab, m_wit, m_tab, &mut tr);
@@ -1128,17 +1155,10 @@ pub fn verify_argmax_dominance_d1b_standalone(
     let tie_at_z = eval_public_tie_indicator_mle(y_hat, &z_t, &z_j);
     let expected_win_claim = proof.gap_at_z.add(proof.logit_at_z).add(tie_at_z);
 
-    let sel_chals = verify_gruen_einsum_mode2_ext4(
-        expected_win_claim,
-        &z_t,
-        &proof.win_sel_gruen,
-        &mut tr,
-    )?;
-    let expected_sel_eval = eval_public_onehot_draft_mle(
-        y_hat,
-        &sel_chals[..proof.log_t],
-        &sel_chals[proof.log_t..],
-    );
+    let sel_chals =
+        verify_gruen_einsum_mode2_ext4(expected_win_claim, &z_t, &proof.win_sel_gruen, &mut tr)?;
+    let expected_sel_eval =
+        eval_public_onehot_draft_mle(y_hat, &sel_chals[..proof.log_t], &sel_chals[proof.log_t..]);
     if proof.win_sel_gruen.terminal_openings.0 != expected_sel_eval {
         return Err("public one-hot draft selector evaluation mismatch".to_string());
     }
@@ -1354,7 +1374,13 @@ impl LoopedMoeCollapsedExt4Proof {
         let log_t = cur.read_u8()? as usize;
         let log_j = cur.read_u8()? as usize;
         let log_k = cur.read_u8()? as usize;
-        if log_t > 16 || log_j == 0 || log_j > 20 || log_k == 0 || log_k > 16 || 5 + log_j + log_k > 26 {
+        if log_t > 16
+            || log_j == 0
+            || log_j > 20
+            || log_k == 0
+            || log_k > 16
+            || 5 + log_j + log_k > 26
+        {
             return Err("invalid LoopedMoeCollapsedExt4Proof dimensions".to_string());
         }
         let x_pcs_roots = [cur.read_arr32()?, cur.read_arr32()?, cur.read_arr32()?];
@@ -1363,7 +1389,9 @@ impl LoopedMoeCollapsedExt4Proof {
         let x_evals_at_term = [cur.read_ext4()?, cur.read_ext4()?, cur.read_ext4()?];
         let mxfp4_proof = Mxfp4DelayedBjkExt4Proof::read_from(&mut cur)?;
         if mxfp4_proof.log_j != log_j || mxfp4_proof.log_k != log_k {
-            return Err("inner MXFP4 log_j/log_k mismatch in LoopedMoeCollapsedExt4Proof".to_string());
+            return Err(
+                "inner MXFP4 log_j/log_k mismatch in LoopedMoeCollapsedExt4Proof".to_string(),
+            );
         }
         let q_pcs_proof = PcsOpeningProof::read_from(&mut cur)?;
         let s_pcs_proof = PcsOpeningProof::read_from(&mut cur)?;
@@ -1450,11 +1478,11 @@ pub fn prove_looped_moe_collapsed_ext4(
     tr.absorb_u32(b"log_k", log_k as u32);
     tr.absorb_root(b"q_root", &weights.q_state.root);
     tr.absorb_root(b"s_root", &weights.s_state.root);
-    for r in 0..3 {
-        tr.absorb_root(b"x_root", &x_states[r].root);
+    for st in &x_states {
+        tr.absorb_root(b"x_root", &st.root);
     }
-    for r in 0..3 {
-        tr.absorb_root(b"y_root", &y_states[r].root);
+    for st in &y_states {
+        tr.absorb_root(b"y_root", &st.root);
     }
 
     // Squeeze `124`-bit loop-folding challenge `ρ` & outer challenges `(r_i, r_j)` AFTER root commitment!
@@ -1648,7 +1676,9 @@ pub fn verify_looped_moe_collapsed_standalone(
         || proof.log_t + 5 + proof.log_k > 26
         || proof.log_t + proof.log_j > 26
     {
-        return Err("out-of-range dimensions in verify_looped_moe_collapsed_standalone".to_string());
+        return Err(
+            "out-of-range dimensions in verify_looped_moe_collapsed_standalone".to_string(),
+        );
     }
     if proof.mxfp4_proof.log_j != proof.log_j || proof.mxfp4_proof.log_k != proof.log_k {
         return Err("looped MoE inner MXFP4 dimension mismatch".to_string());
@@ -1681,12 +1711,8 @@ pub fn verify_looped_moe_collapsed_standalone(
         .add(rho.mul(proof.y_evals_at_r[1]))
         .add(rho2.mul(proof.y_evals_at_r[2]));
 
-    let chals = verify_mxfp4_delayed_bjk_horner_ext4(
-        expected_folded_y,
-        &r_j,
-        &proof.mxfp4_proof,
-        &mut tr,
-    )?;
+    let chals =
+        verify_mxfp4_delayed_bjk_horner_ext4(expected_folded_y, &r_j, &proof.mxfp4_proof, &mut tr)?;
 
     for &xv in &proof.x_evals_at_term {
         tr.absorb_ext4(b"loop_x_ev", xv);
@@ -1737,27 +1763,35 @@ pub fn verify_looped_moe_collapsed_standalone(
         &mut tr,
     )?;
 
-    for r in 0..3 {
+    for ((x_root, &x_val), x_prf) in expected_x_roots
+        .iter()
+        .zip(proof.x_evals_at_term.iter())
+        .zip(proof.x_pcs_proofs.iter())
+    {
         verify_pcs_claims(
-            &expected_x_roots[r],
+            x_root,
             PcsShape::new(proof.log_t + 5 + proof.log_k, PcsParams::default_zk(1)),
             &[MleEvalClaim {
                 point: pt_x.clone(),
-                value: proof.x_evals_at_term[r],
+                value: x_val,
             }],
-            &proof.x_pcs_proofs[r],
+            x_prf,
             &mut tr,
         )?;
     }
-    for r in 0..3 {
+    for ((y_root, &y_val), y_prf) in expected_y_roots
+        .iter()
+        .zip(proof.y_evals_at_r.iter())
+        .zip(proof.y_pcs_proofs.iter())
+    {
         verify_pcs_claims(
-            &expected_y_roots[r],
+            y_root,
             PcsShape::new(proof.log_t + proof.log_j, PcsParams::default_zk(1)),
             &[MleEvalClaim {
                 point: pt_y.clone(),
-                value: proof.y_evals_at_r[r],
+                value: y_val,
             }],
-            &proof.y_pcs_proofs[r],
+            y_prf,
             &mut tr,
         )?;
     }
@@ -1810,7 +1844,8 @@ pub fn benchmark_inkling2_looped_moe_r3() -> Result<LoopedMoeBenchSummary, Strin
         }
     }
     let name = "Inkling-2-Mini/loop_core.moe.expert_gate_proj[1152x2304]";
-    let digest = Mxfp4Matrix::compute_digest(name, rows_orig, rows_pad, cols_orig, &nibbles, &scales);
+    let digest =
+        Mxfp4Matrix::compute_digest(name, rows_orig, rows_pad, cols_orig, &nibbles, &scales);
     let mat = Mxfp4Matrix {
         name: name.to_string(),
         rows_orig,

@@ -30,6 +30,7 @@ use crate::whir_ext4::{
 };
 use rayon::prelude::*;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
+use std::ops::{Add, Mul, Neg, Sub};
 use std::path::Path;
 use std::sync::OnceLock;
 
@@ -258,13 +259,13 @@ pub fn public_luts_24l() -> &'static Full24LPublicLuts {
             let pow2 = 1u32 << e;
             let half_pow2 = if e == 0 { 0 } else { 1u32 << (e - 1) };
             let min_u = if e == 0 { 1usize } else { 4096usize };
-            for u in min_u..16_384usize {
+            for (u, &lut_val) in rsqrt_lut.iter().enumerate().skip(min_u) {
                 let slot = rsqrt_norm_cols[0].len();
                 rsqrt_norm_cols[0].push(pow4);
                 rsqrt_norm_cols[1].push(pow2);
                 rsqrt_norm_cols[2].push(half_pow2);
                 rsqrt_norm_cols[3].push(u as u32);
-                rsqrt_norm_cols[4].push(rsqrt_lut[u]);
+                rsqrt_norm_cols[4].push(lut_val);
                 rsqrt_slot_map.insert((e, u as u16), slot);
             }
         }
@@ -354,13 +355,13 @@ fn eval_cmp_ij_mle(z_i: &[Ext4], z_j: &[Ext4], strict_gt: bool) -> Ext4 {
     let eq_i = build_eq_table_lsb_ext4(z_i);
     let eq_j = build_eq_table_lsb_ext4(z_j);
     let mut acc = Ext4::ZERO;
-    for i in 0..eq_i.len() {
+    for (i, &eq_iv) in eq_i.iter().enumerate() {
         let hi = if strict_gt { i } else { i + 1 };
         let mut s = Ext4::ZERO;
         for &ej in &eq_j[..hi] {
             s = s.add(ej);
         }
-        acc = acc.add(eq_i[i].mul(s));
+        acc = acc.add(eq_iv.mul(s));
     }
     acc
 }
@@ -616,7 +617,7 @@ fn verify_merkle_multiproof_dom(
         .collect();
     let mut aux_pos = 0usize;
     for level in 0..num_levels {
-        let mut next_nodes = Vec::with_capacity((cur_nodes.len() + 1) / 2);
+        let mut next_nodes = Vec::with_capacity(cur_nodes.len().div_ceil(2));
         let mut k = 0usize;
         while k < cur_nodes.len() {
             let (idx, hash) = cur_nodes[k];
@@ -714,23 +715,24 @@ impl PrecomputedModelWeights24L {
             }
             let q = (f * scale).round();
             if !((-32_767.0..=32_767.0).contains(&q)) {
-                return Err(format!("quantized weight {q} out of [-32767, 32767] in {ctx}"));
+                return Err(format!(
+                    "quantized weight {q} out of [-32767, 32767] in {ctx}"
+                ));
             }
             Ok(q as i16)
         };
 
-        let set_cell =
-            |rows: &mut [Option<Vec<i16>>], st_id: usize, u: usize, val: i16| {
-                assert_ne!(val, i16::MIN, "i16::MIN disallowed in weight cell");
-                if val == 0 {
-                    return;
-                }
-                let cell = shape.subtables[st_id].base_cell + u;
-                let r = cell >> mc;
-                let col = cell & (w0 - 1);
-                let row = rows[r].get_or_insert_with(|| vec![0i16; w0]);
-                row[col] = val;
-            };
+        let set_cell = |rows: &mut [Option<Vec<i16>>], st_id: usize, u: usize, val: i16| {
+            assert_ne!(val, i16::MIN, "i16::MIN disallowed in weight cell");
+            if val == 0 {
+                return;
+            }
+            let cell = shape.subtables[st_id].base_cell + u;
+            let r = cell >> mc;
+            let col = cell & (w0 - 1);
+            let row = rows[r].get_or_insert_with(|| vec![0i16; w0]);
+            row[col] = val;
+        };
 
         // Helper to quantize a 2D `[out_dim, in_dim]` tensor (`in_dim` contiguous at low bits!):
         let load_2d_into = |rows: &mut [Option<Vec<i16>>],
@@ -766,7 +768,8 @@ impl PrecomputedModelWeights24L {
                     },
                 );
             let (q_vals, mat_l1_u64) = row_res?;
-            let mat_l1 = u32::try_from(mat_l1_u64).map_err(|_| format!("row L1 overflow on {name}"))?;
+            let mat_l1 =
+                u32::try_from(mat_l1_u64).map_err(|_| format!("row L1 overflow on {name}"))?;
             if mat_l1 > *max_l1_ref {
                 *max_l1_ref = mat_l1;
             }
@@ -819,12 +822,18 @@ impl PrecomputedModelWeights24L {
             let (_, ln2_w) = mmap.read_f32(&format!("{pfx}.post_attention_layernorm.weight"))?;
             for d in 0..D_MODEL {
                 let q1 = quantize_checked_i16(1.0 + ln1_w[d], S_W as f32, "input_layernorm")?;
-                let q2 = quantize_checked_i16(1.0 + ln2_w[d], S_W as f32, "post_attention_layernorm")?;
+                let q2 =
+                    quantize_checked_i16(1.0 + ln2_w[d], S_W as f32, "post_attention_layernorm")?;
                 max_gain_abs = max_gain_abs
                     .max((q1 as i32).unsigned_abs())
                     .max((q2 as i32).unsigned_abs());
                 set_cell(&mut rows_i16, WST_NORM1024, d + (l << LOG_D_MODEL), q1);
-                set_cell(&mut rows_i16, WST_NORM1024, d + ((32 + l) << LOG_D_MODEL), q2);
+                set_cell(
+                    &mut rows_i16,
+                    WST_NORM1024,
+                    d + ((32 + l) << LOG_D_MODEL),
+                    q2,
+                );
             }
 
             // MLP `[gate_proj, up_proj, down_proj]`:
@@ -852,8 +861,8 @@ impl PrecomputedModelWeights24L {
                 if sh != vec![D_MODEL, D_FF] {
                     return Err(format!("bad down_proj shape {sh:?} at layer {l}"));
                 }
-                let base = shape.subtables[WST_MLP_DOWN].base_cell
-                    + (l << (LOG_D_FF_PAD + LOG_D_MODEL));
+                let base =
+                    shape.subtables[WST_MLP_DOWN].base_cell + (l << (LOG_D_FF_PAD + LOG_D_MODEL));
                 for d_out in 0..D_MODEL {
                     let row = &dw[d_out * D_FF..(d_out + 1) * D_FF];
                     let mut l1 = 0u64;
@@ -866,7 +875,8 @@ impl PrecomputedModelWeights24L {
                         l1 += (q as i32).unsigned_abs() as u64;
                         dst[col0 + j] = q;
                     }
-                    let l1_u32 = u32::try_from(l1).map_err(|_| "down_proj L1 overflow".to_string())?;
+                    let l1_u32 =
+                        u32::try_from(l1).map_err(|_| "down_proj L1 overflow".to_string())?;
                     if l1_u32 > max_row_l1 {
                         max_row_l1 = l1_u32;
                     }
@@ -939,7 +949,8 @@ impl PrecomputedModelWeights24L {
                             q,
                         );
                     }
-                    let cl1_u32 = u32::try_from(cl1).map_err(|_| "conv1d L1 overflow".to_string())?;
+                    let cl1_u32 =
+                        u32::try_from(cl1).map_err(|_| "conv1d L1 overflow".to_string())?;
                     if cl1_u32 > max_conv_l1 {
                         max_conv_l1 = cl1_u32;
                     }
@@ -960,7 +971,7 @@ impl PrecomputedModelWeights24L {
 
                 // `WST_NORM_GDN128 [d: 128, gk: 64]` (`3*g+0 = q`, `3*g+1 = k`, `3*g+2 = y_norm`):
                 let (_, yn_w) = mmap.read_f32(&format!("{pfx}.linear_attn.norm.weight"))?;
-                for d in 0..GDN_D {
+                for (d, &yn_val) in yn_w.iter().enumerate().take(GDN_D) {
                     set_cell(
                         &mut rows_i16,
                         WST_NORM_GDN128,
@@ -974,7 +985,7 @@ impl PrecomputedModelWeights24L {
                         gdn_qk_l2_gain,
                     );
                     // Plain RMSNorm (`NO 1 + w` on `linear_attn.norm.weight`!):
-                    let qy = quantize_checked_i16(yn_w[d], S_W as f32, "linear_attn.norm")?;
+                    let qy = quantize_checked_i16(yn_val, S_W as f32, "linear_attn.norm")?;
                     max_gain_abs = max_gain_abs.max((qy as i32).unsigned_abs());
                     set_cell(
                         &mut rows_i16,
@@ -994,8 +1005,8 @@ impl PrecomputedModelWeights24L {
                 for hq in 0..GQA_HQ {
                     for dh in 0..GQA_DH {
                         let row_q = &qwf[(hq * 512 + dh) * D_MODEL..(hq * 512 + dh + 1) * D_MODEL];
-                        let row_g =
-                            &qwf[(hq * 512 + 256 + dh) * D_MODEL..(hq * 512 + 256 + dh + 1) * D_MODEL];
+                        let row_g = &qwf
+                            [(hq * 512 + 256 + dh) * D_MODEL..(hq * 512 + 256 + dh + 1) * D_MODEL];
                         let idx_sub =
                             (dh << LOG_D_MODEL) + (hq << (LOG_D_MODEL + LOG_GQA_DH)) + (q << 21);
                         let cell_q = shape.subtables[WST_GQA_Q].base_cell + idx_sub;
@@ -1022,7 +1033,8 @@ impl PrecomputedModelWeights24L {
                                 dst_g[col_g + d] = v;
                             }
                         }
-                        let l1_qg = u32::try_from(l1_q.max(l1_g)).map_err(|_| "q_proj L1 overflow".to_string())?;
+                        let l1_qg = u32::try_from(l1_q.max(l1_g))
+                            .map_err(|_| "q_proj L1 overflow".to_string())?;
                         max_row_l1 = max_row_l1.max(l1_qg);
                     }
                 }
@@ -1208,7 +1220,7 @@ impl PrecomputedModelWeights24L {
         z_mid: &[Ext4],
     ) -> Vec<Ext4> {
         let d_len = 1usize << log_d;
-        let mid_len = 1usize << log_mid;
+        let _mid_len = 1usize << log_mid;
         let hi_len = 1usize << log_hi;
         assert_eq!(log_d + log_mid + log_hi, self.shape.subtables[st_id].m_vars);
         let eq_mid = build_eq_table_lsb_ext4(z_mid);
@@ -1221,8 +1233,8 @@ impl PrecomputedModelWeights24L {
             .map(|hi| {
                 let mut acc_d = vec![[0i128; 4]; d_len];
                 let hi_base = base_st + (hi << (log_d + log_mid));
-                for m in 0..mid_len {
-                    let ew = eq_mid[m].0;
+                for (m, eq_mv) in eq_mid.iter().enumerate() {
+                    let ew = eq_mv.0;
                     let cell0 = hi_base + (m << log_d);
                     let r = cell0 >> mc;
                     if let Some(row) = &self.rows_i16[r] {
@@ -1357,9 +1369,8 @@ impl PublicWeightOpeningProof24L {
     pub fn write_to(&self, out: &mut Vec<u8>) {
         out.push(self.row_sc_rounds.len() as u8);
         out.push(self.col_sc_rounds.len() as u8);
-        let mut hdr = Vec::with_capacity(
-            2 + (self.row_sc_rounds.len() + self.col_sc_rounds.len()) * 3,
-        );
+        let mut hdr =
+            Vec::with_capacity(2 + (self.row_sc_rounds.len() + self.col_sc_rounds.len()) * 3);
         hdr.push(self.u_eval_at_zeta);
         hdr.push(self.u_prox_at_zeta);
         for r in &self.row_sc_rounds {
@@ -1606,7 +1617,7 @@ pub fn open_public_weight_whir_24l(
                 let col0 = st.base_cell & (sh.w0 - 1);
                 a_row[r_owner] = scale;
                 let eq_lo = build_eq_table_lsb_ext4(pt);
-                for r_idx in 0..sh.usable_rows {
+                for (r_idx, m_slot) in m_row.iter_mut().enumerate().take(sh.usable_rows) {
                     if let Some(row) = &weights.rows_i16[r_idx] {
                         let sl = &row[col0..col0 + eq_lo.len()];
                         let mut acc = [0i128; 4];
@@ -1619,7 +1630,7 @@ pub fn open_public_weight_whir_24l(
                                 acc[3] += vi * (e.0[3] as i128);
                             }
                         }
-                        m_row[r_idx] = Ext4([
+                        *m_slot = Ext4([
                             acc[0].rem_euclid(P as i128) as u32,
                             acc[1].rem_euclid(P as i128) as u32,
                             acc[2].rem_euclid(P as i128) as u32,
@@ -1641,7 +1652,7 @@ pub fn open_public_weight_whir_24l(
                     .enumerate()
                     .filter(|&(_, eh)| !eh.is_zero())
                     .collect();
-                for r_idx in 0..sh.usable_rows {
+                for (r_idx, m_slot) in m_row.iter_mut().enumerate().take(sh.usable_rows) {
                     if let Some(row) = &weights.rows_i16[r_idx] {
                         let mut row_dot = Ext4::ZERO;
                         for &(hi, eh) in &active_hi {
@@ -1665,7 +1676,7 @@ pub fn open_public_weight_whir_24l(
                             ]);
                             row_dot = row_dot.add(eh.mul(blk_ext));
                         }
-                        m_row[r_idx] = row_dot;
+                        *m_slot = row_dot;
                     }
                 }
             }
@@ -2038,9 +2049,8 @@ pub fn verify_public_weight_whir_24l(
             for (b, &pb) in pt.iter().enumerate() {
                 ev = ev.mul(eq_lin_ext4(pb, z_full[b]));
             }
-            for b in st.m_vars..m_bits {
+            for (b, &zb) in z_full.iter().enumerate().take(m_bits).skip(st.m_vars) {
                 let bit = (prefix >> (b - st.m_vars)) & 1;
-                let zb = z_full[b];
                 ev = ev.mul(if bit == 1 { zb } else { Ext4::ONE.sub(zb) });
             }
             v_at_zeta = v_at_zeta.add(ev);
@@ -2171,8 +2181,8 @@ pub fn verify_public_weight_whir_24l(
     let eq_row = build_eq_table_lsb_ext4(&r_row);
     let mut w_row = Vec::with_capacity(sh.usable_rows);
     let mut gp = Ext4::ONE;
-    for r in 0..sh.usable_rows {
-        w_row.push(gp.add(th_ev.mul(eq_row[r])));
+    for &eq_rv in eq_row.iter().take(sh.usable_rows) {
+        w_row.push(gp.add(th_ev.mul(eq_rv)));
         gp = gp.mul(gamma);
     }
 
@@ -2316,18 +2326,30 @@ pub fn verify_public_weight_whir_24l(
 // §4. Rayon-Parallel `D1b` Range & Tuple-LUT Provers + Parallel `GMaskExt4` `EinSumcheck`
 // ================================================================================================
 
+struct D1bFracLabels<'a> {
+    absorb_root: &'a [u8],
+    eta: &'a [u8],
+    c: [&'a [u8]; 4],
+    ch: &'a [u8],
+    pq: [&'a [u8]; 4],
+    rbit: &'a [u8],
+}
+
 fn run_d1b_fraction_tree_par(
     p0: Vec<Ext4>,
     q0: Vec<Ext4>,
     m_wit: usize,
-    absorb_root_lbl: &[u8],
-    eta_lbl: &[u8],
-    c_lbls: [&[u8]; 4],
-    ch_lbl: &[u8],
-    pq_lbls: [&[u8]; 4],
-    rbit_lbl: &[u8],
+    labels: &D1bFracLabels<'_>,
     tr: &mut CShakeTranscript,
 ) -> (Ext4, Vec<D1bLayerProof>, Vec<Ext4>) {
+    let D1bFracLabels {
+        absorb_root: absorb_root_lbl,
+        eta: eta_lbl,
+        c: c_lbls,
+        ch: ch_lbl,
+        pq: pq_lbls,
+        rbit: rbit_lbl,
+    } = *labels;
     let mut p_layers = Vec::with_capacity(m_wit + 2);
     let mut q_layers = Vec::with_capacity(m_wit + 2);
     p_layers.push(p0);
@@ -2426,7 +2448,14 @@ fn run_d1b_fraction_tree_par(
             let [p0_acc, p1_acc, p2_acc, pinf_acc] = if h2 >= 2048 {
                 (0..h2).into_par_iter().map(eval_idx).reduce(
                     || [Ext4::ZERO; 4],
-                    |a, b| [a[0].add(b[0]), a[1].add(b[1]), a[2].add(b[2]), a[3].add(b[3])],
+                    |a, b| {
+                        [
+                            a[0].add(b[0]),
+                            a[1].add(b[1]),
+                            a[2].add(b[2]),
+                            a[3].add(b[3]),
+                        ]
+                    },
                 )
             } else {
                 let mut acc = [Ext4::ZERO; 4];
@@ -2537,12 +2566,14 @@ pub fn prove_d1b_range_par_ext4(
         p0,
         q0,
         m_wit,
-        b"d1b_root_q",
-        b"d1b_eta",
-        [b"d1b_c0", b"d1b_c1", b"d1b_c2", b"d1b_cinf"],
-        b"d1b_ch",
-        [b"d1b_plo", b"d1b_phi", b"d1b_qlo", b"d1b_qhi"],
-        b"d1b_rbit",
+        &D1bFracLabels {
+            absorb_root: b"d1b_root_q",
+            eta: b"d1b_eta",
+            c: [b"d1b_c0", b"d1b_c1", b"d1b_c2", b"d1b_cinf"],
+            ch: b"d1b_ch",
+            pq: [b"d1b_plo", b"d1b_phi", b"d1b_qlo", b"d1b_qhi"],
+            rbit: b"d1b_rbit",
+        },
         tr,
     );
     let z_leaf = cur_pt[..m_wit].to_vec();
@@ -2625,12 +2656,14 @@ pub fn prove_d1b_tuple_public_table_par_ext4(
         p0,
         q0,
         m_wit,
-        b"d1b_tup_rq",
-        b"d1b_tup_eta",
-        [b"d1b_tc0", b"d1b_tc1", b"d1b_tc2", b"d1b_tcinf"],
-        b"d1b_tch",
-        [b"d1b_tplo", b"d1b_tphi", b"d1b_tqlo", b"d1b_tqhi"],
-        b"d1b_trbit",
+        &D1bFracLabels {
+            absorb_root: b"d1b_tup_rq",
+            eta: b"d1b_tup_eta",
+            c: [b"d1b_tc0", b"d1b_tc1", b"d1b_tc2", b"d1b_tcinf"],
+            ch: b"d1b_tch",
+            pq: [b"d1b_tplo", b"d1b_tphi", b"d1b_tqlo", b"d1b_tqhi"],
+            rbit: b"d1b_trbit",
+        },
         tr,
     );
     let z_leaf = cur_pt[..m_wit].to_vec();
@@ -2822,7 +2855,14 @@ pub fn prove_gmask_einsum_par_ext4(
         let [q0, q1, q2, q_inf] = if nk * rem_h_pairs >= 2048 && nk >= 4 {
             (0..nk).into_par_iter().map(eval_q).reduce(
                 || [Ext4::ZERO; 4],
-                |a, b| [a[0].add(b[0]), a[1].add(b[1]), a[2].add(b[2]), a[3].add(b[3])],
+                |a, b| {
+                    [
+                        a[0].add(b[0]),
+                        a[1].add(b[1]),
+                        a[2].add(b[2]),
+                        a[3].add(b[3]),
+                    ]
+                },
             )
         } else {
             let mut acc = [Ext4::ZERO; 4];
@@ -2840,12 +2880,8 @@ pub fn prove_gmask_einsum_par_ext4(
         let eq1 = prefix_eq.mul(zu);
         let eq2 = prefix_eq.mul(zu.scale_bb(3).sub(Ext4::ONE));
         let eq_slope = prefix_eq.mul(zu.add(zu).sub(Ext4::ONE));
-        let unmasked = cubic_monomial_from_012inf(
-            eq0.mul(q0),
-            eq1.mul(q1),
-            eq2.mul(q2),
-            eq_slope.mul(q_inf),
-        );
+        let unmasked =
+            cubic_monomial_from_012inf(eq0.mul(q0), eq1.mul(q1), eq2.mul(q2), eq_slope.mul(q_inf));
         let bv = gmask.blind_round_poly(spec_name, u, &challenges, rho, &unmasked);
         let blinded = [bv[0], bv[1], bv[2], bv[3]];
         tr.absorb_ext4_slice(b"gm_es_rd", &blinded);
@@ -3124,9 +3160,7 @@ pub fn execute_f32_reference_24l(
             for t in 0..FULL_24L_SEQ_LEN {
                 for hq in 0..GQA_HQ {
                     q_only[(t * GQA_HQ + hq) * GQA_DH..(t * GQA_HQ + hq + 1) * GQA_DH]
-                        .copy_from_slice(
-                            &qg[t * 4096 + hq * 512..t * 4096 + hq * 512 + GQA_DH],
-                        );
+                        .copy_from_slice(&qg[t * 4096 + hq * 512..t * 4096 + hq * 512 + GQA_DH]);
                     gate[(t * GQA_HQ + hq) * GQA_DH..(t * GQA_HQ + hq + 1) * GQA_DH]
                         .copy_from_slice(
                             &qg[t * 4096 + hq * 512 + GQA_DH..t * 4096 + (hq + 1) * 512],
@@ -3161,8 +3195,10 @@ pub fn execute_f32_reference_24l(
                     let mut sc = vec![0.0f32; ti + 1];
                     let mut mx = f32::NEG_INFINITY;
                     for (tj, sc_slot) in sc.iter_mut().enumerate() {
-                        let kt = &kh[(tj * GQA_HKV + hk) * GQA_DH..(tj * GQA_HKV + hk + 1) * GQA_DH];
-                        let d: f32 = kt.iter().zip(qt.iter()).map(|(&a, &b)| a * b).sum::<f32>() / 16.0;
+                        let kt =
+                            &kh[(tj * GQA_HKV + hk) * GQA_DH..(tj * GQA_HKV + hk + 1) * GQA_DH];
+                        let d: f32 =
+                            kt.iter().zip(qt.iter()).map(|(&a, &b)| a * b).sum::<f32>() / 16.0;
                         *sc_slot = d;
                         if d > mx {
                             mx = d;
@@ -3173,10 +3209,12 @@ pub fn execute_f32_reference_24l(
                         *s = (*s - mx).exp();
                         zsum += *s;
                     }
-                    let dst = &mut aoh[(ti * GQA_HQ + hq) * GQA_DH..(ti * GQA_HQ + hq + 1) * GQA_DH];
+                    let dst =
+                        &mut aoh[(ti * GQA_HQ + hq) * GQA_DH..(ti * GQA_HQ + hq + 1) * GQA_DH];
                     for (tj, &prob) in sc.iter().enumerate() {
                         let p = prob / zsum;
-                        let vt = &vr[(tj * GQA_HKV + hk) * GQA_DH..(tj * GQA_HKV + hk + 1) * GQA_DH];
+                        let vt =
+                            &vr[(tj * GQA_HKV + hk) * GQA_DH..(tj * GQA_HKV + hk + 1) * GQA_DH];
                         for d in 0..GQA_DH {
                             dst[d] += p * vt[d];
                         }
@@ -3434,16 +3472,27 @@ const RMS_CFGS: [RmsGroupCfg; 3] = [
     },
 ];
 
-fn fill_rmsnorm_row(
-    m3: &mut [Vec<u32>],
+#[derive(Clone, Copy)]
+struct RmsRowTarget {
     cfg: RmsGroupCfg,
     row_idx: usize,
-    x_row: &[i64],
     w_slot: usize,
+    tamper_rho_plus1: bool,
+}
+
+fn fill_rmsnorm_row(
+    m3: &mut [Vec<u32>],
+    target: RmsRowTarget,
+    x_row: &[i64],
     weights: &PrecomputedModelWeights24L,
     luts: &Full24LPublicLuts,
-    tamper_rho_plus1: bool,
 ) -> Vec<i64> {
+    let RmsRowTarget {
+        cfg,
+        row_idx,
+        w_slot,
+        tamper_rho_plus1,
+    } = target;
     let dim = 1usize << cfg.log_d;
     assert_eq!(x_row.len(), dim);
     let base = cfg.grp * RGRP_STRIDE;
@@ -3524,17 +3573,29 @@ fn fill_rmsnorm_row(
     y_out
 }
 
-fn matmul_witness_rows(
-    x_seq: &[i64], // [seq * in_dim]
-    seq: usize,
-    in_dim: usize,
-    weights: &PrecomputedModelWeights24L,
+#[derive(Clone, Copy)]
+struct MatmulRowSpec {
     wst_id: usize,
     layer_offset_cells: usize,
     out_limit: usize,
     in_stride_in_wst: usize,
     out_div: i64,
+}
+
+fn matmul_witness_rows(
+    x_seq: &[i64], // [seq * in_dim]
+    seq: usize,
+    in_dim: usize,
+    weights: &PrecomputedModelWeights24L,
+    spec: MatmulRowSpec,
 ) -> (Vec<i64>, Vec<u32>) {
+    let MatmulRowSpec {
+        wst_id,
+        layer_offset_cells,
+        out_limit,
+        in_stride_in_wst,
+        out_div,
+    } = spec;
     let zero_buf = vec![0i16; in_dim];
     let pairs: Vec<(Vec<i64>, Vec<u32>)> = (0..seq)
         .into_par_iter()
@@ -3588,16 +3649,16 @@ fn generate_24l_witness(
     let luts = public_luts_24l();
 
     let m0_vars = [
-        22, 22, 22, 22, 22, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 19, 19, 17, 17, 17, 17,
-        17, 17, 17, 17, 17, 17, 17, 17, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
+        22, 22, 22, 22, 22, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 19, 19, 17, 17, 17, 17, 17,
+        17, 17, 17, 17, 17, 17, 17, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
     ];
     let m1_vars = [
-        18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 17, 17, 16, 16, 16, 16, 16, 16, 14, 14, 14,
-        14, 14, 14, 14, 14, 14, 10, 10, 10,
+        18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 17, 17, 16, 16, 16, 16, 16, 16, 14, 14, 14, 14,
+        14, 14, 14, 14, 14, 10, 10, 10,
     ];
     let m2_vars = [
-        21, 21, 21, 21, 21, 21, 21, 19, 19, 19, 19, 19, 18, 18, 18, 17, 16, 16, 16, 15, 15, 15,
-        15, 12, 12, 12, 12,
+        21, 21, 21, 21, 21, 21, 21, 19, 19, 19, 19, 19, 18, 18, 18, 17, 16, 16, 16, 15, 15, 15, 15,
+        12, 12, 12, 12,
     ];
     let mut m3_vars = Vec::with_capacity(M3_COUNT);
     for cfg in RMS_CFGS {
@@ -3664,13 +3725,15 @@ fn generate_24l_witness(
                 tamper == Some(Full24LayerTamperKind::Layer22RmsNormScale) && l == 22 && t == 0;
             let yr = fill_rmsnorm_row(
                 &mut m3,
-                RMS_CFGS[0],
-                row_idx,
+                RmsRowTarget {
+                    cfg: RMS_CFGS[0],
+                    row_idx,
+                    w_slot: l,
+                    tamper_rho_plus1: tamper_rho,
+                },
                 &h_cur[t * D_MODEL..(t + 1) * D_MODEL],
-                l,
                 weights,
                 luts,
-                tamper_rho,
             );
             x_ln1[t * D_MODEL..(t + 1) * D_MODEL].copy_from_slice(&yr);
         }
@@ -3684,44 +3747,52 @@ fn generate_24l_witness(
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GDN_QKV,
-                g << (LOG_D_MODEL + LOG_GDN_QKV_PAD),
-                GDN_QKV_DIM,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GDN_QKV,
+                    layer_offset_cells: g << (LOG_D_MODEL + LOG_GDN_QKV_PAD),
+                    out_limit: GDN_QKV_DIM,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
             let (z_proj, rem_z) = matmul_witness_rows(
                 &x_ln1,
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GDN_Z,
-                g << (LOG_D_MODEL + 11),
-                2048,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GDN_Z,
+                    layer_offset_cells: g << (LOG_D_MODEL + 11),
+                    out_limit: 2048,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
             let (b_proj, rem_b) = matmul_witness_rows(
                 &x_ln1,
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GDN_B,
-                g << (LOG_D_MODEL + LOG_GDN_H),
-                GDN_H,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GDN_B,
+                    layer_offset_cells: g << (LOG_D_MODEL + LOG_GDN_H),
+                    out_limit: GDN_H,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
             let (a_proj, rem_a) = matmul_witness_rows(
                 &x_ln1,
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GDN_A,
-                g << (LOG_D_MODEL + LOG_GDN_H),
-                GDN_H,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GDN_A,
+                    layer_offset_cells: g << (LOG_D_MODEL + LOG_GDN_H),
+                    out_limit: GDN_H,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
 
             let mut conv_silu = vec![0i64; FULL_24L_SEQ_LEN * GDN_QKV_DIM];
@@ -3765,23 +3836,27 @@ fn generate_24l_witness(
                     let row_k = h + (t << LOG_GDN_H) + ((3 * g + 1) << (LOG_GDN_H + LOG_SEQ));
                     let q_out = fill_rmsnorm_row(
                         &mut m3,
-                        RMS_CFGS[1],
-                        row_q,
+                        RmsRowTarget {
+                            cfg: RMS_CFGS[1],
+                            row_idx: row_q,
+                            w_slot: 3 * g,
+                            tamper_rho_plus1: false,
+                        },
                         &q_in,
-                        3 * g,
                         weights,
                         luts,
-                        false,
                     );
                     let k_out = fill_rmsnorm_row(
                         &mut m3,
-                        RMS_CFGS[1],
-                        row_k,
+                        RmsRowTarget {
+                            cfg: RMS_CFGS[1],
+                            row_idx: row_k,
+                            w_slot: 3 * g + 1,
+                            tamper_rho_plus1: false,
+                        },
                         &k_in,
-                        3 * g + 1,
                         weights,
                         luts,
-                        false,
                     );
                     q_n[(t * GDN_H + h) * GDN_D..(t * GDN_H + h + 1) * GDN_D]
                         .copy_from_slice(&q_out);
@@ -3825,12 +3900,18 @@ fn generate_24l_witness(
             let mut a_wy = [[[0i64; FULL_24L_SEQ_LEN]; FULL_24L_SEQ_LEN]; GDN_H];
             for h in 0..GDN_H {
                 for j in 0..FULL_24L_SEQ_LEN {
-                    gamma[h][j][j] = 512;
+                    let (prefix, rest) = gamma[h].split_at_mut(j + 1);
+                    prefix[j][j] = 512;
                     let diag_idx = h + (j << 4) + (j << 8) + (g << 12);
                     m0[M0_GAMMA][diag_idx] = 512;
-                    for i in (j + 1)..FULL_24L_SEQ_LEN {
-                        let (gm, r_gm) = div_round_with_rem(gamma[h][i - 1][j] * alpha_q12[i][h], 4096);
-                        gamma[h][i][j] = gm;
+                    let mut prev_gm = 512i64;
+                    for (step, (gamma_row, alpha_row)) in
+                        rest.iter_mut().zip(alpha_q12[j + 1..].iter()).enumerate()
+                    {
+                        let i = j + 1 + step;
+                        let (gm, r_gm) = div_round_with_rem(prev_gm * alpha_row[h], 4096);
+                        gamma_row[j] = gm;
+                        prev_gm = gm;
                         let idx17 = h + (i << 4) + (j << 8) + (g << 12);
                         m0[M0_GAMMA][idx17] = gm as u32;
                         m0[M0_REM_GAMMA][idx17] = r_gm;
@@ -3920,20 +4001,22 @@ fn generate_24l_witness(
                     let row_y = h + (t << LOG_GDN_H) + ((3 * g + 2) << (LOG_GDN_H + LOG_SEQ));
                     let yn = fill_rmsnorm_row(
                         &mut m3,
-                        RMS_CFGS[1],
-                        row_y,
+                        RmsRowTarget {
+                            cfg: RMS_CFGS[1],
+                            row_idx: row_y,
+                            w_slot: 3 * g + 2,
+                            tamper_rho_plus1: false,
+                        },
                         &y_wy[(t * GDN_H + h) * GDN_D..(t * GDN_H + h + 1) * GDN_D],
-                        3 * g + 2,
                         weights,
                         luts,
-                        false,
                     );
-                    for d in 0..GDN_D {
+                    for (d, &yn_d) in yn.iter().enumerate() {
                         let k = h * GDN_D + d;
                         let idx20 = k + (t << 11) + (g << 15);
                         let zv = z_proj[t * 2048 + k];
                         let zs = luts.silu_i64[(zv + 16_384) as usize];
-                        let (gv, r_gv) = div_round_with_rem(yn[d] * zs, S_ACT);
+                        let (gv, r_gv) = div_round_with_rem(yn_d * zs, S_ACT);
                         m0[M0_Z_PROJ][idx20] = bb_from_i64(zv);
                         m0[M0_REM_Z][idx20] = rem_z[t * 2048 + k];
                         m0[M0_Z_SILU][idx20] = bb_from_i64(zs);
@@ -3949,11 +4032,13 @@ fn generate_24l_witness(
                 FULL_24L_SEQ_LEN,
                 2048,
                 weights,
-                WST_GDN_OUT,
-                g << (11 + LOG_D_MODEL),
-                D_MODEL,
-                2048,
-                (S_ACT * S_W) / S_RES, // 32
+                MatmulRowSpec {
+                    wst_id: WST_GDN_OUT,
+                    layer_offset_cells: g << (11 + LOG_D_MODEL),
+                    out_limit: D_MODEL,
+                    in_stride_in_wst: 2048,
+                    out_div: (S_ACT * S_W) / S_RES, // 32
+                },
             );
             for t in 0..FULL_24L_SEQ_LEN {
                 for d in 0..D_MODEL {
@@ -3971,44 +4056,52 @@ fn generate_24l_witness(
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GQA_Q,
-                q << 21,
-                2048,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GQA_Q,
+                    layer_offset_cells: q << 21,
+                    out_limit: 2048,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
             let (gate, rem_gate) = matmul_witness_rows(
                 &x_ln1,
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GQA_GATE,
-                q << 21,
-                2048,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GQA_GATE,
+                    layer_offset_cells: q << 21,
+                    out_limit: 2048,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
             let (k_raw, rem_k) = matmul_witness_rows(
                 &x_ln1,
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GQA_K,
-                q << (LOG_D_MODEL + 9),
-                512,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GQA_K,
+                    layer_offset_cells: q << (LOG_D_MODEL + 9),
+                    out_limit: 512,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
             let (v_proj, rem_v) = matmul_witness_rows(
                 &x_ln1,
                 FULL_24L_SEQ_LEN,
                 D_MODEL,
                 weights,
-                WST_GQA_V,
-                q << (LOG_D_MODEL + 9),
-                512,
-                D_MODEL,
-                S_W,
+                MatmulRowSpec {
+                    wst_id: WST_GQA_V,
+                    layer_offset_cells: q << (LOG_D_MODEL + 9),
+                    out_limit: 512,
+                    in_stride_in_wst: D_MODEL,
+                    out_div: S_W,
+                },
             );
 
             let mut qh_r = vec![0i64; FULL_24L_SEQ_LEN * GQA_HQ * GQA_DH];
@@ -4029,13 +4122,15 @@ fn generate_24l_witness(
                     let w_slot = hq + (q << 4);
                     let qhi = fill_rmsnorm_row(
                         &mut m3,
-                        RMS_CFGS[2],
-                        row_idx,
+                        RmsRowTarget {
+                            cfg: RMS_CFGS[2],
+                            row_idx,
+                            w_slot,
+                            tamper_rho_plus1: false,
+                        },
                         &q_in,
-                        w_slot,
                         weights,
                         luts,
-                        false,
                     );
                     for pair in 0..32 {
                         let (cs, sn) = (luts.rope_cos_q10[t][pair], luts.rope_sin_q10[t][pair]);
@@ -4084,13 +4179,15 @@ fn generate_24l_witness(
                     let w_slot = (8 + hk) + (q << 4);
                     let khi = fill_rmsnorm_row(
                         &mut m3,
-                        RMS_CFGS[2],
-                        row_idx,
+                        RmsRowTarget {
+                            cfg: RMS_CFGS[2],
+                            row_idx,
+                            w_slot,
+                            tamper_rho_plus1: false,
+                        },
                         &k_in,
-                        w_slot,
                         weights,
                         luts,
-                        false,
                     );
                     for pair in 0..32 {
                         let (cs, sn) = (luts.rope_cos_q10[t][pair], luts.rope_sin_q10[t][pair]);
@@ -4125,8 +4222,10 @@ fn generate_24l_witness(
                     let mut best_tj = 0usize;
                     for tj in 0..=ti {
                         let idx14 = tj + (ti << 4) + (hq << 8) + (q << 11);
-                        let kt = &kh_r[(tj * GQA_HKV + hk) * GQA_DH..(tj * GQA_HKV + hk + 1) * GQA_DH];
-                        let qt = &qh_r[(ti * GQA_HQ + hq) * GQA_DH..(ti * GQA_HQ + hq + 1) * GQA_DH];
+                        let kt =
+                            &kh_r[(tj * GQA_HKV + hk) * GQA_DH..(tj * GQA_HKV + hk + 1) * GQA_DH];
+                        let qt =
+                            &qh_r[(ti * GQA_HQ + hq) * GQA_DH..(ti * GQA_HQ + hq + 1) * GQA_DH];
                         let dot: i64 = kt.iter().zip(qt.iter()).map(|(&a, &b)| a * b).sum();
                         let (sc, r_sc) = div_round_with_rem(dot, 64);
                         sc_row[tj] = sc;
@@ -4193,11 +4292,13 @@ fn generate_24l_witness(
                 FULL_24L_SEQ_LEN,
                 2048,
                 weights,
-                WST_GQA_O,
-                q << (11 + LOG_D_MODEL),
-                D_MODEL,
-                2048,
-                (S_ACT * S_W) / S_RES, // 32
+                MatmulRowSpec {
+                    wst_id: WST_GQA_O,
+                    layer_offset_cells: q << (11 + LOG_D_MODEL),
+                    out_limit: D_MODEL,
+                    in_stride_in_wst: 2048,
+                    out_div: (S_ACT * S_W) / S_RES, // 32
+                },
             );
             if tamper == Some(Full24LayerTamperKind::Layer11GqaOProj) && l == 11 {
                 ao[0] += 1;
@@ -4228,13 +4329,15 @@ fn generate_24l_witness(
             let row_idx = t + ((32 + l) << LOG_SEQ);
             let yr = fill_rmsnorm_row(
                 &mut m3,
-                RMS_CFGS[0],
-                row_idx,
+                RmsRowTarget {
+                    cfg: RMS_CFGS[0],
+                    row_idx,
+                    w_slot: 32 + l,
+                    tamper_rho_plus1: false,
+                },
                 &h_cur[t * D_MODEL..(t + 1) * D_MODEL],
-                32 + l,
                 weights,
                 luts,
-                false,
             );
             x_ln2[t * D_MODEL..(t + 1) * D_MODEL].copy_from_slice(&yr);
         }
@@ -4245,22 +4348,26 @@ fn generate_24l_witness(
             FULL_24L_SEQ_LEN,
             D_MODEL,
             weights,
-            WST_MLP_GATE,
-            l << (LOG_D_MODEL + LOG_D_FF_PAD),
-            D_FF,
-            D_MODEL,
-            S_W,
+            MatmulRowSpec {
+                wst_id: WST_MLP_GATE,
+                layer_offset_cells: l << (LOG_D_MODEL + LOG_D_FF_PAD),
+                out_limit: D_FF,
+                in_stride_in_wst: D_MODEL,
+                out_div: S_W,
+            },
         );
         let (mlp_up, rem_mu) = matmul_witness_rows(
             &x_ln2,
             FULL_24L_SEQ_LEN,
             D_MODEL,
             weights,
-            WST_MLP_UP,
-            l << (LOG_D_MODEL + LOG_D_FF_PAD),
-            D_FF,
-            D_MODEL,
-            S_W,
+            MatmulRowSpec {
+                wst_id: WST_MLP_UP,
+                layer_offset_cells: l << (LOG_D_MODEL + LOG_D_FF_PAD),
+                out_limit: D_FF,
+                in_stride_in_wst: D_MODEL,
+                out_div: S_W,
+            },
         );
         let mut swiglu_pad = vec![0i64; FULL_24L_SEQ_LEN * D_FF_PAD];
         for t in 0..FULL_24L_SEQ_LEN {
@@ -4299,11 +4406,13 @@ fn generate_24l_witness(
             FULL_24L_SEQ_LEN,
             D_FF_PAD,
             weights,
-            WST_MLP_DOWN,
-            l << (LOG_D_FF_PAD + LOG_D_MODEL),
-            D_MODEL,
-            D_FF_PAD,
-            (S_SW * S_W) / S_RES, // 16
+            MatmulRowSpec {
+                wst_id: WST_MLP_DOWN,
+                layer_offset_cells: l << (LOG_D_FF_PAD + LOG_D_MODEL),
+                out_limit: D_MODEL,
+                in_stride_in_wst: D_FF_PAD,
+                out_div: (S_SW * S_W) / S_RES, // 16
+            },
         );
         if tamper == Some(Full24LayerTamperKind::Layer14SwiGluSiluDownProj) && l == 14 {
             // Forge `down_proj` output (`!= swiglu · W_down[14]`) while keeping all `RMSNorm`/`SiLU`/`WY` locally valid!
@@ -4334,13 +4443,15 @@ fn generate_24l_witness(
         let row_idx = t + (24 << LOG_SEQ);
         let yr = fill_rmsnorm_row(
             &mut m3,
-            RMS_CFGS[0],
-            row_idx,
+            RmsRowTarget {
+                cfg: RMS_CFGS[0],
+                row_idx,
+                w_slot: 24,
+                tamper_rho_plus1: false,
+            },
             &h_cur[t * D_MODEL..(t + 1) * D_MODEL],
-            24,
             weights,
             luts,
-            false,
         );
         if t == FULL_24L_SEQ_LEN - 1 {
             x_final_last = yr;
@@ -4353,11 +4464,13 @@ fn generate_24l_witness(
         1,
         D_MODEL,
         weights,
-        WST_EMBED,
-        0,
-        VOCAB_SIZE,
-        D_MODEL,
-        (S_ACT * S_W) / 256, // 512
+        MatmulRowSpec {
+            wst_id: WST_EMBED,
+            layer_offset_cells: 0,
+            out_limit: VOCAB_SIZE,
+            in_stride_in_wst: D_MODEL,
+            out_div: (S_ACT * S_W) / 256, // 512
+        },
     );
     let mut best_tok = 0usize;
     let mut best_logit = i64::MIN;
@@ -4552,13 +4665,16 @@ fn canonical_range_bucket_plans() -> Vec<RangeBucketPlan> {
     let max_bucket_cells = 1usize << 24; // `D1bRangeExt4Proof::read_from` caps `m_wit <= 24`!
     let mut plans = Vec::new();
     for (m_tab, mut items) in by_tab {
-        items.sort_by(|a, b| b.2.cmp(&a.2));
+        items.sort_by_key(|item| std::cmp::Reverse(item.2));
         let mut cur_slices = Vec::new();
         let mut cur_off = 0usize;
         for (mat_id, st, mv, add_c) in items {
             let sz = 1usize << mv;
             if cur_off + sz > max_bucket_cells && !cur_slices.is_empty() {
-                let m_wit = cur_off.max(1usize << m_tab).next_power_of_two().trailing_zeros() as usize;
+                let m_wit = cur_off
+                    .max(1usize << m_tab)
+                    .next_power_of_two()
+                    .trailing_zeros() as usize;
                 plans.push(RangeBucketPlan {
                     m_tab,
                     m_wit,
@@ -4578,7 +4694,10 @@ fn canonical_range_bucket_plans() -> Vec<RangeBucketPlan> {
             cur_off += sz;
         }
         if !cur_slices.is_empty() {
-            let m_wit = cur_off.max(1usize << m_tab).next_power_of_two().trailing_zeros() as usize;
+            let m_wit = cur_off
+                .max(1usize << m_tab)
+                .next_power_of_two()
+                .trailing_zeros() as usize;
             plans.push(RangeBucketPlan {
                 m_tab,
                 m_wit,
@@ -4616,8 +4735,8 @@ pub struct Full24LayerQwen35Receipt {
     pub lut_d1b_proofs: [D1bRangeExt4Proof; 5], // `[silu, sig, sp, expneg, rsqrt_norm]`
     pub weight_matmul_proofs: Vec<SecPubWeightEinSumOpening>, // `12` weight contractions + `conv1d` + `sp*alog` + `3 uq9*wgain` = `17`
     pub pub_ind_proofs: Vec<BlindedEinSumExt4Proof>,          // public-indicator zerochecks / RoPE
-    pub sec_sec_proofs: Vec<SecSecEinSumOpening>,             // bilinear witness × witness contractions
-    pub linear_point_evals: Vec<Ext4>,                        // claimed point evaluations for linear equations
+    pub sec_sec_proofs: Vec<SecSecEinSumOpening>, // bilinear witness × witness contractions
+    pub linear_point_evals: Vec<Ext4>,            // claimed point evaluations for linear equations
     pub weight_whir_proof: PublicWeightOpeningProof24L,
     pub online_whir_proof: WhirBatchOpeningProofExt4,
 }
@@ -4726,7 +4845,10 @@ impl Full24LayerQwen35Receipt {
         let weight_whir_proof = PublicWeightOpeningProof24L::read_from(&mut cur)?;
         let online_whir_proof = WhirBatchOpeningProofExt4::read_from(&mut cur)?;
         if cur.remaining() != 0 {
-            return Err(format!("trailing {} bytes in Full24LayerQwen35Receipt", cur.remaining()));
+            return Err(format!(
+                "trailing {} bytes in Full24LayerQwen35Receipt",
+                cur.remaining()
+            ));
         }
         let parsed = Self {
             model_root,
@@ -4900,18 +5022,18 @@ fn fold_mid_u32_for_einsum(
 
 fn online_shapes_24l(num_range_buckets: usize) -> [WhirExt4MatrixShape; 4] {
     let m0_vars = [
-        22, 22, 22, 22, 22, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 19, 19, 17, 17, 17, 17,
-        17, 17, 17, 17, 17, 17, 17, 17, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
+        22, 22, 22, 22, 22, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 19, 19, 17, 17, 17, 17, 17,
+        17, 17, 17, 17, 17, 17, 17, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13,
     ];
     let m1_vars = [
-        18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 17, 17, 16, 16, 16, 16, 16, 16, 14, 14, 14,
-        14, 14, 14, 14, 14, 14, 10, 10, 10,
+        18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 17, 17, 16, 16, 16, 16, 16, 16, 14, 14, 14, 14,
+        14, 14, 14, 14, 14, 10, 10, 10,
     ];
     let plans = canonical_range_bucket_plans();
     assert_eq!(plans.len(), num_range_buckets);
     let mut m2_vars = vec![
-        21, 21, 21, 21, 21, 21, 21, 19, 19, 19, 19, 19, 18, 18, 18, 17, 15, 15, 15, 15, 12, 12,
-        12, 12,
+        21, 21, 21, 21, 21, 21, 21, 19, 19, 19, 19, 19, 18, 18, 18, 17, 15, 15, 15, 15, 12, 12, 12,
+        12,
     ];
     for pl in &plans {
         m2_vars.push(pl.m_tab);
@@ -4980,6 +5102,8 @@ pub fn prove_tampered_full_24l_qwen35_turn(
 ) -> Result<Full24LayerQwen35Receipt, String> {
     prove_full_24l_qwen35_turn_inner(weights, prompt_tokens, Some(tamper))
 }
+
+type WitPtMapFn = fn(&[Ext4]) -> Vec<Ext4>;
 
 fn prove_full_24l_qwen35_turn_inner(
     weights: &PrecomputedModelWeights24L,
@@ -5121,9 +5245,8 @@ fn prove_full_24l_qwen35_turn_inner(
     m2[M2D_MULT_EXPNEG] = mult_en;
 
     // 4: `RsqrtNorm` (`m_wit = 17 = 131,072`): `NormGdn128` (`2^{14}`) + `NormGqa256` (`2^{11}`) + `Norm1024` (`2^{10}`)
-    let mut rsq_wcols: [Vec<u32>; 5] = std::array::from_fn(|c| {
-        vec![if c == 1 { 1u32 } else { 0u32 }; 1 << 17]
-    });
+    let mut rsq_wcols: [Vec<u32>; 5] =
+        std::array::from_fn(|c| vec![if c == 1 { 1u32 } else { 0u32 }; 1 << 17]);
     let rsq_srcs = [
         (1usize, 0usize, 1usize << 14),
         (2usize, 1usize << 14, 1usize << 11),
@@ -5137,13 +5260,12 @@ fn prove_full_24l_qwen35_turn_inner(
         }
     }
     let mut mult_rsq = vec![0u32; 1 << 17];
-    for i in 0..(1 << 17) {
-        let p4 = rsq_wcols[0][i];
+    for (&p4, &u_val) in rsq_wcols[0].iter().zip(rsq_wcols[3].iter()) {
         let slot = if p4 == 0 {
             0usize
         } else {
             let e = (p4.trailing_zeros() / 2) as u8;
-            let u = rsq_wcols[3][i] as u16;
+            let u = u_val as u16;
             luts.rsqrt_slot_map[&(e, u)]
         };
         mult_rsq[slot] += 1;
@@ -5248,11 +5370,11 @@ fn prove_full_24l_qwen35_turn_inner(
     let mut linear_point_evals: Vec<Ext4> = Vec::with_capacity(256);
     let mats_all = [&m0, &m1, &m2, &m3];
     let push_eval = |mat_id: usize,
-                         st: usize,
-                         pt: Vec<Ext4>,
-                         tr_ref: &mut CShakeTranscript,
-                         lin_evs: &mut Vec<Ext4>,
-                         onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]|
+                     st: usize,
+                     pt: Vec<Ext4>,
+                     tr_ref: &mut CShakeTranscript,
+                     lin_evs: &mut Vec<Ext4>,
+                     onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]|
      -> Ext4 {
         let v = mle_eval_bb_at_ext4(&mats_all[mat_id][st], &pt);
         tr_ref.absorb_ext4(b"lin_ev", v);
@@ -5263,15 +5385,14 @@ fn prove_full_24l_qwen35_turn_inner(
 
     // Discharge virtual range `rem_leaf_eval`s via per-matrix `JointLinearClaimExt4`:
     let mut final_range_proofs = Vec::with_capacity(range_d1b_proofs.len());
-    for (pl, (prf, z_leaf)) in range_plans.iter().zip(range_d1b_proofs.into_iter()) {
+    for (pl, (prf, z_leaf)) in range_plans.iter().zip(range_d1b_proofs) {
         let mut by_mat: [Vec<LinearTermExt4>; 4] = [Vec::new(), Vec::new(), Vec::new(), Vec::new()];
         let mut mat_vals = [Ext4::ZERO; 4];
         for sl in &pl.slices {
             let prefix = sl.base_cell >> sl.m_vars;
             let mut pref_ev = Ext4::ONE;
-            for b in sl.m_vars..pl.m_wit {
-                let bit = (prefix >> (b - sl.m_vars)) & 1;
-                let zb = z_leaf[b];
+            for (b, &zb) in z_leaf[sl.m_vars..pl.m_wit].iter().enumerate() {
+                let bit = (prefix >> b) & 1;
                 pref_ev = pref_ev.mul(if bit == 1 { zb } else { Ext4::ONE.sub(zb) });
             }
             let sub_pt = z_leaf[..sl.m_vars].to_vec();
@@ -5327,34 +5448,146 @@ fn prove_full_24l_qwen35_turn_inner(
     // SiLU virtual leaf (`m_wit = 23`):
     {
         let _ = beta_silu;
-        let _ = push_eval(0, M0_CONV_PRE, z_silu[..22].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_CONV_SILU, z_silu[..22].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(2, M2_MLP_GATE, z_silu[..21].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(2, M2_GATE_SILU, z_silu[..21].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_Z_PROJ, z_silu[..20].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_Z_SILU, z_silu[..20].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_CONV_PRE,
+            z_silu[..22].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_CONV_SILU,
+            z_silu[..22].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            2,
+            M2_MLP_GATE,
+            z_silu[..21].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            2,
+            M2_GATE_SILU,
+            z_silu[..21].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_Z_PROJ,
+            z_silu[..20].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_Z_SILU,
+            z_silu[..20].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
     }
     // Sigmoid virtual leaf (`m_wit = 19`):
     {
         let _ = beta_sig;
-        let _ = push_eval(1, M1_GATE, z_sig[..18].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_SIG_GATE, z_sig[..18].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_B_PROJ, z_sig[..13].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_BETA_Q10, z_sig[..13].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_GATE,
+            z_sig[..18].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_SIG_GATE,
+            z_sig[..18].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_B_PROJ,
+            z_sig[..13].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_BETA_Q10,
+            z_sig[..13].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
     }
     // Softplus virtual leaf (`m_wit = 15`):
     {
         let _ = beta_sp;
-        let _ = push_eval(0, M0_SP_IN, z_sp[..13].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_SP_Q8, z_sp[..13].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_SP_IN,
+            z_sp[..13].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_SP_Q8,
+            z_sp[..13].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
     }
     // ExpNeg virtual leaf (`m_wit = 15`):
     {
         let _ = beta_en;
-        let _ = push_eval(1, M1_U_SM, z_en[..14].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_E_SM_RAW, z_en[..14].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_G_EXP, z_en[..13].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_ALPHA_Q12, z_en[..13].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_U_SM,
+            z_en[..14].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_E_SM_RAW,
+            z_en[..14].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_G_EXP,
+            z_en[..13].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_ALPHA_Q12,
+            z_en[..13].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
     }
     // RsqrtNorm virtual leaf (`m_wit = 17`, all in `mat 3`):
     {
@@ -5365,13 +5598,9 @@ fn prove_full_24l_qwen35_turn_inner(
                 let mv = len.trailing_zeros() as usize;
                 let prefix = dst_off >> mv;
                 let mut pref = bp;
-                for b in mv..17 {
-                    let bit = (prefix >> (b - mv)) & 1;
-                    pref = pref.mul(if bit == 1 {
-                        z_rsq[b]
-                    } else {
-                        Ext4::ONE.sub(z_rsq[b])
-                    });
+                for (b, &zb) in z_rsq[mv..17].iter().enumerate() {
+                    let bit = (prefix >> b) & 1;
+                    pref = pref.mul(if bit == 1 { zb } else { Ext4::ONE.sub(zb) });
                 }
                 terms.push(LinearTermExt4::PointEval {
                     subtable: grp * RGRP_STRIDE + co,
@@ -5417,19 +5646,214 @@ fn prove_full_24l_qwen35_turn_inner(
     let mlp_ln2_slots: Vec<usize> = (0..NUM_LAYERS).map(|l| 32 + l).collect();
 
     let mm_jobs = [
-        MatmulJob { spec: "wm_gdn_qkv", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gdn_ln1_slots), wst: WST_GDN_QKV, y_mat: 0, y_st: M0_QKV, rem_st: M0_REM_QKV, log_d: 10, log_j: 13, log_l: 5, out_div: 512, j_bound: GDN_QKV_DIM, l_bound: NUM_GDN_LAYERS },
-        MatmulJob { spec: "wm_gdn_z", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gdn_ln1_slots), wst: WST_GDN_Z, y_mat: 0, y_st: M0_Z_PROJ, rem_st: M0_REM_Z, log_d: 10, log_j: 11, log_l: 5, out_div: 512, j_bound: 2048, l_bound: NUM_GDN_LAYERS },
-        MatmulJob { spec: "wm_gdn_b", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gdn_ln1_slots), wst: WST_GDN_B, y_mat: 0, y_st: M0_B_PROJ, rem_st: M0_REM_B, log_d: 10, log_j: 4, log_l: 5, out_div: 512, j_bound: 16, l_bound: NUM_GDN_LAYERS },
-        MatmulJob { spec: "wm_gdn_a", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gdn_ln1_slots), wst: WST_GDN_A, y_mat: 0, y_st: M0_A_PROJ, rem_st: M0_REM_A, log_d: 10, log_j: 4, log_l: 5, out_div: 512, j_bound: 16, l_bound: NUM_GDN_LAYERS },
-        MatmulJob { spec: "wm_gdn_out", x_mat: 0, x_st: M0_GATED, x_layer_map: None, wst: WST_GDN_OUT, y_mat: 0, y_st: M0_ATTN_OUT, rem_st: M0_REM_OUT, log_d: 11, log_j: 10, log_l: 5, out_div: 64, j_bound: 1024, l_bound: NUM_GDN_LAYERS },
-        MatmulJob { spec: "wm_gqa_q", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gqa_ln1_slots), wst: WST_GQA_Q, y_mat: 1, y_st: M1_Q_RAW, rem_st: M1_REM_Q, log_d: 10, log_j: 11, log_l: 3, out_div: 512, j_bound: 2048, l_bound: NUM_GQA_LAYERS },
-        MatmulJob { spec: "wm_gqa_gate", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gqa_ln1_slots), wst: WST_GQA_GATE, y_mat: 1, y_st: M1_GATE, rem_st: M1_REM_GATE, log_d: 10, log_j: 11, log_l: 3, out_div: 512, j_bound: 2048, l_bound: NUM_GQA_LAYERS },
-        MatmulJob { spec: "wm_gqa_k", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gqa_ln1_slots), wst: WST_GQA_K, y_mat: 1, y_st: M1_K_RAW, rem_st: M1_REM_K, log_d: 10, log_j: 9, log_l: 3, out_div: 512, j_bound: 512, l_bound: NUM_GQA_LAYERS },
-        MatmulJob { spec: "wm_gqa_v", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&gqa_ln1_slots), wst: WST_GQA_V, y_mat: 1, y_st: M1_V_PROJ, rem_st: M1_REM_V, log_d: 10, log_j: 9, log_l: 3, out_div: 512, j_bound: 512, l_bound: NUM_GQA_LAYERS },
-        MatmulJob { spec: "wm_gqa_o", x_mat: 1, x_st: M1_AO_G, x_layer_map: None, wst: WST_GQA_O, y_mat: 1, y_st: M1_ATTN_OUT, rem_st: M1_REM_OUT, log_d: 11, log_j: 10, log_l: 3, out_div: 64, j_bound: 1024, l_bound: NUM_GQA_LAYERS },
-        MatmulJob { spec: "wm_mlp_gate", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&mlp_ln2_slots), wst: WST_MLP_GATE, y_mat: 2, y_st: M2_MLP_GATE, rem_st: M2_REM_GATE, log_d: 10, log_j: 12, log_l: 5, out_div: 512, j_bound: D_FF, l_bound: NUM_LAYERS },
-        MatmulJob { spec: "wm_mlp_up", x_mat: 3, x_st: RGRP_YOUT, x_layer_map: Some(&mlp_ln2_slots), wst: WST_MLP_UP, y_mat: 2, y_st: M2_MLP_UP, rem_st: M2_REM_UP, log_d: 10, log_j: 12, log_l: 5, out_div: 512, j_bound: D_FF, l_bound: NUM_LAYERS },
-        MatmulJob { spec: "wm_mlp_down", x_mat: 2, x_st: M2_SWIGLU, x_layer_map: None, wst: WST_MLP_DOWN, y_mat: 2, y_st: M2_MLP_OUT, rem_st: M2_REM_MLPOUT, log_d: 12, log_j: 10, log_l: 5, out_div: 32, j_bound: 1024, l_bound: NUM_LAYERS },
+        MatmulJob {
+            spec: "wm_gdn_qkv",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gdn_ln1_slots),
+            wst: WST_GDN_QKV,
+            y_mat: 0,
+            y_st: M0_QKV,
+            rem_st: M0_REM_QKV,
+            log_d: 10,
+            log_j: 13,
+            log_l: 5,
+            out_div: 512,
+            j_bound: GDN_QKV_DIM,
+            l_bound: NUM_GDN_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gdn_z",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gdn_ln1_slots),
+            wst: WST_GDN_Z,
+            y_mat: 0,
+            y_st: M0_Z_PROJ,
+            rem_st: M0_REM_Z,
+            log_d: 10,
+            log_j: 11,
+            log_l: 5,
+            out_div: 512,
+            j_bound: 2048,
+            l_bound: NUM_GDN_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gdn_b",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gdn_ln1_slots),
+            wst: WST_GDN_B,
+            y_mat: 0,
+            y_st: M0_B_PROJ,
+            rem_st: M0_REM_B,
+            log_d: 10,
+            log_j: 4,
+            log_l: 5,
+            out_div: 512,
+            j_bound: 16,
+            l_bound: NUM_GDN_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gdn_a",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gdn_ln1_slots),
+            wst: WST_GDN_A,
+            y_mat: 0,
+            y_st: M0_A_PROJ,
+            rem_st: M0_REM_A,
+            log_d: 10,
+            log_j: 4,
+            log_l: 5,
+            out_div: 512,
+            j_bound: 16,
+            l_bound: NUM_GDN_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gdn_out",
+            x_mat: 0,
+            x_st: M0_GATED,
+            x_layer_map: None,
+            wst: WST_GDN_OUT,
+            y_mat: 0,
+            y_st: M0_ATTN_OUT,
+            rem_st: M0_REM_OUT,
+            log_d: 11,
+            log_j: 10,
+            log_l: 5,
+            out_div: 64,
+            j_bound: 1024,
+            l_bound: NUM_GDN_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gqa_q",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gqa_ln1_slots),
+            wst: WST_GQA_Q,
+            y_mat: 1,
+            y_st: M1_Q_RAW,
+            rem_st: M1_REM_Q,
+            log_d: 10,
+            log_j: 11,
+            log_l: 3,
+            out_div: 512,
+            j_bound: 2048,
+            l_bound: NUM_GQA_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gqa_gate",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gqa_ln1_slots),
+            wst: WST_GQA_GATE,
+            y_mat: 1,
+            y_st: M1_GATE,
+            rem_st: M1_REM_GATE,
+            log_d: 10,
+            log_j: 11,
+            log_l: 3,
+            out_div: 512,
+            j_bound: 2048,
+            l_bound: NUM_GQA_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gqa_k",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gqa_ln1_slots),
+            wst: WST_GQA_K,
+            y_mat: 1,
+            y_st: M1_K_RAW,
+            rem_st: M1_REM_K,
+            log_d: 10,
+            log_j: 9,
+            log_l: 3,
+            out_div: 512,
+            j_bound: 512,
+            l_bound: NUM_GQA_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gqa_v",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&gqa_ln1_slots),
+            wst: WST_GQA_V,
+            y_mat: 1,
+            y_st: M1_V_PROJ,
+            rem_st: M1_REM_V,
+            log_d: 10,
+            log_j: 9,
+            log_l: 3,
+            out_div: 512,
+            j_bound: 512,
+            l_bound: NUM_GQA_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_gqa_o",
+            x_mat: 1,
+            x_st: M1_AO_G,
+            x_layer_map: None,
+            wst: WST_GQA_O,
+            y_mat: 1,
+            y_st: M1_ATTN_OUT,
+            rem_st: M1_REM_OUT,
+            log_d: 11,
+            log_j: 10,
+            log_l: 3,
+            out_div: 64,
+            j_bound: 1024,
+            l_bound: NUM_GQA_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_mlp_gate",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&mlp_ln2_slots),
+            wst: WST_MLP_GATE,
+            y_mat: 2,
+            y_st: M2_MLP_GATE,
+            rem_st: M2_REM_GATE,
+            log_d: 10,
+            log_j: 12,
+            log_l: 5,
+            out_div: 512,
+            j_bound: D_FF,
+            l_bound: NUM_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_mlp_up",
+            x_mat: 3,
+            x_st: RGRP_YOUT,
+            x_layer_map: Some(&mlp_ln2_slots),
+            wst: WST_MLP_UP,
+            y_mat: 2,
+            y_st: M2_MLP_UP,
+            rem_st: M2_REM_UP,
+            log_d: 10,
+            log_j: 12,
+            log_l: 5,
+            out_div: 512,
+            j_bound: D_FF,
+            l_bound: NUM_LAYERS,
+        },
+        MatmulJob {
+            spec: "wm_mlp_down",
+            x_mat: 2,
+            x_st: M2_SWIGLU,
+            x_layer_map: None,
+            wst: WST_MLP_DOWN,
+            y_mat: 2,
+            y_st: M2_MLP_OUT,
+            rem_st: M2_REM_MLPOUT,
+            log_d: 12,
+            log_j: 10,
+            log_l: 5,
+            out_div: 32,
+            j_bound: 1024,
+            l_bound: NUM_LAYERS,
+        },
     ];
 
     for job in &mm_jobs {
@@ -5437,39 +5861,53 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_t = tr.squeeze_ext4_vec(b"mm_zt", LOG_SEQ, true);
         let z_l = tr.squeeze_ext4_vec(b"mm_zl", job.log_l, true);
         let y_pt = concat_pts(&[&z_j, &z_t, &z_l]);
-        let _ = push_eval(job.y_mat, job.y_st, y_pt.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(job.y_mat, job.rem_st, y_pt, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            job.y_mat,
+            job.y_st,
+            y_pt.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            job.y_mat,
+            job.rem_st,
+            y_pt,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
-        let w_folded = weights.fold_mid_weight_for_einsum(job.wst, job.log_d, job.log_j, job.log_l, &z_j);
+        let w_folded =
+            weights.fold_mid_weight_for_einsum(job.wst, job.log_d, job.log_j, job.log_l, &z_j);
         let x_folded = if let Some(slot_map) = job.x_layer_map {
             let d_len = 1usize << job.log_d;
             let l_len = 1usize << job.log_l;
             let eq_t = build_eq_table_lsb_ext4(&z_t);
             let mut xf = vec![Ext4::ZERO; l_len * d_len];
             for (li, &slot) in slot_map.iter().enumerate() {
-                for t in 0..FULL_24L_SEQ_LEN {
-                    let ew = eq_t[t];
+                for (t, &ew) in eq_t.iter().enumerate() {
                     let base = (t + (slot << LOG_SEQ)) << job.log_d;
                     let sl = &m3[RGRP_YOUT][base..base + d_len];
                     for d in 0..d_len {
-                        xf[li + (d << job.log_l)] = xf[li + (d << job.log_l)].add(ew.scale_bb(sl[d]));
+                        xf[li + (d << job.log_l)] =
+                            xf[li + (d << job.log_l)].add(ew.scale_bb(sl[d]));
                     }
                 }
             }
             xf
         } else {
-            fold_mid_u32_for_einsum(&mats_all[job.x_mat][job.x_st], job.log_d, LOG_SEQ, job.log_l, &z_t)
+            fold_mid_u32_for_einsum(
+                &mats_all[job.x_mat][job.x_st],
+                job.log_d,
+                LOG_SEQ,
+                job.log_l,
+                &z_t,
+            )
         };
 
         let (prf, rho, ch, _x_at_r, w_at_r, term) = prove_gmask_einsum_par_ext4(
-            &x_folded,
-            &w_folded,
-            job.log_l,
-            job.log_d,
-            &z_l,
-            &gmask,
-            job.spec,
-            &mut tr,
+            &x_folded, &w_folded, job.log_l, job.log_d, &z_l, &gmask, job.spec, &mut tr,
         );
         tr.absorb_ext4(b"mm_wr", w_at_r);
         let r_l = &ch[..job.log_l];
@@ -5480,7 +5918,11 @@ fn prove_full_24l_qwen35_turn_inner(
             w_at_r,
         ));
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, job.spec, &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
 
         let eq_zl = eq_mle_ext4(&z_l, r_l);
         let scale_x = eq_zl.mul(w_at_r);
@@ -5501,7 +5943,10 @@ fn prove_full_24l_qwen35_turn_inner(
             }
             tr.absorb_ext4(b"mm_xmap", x_val);
             linear_point_evals.push(x_val);
-            online_claims[3].push(JointLinearClaimExt4 { terms: x_terms, rhs: x_val });
+            online_claims[3].push(JointLinearClaimExt4 {
+                terms: x_terms,
+                rhs: x_val,
+            });
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
                 Vec::new(),
                 gm_limb_ids,
@@ -5523,7 +5968,14 @@ fn prove_full_24l_qwen35_turn_inner(
             ));
         } else {
             let x_pt = concat_pts(&[r_d, &z_t, r_l]);
-            let xv = push_eval(job.x_mat, job.x_st, x_pt, &mut tr, &mut linear_point_evals, &mut online_claims);
+            let xv = push_eval(
+                job.x_mat,
+                job.x_st,
+                x_pt,
+                &mut tr,
+                &mut linear_point_evals,
+                &mut online_claims,
+            );
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
                 Vec::new(),
                 gm_limb_ids,
@@ -5533,7 +5985,10 @@ fn prove_full_24l_qwen35_turn_inner(
             ));
         }
         let _ = (job.out_div, job.j_bound, job.l_bound);
-        weight_matmul_proofs.push(SecPubWeightEinSumOpening { prf, weight_at_r: w_at_r });
+        weight_matmul_proofs.push(SecPubWeightEinSumOpening {
+            prf,
+            weight_at_r: w_at_r,
+        });
     }
 
     // `wm_gdn_conv` (`mu_s = 18` `(c: 13, g: 5)`, `kappa = 2` `kw`):
@@ -5542,8 +5997,22 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_t = tr.squeeze_ext4_vec(b"conv_zt", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"conv_zg", 5, true);
         let pt_ctg = concat_pts(&[&z_c, &z_t, &z_g]);
-        let _ = push_eval(0, M0_CONV_PRE, pt_ctg.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_CONV, pt_ctg, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_CONV_PRE,
+            pt_ctg.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_CONV,
+            pt_ctg,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let eq_t = build_eq_table_lsb_ext4(&z_t);
         let cg_len = 1usize << 18;
@@ -5560,11 +6029,11 @@ fn prove_full_24l_qwen35_turn_inner(
                     };
                     right_conv[cg + (kw << 18)] = Ext4::from_bb(bb_from_i64(wv));
                     let mut acc = Ext4::ZERO;
-                    for t in 0..FULL_24L_SEQ_LEN {
+                    for (t, &eq_val) in eq_t.iter().enumerate() {
                         if t + kw >= 3 {
                             let s = t + kw - 3;
                             let qv = m0[M0_QKV][c + (s << 13) + (g << 17)];
-                            acc = acc.add(eq_t[t].scale_bb(qv));
+                            acc = acc.add(eq_val.scale_bb(qv));
                         }
                     }
                     left_conv[cg + (kw << 18)] = acc;
@@ -5573,7 +6042,14 @@ fn prove_full_24l_qwen35_turn_inner(
         }
         let z_cg = concat_pts(&[&z_c, &z_g]);
         let (prf, rho, ch, l_at_r, w_at_r, term) = prove_gmask_einsum_par_ext4(
-            &left_conv, &right_conv, 18, 2, &z_cg, &gmask, "wm_gdn_conv", &mut tr,
+            &left_conv,
+            &right_conv,
+            18,
+            2,
+            &z_cg,
+            &gmask,
+            "wm_gdn_conv",
+            &mut tr,
         );
         tr.absorb_ext4(b"conv_wr", w_at_r);
         let (r_c, r_g, r_kw) = (&ch[..13], &ch[13..18], &ch[18..20]);
@@ -5600,9 +6076,16 @@ fn prove_full_24l_qwen35_turn_inner(
                 weight: wt,
             });
         }
-        online_claims[0].push(JointLinearClaimExt4 { terms: s_terms, rhs: l_at_r });
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: s_terms,
+            rhs: l_at_r,
+        });
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "wm_gdn_conv", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -5610,7 +6093,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z_cg, &ch[..18]).mul(l_at_r).mul(w_at_r)),
         ));
-        weight_matmul_proofs.push(SecPubWeightEinSumOpening { prf, weight_at_r: w_at_r });
+        weight_matmul_proofs.push(SecPubWeightEinSumOpening {
+            prf,
+            weight_at_r: w_at_r,
+        });
     }
 
     // `wm_gdn_sp_alog` (`SP_Q8[h, t, g] * EXP_ALOG[h, g] = 512 * G_EXP + REM_GEXP - 256 * act_gdn(g)`):
@@ -5619,8 +6105,22 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_t = tr.squeeze_ext4_vec(b"spa_zt", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"spa_zg", 5, true);
         let pt13 = concat_pts(&[&z_h, &z_t, &z_g]);
-        let _ = push_eval(0, M0_G_EXP, pt13.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_GEXP, pt13, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_G_EXP,
+            pt13.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_GEXP,
+            pt13,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let eq_t = build_eq_table_lsb_ext4(&z_t);
         let mut left_hg = vec![Ext4::ZERO; 512];
@@ -5639,13 +6139,35 @@ fn prove_full_24l_qwen35_turn_inner(
         }
         let z_hg = concat_pts(&[&z_h, &z_g]);
         let (prf, rho, ch, _sp_r, w_at_r, term) = prove_gmask_einsum_par_ext4(
-            &left_hg, &right_hg, 9, 0, &z_hg, &gmask, "wm_gdn_sp_alog", &mut tr,
+            &left_hg,
+            &right_hg,
+            9,
+            0,
+            &z_hg,
+            &gmask,
+            "wm_gdn_sp_alog",
+            &mut tr,
         );
         tr.absorb_ext4(b"spa_wr", w_at_r);
-        weight_claims.push(PublicWeightClaim24L::point_eval(WST_GDN_ALOG, ch.clone(), w_at_r));
-        let sp_ev = push_eval(0, M0_SP_Q8, concat_pts(&[&ch[..4], &z_t, &ch[4..9]]), &mut tr, &mut linear_point_evals, &mut online_claims);
+        weight_claims.push(PublicWeightClaim24L::point_eval(
+            WST_GDN_ALOG,
+            ch.clone(),
+            w_at_r,
+        ));
+        let sp_ev = push_eval(
+            0,
+            M0_SP_Q8,
+            concat_pts(&[&ch[..4], &z_t, &ch[4..9]]),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "wm_gdn_sp_alog", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -5653,7 +6175,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z_hg, &ch).mul(sp_ev).mul(w_at_r)),
         ));
-        weight_matmul_proofs.push(SecPubWeightEinSumOpening { prf, weight_at_r: w_at_r });
+        weight_matmul_proofs.push(SecPubWeightEinSumOpening {
+            prf,
+            weight_at_r: w_at_r,
+        });
     }
 
     // `wm_lm_head` (`X_FINAL[d, t=15, slot=24] * W_EMBED[d, v] = 512 * LOGITS[v] + REM_LOGITS[v] - 256 * act_vocab(v)`):
@@ -5661,9 +6186,30 @@ fn prove_full_24l_qwen35_turn_inner(
     // so `2 * sum_{b0, d_hi} eq([half], b0) X[b0, d_hi] W[b0, d_hi] == sum_{d=0}^{1023} X[d] W[d]`!!).
     {
         let z_v = tr.squeeze_ext4_vec(b"lmh_zv", 18, true);
-        let _ = push_eval(2, M2_LOGITS, z_v.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(2, M2_REM_LOGITS, z_v.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(2, M2_DIFF_ARGMAX, z_v.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            2,
+            M2_LOGITS,
+            z_v.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            2,
+            M2_REM_LOGITS,
+            z_v.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            2,
+            M2_DIFF_ARGMAX,
+            z_v.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         // Also open `LOGITS` at the exact Boolean hypercube point `bits(emitted_token_id)`!
         let vstar_bits = bits_to_ext4(wit.emitted_token_id as usize, 18);
         online_claims[2].push(JointLinearClaimExt4::point_eval(
@@ -5679,7 +6225,14 @@ fn prove_full_24l_qwen35_turn_inner(
             .collect();
         let z_half = [Ext4::from_bb(INV2_BB)];
         let (prf, rho, ch, _x_r, w_at_r, term) = prove_gmask_einsum_par_ext4(
-            &x_fin, &w_emb_folded, 1, 9, &z_half, &gmask, "wm_lm_head", &mut tr,
+            &x_fin,
+            &w_emb_folded,
+            1,
+            9,
+            &z_half,
+            &gmask,
+            "wm_lm_head",
+            &mut tr,
         );
         tr.absorb_ext4(b"lmh_wr", w_at_r);
         weight_claims.push(PublicWeightClaim24L::point_eval(
@@ -5688,9 +6241,20 @@ fn prove_full_24l_qwen35_turn_inner(
             w_at_r,
         ));
         let t15_s24 = concat_pts(&[&ch, &bits_to_ext4(15, 4), &bits_to_ext4(24, 6)]);
-        let x_ev = push_eval(3, RGRP_YOUT, t15_s24, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let x_ev = push_eval(
+            3,
+            RGRP_YOUT,
+            t15_s24,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "wm_lm_head", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -5698,7 +6262,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z_half, &ch[..1]).mul(x_ev).mul(w_at_r)),
         ));
-        weight_matmul_proofs.push(SecPubWeightEinSumOpening { prf, weight_at_r: w_at_r });
+        weight_matmul_proofs.push(SecPubWeightEinSumOpening {
+            prf,
+            weight_at_r: w_at_r,
+        });
     }
 
     // `wm_rms{0,1,2}_gain` (`UQ9 * W_GAIN = gain_div * YOUT + RY - (gain_div/2) * act`):
@@ -5707,22 +6274,41 @@ fn prove_full_24l_qwen35_turn_inner(
         let mf = cfg.log_d + cfg.m_row;
         let z_full = tr.squeeze_ext4_vec(b"rmsg_zf", mf, true);
         let b = cfg.grp * RGRP_STRIDE;
-        let _ = push_eval(3, b + RGRP_YOUT, z_full.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_RY, z_full.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            3,
+            b + RGRP_YOUT,
+            z_full.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            3,
+            b + RGRP_RY,
+            z_full.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let full_len = 1usize << mf;
-        let uq9_ext: Vec<Ext4> = m3[b + RGRP_UQ9].par_iter().map(|&v| Ext4::from_bb(v)).collect();
+        let uq9_ext: Vec<Ext4> = m3[b + RGRP_UQ9]
+            .par_iter()
+            .map(|&v| Ext4::from_bb(v))
+            .collect();
         let wgain_ext: Vec<Ext4> = (0..full_len)
             .into_par_iter()
             .map(|idx| {
                 let d = idx & ((1usize << cfg.log_d) - 1);
                 let row = idx >> cfg.log_d;
                 let w_slot = match g_idx {
-                    0 => row >> 4,                  // `t: 4, slot: 6` -> `slot`
-                    1 => row >> 8,                  // `h: 4, t: 4, gk: 6` -> `gk`
+                    0 => row >> 4,                       // `t: 4, slot: 6` -> `slot`
+                    1 => row >> 8,                       // `h: 4, t: 4, gk: 6` -> `gk`
                     _ => (row & 15) + ((row >> 8) << 4), // `hslot: 4, t: 4, q: 3` -> `hslot + (q << 4)`
                 };
-                Ext4::from_bb(bb_from_i64(weights.read_i64(cfg.wst_gain, d + (w_slot << cfg.log_d))))
+                Ext4::from_bb(bb_from_i64(
+                    weights.read_i64(cfg.wst_gain, d + (w_slot << cfg.log_d)),
+                ))
             })
             .collect();
         let (prf, rho, ch, _u_r, w_at_r, term) = prove_gmask_einsum_par_ext4(
@@ -5735,9 +6321,20 @@ fn prove_full_24l_qwen35_turn_inner(
             _ => concat_pts(&[&ch[..8], &ch[8..12], &ch[16..19]]),
         };
         weight_claims.push(PublicWeightClaim24L::point_eval(cfg.wst_gain, w_pt, w_at_r));
-        let u_ev = push_eval(3, b + RGRP_UQ9, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let u_ev = push_eval(
+            3,
+            b + RGRP_UQ9,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, spec, &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -5745,22 +6342,25 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z_full, &ch).mul(u_ev).mul(w_at_r)),
         ));
-        weight_matmul_proofs.push(SecPubWeightEinSumOpening { prf, weight_at_r: w_at_r });
+        weight_matmul_proofs.push(SecPubWeightEinSumOpening {
+            prf,
+            weight_at_r: w_at_r,
+        });
     }
 
     // Step C: `pub_ind_proofs` (public indicator zerochecks, RoPE, & `DIFF_NORM`):
     // Helper closure for `Wit * PubInd == claim`:
     let prove_wit_pub = |spec: &str,
-                             wit_mat: usize,
-                             wit_st: usize,
-                             wit_override: Option<Vec<Ext4>>,
-                             wit_pt_map: Option<fn(&[Ext4]) -> Vec<Ext4>>,
-                             pub_vec: Vec<Ext4>,
-                             z_s: Vec<Ext4>,
-                             tr_ref: &mut CShakeTranscript,
-                             lin_evs: &mut Vec<Ext4>,
-                             onl_cl: &mut [Vec<JointLinearClaimExt4>; 4],
-                             pi_out: &mut Vec<BlindedEinSumExt4Proof>| {
+                         wit_mat: usize,
+                         wit_st: usize,
+                         wit_override: Option<Vec<Ext4>>,
+                         wit_pt_map: Option<WitPtMapFn>,
+                         pub_vec: Vec<Ext4>,
+                         z_s: Vec<Ext4>,
+                         tr_ref: &mut CShakeTranscript,
+                         lin_evs: &mut Vec<Ext4>,
+                         onl_cl: &mut [Vec<JointLinearClaimExt4>; 4],
+                         pi_out: &mut Vec<BlindedEinSumExt4Proof>| {
         let m = z_s.len();
         let w_ext: Vec<Ext4> = wit_override.unwrap_or_else(|| {
             mats_all[wit_mat][wit_st]
@@ -5771,7 +6371,11 @@ fn prove_full_24l_qwen35_turn_inner(
         let (prf, rho, ch, w_at_r, p_at_r, term) =
             prove_gmask_einsum_par_ext4(&w_ext, &pub_vec, m, 0, &z_s, &gmask, spec, tr_ref);
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, spec, &ch);
-        onl_cl[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        onl_cl[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         let scale = eq_mle_ext4(&z_s, &ch).mul(p_at_r);
         let mapped_pt = wit_pt_map.map_or_else(|| ch.clone(), |f| f(&ch));
         if wit_mat == 2 && wit_st < 999 {
@@ -5835,17 +6439,67 @@ fn prove_full_24l_qwen35_turn_inner(
         }
     }
     let z_g1 = tr.squeeze_ext4_vec(b"pi_zg1", 17, true);
-    prove_wit_pub("pi_gdn_gamma_zc", 0, M0_GAMMA, None, None, bad_gamma, z_g1, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+    prove_wit_pub(
+        "pi_gdn_gamma_zc",
+        0,
+        M0_GAMMA,
+        None,
+        None,
+        bad_gamma,
+        z_g1,
+        &mut tr,
+        &mut linear_point_evals,
+        &mut online_claims,
+        &mut pub_ind_proofs,
+    );
     let z_g2 = tr.squeeze_ext4_vec(b"pi_zg2", 17, true);
-    prove_wit_pub("pi_gdn_lwy_slt", 0, M0_L_WY, None, None, bad_lwy, z_g2, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+    prove_wit_pub(
+        "pi_gdn_lwy_slt",
+        0,
+        M0_L_WY,
+        None,
+        None,
+        bad_lwy,
+        z_g2,
+        &mut tr,
+        &mut linear_point_evals,
+        &mut online_claims,
+        &mut pub_ind_proofs,
+    );
     let z_g3 = tr.squeeze_ext4_vec(b"pi_zg3", 17, true);
-    prove_wit_pub("pi_gdn_awy_ut", 0, M0_A_WY, None, None, bad_awy, z_g3, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+    prove_wit_pub(
+        "pi_gdn_awy_ut",
+        0,
+        M0_A_WY,
+        None,
+        None,
+        bad_awy,
+        z_g3,
+        &mut tr,
+        &mut linear_point_evals,
+        &mut online_claims,
+        &mut pub_ind_proofs,
+    );
 
     // GQA Q-RoPE (`[dh: 256, hq: 8, t: 16, q: 8]` = `18` vars) & K-RoPE (`[dh: 256, hkv: 2, t: 16, q: 8]` = `16` vars):
     {
         let z_rq = tr.squeeze_ext4_vec(b"rope_zq", 18, true);
-        let _ = push_eval(1, M1_QH_R, z_rq.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_REM_ROPE_Q, z_rq.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_QH_R,
+            z_rq.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_REM_ROPE_Q,
+            z_rq.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let b2 = 2 * RGRP_STRIDE;
         let qnorm_18: Vec<Ext4> = (0..(1 << 18))
             .map(|idx| {
@@ -5856,9 +6510,7 @@ fn prove_full_24l_qwen35_turn_inner(
                 Ext4::from_bb(m3[b2 + RGRP_YOUT][dh + (hq << 8) + (t << 12) + (q << 16)])
             })
             .collect();
-        let qswap_18: Vec<Ext4> = (0..(1 << 18))
-            .map(|idx| qnorm_18[idx ^ 32])
-            .collect();
+        let qswap_18: Vec<Ext4> = (0..(1 << 18)).map(|idx| qnorm_18[idx ^ 32]).collect();
         let rdiag_18: Vec<Ext4> = (0..(1 << 18))
             .map(|idx| {
                 let dh = idx & 255;
@@ -5892,7 +6544,13 @@ fn prove_full_24l_qwen35_turn_inner(
         tr.absorb_ext4(b"rope_q_cd", cl_qd);
         linear_point_evals.push(cl_qd);
         fn map_q18_to_rms(ch: &[Ext4]) -> Vec<Ext4> {
-            concat_pts(&[&ch[..8], &ch[8..11], &[Ext4::ZERO], &ch[11..15], &ch[15..18]])
+            concat_pts(&[
+                &ch[..8],
+                &ch[8..11],
+                &[Ext4::ZERO],
+                &ch[11..15],
+                &ch[15..18],
+            ])
         }
         fn map_q18_swap_to_rms(ch: &[Ext4]) -> Vec<Ext4> {
             concat_pts(&[
@@ -5905,13 +6563,51 @@ fn prove_full_24l_qwen35_turn_inner(
                 &ch[15..18],
             ])
         }
-        prove_wit_pub("pi_gqa_rope_q_diag", 3, b2 + RGRP_YOUT, Some(qnorm_18), Some(map_q18_to_rms), rdiag_18, z_rq.clone(), &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
-        prove_wit_pub("pi_gqa_rope_q_cross", 3, b2 + RGRP_YOUT, Some(qswap_18), Some(map_q18_swap_to_rms), rcross_18, z_rq, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        prove_wit_pub(
+            "pi_gqa_rope_q_diag",
+            3,
+            b2 + RGRP_YOUT,
+            Some(qnorm_18),
+            Some(map_q18_to_rms),
+            rdiag_18,
+            z_rq.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
+        prove_wit_pub(
+            "pi_gqa_rope_q_cross",
+            3,
+            b2 + RGRP_YOUT,
+            Some(qswap_18),
+            Some(map_q18_swap_to_rms),
+            rcross_18,
+            z_rq,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
 
         // K-RoPE (`16` vars `[dh: 256, hkv: 2, t: 16, q: 8]` -> `hslot = 8 + hkv = [hkv, 0, 0, 1]`!):
         let z_rk = tr.squeeze_ext4_vec(b"rope_zk", 16, true);
-        let _ = push_eval(1, M1_KH_R, z_rk.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_REM_ROPE_K, z_rk.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_KH_R,
+            z_rk.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_REM_ROPE_K,
+            z_rk.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let knorm_16: Vec<Ext4> = (0..(1 << 16))
             .map(|idx| {
                 let dh = idx & 255;
@@ -5971,8 +6667,32 @@ fn prove_full_24l_qwen35_turn_inner(
                 &ch[13..16],
             ])
         }
-        prove_wit_pub("pi_gqa_rope_k_diag", 3, b2 + RGRP_YOUT, Some(knorm_16), Some(map_k16_to_rms), rdiag_16, z_rk.clone(), &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
-        prove_wit_pub("pi_gqa_rope_k_cross", 3, b2 + RGRP_YOUT, Some(kswap_16), Some(map_k16_swap_to_rms), rcross_16, z_rk, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        prove_wit_pub(
+            "pi_gqa_rope_k_diag",
+            3,
+            b2 + RGRP_YOUT,
+            Some(knorm_16),
+            Some(map_k16_to_rms),
+            rdiag_16,
+            z_rk.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
+        prove_wit_pub(
+            "pi_gqa_rope_k_cross",
+            3,
+            b2 + RGRP_YOUT,
+            Some(kswap_16),
+            Some(map_k16_swap_to_rms),
+            rcross_16,
+            z_rk,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
     }
 
     // GQA 14-bit causal indicator checks `[tj: 16, ti: 16, hq: 8, q: 8]`:
@@ -5994,53 +6714,162 @@ fn prove_full_24l_qwen35_turn_inner(
             }
         }
         let zc1 = tr.squeeze_ext4_vec(b"gqa_zc1", 14, true);
-        prove_wit_pub("pi_gqa_sc_caus", 1, M1_SC_Q8, None, None, non_caus.clone(), zc1, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        prove_wit_pub(
+            "pi_gqa_sc_caus",
+            1,
+            M1_SC_Q8,
+            None,
+            None,
+            non_caus.clone(),
+            zc1,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
         let zc2 = tr.squeeze_ext4_vec(b"gqa_zc2", 14, true);
-        prove_wit_pub("pi_gqa_sel_caus", 1, M1_SEL_MAX, None, None, non_caus.clone(), zc2, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        prove_wit_pub(
+            "pi_gqa_sel_caus",
+            1,
+            M1_SEL_MAX,
+            None,
+            None,
+            non_caus.clone(),
+            zc2,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
 
         // `I_caus * (M_MAX - SC_Q8) == U_SM`:
         let zc3 = tr.squeeze_ext4_vec(b"gqa_zc3", 14, true);
-        let _ = push_eval(1, M1_U_SM, zc3.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_U_SM,
+            zc3.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let diff_msc: Vec<Ext4> = (0..(1 << 14))
             .map(|idx| {
                 let m_v = m1[M1_M_MAX][idx >> 4];
                 Ext4::from_bb(bsub(m_v, m1[M1_SC_Q8][idx]))
             })
             .collect();
-        let ch3 = prove_wit_pub("pi_gqa_usm_caus", 1, 999, Some(diff_msc), None, caus_ind.clone(), zc3, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        let ch3 = prove_wit_pub(
+            "pi_gqa_usm_caus",
+            1,
+            999,
+            Some(diff_msc),
+            None,
+            caus_ind.clone(),
+            zc3,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
         let wr3 = *linear_point_evals.last().unwrap();
         online_claims[1].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M1_M_MAX, point: ch3[4..].to_vec(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: M1_SC_Q8, point: ch3, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M1_M_MAX,
+                    point: ch3[4..].to_vec(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M1_SC_Q8,
+                    point: ch3,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: wr3,
         });
 
         // `I_caus * E_SM_RAW == E_SM`:
         let zc4 = tr.squeeze_ext4_vec(b"gqa_zc4", 14, true);
-        let _ = push_eval(1, M1_E_SM, zc4.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        prove_wit_pub("pi_gqa_esm_caus", 1, M1_E_SM_RAW, None, None, caus_ind.clone(), zc4, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        let _ = push_eval(
+            1,
+            M1_E_SM,
+            zc4.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        prove_wit_pub(
+            "pi_gqa_esm_caus",
+            1,
+            M1_E_SM_RAW,
+            None,
+            None,
+            caus_ind.clone(),
+            zc4,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
 
         // `(1 - I_caus) * P_SM == 0`:
         let zc5 = tr.squeeze_ext4_vec(b"gqa_zc5", 14, true);
-        prove_wit_pub("pi_gqa_psm_caus", 1, M1_P_SM, None, None, non_caus, zc5, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        prove_wit_pub(
+            "pi_gqa_psm_caus",
+            1,
+            M1_P_SM,
+            None,
+            None,
+            non_caus,
+            zc5,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
 
         // `I_caus * (Z_SM - 1 - REM_PSM) == DIFF_PSM`:
         let zc6 = tr.squeeze_ext4_vec(b"gqa_zc6", 14, true);
-        let _ = push_eval(1, M1_DIFF_PSM, zc6.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_DIFF_PSM,
+            zc6.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let diff_zrem: Vec<Ext4> = (0..(1 << 14))
             .map(|idx| {
                 let zv = m1[M1_Z_SM][idx >> 4];
                 Ext4::from_bb(bsub(bsub(zv, 1), m1[M1_REM_PSM][idx]))
             })
             .collect();
-        let ch6 = prove_wit_pub("pi_gqa_dpsm_caus", 1, 999, Some(diff_zrem), None, caus_ind, zc6, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        let ch6 = prove_wit_pub(
+            "pi_gqa_dpsm_caus",
+            1,
+            999,
+            Some(diff_zrem),
+            None,
+            caus_ind,
+            zc6,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
         let wr6 = *linear_point_evals.last().unwrap();
         online_claims[1].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M1_Z_SM, point: ch6[4..].to_vec(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: M1_REM_PSM, point: ch6, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M1_Z_SM,
+                    point: ch6[4..].to_vec(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M1_REM_PSM,
+                    point: ch6,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: wr6.add(Ext4::ONE),
         });
@@ -6052,7 +6881,14 @@ fn prove_full_24l_qwen35_turn_inner(
         let b = cfg.grp * RGRP_STRIDE;
         let mr = cfg.m_row;
         let zr = tr.squeeze_ext4_vec(b"rmsdn_zr", mr, true);
-        let _ = push_eval(3, b + RGRP_DIFF_NORM, zr.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            3,
+            b + RGRP_DIFF_NORM,
+            zr.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let act_vec: Vec<Ext4> = (0..(1usize << mr))
             .map(|row| {
                 let active = match g_idx {
@@ -6063,7 +6899,11 @@ fn prove_full_24l_qwen35_turn_inner(
                     1 => (row >> 8) < 54,
                     _ => (row & 15) < 10 && (row >> 8) < 6,
                 };
-                if active { Ext4::ONE } else { Ext4::ZERO }
+                if active {
+                    Ext4::ONE
+                } else {
+                    Ext4::ZERO
+                }
             })
             .collect();
         let diff_p4: Vec<Ext4> = (0..(1usize << mr))
@@ -6073,12 +6913,32 @@ fn prove_full_24l_qwen35_turn_inner(
                 Ext4::from_bb(bsub(bsub(p4, 1), rn))
             })
             .collect();
-        let chr = prove_wit_pub(spec, 3, 999, Some(diff_p4), None, act_vec, zr, &mut tr, &mut linear_point_evals, &mut online_claims, &mut pub_ind_proofs);
+        let chr = prove_wit_pub(
+            spec,
+            3,
+            999,
+            Some(diff_p4),
+            None,
+            act_vec,
+            zr,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+            &mut pub_ind_proofs,
+        );
         let wr = *linear_point_evals.last().unwrap();
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_POW4, point: chr.clone(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RNORM, point: chr, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_POW4,
+                    point: chr.clone(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RNORM,
+                    point: chr,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: wr.add(Ext4::ONE),
         });
@@ -6088,8 +6948,22 @@ fn prove_full_24l_qwen35_turn_inner(
     // 1. `ss_gdn_gamma_rec`: `GAMMA_PREV[h, i, j, g] * ALPHA_Q12[h, i, g] == 4096 * (GAMMA - 512 * I_diag) + REM_GAMMA - 2048 * I_gt`
     {
         let z17 = tr.squeeze_ext4_vec(b"gmrec_z", 17, true);
-        let _ = push_eval(0, M0_GAMMA, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_GAMMA, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_GAMMA,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_GAMMA,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let mut g_prev = vec![Ext4::ZERO; 1 << 17];
         let mut a_lift = vec![Ext4::ZERO; 1 << 17];
         for g in 0..GDN_PAD {
@@ -6099,14 +6973,23 @@ fn prove_full_24l_qwen35_turn_inner(
                         let idx = h + (i << 4) + (j << 8) + (g << 12);
                         a_lift[idx] = Ext4::from_bb(m0[M0_ALPHA_Q12][h + (i << 4) + (g << 8)]);
                         if i > j {
-                            g_prev[idx] = Ext4::from_bb(m0[M0_GAMMA][h + ((i - 1) << 4) + (j << 8) + (g << 12)]);
+                            g_prev[idx] = Ext4::from_bb(
+                                m0[M0_GAMMA][h + ((i - 1) << 4) + (j << 8) + (g << 12)],
+                            );
                         }
                     }
                 }
             }
         }
         let (prf, rho, ch, gp_at_r, al_at_r, term) = prove_gmask_einsum_par_ext4(
-            &g_prev, &a_lift, 17, 0, &z17, &gmask, "ss_gdn_gamma_rec", &mut tr,
+            &g_prev,
+            &a_lift,
+            17,
+            0,
+            &z17,
+            &gmask,
+            "ss_gdn_gamma_rec",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", gp_at_r);
         let _ = al_at_r;
@@ -6114,20 +6997,39 @@ fn prove_full_24l_qwen35_turn_inner(
         let eq_i = build_eq_table_lsb_ext4(&ch[4..8]);
         let eq_j = build_eq_table_lsb_ext4(&ch[8..12]);
         let mut terms_gp = Vec::with_capacity(120);
-        for j in 0..16 {
+        for (j, &eq_j_val) in eq_j.iter().enumerate() {
             for ip in j..15 {
-                let wt = eq_i[ip + 1].mul(eq_j[j]);
+                let wt = eq_i[ip + 1].mul(eq_j_val);
                 terms_gp.push(LinearTermExt4::PointEval {
                     subtable: M0_GAMMA,
-                    point: concat_pts(&[&ch[..4], &bits_to_ext4(ip, 4), &bits_to_ext4(j, 4), &ch[12..17]]),
+                    point: concat_pts(&[
+                        &ch[..4],
+                        &bits_to_ext4(ip, 4),
+                        &bits_to_ext4(j, 4),
+                        &ch[12..17],
+                    ]),
                     weight: wt,
                 });
             }
         }
-        online_claims[0].push(JointLinearClaimExt4 { terms: terms_gp, rhs: gp_at_r });
-        let al_ev = push_eval(0, M0_ALPHA_Q12, concat_pts(&[&ch[..8], &ch[12..17]]), &mut tr, &mut linear_point_evals, &mut online_claims);
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: terms_gp,
+            rhs: gp_at_r,
+        });
+        let al_ev = push_eval(
+            0,
+            M0_ALPHA_Q12,
+            concat_pts(&[&ch[..8], &ch[12..17]]),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_gamma_rec", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -6135,7 +7037,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z17, &ch).mul(gp_at_r).mul(al_ev)),
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: gp_at_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: gp_at_r,
+        });
     }
 
     // 2. `ss_gdn_dkk` (`k_n[i] @ k_n[j] = 512 * DKK + REM_DKK - 256 * act_gdn(g)`, `mu_s = 9` `(h:4, g:5)`, `kappa = 7` `d`):
@@ -6145,8 +7050,22 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_j = tr.squeeze_ext4_vec(b"dkk_zj", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"dkk_zg", 5, true);
         let pt17 = concat_pts(&[&z_h, &z_i, &z_j, &z_g]);
-        let _ = push_eval(0, M0_DKK, pt17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_DKK, pt17, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_DKK,
+            pt17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_DKK,
+            pt17,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let eq_i = build_eq_table_lsb_ext4(&z_i);
         let eq_j = build_eq_table_lsb_ext4(&z_j);
@@ -6168,40 +7087,78 @@ fn prove_full_24l_qwen35_turn_inner(
             }
         }
         let z_hg = concat_pts(&[&z_h, &z_g]);
-        let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &kn_i, &kn_j, 9, 7, &z_hg, &gmask, "ss_gdn_dkk", &mut tr,
-        );
+        let (prf, rho, ch, l_r, _r_r, term) =
+            prove_gmask_einsum_par_ext4(&kn_i, &kn_j, 9, 7, &z_hg, &gmask, "ss_gdn_dkk", &mut tr);
         tr.absorb_ext4(b"ss_lr", l_r);
         let (r_h, r_g, r_d) = (&ch[..4], &ch[4..9], &ch[9..16]);
         let eq_rg = build_eq_table_lsb_ext4(r_g);
         let mut t_i = Vec::with_capacity(18);
         let mut t_j = Vec::with_capacity(18);
         let mut r_val = Ext4::ZERO;
-        for g in 0..NUM_GDN_LAYERS {
+        for (g, &eq_rg_g) in eq_rg[..NUM_GDN_LAYERS].iter().enumerate() {
             let gk_bits = bits_to_ext4(3 * g + 1, 6);
             let pti = concat_pts(&[r_d, r_h, &z_i, &gk_bits]);
             let ptj = concat_pts(&[r_d, r_h, &z_j, &gk_bits]);
-            r_val = r_val.add(eq_rg[g].mul(mle_eval_bb_at_ext4(&m3[b1 + RGRP_YOUT], &ptj)));
-            t_i.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: pti, weight: eq_rg[g] });
-            t_j.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: ptj, weight: eq_rg[g] });
+            r_val = r_val.add(eq_rg_g.mul(mle_eval_bb_at_ext4(&m3[b1 + RGRP_YOUT], &ptj)));
+            t_i.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: pti,
+                weight: eq_rg_g,
+            });
+            t_j.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: ptj,
+                weight: eq_rg_g,
+            });
         }
         tr.absorb_ext4(b"dkk_rr", r_val);
         linear_point_evals.push(r_val);
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_i, rhs: l_r });
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_j, rhs: r_val });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_i,
+            rhs: l_r,
+        });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_j,
+            rhs: r_val,
+        });
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_dkk", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(l_r).mul(r_val)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(l_r).mul(r_val)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 3. `ss_gdn_bg` (`BETA_Q10[h, i, g] * GAMMA[h, i, j, g] = 1024 * BG + REM_BG - 512 * act_gdn(g)`):
     {
         let z17 = tr.squeeze_ext4_vec(b"bg_z", 17, true);
-        let _ = push_eval(0, M0_BG, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_BG, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_BG,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_BG,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let b_lift: Vec<Ext4> = (0..(1 << 17))
             .map(|idx| {
                 let h = idx & 15;
@@ -6212,25 +7169,71 @@ fn prove_full_24l_qwen35_turn_inner(
             .collect();
         let gm_ext: Vec<Ext4> = m0[M0_GAMMA].par_iter().map(|&v| Ext4::from_bb(v)).collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &b_lift, &gm_ext, 17, 0, &z17, &gmask, "ss_gdn_bg", &mut tr,
+            &b_lift,
+            &gm_ext,
+            17,
+            0,
+            &z17,
+            &gmask,
+            "ss_gdn_bg",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
-        let b_ev = push_eval(0, M0_BETA_Q10, concat_pts(&[&ch[..8], &ch[12..17]]), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let b_ev = push_eval(
+            0,
+            M0_BETA_Q10,
+            concat_pts(&[&ch[..8], &ch[12..17]]),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let _ = b_ev;
-        let gm_ev = push_eval(0, M0_GAMMA, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let gm_ev = push_eval(
+            0,
+            M0_GAMMA,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_bg", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z17, &ch).mul(l_r).mul(gm_ev)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z17, &ch).mul(l_r).mul(gm_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 4. `ss_gdn_lwy` (`(I_gt * DKK) * BG = 512 * L_WY + REM_LWY - 256 * I_gt`):
     {
         let z17 = tr.squeeze_ext4_vec(b"lwy_z", 17, true);
-        let _ = push_eval(0, M0_L_WY, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_LWY, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_L_WY,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_LWY,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let dkk_gt: Vec<Ext4> = (0..(1 << 17))
             .map(|idx| {
                 let i = (idx >> 4) & 15;
@@ -6244,29 +7247,62 @@ fn prove_full_24l_qwen35_turn_inner(
             .collect();
         let bg_ext: Vec<Ext4> = m0[M0_BG].par_iter().map(|&v| Ext4::from_bb(v)).collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &dkk_gt, &bg_ext, 17, 0, &z17, &gmask, "ss_gdn_lwy", &mut tr,
+            &dkk_gt,
+            &bg_ext,
+            17,
+            0,
+            &z17,
+            &gmask,
+            "ss_gdn_lwy",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
         let eq_i = build_eq_table_lsb_ext4(&ch[4..8]);
         let eq_j = build_eq_table_lsb_ext4(&ch[8..12]);
         let mut dkk_terms = Vec::with_capacity(120);
-        for j in 0..16 {
-            for i in (j + 1)..16 {
+        for (j, &eq_j_val) in eq_j.iter().enumerate() {
+            for (i, &eq_i_val) in eq_i.iter().enumerate().skip(j + 1) {
                 dkk_terms.push(LinearTermExt4::PointEval {
                     subtable: M0_DKK,
-                    point: concat_pts(&[&ch[..4], &bits_to_ext4(i, 4), &bits_to_ext4(j, 4), &ch[12..17]]),
-                    weight: eq_i[i].mul(eq_j[j]),
+                    point: concat_pts(&[
+                        &ch[..4],
+                        &bits_to_ext4(i, 4),
+                        &bits_to_ext4(j, 4),
+                        &ch[12..17],
+                    ]),
+                    weight: eq_i_val.mul(eq_j_val),
                 });
             }
         }
-        online_claims[0].push(JointLinearClaimExt4 { terms: dkk_terms, rhs: l_r });
-        let bg_ev = push_eval(0, M0_BG, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: dkk_terms,
+            rhs: l_r,
+        });
+        let bg_ev = push_eval(
+            0,
+            M0_BG,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_lwy", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z17, &ch).mul(l_r).mul(bg_ev)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z17, &ch).mul(l_r).mul(bg_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 5. `ss_gdn_dqk` (`q_n[i] @ k_n[j] = 724 * DQK + REM_DQK - 362 * act_gdn(g)`):
@@ -6276,8 +7312,22 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_j = tr.squeeze_ext4_vec(b"dqk_zj", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"dqk_zg", 5, true);
         let pt17 = concat_pts(&[&z_h, &z_i, &z_j, &z_g]);
-        let _ = push_eval(0, M0_DQK, pt17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_DQK, pt17, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_DQK,
+            pt17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_DQK,
+            pt17,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let eq_i = build_eq_table_lsb_ext4(&z_i);
         let eq_j = build_eq_table_lsb_ext4(&z_j);
@@ -6291,67 +7341,153 @@ fn prove_full_24l_qwen35_turn_inner(
                     let bq = (h + (t << 4) + ((3 * g) << 8)) << 7;
                     let bk = (h + (t << 4) + ((3 * g + 1) << 8)) << 7;
                     for d in 0..128 {
-                        qn_i[hg + (d << 9)] = qn_i[hg + (d << 9)].add(eq_i[t].scale_bb(m3[b1 + RGRP_YOUT][bq + d]));
-                        kn_j[hg + (d << 9)] = kn_j[hg + (d << 9)].add(eq_j[t].scale_bb(m3[b1 + RGRP_YOUT][bk + d]));
+                        qn_i[hg + (d << 9)] =
+                            qn_i[hg + (d << 9)].add(eq_i[t].scale_bb(m3[b1 + RGRP_YOUT][bq + d]));
+                        kn_j[hg + (d << 9)] =
+                            kn_j[hg + (d << 9)].add(eq_j[t].scale_bb(m3[b1 + RGRP_YOUT][bk + d]));
                     }
                 }
             }
         }
         let z_hg = concat_pts(&[&z_h, &z_g]);
-        let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &qn_i, &kn_j, 9, 7, &z_hg, &gmask, "ss_gdn_dqk", &mut tr,
-        );
+        let (prf, rho, ch, l_r, _r_r, term) =
+            prove_gmask_einsum_par_ext4(&qn_i, &kn_j, 9, 7, &z_hg, &gmask, "ss_gdn_dqk", &mut tr);
         tr.absorb_ext4(b"ss_lr", l_r);
         let (r_h, r_g, r_d) = (&ch[..4], &ch[4..9], &ch[9..16]);
         let eq_rg = build_eq_table_lsb_ext4(r_g);
         let mut t_i = Vec::with_capacity(18);
         let mut t_j = Vec::with_capacity(18);
         let mut r_val = Ext4::ZERO;
-        for g in 0..NUM_GDN_LAYERS {
+        for (g, &eq_rg_g) in eq_rg[..NUM_GDN_LAYERS].iter().enumerate() {
             let pti = concat_pts(&[r_d, r_h, &z_i, &bits_to_ext4(3 * g, 6)]);
             let ptj = concat_pts(&[r_d, r_h, &z_j, &bits_to_ext4(3 * g + 1, 6)]);
-            r_val = r_val.add(eq_rg[g].mul(mle_eval_bb_at_ext4(&m3[b1 + RGRP_YOUT], &ptj)));
-            t_i.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: pti, weight: eq_rg[g] });
-            t_j.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: ptj, weight: eq_rg[g] });
+            r_val = r_val.add(eq_rg_g.mul(mle_eval_bb_at_ext4(&m3[b1 + RGRP_YOUT], &ptj)));
+            t_i.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: pti,
+                weight: eq_rg_g,
+            });
+            t_j.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: ptj,
+                weight: eq_rg_g,
+            });
         }
         tr.absorb_ext4(b"dqk_rr", r_val);
         linear_point_evals.push(r_val);
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_i, rhs: l_r });
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_j, rhs: r_val });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_i,
+            rhs: l_r,
+        });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_j,
+            rhs: r_val,
+        });
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_dqk", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(l_r).mul(r_val)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(l_r).mul(r_val)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 6. `ss_gdn_awy` (`DQK * GAMMA = 512 * A_WY + REM_AWY - 256 * I_ge`; `GAMMA == 0` outside `I_ge` via `pi_gdn_gamma_zc`!):
     {
         let z17 = tr.squeeze_ext4_vec(b"awy_z", 17, true);
-        let _ = push_eval(0, M0_A_WY, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_AWY, z17.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_A_WY,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_AWY,
+            z17.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let dqk_ext: Vec<Ext4> = m0[M0_DQK].par_iter().map(|&v| Ext4::from_bb(v)).collect();
         let gm_ext: Vec<Ext4> = m0[M0_GAMMA].par_iter().map(|&v| Ext4::from_bb(v)).collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &dqk_ext, &gm_ext, 17, 0, &z17, &gmask, "ss_gdn_awy", &mut tr,
+            &dqk_ext,
+            &gm_ext,
+            17,
+            0,
+            &z17,
+            &gmask,
+            "ss_gdn_awy",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
-        let _ = push_eval(0, M0_DQK, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let gm_ev = push_eval(0, M0_GAMMA, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_DQK,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let gm_ev = push_eval(
+            0,
+            M0_GAMMA,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_awy", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z17, &ch).mul(l_r).mul(gm_ev)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z17, &ch).mul(l_r).mul(gm_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 7. `ss_gdn_vbeta` (`BETA_Q10[h, t, g] * V_R[d, h, t, g] = 512 * V_BETA + REM_VBETA - 256 * act_gdn(g)`):
     {
         let z20 = tr.squeeze_ext4_vec(b"vb_z", 20, true);
-        let _ = push_eval(0, M0_V_BETA, z20.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_VBETA, z20.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_V_BETA,
+            z20.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_VBETA,
+            z20.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let b_lift: Vec<Ext4> = (0..(1 << 20))
             .map(|idx| {
                 let h = (idx >> 7) & 15;
@@ -6372,7 +7508,14 @@ fn prove_full_24l_qwen35_turn_inner(
             })
             .collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &b_lift, &vr_ext, 20, 0, &z20, &gmask, "ss_gdn_vbeta", &mut tr,
+            &b_lift,
+            &vr_ext,
+            20,
+            0,
+            &z20,
+            &gmask,
+            "ss_gdn_vbeta",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
         let eq_rg = build_eq_table_lsb_ext4(&ch[15..20]);
@@ -6383,15 +7526,36 @@ fn prove_full_24l_qwen35_turn_inner(
                 weight: eq_rg[g],
             })
             .collect();
-        online_claims[0].push(JointLinearClaimExt4 { terms: b_terms, rhs: l_r });
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: b_terms,
+            rhs: l_r,
+        });
         let vr_pt = concat_pts(&[&ch[..11], &[Ext4::ZERO, Ext4::ONE], &ch[11..20]]);
-        let vr_ev = push_eval(0, M0_CONV_SILU, vr_pt, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let vr_ev = push_eval(
+            0,
+            M0_CONV_SILU,
+            vr_pt,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_vbeta", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z20, &ch).mul(l_r).mul(vr_ev)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z20, &ch).mul(l_r).mul(vr_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 8 & 9: `ss_gdn_uwy_solve` (`L_WY @ U_WY = 512*(V_BETA - U_WY) + 256*act_gdn - REM_UWY`) & `ss_gdn_ywy_read` (`A_WY @ U_WY = 512*Y_WY + REM_YWY - 256*act_gdn`):
@@ -6405,10 +7569,31 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_g = tr.squeeze_ext4_vec(b"wy_zg", 5, true);
         let pt20 = concat_pts(&[&z_d, &z_h, &z_i, &z_g]);
         if is_solve {
-            let _ = push_eval(0, M0_V_BETA, pt20.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+            let _ = push_eval(
+                0,
+                M0_V_BETA,
+                pt20.clone(),
+                &mut tr,
+                &mut linear_point_evals,
+                &mut online_claims,
+            );
         }
-        let _ = push_eval(0, out_st, pt20.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, rem_st, pt20, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            out_st,
+            pt20.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            rem_st,
+            pt20,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let eq_i = build_eq_table_lsb_ext4(&z_i);
         let eq_d = build_eq_table_lsb_ext4(&z_d);
@@ -6420,7 +7605,8 @@ fn prove_full_24l_qwen35_turn_inner(
                 for j in 0..16 {
                     let mut sl = Ext4::ZERO;
                     for i in 0..16 {
-                        sl = sl.add(eq_i[i].scale_bb(m0[mat_st][h + (i << 4) + (j << 8) + (g << 12)]));
+                        sl = sl
+                            .add(eq_i[i].scale_bb(m0[mat_st][h + (i << 4) + (j << 8) + (g << 12)]));
                     }
                     left_hgj[hg + (j << 9)] = sl;
                     let mut sr = Ext4::ZERO;
@@ -6433,9 +7619,8 @@ fn prove_full_24l_qwen35_turn_inner(
             }
         }
         let z_hg = concat_pts(&[&z_h, &z_g]);
-        let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &left_hgj, &right_hgj, 9, 4, &z_hg, &gmask, spec, &mut tr,
-        );
+        let (prf, rho, ch, l_r, _r_r, term) =
+            prove_gmask_einsum_par_ext4(&left_hgj, &right_hgj, 9, 4, &z_hg, &gmask, spec, &mut tr);
         tr.absorb_ext4(b"ss_lr", l_r);
         let (r_h, r_g, r_j) = (&ch[..4], &ch[4..9], &ch[9..13]);
         online_claims[0].push(JointLinearClaimExt4::point_eval(
@@ -6443,20 +7628,52 @@ fn prove_full_24l_qwen35_turn_inner(
             concat_pts(&[r_h, &z_i, r_j, r_g]),
             l_r,
         ));
-        let u_ev = push_eval(0, M0_U_WY, concat_pts(&[&z_d, r_h, r_j, r_g]), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let u_ev = push_eval(
+            0,
+            M0_U_WY,
+            concat_pts(&[&z_d, r_h, r_j, r_g]),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, spec, &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(l_r).mul(u_ev)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(l_r).mul(u_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 10. `ss_gdn_gated` (`Y_NORM * Z_SILU = 256 * GATED + REM_GATED - 128 * act_gdn(g)`):
     {
         let z20 = tr.squeeze_ext4_vec(b"gg_z", 20, true);
-        let _ = push_eval(0, M0_GATED, z20.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_REM_GATED, z20.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_GATED,
+            z20.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_REM_GATED,
+            z20.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let b1 = RGRP_STRIDE;
         let yn_20: Vec<Ext4> = (0..(1 << 20))
             .map(|idx| {
@@ -6469,28 +7686,59 @@ fn prove_full_24l_qwen35_turn_inner(
                 }
             })
             .collect();
-        let zs_20: Vec<Ext4> = m0[M0_Z_SILU].par_iter().map(|&v| Ext4::from_bb(v)).collect();
+        let zs_20: Vec<Ext4> = m0[M0_Z_SILU]
+            .par_iter()
+            .map(|&v| Ext4::from_bb(v))
+            .collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &yn_20, &zs_20, 20, 0, &z20, &gmask, "ss_gdn_gated", &mut tr,
+            &yn_20,
+            &zs_20,
+            20,
+            0,
+            &z20,
+            &gmask,
+            "ss_gdn_gated",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
         let eq_rg = build_eq_table_lsb_ext4(&ch[15..20]);
         let mut yn_terms = Vec::with_capacity(18);
-        for g in 0..NUM_GDN_LAYERS {
+        for (g, &eq_rg_g) in eq_rg[..NUM_GDN_LAYERS].iter().enumerate() {
             yn_terms.push(LinearTermExt4::PointEval {
                 subtable: b1 + RGRP_YOUT,
                 point: concat_pts(&[&ch[..15], &bits_to_ext4(3 * g + 2, 6)]),
-                weight: eq_rg[g],
+                weight: eq_rg_g,
             });
         }
-        online_claims[3].push(JointLinearClaimExt4 { terms: yn_terms, rhs: l_r });
-        let zs_ev = push_eval(0, M0_Z_SILU, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: yn_terms,
+            rhs: l_r,
+        });
+        let zs_ev = push_eval(
+            0,
+            M0_Z_SILU,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_gated", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z20, &ch).mul(l_r).mul(zs_ev)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z20, &ch).mul(l_r).mul(zs_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 11. `ss_gqa_qk`: `(I_caus(tj, ti, q) * KH_R[dh, hq>>2, tj, q]) @ QH_R[dh, hq, ti, q] = 256 * SC_Q8 + REM_SC - 128 * I_caus`
@@ -6500,8 +7748,22 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_hq = tr.squeeze_ext4_vec(b"qk_zhq", 3, true);
         let z_q = tr.squeeze_ext4_vec(b"qk_zq", 3, true);
         let pt14 = concat_pts(&[&z_tj, &z_ti, &z_hq, &z_q]);
-        let _ = push_eval(1, M1_SC_Q8, pt14.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_REM_SC, pt14, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_SC_Q8,
+            pt14.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_REM_SC,
+            pt14,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let eq_tj = build_eq_table_lsb_ext4(&z_tj);
         let mut k_caus = vec![Ext4::ZERO; 1024 * 256];
@@ -6516,12 +7778,11 @@ fn prove_full_24l_qwen35_turn_inner(
                         q_unf[row10 + (dh << 10)] = Ext4::from_bb(m1[M1_QH_R][q_base + dh]);
                     }
                     if q < NUM_GQA_LAYERS {
-                        for tj in 0..=ti {
-                            let ew = eq_tj[tj];
+                        for (tj, &ew) in eq_tj[..=ti].iter().enumerate() {
                             let k_base = (hk << 8) + (tj << 9) + (q << 13);
                             for dh in 0..256 {
-                                k_caus[row10 + (dh << 10)] =
-                                    k_caus[row10 + (dh << 10)].add(ew.scale_bb(m1[M1_KH_R][k_base + dh]));
+                                k_caus[row10 + (dh << 10)] = k_caus[row10 + (dh << 10)]
+                                    .add(ew.scale_bb(m1[M1_KH_R][k_base + dh]));
                             }
                         }
                     }
@@ -6529,22 +7790,21 @@ fn prove_full_24l_qwen35_turn_inner(
             }
         }
         let z10 = concat_pts(&[&z_ti, &z_hq, &z_q]);
-        let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &k_caus, &q_unf, 10, 8, &z10, &gmask, "ss_gqa_qk", &mut tr,
-        );
+        let (prf, rho, ch, l_r, _r_r, term) =
+            prove_gmask_einsum_par_ext4(&k_caus, &q_unf, 10, 8, &z10, &gmask, "ss_gqa_qk", &mut tr);
         tr.absorb_ext4(b"ss_lr", l_r);
         let (r_ti, r_hq, r_q, r_dh) = (&ch[..4], &ch[4..7], &ch[7..10], &ch[10..18]);
         let eq_rti = build_eq_table_lsb_ext4(r_ti);
         let eq_rq = build_eq_table_lsb_ext4(r_q);
         let mut k_terms = Vec::with_capacity(96);
-        for q in 0..NUM_GQA_LAYERS {
+        for (q, &eq_rq_q) in eq_rq[..NUM_GQA_LAYERS].iter().enumerate() {
             let q_bits = bits_to_ext4(q, 3);
             for tj in 0..16 {
                 let mut sum_ti = Ext4::ZERO;
                 for &eti in &eq_rti[tj..16] {
                     sum_ti = sum_ti.add(eti);
                 }
-                let wt = eq_rq[q].mul(eq_tj[tj]).mul(sum_ti);
+                let wt = eq_rq_q.mul(eq_tj[tj]).mul(sum_ti);
                 k_terms.push(LinearTermExt4::PointEval {
                     subtable: M1_KH_R,
                     point: concat_pts(&[r_dh, &[r_hq[2]], &bits_to_ext4(tj, 4), &q_bits]),
@@ -6552,7 +7812,10 @@ fn prove_full_24l_qwen35_turn_inner(
                 });
             }
         }
-        online_claims[1].push(JointLinearClaimExt4 { terms: k_terms, rhs: l_r });
+        online_claims[1].push(JointLinearClaimExt4 {
+            terms: k_terms,
+            rhs: l_r,
+        });
         let q_ev = push_eval(
             1,
             M1_QH_R,
@@ -6562,7 +7825,11 @@ fn prove_full_24l_qwen35_turn_inner(
             &mut online_claims,
         );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_qk", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -6570,7 +7837,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z10, &ch[..10]).mul(l_r).mul(q_ev)),
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 12. `ss_gqa_sel_bool`: `SEL_MAX * (1 - SEL_MAX) == 0`
@@ -6579,12 +7849,27 @@ fn prove_full_24l_qwen35_turn_inner(
         let sel_ext: Vec<Ext4> = m1[M1_SEL_MAX].iter().map(|&v| Ext4::from_bb(v)).collect();
         let comp_ext: Vec<Ext4> = sel_ext.iter().map(|&v| Ext4::ONE.sub(v)).collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &sel_ext, &comp_ext, 14, 0, &z14, &gmask, "ss_gqa_sel_bool", &mut tr,
+            &sel_ext,
+            &comp_ext,
+            14,
+            0,
+            &z14,
+            &gmask,
+            "ss_gqa_sel_bool",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
-        online_claims[1].push(JointLinearClaimExt4::point_eval(M1_SEL_MAX, ch.clone(), l_r));
+        online_claims[1].push(JointLinearClaimExt4::point_eval(
+            M1_SEL_MAX,
+            ch.clone(),
+            l_r,
+        ));
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_sel_bool", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -6592,7 +7877,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z14, &ch).mul(l_r).mul(Ext4::ONE.sub(l_r))),
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 13. `ss_gqa_sel_max`: `SEL_MAX * (M_MAX[ti, hq, q] - SC_Q8[tj, ti, hq, q]) == 0`
@@ -6603,14 +7891,43 @@ fn prove_full_24l_qwen35_turn_inner(
             .map(|idx| Ext4::from_bb(bsub(m1[M1_M_MAX][idx >> 4], m1[M1_SC_Q8][idx])))
             .collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &sel_ext, &diff_ext, 14, 0, &z14, &gmask, "ss_gqa_sel_max", &mut tr,
+            &sel_ext,
+            &diff_ext,
+            14,
+            0,
+            &z14,
+            &gmask,
+            "ss_gqa_sel_max",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
-        online_claims[1].push(JointLinearClaimExt4::point_eval(M1_SEL_MAX, ch.clone(), l_r));
-        let m_ev = push_eval(1, M1_M_MAX, ch[4..].to_vec(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let sc_ev = push_eval(1, M1_SC_Q8, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        online_claims[1].push(JointLinearClaimExt4::point_eval(
+            M1_SEL_MAX,
+            ch.clone(),
+            l_r,
+        ));
+        let m_ev = push_eval(
+            1,
+            M1_M_MAX,
+            ch[4..].to_vec(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let sc_ev = push_eval(
+            1,
+            M1_SC_Q8,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_sel_max", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -6618,26 +7935,65 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z14, &ch).mul(l_r).mul(m_ev.sub(sc_ev))),
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 14. `ss_gqa_psm_div`: `Z_SM[ti, hq, q] * P_SM[tj, ti, hq, q] == 4096 * E_SM - REM_PSM`
     {
         let z14 = tr.squeeze_ext4_vec(b"psmd_z", 14, true);
-        let _ = push_eval(1, M1_E_SM, z14.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_REM_PSM, z14.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_E_SM,
+            z14.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_REM_PSM,
+            z14.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let z_lift: Vec<Ext4> = (0..(1 << 14))
             .map(|idx| Ext4::from_bb(m1[M1_Z_SM][idx >> 4]))
             .collect();
         let p_ext: Vec<Ext4> = m1[M1_P_SM].iter().map(|&v| Ext4::from_bb(v)).collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &z_lift, &p_ext, 14, 0, &z14, &gmask, "ss_gqa_psm_div", &mut tr,
+            &z_lift,
+            &p_ext,
+            14,
+            0,
+            &z14,
+            &gmask,
+            "ss_gqa_psm_div",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
-        online_claims[1].push(JointLinearClaimExt4::point_eval(M1_Z_SM, ch[4..].to_vec(), l_r));
-        let p_ev = push_eval(1, M1_P_SM, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        online_claims[1].push(JointLinearClaimExt4::point_eval(
+            M1_Z_SM,
+            ch[4..].to_vec(),
+            l_r,
+        ));
+        let p_ev = push_eval(
+            1,
+            M1_P_SM,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_psm_div", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -6645,7 +8001,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z14, &ch).mul(l_r).mul(p_ev)),
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 15. `ss_gqa_pv`: `P_SM[tj, ti, hq, q] @ V_PROJ[dh, hq>>2, tj, q] == 4096 * AO_H + REM_AOH - 2048 * act_gqa`
@@ -6655,8 +8014,22 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_ti = tr.squeeze_ext4_vec(b"pv_zti", 4, true);
         let z_q = tr.squeeze_ext4_vec(b"pv_zq", 3, true);
         let pt18 = concat_pts(&[&z_dh, &z_hq, &z_ti, &z_q]);
-        let _ = push_eval(1, M1_AO_H, pt18.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_REM_AOH, pt18, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_AO_H,
+            pt18.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_REM_AOH,
+            pt18,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
 
         let eq_ti = build_eq_table_lsb_ext4(&z_ti);
         let eq_dh = build_eq_table_lsb_ext4(&z_dh);
@@ -6669,7 +8042,9 @@ fn prove_full_24l_qwen35_turn_inner(
                 for tj in 0..16 {
                     let mut sp = Ext4::ZERO;
                     for ti in 0..16 {
-                        sp = sp.add(eq_ti[ti].scale_bb(m1[M1_P_SM][tj + (ti << 4) + (hq << 8) + (q << 11)]));
+                        sp = sp.add(
+                            eq_ti[ti].scale_bb(m1[M1_P_SM][tj + (ti << 4) + (hq << 8) + (q << 11)]),
+                        );
                     }
                     p_fold[hqq + (tj << 6)] = sp;
                     let mut sv = Ext4::ZERO;
@@ -6682,9 +8057,8 @@ fn prove_full_24l_qwen35_turn_inner(
             }
         }
         let z6 = concat_pts(&[&z_hq, &z_q]);
-        let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &p_fold, &v_fold, 6, 4, &z6, &gmask, "ss_gqa_pv", &mut tr,
-        );
+        let (prf, rho, ch, l_r, _r_r, term) =
+            prove_gmask_einsum_par_ext4(&p_fold, &v_fold, 6, 4, &z6, &gmask, "ss_gqa_pv", &mut tr);
         tr.absorb_ext4(b"ss_lr", l_r);
         let (r_hq, r_q, r_tj) = (&ch[..3], &ch[3..6], &ch[6..10]);
         online_claims[1].push(JointLinearClaimExt4::point_eval(
@@ -6701,7 +8075,11 @@ fn prove_full_24l_qwen35_turn_inner(
             &mut online_claims,
         );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_pv", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -6709,24 +8087,62 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z6, &ch[..6]).mul(l_r).mul(v_ev)),
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 16. `ss_gqa_aog`: `AO_H * SIG_GATE == 1024 * AO_G + REM_AOG - 512 * act_gqa`
     {
         let z18 = tr.squeeze_ext4_vec(b"aog_z", 18, true);
-        let _ = push_eval(1, M1_AO_G, z18.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(1, M1_REM_AOG, z18.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            1,
+            M1_AO_G,
+            z18.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            1,
+            M1_REM_AOG,
+            z18.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let aoh_ext: Vec<Ext4> = m1[M1_AO_H].par_iter().map(|&v| Ext4::from_bb(v)).collect();
-        let sg_ext: Vec<Ext4> = m1[M1_SIG_GATE].par_iter().map(|&v| Ext4::from_bb(v)).collect();
+        let sg_ext: Vec<Ext4> = m1[M1_SIG_GATE]
+            .par_iter()
+            .map(|&v| Ext4::from_bb(v))
+            .collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &aoh_ext, &sg_ext, 18, 0, &z18, &gmask, "ss_gqa_aog", &mut tr,
+            &aoh_ext,
+            &sg_ext,
+            18,
+            0,
+            &z18,
+            &gmask,
+            "ss_gqa_aog",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
         online_claims[1].push(JointLinearClaimExt4::point_eval(M1_AO_H, ch.clone(), l_r));
-        let sg_ev = push_eval(1, M1_SIG_GATE, ch.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let sg_ev = push_eval(
+            1,
+            M1_SIG_GATE,
+            ch.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_aog", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -6734,23 +8150,61 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term.sub(eq_mle_ext4(&z18, &ch).mul(l_r).mul(sg_ev)),
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 17. `ss_mlp_swiglu`: `GATE_SILU * MLP_UP == 512 * SWIGLU + REM_SWIGLU - 256 * act_mlp`
     {
         let z21 = tr.squeeze_ext4_vec(b"swg_z", 21, true);
-        let _ = push_eval(2, M2_SWIGLU, z21.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(2, M2_REM_SWIGLU, z21.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let gs_ext: Vec<Ext4> = m2[M2_GATE_SILU].par_iter().map(|&v| Ext4::from_bb(v)).collect();
-        let up_ext: Vec<Ext4> = m2[M2_MLP_UP].par_iter().map(|&v| Ext4::from_bb(v)).collect();
+        let _ = push_eval(
+            2,
+            M2_SWIGLU,
+            z21.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            2,
+            M2_REM_SWIGLU,
+            z21.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let gs_ext: Vec<Ext4> = m2[M2_GATE_SILU]
+            .par_iter()
+            .map(|&v| Ext4::from_bb(v))
+            .collect();
+        let up_ext: Vec<Ext4> = m2[M2_MLP_UP]
+            .par_iter()
+            .map(|&v| Ext4::from_bb(v))
+            .collect();
         let (prf, rho, ch, l_r, _r_r, term) = prove_gmask_einsum_par_ext4(
-            &gs_ext, &up_ext, 21, 0, &z21, &gmask, "ss_mlp_swiglu", &mut tr,
+            &gs_ext,
+            &up_ext,
+            21,
+            0,
+            &z21,
+            &gmask,
+            "ss_mlp_swiglu",
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_r);
-        online_claims[2].push(JointLinearClaimExt4::point_eval(M2_GATE_SILU, ch.clone(), l_r));
+        online_claims[2].push(JointLinearClaimExt4::point_eval(
+            M2_GATE_SILU,
+            ch.clone(),
+            l_r,
+        ));
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_mlp_swiglu", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             vec![LinearTermExt4::PointEval {
                 subtable: M2_MLP_UP,
@@ -6762,7 +8216,10 @@ fn prove_full_24l_qwen35_turn_inner(
             rho,
             term,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf, left_at_r: l_r });
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf,
+            left_at_r: l_r,
+        });
     }
 
     // 18..29: `RMSNorm` `4` bilinear checks × `3` groups (`sq`, `p4u`, `p2r`, `xrho`):
@@ -6805,13 +8262,15 @@ fn prove_full_24l_qwen35_turn_inner(
                         for hq in 0..8 {
                             for d in 0..256 {
                                 let qr = m1[M1_Q_RAW][d + (hq << 8) + (t << 11) + (q << 15)];
-                                v[d + (hq << 8) + (t << 12) + (q << 16)] = Ext4::from_bb(bmul(2, qr));
+                                v[d + (hq << 8) + (t << 12) + (q << 16)] =
+                                    Ext4::from_bb(bmul(2, qr));
                             }
                         }
                         for hk in 0..2 {
                             for d in 0..256 {
                                 let kr = m1[M1_K_RAW][d + (hk << 8) + (t << 9) + (q << 13)];
-                                v[d + ((8 + hk) << 8) + (t << 12) + (q << 16)] = Ext4::from_bb(bmul(2, kr));
+                                v[d + ((8 + hk) << 8) + (t << 12) + (q << 16)] =
+                                    Ext4::from_bb(bmul(2, kr));
                             }
                         }
                     }
@@ -6821,66 +8280,91 @@ fn prove_full_24l_qwen35_turn_inner(
         }
     };
 
-    let discharge_rms_xin = |g_idx: usize, pt: &[Ext4], expected_val: Ext4, onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]| {
-        match g_idx {
-            0 => {
-                let s5 = pt[19];
-                let pt19 = pt[..19].to_vec();
-                onl_cl[2].push(JointLinearClaimExt4 {
-                    terms: vec![
-                        LinearTermExt4::PointEval { subtable: M2_H_IN, point: pt19.clone(), weight: Ext4::ONE.sub(s5) },
-                        LinearTermExt4::PointEval { subtable: M2_H_MID, point: pt19, weight: s5 },
-                    ],
-                    rhs: expected_val,
-                });
-            }
-            1 => {
-                let eq_gk = build_eq_table_lsb_ext4(&pt[15..21]);
-                let mut terms = Vec::with_capacity(54);
-                let two = Ext4::from_bb(2);
-                for g in 0..18 {
-                    let g_bits = bits_to_ext4(g, 5);
-                    terms.push(LinearTermExt4::PointEval {
-                        subtable: M0_CONV_SILU,
-                        point: concat_pts(&[&pt[..11], &[Ext4::ZERO, Ext4::ZERO], &pt[11..15], &g_bits]),
-                        weight: two.mul(eq_gk[3 * g]),
-                    });
-                    terms.push(LinearTermExt4::PointEval {
-                        subtable: M0_CONV_SILU,
-                        point: concat_pts(&[&pt[..11], &[Ext4::ONE, Ext4::ZERO], &pt[11..15], &g_bits]),
-                        weight: two.mul(eq_gk[3 * g + 1]),
-                    });
-                    terms.push(LinearTermExt4::PointEval {
-                        subtable: M0_Y_WY,
-                        point: concat_pts(&[&pt[..15], &g_bits]),
-                        weight: eq_gk[3 * g + 2],
+    let discharge_rms_xin =
+        |g_idx: usize,
+         pt: &[Ext4],
+         expected_val: Ext4,
+         onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]| {
+            match g_idx {
+                0 => {
+                    let s5 = pt[19];
+                    let pt19 = pt[..19].to_vec();
+                    onl_cl[2].push(JointLinearClaimExt4 {
+                        terms: vec![
+                            LinearTermExt4::PointEval {
+                                subtable: M2_H_IN,
+                                point: pt19.clone(),
+                                weight: Ext4::ONE.sub(s5),
+                            },
+                            LinearTermExt4::PointEval {
+                                subtable: M2_H_MID,
+                                point: pt19,
+                                weight: s5,
+                            },
+                        ],
+                        rhs: expected_val,
                     });
                 }
-                onl_cl[0].push(JointLinearClaimExt4 { terms, rhs: expected_val });
+                1 => {
+                    let eq_gk = build_eq_table_lsb_ext4(&pt[15..21]);
+                    let mut terms = Vec::with_capacity(54);
+                    let two = Ext4::from_bb(2);
+                    for g in 0..18 {
+                        let g_bits = bits_to_ext4(g, 5);
+                        terms.push(LinearTermExt4::PointEval {
+                            subtable: M0_CONV_SILU,
+                            point: concat_pts(&[
+                                &pt[..11],
+                                &[Ext4::ZERO, Ext4::ZERO],
+                                &pt[11..15],
+                                &g_bits,
+                            ]),
+                            weight: two.mul(eq_gk[3 * g]),
+                        });
+                        terms.push(LinearTermExt4::PointEval {
+                            subtable: M0_CONV_SILU,
+                            point: concat_pts(&[
+                                &pt[..11],
+                                &[Ext4::ONE, Ext4::ZERO],
+                                &pt[11..15],
+                                &g_bits,
+                            ]),
+                            weight: two.mul(eq_gk[3 * g + 1]),
+                        });
+                        terms.push(LinearTermExt4::PointEval {
+                            subtable: M0_Y_WY,
+                            point: concat_pts(&[&pt[..15], &g_bits]),
+                            weight: eq_gk[3 * g + 2],
+                        });
+                    }
+                    onl_cl[0].push(JointLinearClaimExt4 {
+                        terms,
+                        rhs: expected_val,
+                    });
+                }
+                _ => {
+                    let two = Ext4::from_bb(2);
+                    let (h1, h2, h3) = (pt[9], pt[10], pt[11]);
+                    let w_q = two.mul(Ext4::ONE.sub(h3));
+                    let w_k = two.mul(h3).mul(Ext4::ONE.sub(h2)).mul(Ext4::ONE.sub(h1));
+                    onl_cl[1].push(JointLinearClaimExt4 {
+                        terms: vec![
+                            LinearTermExt4::PointEval {
+                                subtable: M1_Q_RAW,
+                                point: concat_pts(&[&pt[..11], &pt[12..19]]),
+                                weight: w_q,
+                            },
+                            LinearTermExt4::PointEval {
+                                subtable: M1_K_RAW,
+                                point: concat_pts(&[&pt[..9], &pt[12..19]]),
+                                weight: w_k,
+                            },
+                        ],
+                        rhs: expected_val,
+                    });
+                }
             }
-            _ => {
-                let two = Ext4::from_bb(2);
-                let (h1, h2, h3) = (pt[9], pt[10], pt[11]);
-                let w_q = two.mul(Ext4::ONE.sub(h3));
-                let w_k = two.mul(h3).mul(Ext4::ONE.sub(h2)).mul(Ext4::ONE.sub(h1));
-                onl_cl[1].push(JointLinearClaimExt4 {
-                    terms: vec![
-                        LinearTermExt4::PointEval {
-                            subtable: M1_Q_RAW,
-                            point: concat_pts(&[&pt[..11], &pt[12..19]]),
-                            weight: w_q,
-                        },
-                        LinearTermExt4::PointEval {
-                            subtable: M1_K_RAW,
-                            point: concat_pts(&[&pt[..9], &pt[12..19]]),
-                            weight: w_k,
-                        },
-                    ],
-                    rhs: expected_val,
-                });
-            }
-        }
-    };
+        };
 
     for (g_idx, cfg) in RMS_CFGS.iter().enumerate() {
         let b = cfg.grp * RGRP_STRIDE;
@@ -6895,88 +8379,271 @@ fn prove_full_24l_qwen35_turn_inner(
 
         // (a) `sq`: `X_IN * X_IN == 16 * (SQLO + 8192 * SQHI) + RSQ`
         let z_sq = tr.squeeze_ext4_vec(b"rmssq_z", mf, true);
-        let _ = push_eval(3, b + RGRP_SQLO, z_sq.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_SQHI, z_sq.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_RSQ, z_sq.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            3,
+            b + RGRP_SQLO,
+            z_sq.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            3,
+            b + RGRP_SQHI,
+            z_sq.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            3,
+            b + RGRP_RSQ,
+            z_sq.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let (prf_sq, rho_sq, ch_sq, l_sq, _, term_sq) = prove_gmask_einsum_par_ext4(
             &xin_vec, &xin_vec, mf, 0, &z_sq, &gmask, specs[0], &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_sq);
         discharge_rms_xin(g_idx, &ch_sq, l_sq, &mut online_claims);
         let (ws0, wa0) = GMaskExt4::build_spec_weights(&gm_specs, specs[0], &ch_sq);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws0, prf_sq.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &wa0, rho_sq, term_sq.sub(eq_mle_ext4(&z_sq, &ch_sq).mul(l_sq).mul(l_sq)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &ws0,
+            prf_sq.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf: prf_sq, left_at_r: l_sq });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &wa0,
+            rho_sq,
+            term_sq.sub(eq_mle_ext4(&z_sq, &ch_sq).mul(l_sq).mul(l_sq)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf: prf_sq,
+            left_at_r: l_sq,
+        });
 
         // (b) `p4u`: `POW4 * UMS == MS_LO + 8192 * MS_HI - RNORM`
         let z_p4 = tr.squeeze_ext4_vec(b"rmsp4_z", mr, true);
-        let _ = push_eval(3, b + RGRP_MS_LO, z_p4.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_MS_HI, z_p4.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_RNORM, z_p4.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let p4_ext: Vec<Ext4> = m3[b + RGRP_POW4].iter().map(|&v| Ext4::from_bb(v)).collect();
-        let um_ext: Vec<Ext4> = m3[b + RGRP_UMS].iter().map(|&v| Ext4::from_bb(v)).collect();
-        let (prf_p4, rho_p4, ch_p4, l_p4, _, term_p4) = prove_gmask_einsum_par_ext4(
-            &p4_ext, &um_ext, mr, 0, &z_p4, &gmask, specs[1], &mut tr,
+        let _ = push_eval(
+            3,
+            b + RGRP_MS_LO,
+            z_p4.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
         );
+        let _ = push_eval(
+            3,
+            b + RGRP_MS_HI,
+            z_p4.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            3,
+            b + RGRP_RNORM,
+            z_p4.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let p4_ext: Vec<Ext4> = m3[b + RGRP_POW4]
+            .iter()
+            .map(|&v| Ext4::from_bb(v))
+            .collect();
+        let um_ext: Vec<Ext4> = m3[b + RGRP_UMS].iter().map(|&v| Ext4::from_bb(v)).collect();
+        let (prf_p4, rho_p4, ch_p4, l_p4, _, term_p4) =
+            prove_gmask_einsum_par_ext4(&p4_ext, &um_ext, mr, 0, &z_p4, &gmask, specs[1], &mut tr);
         tr.absorb_ext4(b"ss_lr", l_p4);
-        online_claims[3].push(JointLinearClaimExt4::point_eval(b + RGRP_POW4, ch_p4.clone(), l_p4));
-        let um_ev = push_eval(3, b + RGRP_UMS, ch_p4.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let (ws1, wa1) = GMaskExt4::build_spec_weights(&gm_specs, specs[1], &ch_p4);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws1, prf_p4.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &wa1, rho_p4, term_p4.sub(eq_mle_ext4(&z_p4, &ch_p4).mul(l_p4).mul(um_ev)),
+        online_claims[3].push(JointLinearClaimExt4::point_eval(
+            b + RGRP_POW4,
+            ch_p4.clone(),
+            l_p4,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf: prf_p4, left_at_r: l_p4 });
+        let um_ev = push_eval(
+            3,
+            b + RGRP_UMS,
+            ch_p4.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let (ws1, wa1) = GMaskExt4::build_spec_weights(&gm_specs, specs[1], &ch_p4);
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &ws1,
+            prf_p4.gmask_sum,
+        ));
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &wa1,
+            rho_p4,
+            term_p4.sub(eq_mle_ext4(&z_p4, &ch_p4).mul(l_p4).mul(um_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf: prf_p4,
+            left_at_r: l_p4,
+        });
 
         // (c) `p2r`: `POW2 * (RHO_LO + 4096 * RHO_HI) == RMLUT + HPOW2 - RRHO`
         let z_p2 = tr.squeeze_ext4_vec(b"rmsp2_z", mr, true);
-        let _ = push_eval(3, b + RGRP_RMLUT, z_p2.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_HPOW2, z_p2.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_RRHO, z_p2.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let p2_ext: Vec<Ext4> = m3[b + RGRP_POW2].iter().map(|&v| Ext4::from_bb(v)).collect();
+        let _ = push_eval(
+            3,
+            b + RGRP_RMLUT,
+            z_p2.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            3,
+            b + RGRP_HPOW2,
+            z_p2.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            3,
+            b + RGRP_RRHO,
+            z_p2.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let p2_ext: Vec<Ext4> = m3[b + RGRP_POW2]
+            .iter()
+            .map(|&v| Ext4::from_bb(v))
+            .collect();
         let rho_row_ext: Vec<Ext4> = (0..(1usize << mr))
             .map(|r| Ext4::from_bb(m3[b + RGRP_RHO_LO][r] + 4096 * m3[b + RGRP_RHO_HI][r]))
             .collect();
         let (prf_p2, rho_p2, ch_p2, l_p2, _, term_p2) = prove_gmask_einsum_par_ext4(
-            &p2_ext, &rho_row_ext, mr, 0, &z_p2, &gmask, specs[2], &mut tr,
+            &p2_ext,
+            &rho_row_ext,
+            mr,
+            0,
+            &z_p2,
+            &gmask,
+            specs[2],
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_p2);
-        online_claims[3].push(JointLinearClaimExt4::point_eval(b + RGRP_POW2, ch_p2.clone(), l_p2));
-        let rlo_ev = push_eval(3, b + RGRP_RHO_LO, ch_p2.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let rhi_ev = push_eval(3, b + RGRP_RHO_HI, ch_p2.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        online_claims[3].push(JointLinearClaimExt4::point_eval(
+            b + RGRP_POW2,
+            ch_p2.clone(),
+            l_p2,
+        ));
+        let rlo_ev = push_eval(
+            3,
+            b + RGRP_RHO_LO,
+            ch_p2.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let rhi_ev = push_eval(
+            3,
+            b + RGRP_RHO_HI,
+            ch_p2.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let rho_ev = rlo_ev.add(rhi_ev.scale_bb(4096));
         let (ws2, wa2) = GMaskExt4::build_spec_weights(&gm_specs, specs[2], &ch_p2);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws2, prf_p2.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &wa2, rho_p2, term_p2.sub(eq_mle_ext4(&z_p2, &ch_p2).mul(l_p2).mul(rho_ev)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &ws2,
+            prf_p2.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf: prf_p2, left_at_r: l_p2 });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &wa2,
+            rho_p2,
+            term_p2.sub(eq_mle_ext4(&z_p2, &ch_p2).mul(l_p2).mul(rho_ev)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf: prf_p2,
+            left_at_r: l_p2,
+        });
 
         // (d) `xrho`: `X_IN * RHO == 2048 * UQ9 + RU - 1024 * act_row`
         let z_xr = tr.squeeze_ext4_vec(b"rmsxr_z", mf, true);
-        let _ = push_eval(3, b + RGRP_UQ9, z_xr.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(3, b + RGRP_RU, z_xr.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            3,
+            b + RGRP_UQ9,
+            z_xr.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            3,
+            b + RGRP_RU,
+            z_xr.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let rho_full_ext: Vec<Ext4> = (0..(1usize << mf))
             .into_par_iter()
             .map(|idx| rho_row_ext[idx >> cfg.log_d])
             .collect();
         let (prf_xr, rho_xr, ch_xr, l_xr, _, term_xr) = prove_gmask_einsum_par_ext4(
-            &xin_vec, &rho_full_ext, mf, 0, &z_xr, &gmask, specs[3], &mut tr,
+            &xin_vec,
+            &rho_full_ext,
+            mf,
+            0,
+            &z_xr,
+            &gmask,
+            specs[3],
+            &mut tr,
         );
         tr.absorb_ext4(b"ss_lr", l_xr);
         discharge_rms_xin(g_idx, &ch_xr, l_xr, &mut online_claims);
         let r_row_pt = ch_xr[cfg.log_d..].to_vec();
-        let rlo2 = push_eval(3, b + RGRP_RHO_LO, r_row_pt.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let rhi2 = push_eval(3, b + RGRP_RHO_HI, r_row_pt, &mut tr, &mut linear_point_evals, &mut online_claims);
+        let rlo2 = push_eval(
+            3,
+            b + RGRP_RHO_LO,
+            r_row_pt.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let rhi2 = push_eval(
+            3,
+            b + RGRP_RHO_HI,
+            r_row_pt,
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let rho_ev2 = rlo2.add(rhi2.scale_bb(4096));
         let (ws3, wa3) = GMaskExt4::build_spec_weights(&gm_specs, specs[3], &ch_xr);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws3, prf_xr.gmask_sum));
-        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &wa3, rho_xr, term_xr.sub(eq_mle_ext4(&z_xr, &ch_xr).mul(l_xr).mul(rho_ev2)),
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &ws3,
+            prf_xr.gmask_sum,
         ));
-        sec_sec_proofs.push(SecSecEinSumOpening { prf: prf_xr, left_at_r: l_xr });
+        online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
+            Vec::new(),
+            gm_limb_ids,
+            &wa3,
+            rho_xr,
+            term_xr.sub(eq_mle_ext4(&z_xr, &ch_xr).mul(l_xr).mul(rho_ev2)),
+        ));
+        sec_sec_proofs.push(SecSecEinSumOpening {
+            prf: prf_xr,
+            left_at_r: l_xr,
+        });
     }
 
     // Step E: Direct Zero-Round Linear Welds (`embed_tokens`, padding guards, `ST_H_IN == ST_H_CARRY` cross-layer weld,
@@ -7016,17 +8683,32 @@ fn prove_full_24l_qwen35_turn_inner(
         let mut gp = Ext4::ONE;
         for b_idx in 25..32 {
             let pt = concat_pts(&[&z_pad, &bits_to_ext4(b_idx, 5)]);
-            terms_pad.push(LinearTermExt4::PointEval { subtable: M2_H_IN, point: pt.clone(), weight: gp });
+            terms_pad.push(LinearTermExt4::PointEval {
+                subtable: M2_H_IN,
+                point: pt.clone(),
+                weight: gp,
+            });
             gp = gp.mul(g_pad);
-            terms_pad.push(LinearTermExt4::PointEval { subtable: M2_H_CARRY, point: pt, weight: gp });
+            terms_pad.push(LinearTermExt4::PointEval {
+                subtable: M2_H_CARRY,
+                point: pt,
+                weight: gp,
+            });
             gp = gp.mul(g_pad);
         }
         for l_idx in 24..32 {
             let pt = concat_pts(&[&z_pad, &bits_to_ext4(l_idx, 5)]);
-            terms_pad.push(LinearTermExt4::PointEval { subtable: M2_H_MID, point: pt, weight: gp });
+            terms_pad.push(LinearTermExt4::PointEval {
+                subtable: M2_H_MID,
+                point: pt,
+                weight: gp,
+            });
             gp = gp.mul(g_pad);
         }
-        online_claims[2].push(JointLinearClaimExt4 { terms: terms_pad, rhs: Ext4::ZERO });
+        online_claims[2].push(JointLinearClaimExt4 {
+            terms: terms_pad,
+            rhs: Ext4::ZERO,
+        });
     }
 
     // E3. Zero-Gap Cross-Layer Residual Continuity Weld (`M2_H_IN(z_weld) - M2_H_CARRY(z_weld) == 0`):
@@ -7034,8 +8716,16 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_weld = tr.squeeze_ext4_vec(b"xlayer_zweld", 19, true);
         online_claims[2].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M2_H_IN, point: z_weld.clone(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: M2_H_CARRY, point: z_weld, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M2_H_IN,
+                    point: z_weld.clone(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M2_H_CARRY,
+                    point: z_weld,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: Ext4::ZERO,
         });
@@ -7044,41 +8734,69 @@ fn prove_full_24l_qwen35_turn_inner(
     // E4. Residual Add 1 (`H_MID == H_IN_24 + GDN_ATTN_OUT + GQA_ATTN_OUT` across all 24 layers):
     {
         let z_r1 = tr.squeeze_ext4_vec(b"res1_z", 19, true);
-        let _ = push_eval(2, M2_H_MID, z_r1.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            2,
+            M2_H_MID,
+            z_r1.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let eq_zl = build_eq_table_lsb_ext4(&z_r1[14..19]);
 
         let mut hin_val = Ext4::ZERO;
         let mut hin_terms = Vec::with_capacity(24);
-        for l in 0..24 {
+        for (l, &eq_l) in eq_zl[..24].iter().enumerate() {
             let pt = concat_pts(&[&z_r1[..14], &bits_to_ext4(l, 5)]);
-            hin_val = hin_val.add(eq_zl[l].mul(mle_eval_bb_at_ext4(&m2[M2_H_IN], &pt)));
-            hin_terms.push(LinearTermExt4::PointEval { subtable: M2_H_IN, point: pt, weight: eq_zl[l] });
+            hin_val = hin_val.add(eq_l.mul(mle_eval_bb_at_ext4(&m2[M2_H_IN], &pt)));
+            hin_terms.push(LinearTermExt4::PointEval {
+                subtable: M2_H_IN,
+                point: pt,
+                weight: eq_l,
+            });
         }
         tr.absorb_ext4(b"res1_hin", hin_val);
         linear_point_evals.push(hin_val);
-        online_claims[2].push(JointLinearClaimExt4 { terms: hin_terms, rhs: hin_val });
+        online_claims[2].push(JointLinearClaimExt4 {
+            terms: hin_terms,
+            rhs: hin_val,
+        });
 
         let mut gdn_val = Ext4::ZERO;
         let mut gdn_terms = Vec::with_capacity(18);
         for (g, &l) in GDN_LAYER_INDICES.iter().enumerate() {
             let pt = concat_pts(&[&z_r1[..14], &bits_to_ext4(g, 5)]);
             gdn_val = gdn_val.add(eq_zl[l].mul(mle_eval_bb_at_ext4(&m0[M0_ATTN_OUT], &pt)));
-            gdn_terms.push(LinearTermExt4::PointEval { subtable: M0_ATTN_OUT, point: pt, weight: eq_zl[l] });
+            gdn_terms.push(LinearTermExt4::PointEval {
+                subtable: M0_ATTN_OUT,
+                point: pt,
+                weight: eq_zl[l],
+            });
         }
         tr.absorb_ext4(b"res1_gdn", gdn_val);
         linear_point_evals.push(gdn_val);
-        online_claims[0].push(JointLinearClaimExt4 { terms: gdn_terms, rhs: gdn_val });
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: gdn_terms,
+            rhs: gdn_val,
+        });
 
         let mut gqa_val = Ext4::ZERO;
         let mut gqa_terms = Vec::with_capacity(6);
         for (q, &l) in GQA_LAYER_INDICES.iter().enumerate() {
             let pt = concat_pts(&[&z_r1[..14], &bits_to_ext4(q, 3)]);
             gqa_val = gqa_val.add(eq_zl[l].mul(mle_eval_bb_at_ext4(&m1[M1_ATTN_OUT], &pt)));
-            gqa_terms.push(LinearTermExt4::PointEval { subtable: M1_ATTN_OUT, point: pt, weight: eq_zl[l] });
+            gqa_terms.push(LinearTermExt4::PointEval {
+                subtable: M1_ATTN_OUT,
+                point: pt,
+                weight: eq_zl[l],
+            });
         }
         tr.absorb_ext4(b"res1_gqa", gqa_val);
         linear_point_evals.push(gqa_val);
-        online_claims[1].push(JointLinearClaimExt4 { terms: gqa_terms, rhs: gqa_val });
+        online_claims[1].push(JointLinearClaimExt4 {
+            terms: gqa_terms,
+            rhs: gqa_val,
+        });
     }
 
     // E5. Residual Add 2 (`ST_H_CARRY[l + 1] == H_MID[l] + MLP_OUT[l]` across all 24 layers):
@@ -7086,16 +8804,27 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_r2 = tr.squeeze_ext4_vec(b"res2_z", 19, true);
         let eq_zl = build_eq_table_lsb_ext4(&z_r2[14..19]);
         let mut terms_r2 = Vec::with_capacity(26);
-        for l in 0..24 {
+        for (l, &eq_l) in eq_zl[..24].iter().enumerate() {
             terms_r2.push(LinearTermExt4::PointEval {
                 subtable: M2_H_CARRY,
                 point: concat_pts(&[&z_r2[..14], &bits_to_ext4(l + 1, 5)]),
-                weight: eq_zl[l],
+                weight: eq_l,
             });
         }
-        terms_r2.push(LinearTermExt4::PointEval { subtable: M2_H_MID, point: z_r2.clone(), weight: Ext4::ONE.neg() });
-        terms_r2.push(LinearTermExt4::PointEval { subtable: M2_MLP_OUT, point: z_r2, weight: Ext4::ONE.neg() });
-        online_claims[2].push(JointLinearClaimExt4 { terms: terms_r2, rhs: Ext4::ZERO });
+        terms_r2.push(LinearTermExt4::PointEval {
+            subtable: M2_H_MID,
+            point: z_r2.clone(),
+            weight: Ext4::ONE.neg(),
+        });
+        terms_r2.push(LinearTermExt4::PointEval {
+            subtable: M2_MLP_OUT,
+            point: z_r2,
+            weight: Ext4::ONE.neg(),
+        });
+        online_claims[2].push(JointLinearClaimExt4 {
+            terms: terms_r2,
+            rhs: Ext4::ZERO,
+        });
     }
 
     // E6. RMSNorm Block-16 Sum, Row Mean-Square, & `DIFF_RHO` for all 3 groups:
@@ -7111,11 +8840,31 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_sq_half = concat_pts(&[&[half_ext; 4], &z_kr]);
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_SQLO, point: z_sq_half.clone(), weight: Ext4::from_bb(16) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_SQHI, point: z_sq_half, weight: Ext4::from_bb(16 * 8192) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_LO, point: z_kr.clone(), weight: Ext4::from_bb(32).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_HI, point: z_kr.clone(), weight: Ext4::from_bb(32 * 8192).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RB128, point: z_kr, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_SQLO,
+                    point: z_sq_half.clone(),
+                    weight: Ext4::from_bb(16),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_SQHI,
+                    point: z_sq_half,
+                    weight: Ext4::from_bb(16 * 8192),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_LO,
+                    point: z_kr.clone(),
+                    weight: Ext4::from_bb(32).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_HI,
+                    point: z_kr.clone(),
+                    weight: Ext4::from_bb(32 * 8192).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RB128,
+                    point: z_kr,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: Ext4::ZERO,
         });
@@ -7126,11 +8875,31 @@ fn prove_full_24l_qwen35_turn_inner(
         let act_r = eval_rms_group_act_mle(g_idx, &z_ms);
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_LO, point: z_b_half.clone(), weight: Ext4::from_bb(n_blk) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_HI, point: z_b_half, weight: Ext4::from_bb(n_blk * 8192) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_MS_LO, point: z_ms.clone(), weight: Ext4::from_bb(div_ms).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_MS_HI, point: z_ms.clone(), weight: Ext4::from_bb(div_ms * 8192).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RMS, point: z_ms, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_LO,
+                    point: z_b_half.clone(),
+                    weight: Ext4::from_bb(n_blk),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_HI,
+                    point: z_b_half,
+                    weight: Ext4::from_bb(n_blk * 8192),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_MS_LO,
+                    point: z_ms.clone(),
+                    weight: Ext4::from_bb(div_ms).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_MS_HI,
+                    point: z_ms.clone(),
+                    weight: Ext4::from_bb(div_ms * 8192).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RMS,
+                    point: z_ms,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: act_r.scale_bb(div_ms).neg(),
         });
@@ -7138,9 +8907,21 @@ fn prove_full_24l_qwen35_turn_inner(
         let z_dr = tr.squeeze_ext4_vec(b"rmsdr_z", mr, true);
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_POW2, point: z_dr.clone(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RRHO, point: z_dr.clone(), weight: Ext4::ONE.neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_DIFF_RHO, point: z_dr, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_POW2,
+                    point: z_dr.clone(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RRHO,
+                    point: z_dr.clone(),
+                    weight: Ext4::ONE.neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_DIFF_RHO,
+                    point: z_dr,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: Ext4::ONE,
         });
@@ -7149,8 +8930,22 @@ fn prove_full_24l_qwen35_turn_inner(
     // E7. GDN `SP_IN == A_PROJ + act_gdn * DT_BIAS` & `GAMMA[h, j, j, g] == 512 * act_gdn(g)`:
     {
         let z13 = tr.squeeze_ext4_vec(b"spin_z", 13, true);
-        let _ = push_eval(0, M0_SP_IN, z13.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
-        let _ = push_eval(0, M0_A_PROJ, z13.clone(), &mut tr, &mut linear_point_evals, &mut online_claims);
+        let _ = push_eval(
+            0,
+            M0_SP_IN,
+            z13.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
+        let _ = push_eval(
+            0,
+            M0_A_PROJ,
+            z13.clone(),
+            &mut tr,
+            &mut linear_point_evals,
+            &mut online_claims,
+        );
         let dt_pt = concat_pts(&[&z13[..4], &z13[8..13]]);
         let dt_ev = weights.eval_subtable_point(WST_GDN_DT, &dt_pt);
         tr.absorb_ext4(b"spin_dt", dt_ev);
@@ -7161,12 +8956,12 @@ fn prove_full_24l_qwen35_turn_inner(
         let (zh, zj, zg) = (&z_gd[..4], &z_gd[4..8], &z_gd[8..13]);
         let eq_zj = build_eq_table_lsb_ext4(zj);
         let mut d_terms = Vec::with_capacity(16);
-        for j in 0..16 {
+        for (j, &eq_j) in eq_zj.iter().enumerate() {
             let jb = bits_to_ext4(j, 4);
             d_terms.push(LinearTermExt4::PointEval {
                 subtable: M0_GAMMA,
                 point: concat_pts(&[zh, &jb, &jb, zg]),
-                weight: eq_zj[j],
+                weight: eq_j,
             });
         }
         online_claims[0].push(JointLinearClaimExt4 {
@@ -7317,12 +9112,19 @@ fn validate_receipt_canonical_invariants(receipt: &Full24LayerQwen35Receipt) -> 
         .weight_matmul_proofs
         .iter()
         .all(|w| blinded_einsum_is_canonical(&w.prf) && ext4_is_canonical(w.weight_at_r))
-        || !receipt.pub_ind_proofs.iter().all(blinded_einsum_is_canonical)
+        || !receipt
+            .pub_ind_proofs
+            .iter()
+            .all(blinded_einsum_is_canonical)
         || !receipt
             .sec_sec_proofs
             .iter()
             .all(|s| blinded_einsum_is_canonical(&s.prf) && ext4_is_canonical(s.left_at_r))
-        || !receipt.linear_point_evals.iter().copied().all(ext4_is_canonical)
+        || !receipt
+            .linear_point_evals
+            .iter()
+            .copied()
+            .all(ext4_is_canonical)
     {
         return Err("non-canonical Ext4 limb in sumcheck / linear evals".into());
     }
@@ -7342,7 +9144,9 @@ fn validate_receipt_canonical_invariants(receipt: &Full24LayerQwen35Receipt) -> 
     }
     let op = &receipt.online_whir_proof;
     if op.final_lockstep_sc != vec![[Ext4::ZERO; 3]] {
-        return Err("non-zero reserved final_lockstep_sc in online WhirBatchOpeningProofExt4".into());
+        return Err(
+            "non-zero reserved final_lockstep_sc in online WhirBatchOpeningProofExt4".into(),
+        );
     }
     if !op.matrix_parts.iter().all(|mp| {
         mp.zk
@@ -7515,9 +9319,8 @@ pub fn verify_full_24l_qwen35_receipt(
         for sl in &pl.slices {
             let prefix = sl.base_cell >> sl.m_vars;
             let mut pref_ev = Ext4::ONE;
-            for b in sl.m_vars..pl.m_wit {
-                let bit = (prefix >> (b - sl.m_vars)) & 1;
-                let zb = z_leaf[b];
+            for (b, &zb) in z_leaf[sl.m_vars..pl.m_wit].iter().enumerate() {
+                let bit = (prefix >> b) & 1;
                 pref_ev = pref_ev.mul(if bit == 1 { zb } else { Ext4::ONE.sub(zb) });
             }
             const_sum = const_sum.add(pref_ev.scale_bb(sl.add_const_bb));
@@ -7545,11 +9348,11 @@ pub fn verify_full_24l_qwen35_receipt(
     }
 
     let pull_eval = |mat_id: usize,
-                         st: usize,
-                         pt: Vec<Ext4>,
-                         cur: &mut usize,
-                         tr_ref: &mut CShakeTranscript,
-                         onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]|
+                     st: usize,
+                     pt: Vec<Ext4>,
+                     cur: &mut usize,
+                     tr_ref: &mut CShakeTranscript,
+                     onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]|
      -> Result<Ext4, String> {
         let v = next_raw_ev(cur)?;
         tr_ref.absorb_ext4(b"lin_ev", v);
@@ -7586,12 +9389,54 @@ pub fn verify_full_24l_qwen35_receipt(
 
     // SiLU virtual leaf (`0..2^22`: `CONV`, `2^22..2^22+2^21`: `MLP_GATE`, `2^22+2^21..+2^20`: `Z_PROJ`, rest `(0, 0)`):
     {
-        let c_x = pull_eval(0, M0_CONV_PRE, z_silu[..22].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let c_y = pull_eval(0, M0_CONV_SILU, z_silu[..22].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let m_x = pull_eval(2, M2_MLP_GATE, z_silu[..21].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let m_y = pull_eval(2, M2_GATE_SILU, z_silu[..21].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let z_x = pull_eval(0, M0_Z_PROJ, z_silu[..20].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let z_y = pull_eval(0, M0_Z_SILU, z_silu[..20].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let c_x = pull_eval(
+            0,
+            M0_CONV_PRE,
+            z_silu[..22].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let c_y = pull_eval(
+            0,
+            M0_CONV_SILU,
+            z_silu[..22].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let m_x = pull_eval(
+            2,
+            M2_MLP_GATE,
+            z_silu[..21].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let m_y = pull_eval(
+            2,
+            M2_GATE_SILU,
+            z_silu[..21].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let z_x = pull_eval(
+            0,
+            M0_Z_PROJ,
+            z_silu[..20].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let z_y = pull_eval(
+            0,
+            M0_Z_SILU,
+            z_silu[..20].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let p0 = Ext4::ONE.sub(z_silu[22]);
         let p1 = z_silu[22].mul(Ext4::ONE.sub(z_silu[21]));
         let p2 = z_silu[22].mul(z_silu[21]).mul(Ext4::ONE.sub(z_silu[20]));
@@ -7603,10 +9448,38 @@ pub fn verify_full_24l_qwen35_receipt(
     }
     // Sigmoid virtual leaf (`0..2^18`: `M1_GATE`, `2^18..2^18+2^13`: `M0_B_PROJ`, rest `(0, 512)`):
     {
-        let g_x = pull_eval(1, M1_GATE, z_sig[..18].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let g_y = pull_eval(1, M1_SIG_GATE, z_sig[..18].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let b_x = pull_eval(0, M0_B_PROJ, z_sig[..13].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let b_y = pull_eval(0, M0_BETA_Q10, z_sig[..13].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let g_x = pull_eval(
+            1,
+            M1_GATE,
+            z_sig[..18].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let g_y = pull_eval(
+            1,
+            M1_SIG_GATE,
+            z_sig[..18].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let b_x = pull_eval(
+            0,
+            M0_B_PROJ,
+            z_sig[..13].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let b_y = pull_eval(
+            0,
+            M0_BETA_Q10,
+            z_sig[..13].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let p0 = Ext4::ONE.sub(z_sig[18]);
         let mut p1 = z_sig[18];
         for &zb in &z_sig[13..18] {
@@ -7621,8 +9494,22 @@ pub fn verify_full_24l_qwen35_receipt(
     }
     // Softplus virtual leaf (`0..2^13`: `M0_SP_IN`, rest `(0, sp_y_bb[16384])`):
     {
-        let s_x = pull_eval(0, M0_SP_IN, z_sp[..13].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let s_y = pull_eval(0, M0_SP_Q8, z_sp[..13].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let s_x = pull_eval(
+            0,
+            M0_SP_IN,
+            z_sp[..13].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let s_y = pull_eval(
+            0,
+            M0_SP_Q8,
+            z_sp[..13].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let p0 = Ext4::ONE.sub(z_sp[13]).mul(Ext4::ONE.sub(z_sp[14]));
         let pad_ind = Ext4::ONE.sub(p0);
         let wx = p0.mul(s_x);
@@ -7633,10 +9520,38 @@ pub fn verify_full_24l_qwen35_receipt(
     }
     // ExpNeg virtual leaf (`0..2^14`: `M1_U_SM`, `2^14..2^14+2^13`: `M0_G_EXP`, rest `(0, 4096)`):
     {
-        let u_x = pull_eval(1, M1_U_SM, z_en[..14].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let u_y = pull_eval(1, M1_E_SM_RAW, z_en[..14].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let g_x = pull_eval(0, M0_G_EXP, z_en[..13].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let g_y = pull_eval(0, M0_ALPHA_Q12, z_en[..13].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let u_x = pull_eval(
+            1,
+            M1_U_SM,
+            z_en[..14].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let u_y = pull_eval(
+            1,
+            M1_E_SM_RAW,
+            z_en[..14].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let g_x = pull_eval(
+            0,
+            M0_G_EXP,
+            z_en[..13].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let g_y = pull_eval(
+            0,
+            M0_ALPHA_Q12,
+            z_en[..13].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let p0 = Ext4::ONE.sub(z_en[14]);
         let p1 = z_en[14].mul(Ext4::ONE.sub(z_en[13]));
         let pad_ind = z_en[14].mul(z_en[13]);
@@ -7661,13 +9576,9 @@ pub fn verify_full_24l_qwen35_receipt(
                 let mv = len.trailing_zeros() as usize;
                 let prefix = dst_off >> mv;
                 let mut pref = bp;
-                for b in mv..17 {
-                    let bit = (prefix >> (b - mv)) & 1;
-                    pref = pref.mul(if bit == 1 {
-                        z_rsq[b]
-                    } else {
-                        Ext4::ONE.sub(z_rsq[b])
-                    });
+                for (b, &zb) in z_rsq[mv..17].iter().enumerate() {
+                    let bit = (prefix >> b) & 1;
+                    pref = pref.mul(if bit == 1 { zb } else { Ext4::ONE.sub(zb) });
                 }
                 terms.push(LinearTermExt4::PointEval {
                     subtable: grp * RGRP_STRIDE + co,
@@ -7692,37 +9603,281 @@ pub fn verify_full_24l_qwen35_receipt(
     let gqa_ln1_slots: Vec<usize> = GQA_LAYER_INDICES.to_vec();
     let mlp_ln2_slots: Vec<usize> = (0..NUM_LAYERS).map(|l| 32 + l).collect();
     #[allow(clippy::type_complexity)]
-    let mm_jobs: [(&str, usize, usize, Option<&[usize]>, usize, usize, usize, usize, usize, usize, usize, u32, usize, usize); 13] = [
-        ("wm_gdn_qkv", 3, RGRP_YOUT, Some(&gdn_ln1_slots), WST_GDN_QKV, 0, M0_QKV, M0_REM_QKV, 10, 13, 5, 512, GDN_QKV_DIM, NUM_GDN_LAYERS),
-        ("wm_gdn_z", 3, RGRP_YOUT, Some(&gdn_ln1_slots), WST_GDN_Z, 0, M0_Z_PROJ, M0_REM_Z, 10, 11, 5, 512, 2048, NUM_GDN_LAYERS),
-        ("wm_gdn_b", 3, RGRP_YOUT, Some(&gdn_ln1_slots), WST_GDN_B, 0, M0_B_PROJ, M0_REM_B, 10, 4, 5, 512, 16, NUM_GDN_LAYERS),
-        ("wm_gdn_a", 3, RGRP_YOUT, Some(&gdn_ln1_slots), WST_GDN_A, 0, M0_A_PROJ, M0_REM_A, 10, 4, 5, 512, 16, NUM_GDN_LAYERS),
-        ("wm_gdn_out", 0, M0_GATED, None, WST_GDN_OUT, 0, M0_ATTN_OUT, M0_REM_OUT, 11, 10, 5, 64, 1024, NUM_GDN_LAYERS),
-        ("wm_gqa_q", 3, RGRP_YOUT, Some(&gqa_ln1_slots), WST_GQA_Q, 1, M1_Q_RAW, M1_REM_Q, 10, 11, 3, 512, 2048, NUM_GQA_LAYERS),
-        ("wm_gqa_gate", 3, RGRP_YOUT, Some(&gqa_ln1_slots), WST_GQA_GATE, 1, M1_GATE, M1_REM_GATE, 10, 11, 3, 512, 2048, NUM_GQA_LAYERS),
-        ("wm_gqa_k", 3, RGRP_YOUT, Some(&gqa_ln1_slots), WST_GQA_K, 1, M1_K_RAW, M1_REM_K, 10, 9, 3, 512, 512, NUM_GQA_LAYERS),
-        ("wm_gqa_v", 3, RGRP_YOUT, Some(&gqa_ln1_slots), WST_GQA_V, 1, M1_V_PROJ, M1_REM_V, 10, 9, 3, 512, 512, NUM_GQA_LAYERS),
-        ("wm_gqa_o", 1, M1_AO_G, None, WST_GQA_O, 1, M1_ATTN_OUT, M1_REM_OUT, 11, 10, 3, 64, 1024, NUM_GQA_LAYERS),
-        ("wm_mlp_gate", 3, RGRP_YOUT, Some(&mlp_ln2_slots), WST_MLP_GATE, 2, M2_MLP_GATE, M2_REM_GATE, 10, 12, 5, 512, D_FF, NUM_LAYERS),
-        ("wm_mlp_up", 3, RGRP_YOUT, Some(&mlp_ln2_slots), WST_MLP_UP, 2, M2_MLP_UP, M2_REM_UP, 10, 12, 5, 512, D_FF, NUM_LAYERS),
-        ("wm_mlp_down", 2, M2_SWIGLU, None, WST_MLP_DOWN, 2, M2_MLP_OUT, M2_REM_MLPOUT, 12, 10, 5, 32, 1024, NUM_LAYERS),
+    let mm_jobs: [(
+        &str,
+        usize,
+        usize,
+        Option<&[usize]>,
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+        usize,
+        u32,
+        usize,
+        usize,
+    ); 13] = [
+        (
+            "wm_gdn_qkv",
+            3,
+            RGRP_YOUT,
+            Some(&gdn_ln1_slots),
+            WST_GDN_QKV,
+            0,
+            M0_QKV,
+            M0_REM_QKV,
+            10,
+            13,
+            5,
+            512,
+            GDN_QKV_DIM,
+            NUM_GDN_LAYERS,
+        ),
+        (
+            "wm_gdn_z",
+            3,
+            RGRP_YOUT,
+            Some(&gdn_ln1_slots),
+            WST_GDN_Z,
+            0,
+            M0_Z_PROJ,
+            M0_REM_Z,
+            10,
+            11,
+            5,
+            512,
+            2048,
+            NUM_GDN_LAYERS,
+        ),
+        (
+            "wm_gdn_b",
+            3,
+            RGRP_YOUT,
+            Some(&gdn_ln1_slots),
+            WST_GDN_B,
+            0,
+            M0_B_PROJ,
+            M0_REM_B,
+            10,
+            4,
+            5,
+            512,
+            16,
+            NUM_GDN_LAYERS,
+        ),
+        (
+            "wm_gdn_a",
+            3,
+            RGRP_YOUT,
+            Some(&gdn_ln1_slots),
+            WST_GDN_A,
+            0,
+            M0_A_PROJ,
+            M0_REM_A,
+            10,
+            4,
+            5,
+            512,
+            16,
+            NUM_GDN_LAYERS,
+        ),
+        (
+            "wm_gdn_out",
+            0,
+            M0_GATED,
+            None,
+            WST_GDN_OUT,
+            0,
+            M0_ATTN_OUT,
+            M0_REM_OUT,
+            11,
+            10,
+            5,
+            64,
+            1024,
+            NUM_GDN_LAYERS,
+        ),
+        (
+            "wm_gqa_q",
+            3,
+            RGRP_YOUT,
+            Some(&gqa_ln1_slots),
+            WST_GQA_Q,
+            1,
+            M1_Q_RAW,
+            M1_REM_Q,
+            10,
+            11,
+            3,
+            512,
+            2048,
+            NUM_GQA_LAYERS,
+        ),
+        (
+            "wm_gqa_gate",
+            3,
+            RGRP_YOUT,
+            Some(&gqa_ln1_slots),
+            WST_GQA_GATE,
+            1,
+            M1_GATE,
+            M1_REM_GATE,
+            10,
+            11,
+            3,
+            512,
+            2048,
+            NUM_GQA_LAYERS,
+        ),
+        (
+            "wm_gqa_k",
+            3,
+            RGRP_YOUT,
+            Some(&gqa_ln1_slots),
+            WST_GQA_K,
+            1,
+            M1_K_RAW,
+            M1_REM_K,
+            10,
+            9,
+            3,
+            512,
+            512,
+            NUM_GQA_LAYERS,
+        ),
+        (
+            "wm_gqa_v",
+            3,
+            RGRP_YOUT,
+            Some(&gqa_ln1_slots),
+            WST_GQA_V,
+            1,
+            M1_V_PROJ,
+            M1_REM_V,
+            10,
+            9,
+            3,
+            512,
+            512,
+            NUM_GQA_LAYERS,
+        ),
+        (
+            "wm_gqa_o",
+            1,
+            M1_AO_G,
+            None,
+            WST_GQA_O,
+            1,
+            M1_ATTN_OUT,
+            M1_REM_OUT,
+            11,
+            10,
+            3,
+            64,
+            1024,
+            NUM_GQA_LAYERS,
+        ),
+        (
+            "wm_mlp_gate",
+            3,
+            RGRP_YOUT,
+            Some(&mlp_ln2_slots),
+            WST_MLP_GATE,
+            2,
+            M2_MLP_GATE,
+            M2_REM_GATE,
+            10,
+            12,
+            5,
+            512,
+            D_FF,
+            NUM_LAYERS,
+        ),
+        (
+            "wm_mlp_up",
+            3,
+            RGRP_YOUT,
+            Some(&mlp_ln2_slots),
+            WST_MLP_UP,
+            2,
+            M2_MLP_UP,
+            M2_REM_UP,
+            10,
+            12,
+            5,
+            512,
+            D_FF,
+            NUM_LAYERS,
+        ),
+        (
+            "wm_mlp_down",
+            2,
+            M2_SWIGLU,
+            None,
+            WST_MLP_DOWN,
+            2,
+            M2_MLP_OUT,
+            M2_REM_MLPOUT,
+            12,
+            10,
+            5,
+            32,
+            1024,
+            NUM_LAYERS,
+        ),
     ];
 
-    for (wm_idx, &(spec, x_mat, x_st, x_lmap, wst, y_mat, y_st, rem_st, log_d, log_j, log_l, out_div, j_bound, l_bound)) in mm_jobs.iter().enumerate() {
+    for (
+        wm_idx,
+        &(
+            spec,
+            x_mat,
+            x_st,
+            x_lmap,
+            wst,
+            y_mat,
+            y_st,
+            rem_st,
+            log_d,
+            log_j,
+            log_l,
+            out_div,
+            j_bound,
+            l_bound,
+        ),
+    ) in mm_jobs.iter().enumerate()
+    {
         let wp = &receipt.weight_matmul_proofs[wm_idx];
         let z_j = tr.squeeze_ext4_vec(b"mm_zj", log_j, true);
         let z_t = tr.squeeze_ext4_vec(b"mm_zt", LOG_SEQ, true);
         let z_l = tr.squeeze_ext4_vec(b"mm_zl", log_l, true);
         let y_pt = concat_pts(&[&z_j, &z_t, &z_l]);
-        let y_ev = pull_eval(y_mat, y_st, y_pt.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let r_ev = pull_eval(y_mat, rem_st, y_pt, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let y_ev = pull_eval(
+            y_mat,
+            y_st,
+            y_pt.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let r_ev = pull_eval(
+            y_mat,
+            rem_st,
+            y_pt,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let act = eval_lt_const_mle(&z_j, j_bound).mul(eval_lt_const_mle(&z_l, l_bound));
         let claim = y_ev
             .scale_bb(out_div)
             .add(r_ev)
             .sub(act.scale_bb(out_div / 2));
 
-        let (rho, ch, term) = verify_gmask_einsum_ext4(claim, log_l, log_d, &z_l, &wp.prf, &mut tr)?;
+        let (rho, ch, term) =
+            verify_gmask_einsum_ext4(claim, log_l, log_d, &z_l, &wp.prf, &mut tr)?;
         tr.absorb_ext4(b"mm_wr", wp.weight_at_r);
         let (r_l, r_d) = (&ch[..log_l], &ch[log_l..]);
         weight_claims.push(PublicWeightClaim24L::point_eval(
@@ -7731,7 +9886,11 @@ pub fn verify_full_24l_qwen35_receipt(
             wp.weight_at_r,
         ));
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, spec, &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, wp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            wp.prf.gmask_sum,
+        ));
         let scale_x = eq_mle_ext4(&z_l, r_l).mul(wp.weight_at_r);
 
         if let Some(slot_map) = x_lmap {
@@ -7746,7 +9905,10 @@ pub fn verify_full_24l_qwen35_receipt(
                     weight: eq_rl[li],
                 });
             }
-            online_claims[3].push(JointLinearClaimExt4 { terms: x_terms, rhs: x_val });
+            online_claims[3].push(JointLinearClaimExt4 {
+                terms: x_terms,
+                rhs: x_val,
+            });
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
                 Vec::new(),
                 gm_limb_ids,
@@ -7767,7 +9929,14 @@ pub fn verify_full_24l_qwen35_receipt(
                 term,
             ));
         } else {
-            let xv = pull_eval(x_mat, x_st, concat_pts(&[r_d, &z_t, r_l]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let xv = pull_eval(
+                x_mat,
+                x_st,
+                concat_pts(&[r_d, &z_t, r_l]),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
                 Vec::new(),
                 gm_limb_ids,
@@ -7785,8 +9954,22 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_t = tr.squeeze_ext4_vec(b"conv_zt", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"conv_zg", 5, true);
         let pt_ctg = concat_pts(&[&z_c, &z_t, &z_g]);
-        let cp_ev = pull_eval(0, M0_CONV_PRE, pt_ctg.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rc_ev = pull_eval(0, M0_REM_CONV, pt_ctg, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let cp_ev = pull_eval(
+            0,
+            M0_CONV_PRE,
+            pt_ctg.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rc_ev = pull_eval(
+            0,
+            M0_REM_CONV,
+            pt_ctg,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let act = eval_lt_const_mle(&z_c, GDN_QKV_DIM).mul(eval_lt_const_mle(&z_g, NUM_GDN_LAYERS));
         let claim = cp_ev.scale_bb(512).add(rc_ev).sub(act.scale_bb(256));
         let z_cg = concat_pts(&[&z_c, &z_g]);
@@ -7816,15 +9999,26 @@ pub fn verify_full_24l_qwen35_receipt(
                 weight: wt,
             });
         }
-        online_claims[0].push(JointLinearClaimExt4 { terms: s_terms, rhs: l_at_r });
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: s_terms,
+            rhs: l_at_r,
+        });
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "wm_gdn_conv", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, wp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            wp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
             &w_at,
             rho,
-            term.sub(eq_mle_ext4(&z_cg, &ch[..18]).mul(l_at_r).mul(wp.weight_at_r)),
+            term.sub(
+                eq_mle_ext4(&z_cg, &ch[..18])
+                    .mul(l_at_r)
+                    .mul(wp.weight_at_r),
+            ),
         ));
     }
 
@@ -7835,8 +10029,22 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_t = tr.squeeze_ext4_vec(b"spa_zt", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"spa_zg", 5, true);
         let pt13 = concat_pts(&[&z_h, &z_t, &z_g]);
-        let ge_ev = pull_eval(0, M0_G_EXP, pt13.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rg_ev = pull_eval(0, M0_REM_GEXP, pt13, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let ge_ev = pull_eval(
+            0,
+            M0_G_EXP,
+            pt13.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rg_ev = pull_eval(
+            0,
+            M0_REM_GEXP,
+            pt13,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let claim = ge_ev
             .scale_bb(512)
             .add(rg_ev)
@@ -7844,10 +10052,25 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_hg = concat_pts(&[&z_h, &z_g]);
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 9, 0, &z_hg, &wp.prf, &mut tr)?;
         tr.absorb_ext4(b"spa_wr", wp.weight_at_r);
-        weight_claims.push(PublicWeightClaim24L::point_eval(WST_GDN_ALOG, ch.clone(), wp.weight_at_r));
-        let sp_ev = pull_eval(0, M0_SP_Q8, concat_pts(&[&ch[..4], &z_t, &ch[4..9]]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        weight_claims.push(PublicWeightClaim24L::point_eval(
+            WST_GDN_ALOG,
+            ch.clone(),
+            wp.weight_at_r,
+        ));
+        let sp_ev = pull_eval(
+            0,
+            M0_SP_Q8,
+            concat_pts(&[&ch[..4], &z_t, &ch[4..9]]),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "wm_gdn_sp_alog", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, wp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            wp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -7861,12 +10084,35 @@ pub fn verify_full_24l_qwen35_receipt(
     {
         let wp = &receipt.weight_matmul_proofs[15];
         let z_v = tr.squeeze_ext4_vec(b"lmh_zv", 18, true);
-        let log_ev = pull_eval(2, M2_LOGITS, z_v.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rlog_ev = pull_eval(2, M2_REM_LOGITS, z_v.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let darg_ev = pull_eval(2, M2_DIFF_ARGMAX, z_v.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let log_ev = pull_eval(
+            2,
+            M2_LOGITS,
+            z_v.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rlog_ev = pull_eval(
+            2,
+            M2_REM_LOGITS,
+            z_v.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let darg_ev = pull_eval(
+            2,
+            M2_DIFF_ARGMAX,
+            z_v.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let vstar_bits = bits_to_ext4(receipt.emitted_next_token_id as usize, 18);
         let max_bb = Ext4::from_bb(bb_from_i64(receipt.claimed_max_logit as i64));
-        online_claims[2].push(JointLinearClaimExt4::point_eval(M2_LOGITS, vstar_bits, max_bb));
+        online_claims[2].push(JointLinearClaimExt4::point_eval(
+            M2_LOGITS, vstar_bits, max_bb,
+        ));
 
         let act_voc = eval_lt_const_mle(&z_v, VOCAB_SIZE);
         let lt_vstar = eval_lt_const_mle(&z_v, receipt.emitted_next_token_id as usize);
@@ -7887,9 +10133,20 @@ pub fn verify_full_24l_qwen35_receipt(
             wp.weight_at_r,
         ));
         let t15_s24 = concat_pts(&[&ch, &bits_to_ext4(15, 4), &bits_to_ext4(24, 6)]);
-        let x_ev = pull_eval(3, RGRP_YOUT, t15_s24, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let x_ev = pull_eval(
+            3,
+            RGRP_YOUT,
+            t15_s24,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "wm_lm_head", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, wp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            wp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -7906,8 +10163,22 @@ pub fn verify_full_24l_qwen35_receipt(
         let mf = cfg.log_d + cfg.m_row;
         let b = cfg.grp * RGRP_STRIDE;
         let z_full = tr.squeeze_ext4_vec(b"rmsg_zf", mf, true);
-        let y_ev = pull_eval(3, b + RGRP_YOUT, z_full.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let ry_ev = pull_eval(3, b + RGRP_RY, z_full.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let y_ev = pull_eval(
+            3,
+            b + RGRP_YOUT,
+            z_full.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let ry_ev = pull_eval(
+            3,
+            b + RGRP_RY,
+            z_full.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let act = eval_rms_group_act_mle(g_idx, &z_full[cfg.log_d..]);
         let gdiv = cfg.gain_div as u32;
         let claim = y_ev.scale_bb(gdiv).add(ry_ev).sub(act.scale_bb(gdiv / 2));
@@ -7918,10 +10189,25 @@ pub fn verify_full_24l_qwen35_receipt(
             1 => concat_pts(&[&ch[..7], &ch[15..21]]),
             _ => concat_pts(&[&ch[..8], &ch[8..12], &ch[16..19]]),
         };
-        weight_claims.push(PublicWeightClaim24L::point_eval(cfg.wst_gain, w_pt, wp.weight_at_r));
-        let u_ev = pull_eval(3, b + RGRP_UQ9, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        weight_claims.push(PublicWeightClaim24L::point_eval(
+            cfg.wst_gain,
+            w_pt,
+            wp.weight_at_r,
+        ));
+        let u_ev = pull_eval(
+            3,
+            b + RGRP_UQ9,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, spec, &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, wp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            wp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             Vec::new(),
             gm_limb_ids,
@@ -7937,7 +10223,7 @@ pub fn verify_full_24l_qwen35_receipt(
                               claim: Ext4,
                               wit_mat: usize,
                               wit_st: usize,
-                              wit_pt_map: Option<fn(&[Ext4]) -> Vec<Ext4>>,
+                              wit_pt_map: Option<WitPtMapFn>,
                               eval_pub_fn: &dyn Fn(&[Ext4]) -> Ext4,
                               z_s: Vec<Ext4>,
                               cur: &mut usize,
@@ -7950,7 +10236,11 @@ pub fn verify_full_24l_qwen35_receipt(
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, m, 0, &z_s, prf, tr_ref)?;
         let p_at_r = eval_pub_fn(&ch);
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, spec, &ch);
-        onl_cl[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, prf.gmask_sum));
+        onl_cl[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            prf.gmask_sum,
+        ));
         let scale = eq_mle_ext4(&z_s, &ch).mul(p_at_r);
         let mapped_pt = wit_pt_map.map_or_else(|| ch.clone(), |f| f(&ch));
         let mut custom_w = Ext4::ZERO;
@@ -7991,29 +10281,82 @@ pub fn verify_full_24l_qwen35_receipt(
 
     let eval_bad_ge = |ch: &[Ext4]| -> Ext4 {
         Ext4::ONE.sub(
-            eval_lt_const_mle(&ch[12..17], NUM_GDN_LAYERS)
-                .mul(eval_cmp_ij_mle(&ch[4..8], &ch[8..12], false)),
+            eval_lt_const_mle(&ch[12..17], NUM_GDN_LAYERS).mul(eval_cmp_ij_mle(
+                &ch[4..8],
+                &ch[8..12],
+                false,
+            )),
         )
     };
     let eval_bad_gt = |ch: &[Ext4]| -> Ext4 {
         Ext4::ONE.sub(
-            eval_lt_const_mle(&ch[12..17], NUM_GDN_LAYERS)
-                .mul(eval_cmp_ij_mle(&ch[4..8], &ch[8..12], true)),
+            eval_lt_const_mle(&ch[12..17], NUM_GDN_LAYERS).mul(eval_cmp_ij_mle(
+                &ch[4..8],
+                &ch[8..12],
+                true,
+            )),
         )
     };
     let z_g1 = tr.squeeze_ext4_vec(b"pi_zg1", 17, true);
-    verify_wit_pub("pi_gdn_gamma_zc", Ext4::ZERO, 0, M0_GAMMA, None, &eval_bad_ge, z_g1, &mut ev_cursor, &mut tr, &mut online_claims)?;
+    verify_wit_pub(
+        "pi_gdn_gamma_zc",
+        Ext4::ZERO,
+        0,
+        M0_GAMMA,
+        None,
+        &eval_bad_ge,
+        z_g1,
+        &mut ev_cursor,
+        &mut tr,
+        &mut online_claims,
+    )?;
     let z_g2 = tr.squeeze_ext4_vec(b"pi_zg2", 17, true);
-    verify_wit_pub("pi_gdn_lwy_slt", Ext4::ZERO, 0, M0_L_WY, None, &eval_bad_gt, z_g2, &mut ev_cursor, &mut tr, &mut online_claims)?;
+    verify_wit_pub(
+        "pi_gdn_lwy_slt",
+        Ext4::ZERO,
+        0,
+        M0_L_WY,
+        None,
+        &eval_bad_gt,
+        z_g2,
+        &mut ev_cursor,
+        &mut tr,
+        &mut online_claims,
+    )?;
     let z_g3 = tr.squeeze_ext4_vec(b"pi_zg3", 17, true);
-    verify_wit_pub("pi_gdn_awy_ut", Ext4::ZERO, 0, M0_A_WY, None, &eval_bad_ge, z_g3, &mut ev_cursor, &mut tr, &mut online_claims)?;
+    verify_wit_pub(
+        "pi_gdn_awy_ut",
+        Ext4::ZERO,
+        0,
+        M0_A_WY,
+        None,
+        &eval_bad_ge,
+        z_g3,
+        &mut ev_cursor,
+        &mut tr,
+        &mut online_claims,
+    )?;
 
     // GQA Q-RoPE & K-RoPE:
     {
         let b2 = 2 * RGRP_STRIDE;
         let z_rq = tr.squeeze_ext4_vec(b"rope_zq", 18, true);
-        let qhr_ev = pull_eval(1, M1_QH_R, z_rq.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rrq_ev = pull_eval(1, M1_REM_ROPE_Q, z_rq.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let qhr_ev = pull_eval(
+            1,
+            M1_QH_R,
+            z_rq.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rrq_ev = pull_eval(
+            1,
+            M1_REM_ROPE_Q,
+            z_rq.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let cl_qd = next_raw_ev(&mut ev_cursor)?;
         tr.absorb_ext4(b"rope_q_cd", cl_qd);
         let tot_q = qhr_ev
@@ -8022,7 +10365,13 @@ pub fn verify_full_24l_qwen35_receipt(
             .sub(eval_lt_const_mle(&z_rq[15..18], NUM_GQA_LAYERS).scale_bb(2048));
         let cl_qc = tot_q.sub(cl_qd);
         fn map_q18_to_rms(ch: &[Ext4]) -> Vec<Ext4> {
-            concat_pts(&[&ch[..8], &ch[8..11], &[Ext4::ZERO], &ch[11..15], &ch[15..18]])
+            concat_pts(&[
+                &ch[..8],
+                &ch[8..11],
+                &[Ext4::ZERO],
+                &ch[11..15],
+                &ch[15..18],
+            ])
         }
         fn map_q18_swap_to_rms(ch: &[Ext4]) -> Vec<Ext4> {
             concat_pts(&[
@@ -8036,19 +10385,59 @@ pub fn verify_full_24l_qwen35_receipt(
             ])
         }
         let eval_rdiag18 = |ch: &[Ext4]| -> Ext4 {
-            eval_lt_const_mle(&ch[15..18], NUM_GQA_LAYERS)
-                .mul(mle_eval_bb_at_ext4(&luts.rope_diag_bb, &concat_pts(&[&ch[..8], &ch[11..15]])))
+            eval_lt_const_mle(&ch[15..18], NUM_GQA_LAYERS).mul(mle_eval_bb_at_ext4(
+                &luts.rope_diag_bb,
+                &concat_pts(&[&ch[..8], &ch[11..15]]),
+            ))
         };
         let eval_rcross18 = |ch: &[Ext4]| -> Ext4 {
-            eval_lt_const_mle(&ch[15..18], NUM_GQA_LAYERS)
-                .mul(mle_eval_bb_at_ext4(&luts.rope_cross_bb, &concat_pts(&[&ch[..8], &ch[11..15]])))
+            eval_lt_const_mle(&ch[15..18], NUM_GQA_LAYERS).mul(mle_eval_bb_at_ext4(
+                &luts.rope_cross_bb,
+                &concat_pts(&[&ch[..8], &ch[11..15]]),
+            ))
         };
-        verify_wit_pub("pi_gqa_rope_q_diag", cl_qd, 3, b2 + RGRP_YOUT, Some(map_q18_to_rms), &eval_rdiag18, z_rq.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        verify_wit_pub("pi_gqa_rope_q_cross", cl_qc, 3, b2 + RGRP_YOUT, Some(map_q18_swap_to_rms), &eval_rcross18, z_rq, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        verify_wit_pub(
+            "pi_gqa_rope_q_diag",
+            cl_qd,
+            3,
+            b2 + RGRP_YOUT,
+            Some(map_q18_to_rms),
+            &eval_rdiag18,
+            z_rq.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        verify_wit_pub(
+            "pi_gqa_rope_q_cross",
+            cl_qc,
+            3,
+            b2 + RGRP_YOUT,
+            Some(map_q18_swap_to_rms),
+            &eval_rcross18,
+            z_rq,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
 
         let z_rk = tr.squeeze_ext4_vec(b"rope_zk", 16, true);
-        let khr_ev = pull_eval(1, M1_KH_R, z_rk.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rrk_ev = pull_eval(1, M1_REM_ROPE_K, z_rk.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let khr_ev = pull_eval(
+            1,
+            M1_KH_R,
+            z_rk.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rrk_ev = pull_eval(
+            1,
+            M1_REM_ROPE_K,
+            z_rk.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let cl_kd = next_raw_ev(&mut ev_cursor)?;
         tr.absorb_ext4(b"rope_k_cd", cl_kd);
         let tot_k = khr_ev
@@ -8075,54 +10464,186 @@ pub fn verify_full_24l_qwen35_receipt(
             ])
         }
         let eval_rdiag16 = |ch: &[Ext4]| -> Ext4 {
-            eval_lt_const_mle(&ch[13..16], NUM_GQA_LAYERS)
-                .mul(mle_eval_bb_at_ext4(&luts.rope_diag_bb, &concat_pts(&[&ch[..8], &ch[9..13]])))
+            eval_lt_const_mle(&ch[13..16], NUM_GQA_LAYERS).mul(mle_eval_bb_at_ext4(
+                &luts.rope_diag_bb,
+                &concat_pts(&[&ch[..8], &ch[9..13]]),
+            ))
         };
         let eval_rcross16 = |ch: &[Ext4]| -> Ext4 {
-            eval_lt_const_mle(&ch[13..16], NUM_GQA_LAYERS)
-                .mul(mle_eval_bb_at_ext4(&luts.rope_cross_bb, &concat_pts(&[&ch[..8], &ch[9..13]])))
+            eval_lt_const_mle(&ch[13..16], NUM_GQA_LAYERS).mul(mle_eval_bb_at_ext4(
+                &luts.rope_cross_bb,
+                &concat_pts(&[&ch[..8], &ch[9..13]]),
+            ))
         };
-        verify_wit_pub("pi_gqa_rope_k_diag", cl_kd, 3, b2 + RGRP_YOUT, Some(map_k16_to_rms), &eval_rdiag16, z_rk.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        verify_wit_pub("pi_gqa_rope_k_cross", cl_kc, 3, b2 + RGRP_YOUT, Some(map_k16_swap_to_rms), &eval_rcross16, z_rk, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        verify_wit_pub(
+            "pi_gqa_rope_k_diag",
+            cl_kd,
+            3,
+            b2 + RGRP_YOUT,
+            Some(map_k16_to_rms),
+            &eval_rdiag16,
+            z_rk.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        verify_wit_pub(
+            "pi_gqa_rope_k_cross",
+            cl_kc,
+            3,
+            b2 + RGRP_YOUT,
+            Some(map_k16_swap_to_rms),
+            &eval_rcross16,
+            z_rk,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
     }
 
     // GQA 14-bit causal indicator checks:
     {
         let eval_caus = |ch: &[Ext4]| -> Ext4 {
-            eval_lt_const_mle(&ch[11..14], NUM_GQA_LAYERS)
-                .mul(eval_cmp_ij_mle(&ch[4..8], &ch[..4], false))
+            eval_lt_const_mle(&ch[11..14], NUM_GQA_LAYERS).mul(eval_cmp_ij_mle(
+                &ch[4..8],
+                &ch[..4],
+                false,
+            ))
         };
         let eval_non_caus = |ch: &[Ext4]| -> Ext4 { Ext4::ONE.sub(eval_caus(ch)) };
         let zc1 = tr.squeeze_ext4_vec(b"gqa_zc1", 14, true);
-        verify_wit_pub("pi_gqa_sc_caus", Ext4::ZERO, 1, M1_SC_Q8, None, &eval_non_caus, zc1, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        verify_wit_pub(
+            "pi_gqa_sc_caus",
+            Ext4::ZERO,
+            1,
+            M1_SC_Q8,
+            None,
+            &eval_non_caus,
+            zc1,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let zc2 = tr.squeeze_ext4_vec(b"gqa_zc2", 14, true);
-        verify_wit_pub("pi_gqa_sel_caus", Ext4::ZERO, 1, M1_SEL_MAX, None, &eval_non_caus, zc2, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        verify_wit_pub(
+            "pi_gqa_sel_caus",
+            Ext4::ZERO,
+            1,
+            M1_SEL_MAX,
+            None,
+            &eval_non_caus,
+            zc2,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
 
         let zc3 = tr.squeeze_ext4_vec(b"gqa_zc3", 14, true);
-        let usm_ev = pull_eval(1, M1_U_SM, zc3.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let (ch3, wr3) = verify_wit_pub("pi_gqa_usm_caus", usm_ev, 1, 999, None, &eval_caus, zc3, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let usm_ev = pull_eval(
+            1,
+            M1_U_SM,
+            zc3.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let (ch3, wr3) = verify_wit_pub(
+            "pi_gqa_usm_caus",
+            usm_ev,
+            1,
+            999,
+            None,
+            &eval_caus,
+            zc3,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         online_claims[1].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M1_M_MAX, point: ch3[4..].to_vec(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: M1_SC_Q8, point: ch3, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M1_M_MAX,
+                    point: ch3[4..].to_vec(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M1_SC_Q8,
+                    point: ch3,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: wr3,
         });
 
         let zc4 = tr.squeeze_ext4_vec(b"gqa_zc4", 14, true);
-        let esm_ev = pull_eval(1, M1_E_SM, zc4.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        verify_wit_pub("pi_gqa_esm_caus", esm_ev, 1, M1_E_SM_RAW, None, &eval_caus, zc4, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let esm_ev = pull_eval(
+            1,
+            M1_E_SM,
+            zc4.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        verify_wit_pub(
+            "pi_gqa_esm_caus",
+            esm_ev,
+            1,
+            M1_E_SM_RAW,
+            None,
+            &eval_caus,
+            zc4,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
 
         let zc5 = tr.squeeze_ext4_vec(b"gqa_zc5", 14, true);
-        verify_wit_pub("pi_gqa_psm_caus", Ext4::ZERO, 1, M1_P_SM, None, &eval_non_caus, zc5, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        verify_wit_pub(
+            "pi_gqa_psm_caus",
+            Ext4::ZERO,
+            1,
+            M1_P_SM,
+            None,
+            &eval_non_caus,
+            zc5,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
 
         let zc6 = tr.squeeze_ext4_vec(b"gqa_zc6", 14, true);
-        let dpsm_ev = pull_eval(1, M1_DIFF_PSM, zc6.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let (ch6, wr6) = verify_wit_pub("pi_gqa_dpsm_caus", dpsm_ev, 1, 999, None, &eval_caus, zc6, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let dpsm_ev = pull_eval(
+            1,
+            M1_DIFF_PSM,
+            zc6.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let (ch6, wr6) = verify_wit_pub(
+            "pi_gqa_dpsm_caus",
+            dpsm_ev,
+            1,
+            999,
+            None,
+            &eval_caus,
+            zc6,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         online_claims[1].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M1_Z_SM, point: ch6[4..].to_vec(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: M1_REM_PSM, point: ch6, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M1_Z_SM,
+                    point: ch6[4..].to_vec(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M1_REM_PSM,
+                    point: ch6,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: wr6.add(Ext4::ONE),
         });
@@ -8133,13 +10654,39 @@ pub fn verify_full_24l_qwen35_receipt(
         let spec = ["pi_rms0_dnorm", "pi_rms1_dnorm", "pi_rms2_dnorm"][g_idx];
         let b = cfg.grp * RGRP_STRIDE;
         let zr = tr.squeeze_ext4_vec(b"rmsdn_zr", cfg.m_row, true);
-        let dn_ev = pull_eval(3, b + RGRP_DIFF_NORM, zr.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let dn_ev = pull_eval(
+            3,
+            b + RGRP_DIFF_NORM,
+            zr.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let eval_act = |ch: &[Ext4]| -> Ext4 { eval_rms_group_act_mle(g_idx, ch) };
-        let (chr, wr) = verify_wit_pub(spec, dn_ev, 3, 999, None, &eval_act, zr, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let (chr, wr) = verify_wit_pub(
+            spec,
+            dn_ev,
+            3,
+            999,
+            None,
+            &eval_act,
+            zr,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_POW4, point: chr.clone(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RNORM, point: chr, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_POW4,
+                    point: chr.clone(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RNORM,
+                    point: chr,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: wr.add(Ext4::ONE),
         });
@@ -8152,8 +10699,22 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z17 = tr.squeeze_ext4_vec(b"gmrec_z", 17, true);
-        let gm_ev = pull_eval(0, M0_GAMMA, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rgm_ev = pull_eval(0, M0_REM_GAMMA, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let gm_ev = pull_eval(
+            0,
+            M0_GAMMA,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rgm_ev = pull_eval(
+            0,
+            M0_REM_GAMMA,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let g_act = eval_lt_const_mle(&z17[12..17], NUM_GDN_LAYERS);
         let i_diag = g_act.mul(eq_mle_ext4(&z17[4..8], &z17[8..12]));
         let i_gt = g_act.mul(eval_cmp_ij_mle(&z17[4..8], &z17[8..12], true));
@@ -8167,21 +10728,44 @@ pub fn verify_full_24l_qwen35_receipt(
         let eq_i = build_eq_table_lsb_ext4(&ch[4..8]);
         let eq_j = build_eq_table_lsb_ext4(&ch[8..12]);
         let mut terms_gp = Vec::with_capacity(120);
-        for j in 0..16 {
+        for (j, &eq_j_val) in eq_j.iter().enumerate() {
             for ip in j..15 {
                 terms_gp.push(LinearTermExt4::PointEval {
                     subtable: M0_GAMMA,
-                    point: concat_pts(&[&ch[..4], &bits_to_ext4(ip, 4), &bits_to_ext4(j, 4), &ch[12..17]]),
-                    weight: eq_i[ip + 1].mul(eq_j[j]),
+                    point: concat_pts(&[
+                        &ch[..4],
+                        &bits_to_ext4(ip, 4),
+                        &bits_to_ext4(j, 4),
+                        &ch[12..17],
+                    ]),
+                    weight: eq_i[ip + 1].mul(eq_j_val),
                 });
             }
         }
-        online_claims[0].push(JointLinearClaimExt4 { terms: terms_gp, rhs: sp.left_at_r });
-        let al_ev = pull_eval(0, M0_ALPHA_Q12, concat_pts(&[&ch[..8], &ch[12..17]]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: terms_gp,
+            rhs: sp.left_at_r,
+        });
+        let al_ev = pull_eval(
+            0,
+            M0_ALPHA_Q12,
+            concat_pts(&[&ch[..8], &ch[12..17]]),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_gamma_rec", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(al_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(al_ev)),
         ));
     }
 
@@ -8194,9 +10778,26 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_j = tr.squeeze_ext4_vec(b"dkk_zj", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"dkk_zg", 5, true);
         let pt17 = concat_pts(&[&z_h, &z_i, &z_j, &z_g]);
-        let dkk_ev = pull_eval(0, M0_DKK, pt17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rdkk_ev = pull_eval(0, M0_REM_DKK, pt17, &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let claim = dkk_ev.scale_bb(512).add(rdkk_ev).sub(eval_lt_const_mle(&z_g, NUM_GDN_LAYERS).scale_bb(256));
+        let dkk_ev = pull_eval(
+            0,
+            M0_DKK,
+            pt17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rdkk_ev = pull_eval(
+            0,
+            M0_REM_DKK,
+            pt17,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let claim = dkk_ev
+            .scale_bb(512)
+            .add(rdkk_ev)
+            .sub(eval_lt_const_mle(&z_g, NUM_GDN_LAYERS).scale_bb(256));
         let z_hg = concat_pts(&[&z_h, &z_g]);
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 9, 7, &z_hg, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
@@ -8207,17 +10808,39 @@ pub fn verify_full_24l_qwen35_receipt(
         let b1 = RGRP_STRIDE;
         let mut t_i = Vec::with_capacity(18);
         let mut t_j = Vec::with_capacity(18);
-        for g in 0..NUM_GDN_LAYERS {
+        for (g, &eq_rg_g) in eq_rg[..NUM_GDN_LAYERS].iter().enumerate() {
             let gkb = bits_to_ext4(3 * g + 1, 6);
-            t_i.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: concat_pts(&[r_d, r_h, &z_i, &gkb]), weight: eq_rg[g] });
-            t_j.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: concat_pts(&[r_d, r_h, &z_j, &gkb]), weight: eq_rg[g] });
+            t_i.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: concat_pts(&[r_d, r_h, &z_i, &gkb]),
+                weight: eq_rg_g,
+            });
+            t_j.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: concat_pts(&[r_d, r_h, &z_j, &gkb]),
+                weight: eq_rg_g,
+            });
         }
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_i, rhs: sp.left_at_r });
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_j, rhs: r_val });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_i,
+            rhs: sp.left_at_r,
+        });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_j,
+            rhs: r_val,
+        });
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_dkk", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(sp.left_at_r).mul(r_val)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(sp.left_at_r).mul(r_val)),
         ));
     }
 
@@ -8226,20 +10849,59 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z17 = tr.squeeze_ext4_vec(b"bg_z", 17, true);
-        let bg_ev = pull_eval(0, M0_BG, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rbg_ev = pull_eval(0, M0_REM_BG, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let claim = bg_ev.scale_bb(1024).add(rbg_ev).sub(eval_lt_const_mle(&z17[12..17], NUM_GDN_LAYERS).scale_bb(512));
+        let bg_ev = pull_eval(
+            0,
+            M0_BG,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rbg_ev = pull_eval(
+            0,
+            M0_REM_BG,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let claim = bg_ev
+            .scale_bb(1024)
+            .add(rbg_ev)
+            .sub(eval_lt_const_mle(&z17[12..17], NUM_GDN_LAYERS).scale_bb(512));
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 17, 0, &z17, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-        let b_ev = pull_eval(0, M0_BETA_Q10, concat_pts(&[&ch[..8], &ch[12..17]]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let b_ev = pull_eval(
+            0,
+            M0_BETA_Q10,
+            concat_pts(&[&ch[..8], &ch[12..17]]),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         if sp.left_at_r != b_ev {
             return Err("ss_gdn_bg left_at_r mismatch".into());
         }
-        let gm_ev = pull_eval(0, M0_GAMMA, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let gm_ev = pull_eval(
+            0,
+            M0_GAMMA,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_bg", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(gm_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(gm_ev)),
         ));
     }
 
@@ -8248,30 +10910,71 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z17 = tr.squeeze_ext4_vec(b"lwy_z", 17, true);
-        let lwy_ev = pull_eval(0, M0_L_WY, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rlwy_ev = pull_eval(0, M0_REM_LWY, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let i_gt = eval_lt_const_mle(&z17[12..17], NUM_GDN_LAYERS).mul(eval_cmp_ij_mle(&z17[4..8], &z17[8..12], true));
+        let lwy_ev = pull_eval(
+            0,
+            M0_L_WY,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rlwy_ev = pull_eval(
+            0,
+            M0_REM_LWY,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let i_gt = eval_lt_const_mle(&z17[12..17], NUM_GDN_LAYERS).mul(eval_cmp_ij_mle(
+            &z17[4..8],
+            &z17[8..12],
+            true,
+        ));
         let claim = lwy_ev.scale_bb(512).add(rlwy_ev).sub(i_gt.scale_bb(256));
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 17, 0, &z17, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
         let eq_i = build_eq_table_lsb_ext4(&ch[4..8]);
         let eq_j = build_eq_table_lsb_ext4(&ch[8..12]);
         let mut dkk_terms = Vec::with_capacity(120);
-        for j in 0..16 {
-            for i in (j + 1)..16 {
+        for (j, &eq_j_val) in eq_j.iter().enumerate() {
+            for (i, &eq_i_val) in eq_i.iter().enumerate().skip(j + 1) {
                 dkk_terms.push(LinearTermExt4::PointEval {
                     subtable: M0_DKK,
-                    point: concat_pts(&[&ch[..4], &bits_to_ext4(i, 4), &bits_to_ext4(j, 4), &ch[12..17]]),
-                    weight: eq_i[i].mul(eq_j[j]),
+                    point: concat_pts(&[
+                        &ch[..4],
+                        &bits_to_ext4(i, 4),
+                        &bits_to_ext4(j, 4),
+                        &ch[12..17],
+                    ]),
+                    weight: eq_i_val.mul(eq_j_val),
                 });
             }
         }
-        online_claims[0].push(JointLinearClaimExt4 { terms: dkk_terms, rhs: sp.left_at_r });
-        let bg_ev = pull_eval(0, M0_BG, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: dkk_terms,
+            rhs: sp.left_at_r,
+        });
+        let bg_ev = pull_eval(
+            0,
+            M0_BG,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_lwy", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(bg_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(bg_ev)),
         ));
     }
 
@@ -8284,9 +10987,26 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_j = tr.squeeze_ext4_vec(b"dqk_zj", 4, true);
         let z_g = tr.squeeze_ext4_vec(b"dqk_zg", 5, true);
         let pt17 = concat_pts(&[&z_h, &z_i, &z_j, &z_g]);
-        let dqk_ev = pull_eval(0, M0_DQK, pt17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rdqk_ev = pull_eval(0, M0_REM_DQK, pt17, &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let claim = dqk_ev.scale_bb(724).add(rdqk_ev).sub(eval_lt_const_mle(&z_g, NUM_GDN_LAYERS).scale_bb(362));
+        let dqk_ev = pull_eval(
+            0,
+            M0_DQK,
+            pt17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rdqk_ev = pull_eval(
+            0,
+            M0_REM_DQK,
+            pt17,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let claim = dqk_ev
+            .scale_bb(724)
+            .add(rdqk_ev)
+            .sub(eval_lt_const_mle(&z_g, NUM_GDN_LAYERS).scale_bb(362));
         let z_hg = concat_pts(&[&z_h, &z_g]);
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 9, 7, &z_hg, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
@@ -8297,16 +11017,38 @@ pub fn verify_full_24l_qwen35_receipt(
         let b1 = RGRP_STRIDE;
         let mut t_i = Vec::with_capacity(18);
         let mut t_j = Vec::with_capacity(18);
-        for g in 0..NUM_GDN_LAYERS {
-            t_i.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: concat_pts(&[r_d, r_h, &z_i, &bits_to_ext4(3 * g, 6)]), weight: eq_rg[g] });
-            t_j.push(LinearTermExt4::PointEval { subtable: b1 + RGRP_YOUT, point: concat_pts(&[r_d, r_h, &z_j, &bits_to_ext4(3 * g + 1, 6)]), weight: eq_rg[g] });
+        for (g, &eq_rg_g) in eq_rg[..NUM_GDN_LAYERS].iter().enumerate() {
+            t_i.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: concat_pts(&[r_d, r_h, &z_i, &bits_to_ext4(3 * g, 6)]),
+                weight: eq_rg_g,
+            });
+            t_j.push(LinearTermExt4::PointEval {
+                subtable: b1 + RGRP_YOUT,
+                point: concat_pts(&[r_d, r_h, &z_j, &bits_to_ext4(3 * g + 1, 6)]),
+                weight: eq_rg_g,
+            });
         }
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_i, rhs: sp.left_at_r });
-        online_claims[3].push(JointLinearClaimExt4 { terms: t_j, rhs: r_val });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_i,
+            rhs: sp.left_at_r,
+        });
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: t_j,
+            rhs: r_val,
+        });
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_dqk", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(sp.left_at_r).mul(r_val)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(sp.left_at_r).mul(r_val)),
         ));
     }
 
@@ -8315,21 +11057,61 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z17 = tr.squeeze_ext4_vec(b"awy_z", 17, true);
-        let awy_ev = pull_eval(0, M0_A_WY, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rawy_ev = pull_eval(0, M0_REM_AWY, z17.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let i_ge = eval_lt_const_mle(&z17[12..17], NUM_GDN_LAYERS).mul(eval_cmp_ij_mle(&z17[4..8], &z17[8..12], false));
+        let awy_ev = pull_eval(
+            0,
+            M0_A_WY,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rawy_ev = pull_eval(
+            0,
+            M0_REM_AWY,
+            z17.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let i_ge = eval_lt_const_mle(&z17[12..17], NUM_GDN_LAYERS).mul(eval_cmp_ij_mle(
+            &z17[4..8],
+            &z17[8..12],
+            false,
+        ));
         let claim = awy_ev.scale_bb(512).add(rawy_ev).sub(i_ge.scale_bb(256));
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 17, 0, &z17, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-        let dqk_ev = pull_eval(0, M0_DQK, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let dqk_ev = pull_eval(
+            0,
+            M0_DQK,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         if sp.left_at_r != dqk_ev {
             return Err("ss_gdn_awy left_at_r mismatch".into());
         }
-        let gm_ev = pull_eval(0, M0_GAMMA, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let gm_ev = pull_eval(
+            0,
+            M0_GAMMA,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_awy", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(gm_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z17, &ch).mul(sp.left_at_r).mul(gm_ev)),
         ));
     }
 
@@ -8338,9 +11120,26 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z20 = tr.squeeze_ext4_vec(b"vb_z", 20, true);
-        let vb_ev = pull_eval(0, M0_V_BETA, z20.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rvb_ev = pull_eval(0, M0_REM_VBETA, z20.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let claim = vb_ev.scale_bb(256).add(rvb_ev).sub(eval_lt_const_mle(&z20[15..20], NUM_GDN_LAYERS).scale_bb(128));
+        let vb_ev = pull_eval(
+            0,
+            M0_V_BETA,
+            z20.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rvb_ev = pull_eval(
+            0,
+            M0_REM_VBETA,
+            z20.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let claim = vb_ev
+            .scale_bb(256)
+            .add(rvb_ev)
+            .sub(eval_lt_const_mle(&z20[15..20], NUM_GDN_LAYERS).scale_bb(128));
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 20, 0, &z20, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
         let eq_rg = build_eq_table_lsb_ext4(&ch[15..20]);
@@ -8351,13 +11150,31 @@ pub fn verify_full_24l_qwen35_receipt(
                 weight: eq_rg[g],
             })
             .collect();
-        online_claims[0].push(JointLinearClaimExt4 { terms: b_terms, rhs: sp.left_at_r });
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: b_terms,
+            rhs: sp.left_at_r,
+        });
         let vr_pt = concat_pts(&[&ch[..11], &[Ext4::ZERO, Ext4::ONE], &ch[11..20]]);
-        let vr_ev = pull_eval(0, M0_CONV_SILU, vr_pt, &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let vr_ev = pull_eval(
+            0,
+            M0_CONV_SILU,
+            vr_pt,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_vbeta", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z20, &ch).mul(sp.left_at_r).mul(vr_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z20, &ch).mul(sp.left_at_r).mul(vr_ev)),
         ));
     }
 
@@ -8375,12 +11192,37 @@ pub fn verify_full_24l_qwen35_receipt(
         let pt20 = concat_pts(&[&z_d, &z_h, &z_i, &z_g]);
         let g_act = eval_lt_const_mle(&z_g, NUM_GDN_LAYERS);
         let claim = if is_solve {
-            let vb_ev = pull_eval(0, M0_V_BETA, pt20.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let uw_ev = pull_eval(0, out_st, pt20.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let vb_ev = pull_eval(
+                0,
+                M0_V_BETA,
+                pt20.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let uw_ev = pull_eval(
+                0,
+                out_st,
+                pt20.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let rw_ev = pull_eval(0, rem_st, pt20, &mut ev_cursor, &mut tr, &mut online_claims)?;
-            vb_ev.sub(uw_ev).scale_bb(512).add(g_act.scale_bb(256)).sub(rw_ev)
+            vb_ev
+                .sub(uw_ev)
+                .scale_bb(512)
+                .add(g_act.scale_bb(256))
+                .sub(rw_ev)
         } else {
-            let yw_ev = pull_eval(0, out_st, pt20.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let yw_ev = pull_eval(
+                0,
+                out_st,
+                pt20.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let ry_ev = pull_eval(0, rem_st, pt20, &mut ev_cursor, &mut tr, &mut online_claims)?;
             yw_ev.scale_bb(1024).add(ry_ev).sub(g_act.scale_bb(512))
         };
@@ -8393,11 +11235,26 @@ pub fn verify_full_24l_qwen35_receipt(
             concat_pts(&[r_h, &z_i, r_j, r_g]),
             sp.left_at_r,
         ));
-        let u_ev = pull_eval(0, M0_U_WY, concat_pts(&[&z_d, r_h, r_j, r_g]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let u_ev = pull_eval(
+            0,
+            M0_U_WY,
+            concat_pts(&[&z_d, r_h, r_j, r_g]),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, spec, &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(sp.left_at_r).mul(u_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z_hg, &ch[..9]).mul(sp.left_at_r).mul(u_ev)),
         ));
     }
 
@@ -8406,27 +11263,62 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z20 = tr.squeeze_ext4_vec(b"gg_z", 20, true);
-        let gt_ev = pull_eval(0, M0_GATED, z20.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rgt_ev = pull_eval(0, M0_REM_GATED, z20.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let claim = gt_ev.scale_bb(256).add(rgt_ev).sub(eval_lt_const_mle(&z20[15..20], NUM_GDN_LAYERS).scale_bb(128));
+        let gt_ev = pull_eval(
+            0,
+            M0_GATED,
+            z20.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rgt_ev = pull_eval(
+            0,
+            M0_REM_GATED,
+            z20.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let claim = gt_ev
+            .scale_bb(256)
+            .add(rgt_ev)
+            .sub(eval_lt_const_mle(&z20[15..20], NUM_GDN_LAYERS).scale_bb(128));
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 20, 0, &z20, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
         let eq_rg = build_eq_table_lsb_ext4(&ch[15..20]);
         let b1 = RGRP_STRIDE;
         let mut yn_terms = Vec::with_capacity(18);
-        for g in 0..NUM_GDN_LAYERS {
+        for (g, &eq_rg_g) in eq_rg[..NUM_GDN_LAYERS].iter().enumerate() {
             yn_terms.push(LinearTermExt4::PointEval {
                 subtable: b1 + RGRP_YOUT,
                 point: concat_pts(&[&ch[..15], &bits_to_ext4(3 * g + 2, 6)]),
-                weight: eq_rg[g],
+                weight: eq_rg_g,
             });
         }
-        online_claims[3].push(JointLinearClaimExt4 { terms: yn_terms, rhs: sp.left_at_r });
-        let zs_ev = pull_eval(0, M0_Z_SILU, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        online_claims[3].push(JointLinearClaimExt4 {
+            terms: yn_terms,
+            rhs: sp.left_at_r,
+        });
+        let zs_ev = pull_eval(
+            0,
+            M0_Z_SILU,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gdn_gated", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z20, &ch).mul(sp.left_at_r).mul(zs_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z20, &ch).mul(sp.left_at_r).mul(zs_ev)),
         ));
     }
 
@@ -8439,9 +11331,24 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_hq = tr.squeeze_ext4_vec(b"qk_zhq", 3, true);
         let z_q = tr.squeeze_ext4_vec(b"qk_zq", 3, true);
         let pt14 = concat_pts(&[&z_tj, &z_ti, &z_hq, &z_q]);
-        let sc_ev = pull_eval(1, M1_SC_Q8, pt14.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rsc_ev = pull_eval(1, M1_REM_SC, pt14, &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let i_caus = eval_lt_const_mle(&z_q, NUM_GQA_LAYERS).mul(eval_cmp_ij_mle(&z_ti, &z_tj, false));
+        let sc_ev = pull_eval(
+            1,
+            M1_SC_Q8,
+            pt14.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rsc_ev = pull_eval(
+            1,
+            M1_REM_SC,
+            pt14,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let i_caus =
+            eval_lt_const_mle(&z_q, NUM_GQA_LAYERS).mul(eval_cmp_ij_mle(&z_ti, &z_tj, false));
         let claim = sc_ev.scale_bb(64).add(rsc_ev).sub(i_caus.scale_bb(32));
         let z10 = concat_pts(&[&z_ti, &z_hq, &z_q]);
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 10, 8, &z10, &sp.prf, &mut tr)?;
@@ -8451,7 +11358,7 @@ pub fn verify_full_24l_qwen35_receipt(
         let eq_rti = build_eq_table_lsb_ext4(r_ti);
         let eq_rq = build_eq_table_lsb_ext4(r_q);
         let mut k_terms = Vec::with_capacity(96);
-        for q in 0..NUM_GQA_LAYERS {
+        for (q, &eq_rq_q) in eq_rq[..NUM_GQA_LAYERS].iter().enumerate() {
             let q_bits = bits_to_ext4(q, 3);
             for tj in 0..16 {
                 let mut sum_ti = Ext4::ZERO;
@@ -8461,16 +11368,34 @@ pub fn verify_full_24l_qwen35_receipt(
                 k_terms.push(LinearTermExt4::PointEval {
                     subtable: M1_KH_R,
                     point: concat_pts(&[r_dh, &[r_hq[2]], &bits_to_ext4(tj, 4), &q_bits]),
-                    weight: eq_rq[q].mul(eq_tj[tj]).mul(sum_ti),
+                    weight: eq_rq_q.mul(eq_tj[tj]).mul(sum_ti),
                 });
             }
         }
-        online_claims[1].push(JointLinearClaimExt4 { terms: k_terms, rhs: sp.left_at_r });
-        let q_ev = pull_eval(1, M1_QH_R, concat_pts(&[r_dh, r_hq, r_ti, r_q]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        online_claims[1].push(JointLinearClaimExt4 {
+            terms: k_terms,
+            rhs: sp.left_at_r,
+        });
+        let q_ev = pull_eval(
+            1,
+            M1_QH_R,
+            concat_pts(&[r_dh, r_hq, r_ti, r_q]),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_qk", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z10, &ch[..10]).mul(sp.left_at_r).mul(q_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z10, &ch[..10]).mul(sp.left_at_r).mul(q_ev)),
         ));
     }
 
@@ -8481,11 +11406,27 @@ pub fn verify_full_24l_qwen35_receipt(
         let z14 = tr.squeeze_ext4_vec(b"selb_z", 14, true);
         let (rho, ch, term) = verify_gmask_einsum_ext4(Ext4::ZERO, 14, 0, &z14, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-        online_claims[1].push(JointLinearClaimExt4::point_eval(M1_SEL_MAX, ch.clone(), sp.left_at_r));
+        online_claims[1].push(JointLinearClaimExt4::point_eval(
+            M1_SEL_MAX,
+            ch.clone(),
+            sp.left_at_r,
+        ));
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_sel_bool", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z14, &ch).mul(sp.left_at_r).mul(Ext4::ONE.sub(sp.left_at_r))),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(
+                eq_mle_ext4(&z14, &ch)
+                    .mul(sp.left_at_r)
+                    .mul(Ext4::ONE.sub(sp.left_at_r)),
+            ),
         ));
     }
 
@@ -8496,13 +11437,43 @@ pub fn verify_full_24l_qwen35_receipt(
         let z14 = tr.squeeze_ext4_vec(b"selm_z", 14, true);
         let (rho, ch, term) = verify_gmask_einsum_ext4(Ext4::ZERO, 14, 0, &z14, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-        online_claims[1].push(JointLinearClaimExt4::point_eval(M1_SEL_MAX, ch.clone(), sp.left_at_r));
-        let m_ev = pull_eval(1, M1_M_MAX, ch[4..].to_vec(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let sc_ev = pull_eval(1, M1_SC_Q8, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        online_claims[1].push(JointLinearClaimExt4::point_eval(
+            M1_SEL_MAX,
+            ch.clone(),
+            sp.left_at_r,
+        ));
+        let m_ev = pull_eval(
+            1,
+            M1_M_MAX,
+            ch[4..].to_vec(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let sc_ev = pull_eval(
+            1,
+            M1_SC_Q8,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_sel_max", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z14, &ch).mul(sp.left_at_r).mul(m_ev.sub(sc_ev))),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(
+                eq_mle_ext4(&z14, &ch)
+                    .mul(sp.left_at_r)
+                    .mul(m_ev.sub(sc_ev)),
+            ),
         ));
     }
 
@@ -8511,17 +11482,50 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z14 = tr.squeeze_ext4_vec(b"psmd_z", 14, true);
-        let esm_ev = pull_eval(1, M1_E_SM, z14.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rpsm_ev = pull_eval(1, M1_REM_PSM, z14.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let esm_ev = pull_eval(
+            1,
+            M1_E_SM,
+            z14.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rpsm_ev = pull_eval(
+            1,
+            M1_REM_PSM,
+            z14.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let claim = esm_ev.scale_bb(2048).sub(rpsm_ev);
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 14, 0, &z14, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-        online_claims[1].push(JointLinearClaimExt4::point_eval(M1_Z_SM, ch[4..].to_vec(), sp.left_at_r));
-        let p_ev = pull_eval(1, M1_P_SM, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        online_claims[1].push(JointLinearClaimExt4::point_eval(
+            M1_Z_SM,
+            ch[4..].to_vec(),
+            sp.left_at_r,
+        ));
+        let p_ev = pull_eval(
+            1,
+            M1_P_SM,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_psm_div", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z14, &ch).mul(sp.left_at_r).mul(p_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z14, &ch).mul(sp.left_at_r).mul(p_ev)),
         ));
     }
 
@@ -8534,9 +11538,26 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_ti = tr.squeeze_ext4_vec(b"pv_zti", 4, true);
         let z_q = tr.squeeze_ext4_vec(b"pv_zq", 3, true);
         let pt18 = concat_pts(&[&z_dh, &z_hq, &z_ti, &z_q]);
-        let aoh_ev = pull_eval(1, M1_AO_H, pt18.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let raoh_ev = pull_eval(1, M1_REM_AOH, pt18, &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let claim = aoh_ev.scale_bb(2048).add(raoh_ev).sub(eval_lt_const_mle(&z_q, NUM_GQA_LAYERS).scale_bb(1024));
+        let aoh_ev = pull_eval(
+            1,
+            M1_AO_H,
+            pt18.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let raoh_ev = pull_eval(
+            1,
+            M1_REM_AOH,
+            pt18,
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let claim = aoh_ev
+            .scale_bb(2048)
+            .add(raoh_ev)
+            .sub(eval_lt_const_mle(&z_q, NUM_GQA_LAYERS).scale_bb(1024));
         let z6 = concat_pts(&[&z_hq, &z_q]);
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 6, 4, &z6, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
@@ -8546,11 +11567,26 @@ pub fn verify_full_24l_qwen35_receipt(
             concat_pts(&[r_tj, &z_ti, r_hq, r_q]),
             sp.left_at_r,
         ));
-        let v_ev = pull_eval(1, M1_V_PROJ, concat_pts(&[&z_dh, &[r_hq[2]], r_tj, r_q]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let v_ev = pull_eval(
+            1,
+            M1_V_PROJ,
+            concat_pts(&[&z_dh, &[r_hq[2]], r_tj, r_q]),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_pv", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z6, &ch[..6]).mul(sp.left_at_r).mul(v_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z6, &ch[..6]).mul(sp.left_at_r).mul(v_ev)),
         ));
     }
 
@@ -8559,17 +11595,53 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z18 = tr.squeeze_ext4_vec(b"aog_z", 18, true);
-        let aog_ev = pull_eval(1, M1_AO_G, z18.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let raog_ev = pull_eval(1, M1_REM_AOG, z18.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let claim = aog_ev.scale_bb(1024).add(raog_ev).sub(eval_lt_const_mle(&z18[15..18], NUM_GQA_LAYERS).scale_bb(512));
+        let aog_ev = pull_eval(
+            1,
+            M1_AO_G,
+            z18.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let raog_ev = pull_eval(
+            1,
+            M1_REM_AOG,
+            z18.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let claim = aog_ev
+            .scale_bb(1024)
+            .add(raog_ev)
+            .sub(eval_lt_const_mle(&z18[15..18], NUM_GQA_LAYERS).scale_bb(512));
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 18, 0, &z18, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-        online_claims[1].push(JointLinearClaimExt4::point_eval(M1_AO_H, ch.clone(), sp.left_at_r));
-        let sg_ev = pull_eval(1, M1_SIG_GATE, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        online_claims[1].push(JointLinearClaimExt4::point_eval(
+            M1_AO_H,
+            ch.clone(),
+            sp.left_at_r,
+        ));
+        let sg_ev = pull_eval(
+            1,
+            M1_SIG_GATE,
+            ch.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_gqa_aog", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-            Vec::new(), gm_limb_ids, &w_at, rho, term.sub(eq_mle_ext4(&z18, &ch).mul(sp.left_at_r).mul(sg_ev)),
+            Vec::new(),
+            gm_limb_ids,
+            &w_at,
+            rho,
+            term.sub(eq_mle_ext4(&z18, &ch).mul(sp.left_at_r).mul(sg_ev)),
         ));
     }
 
@@ -8578,15 +11650,38 @@ pub fn verify_full_24l_qwen35_receipt(
         let sp = &receipt.sec_sec_proofs[ss_idx];
         ss_idx += 1;
         let z21 = tr.squeeze_ext4_vec(b"swg_z", 21, true);
-        let sw_ev = pull_eval(2, M2_SWIGLU, z21.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let rsw_ev = pull_eval(2, M2_REM_SWIGLU, z21.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let act_mlp = eval_lt_const_mle(&z21[..12], D_FF).mul(eval_lt_const_mle(&z21[16..21], NUM_LAYERS));
+        let sw_ev = pull_eval(
+            2,
+            M2_SWIGLU,
+            z21.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let rsw_ev = pull_eval(
+            2,
+            M2_REM_SWIGLU,
+            z21.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let act_mlp =
+            eval_lt_const_mle(&z21[..12], D_FF).mul(eval_lt_const_mle(&z21[16..21], NUM_LAYERS));
         let claim = sw_ev.scale_bb(512).add(rsw_ev).sub(act_mlp.scale_bb(256));
         let (rho, ch, term) = verify_gmask_einsum_ext4(claim, 21, 0, &z21, &sp.prf, &mut tr)?;
         tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-        online_claims[2].push(JointLinearClaimExt4::point_eval(M2_GATE_SILU, ch.clone(), sp.left_at_r));
+        online_claims[2].push(JointLinearClaimExt4::point_eval(
+            M2_GATE_SILU,
+            ch.clone(),
+            sp.left_at_r,
+        ));
         let (w_sum, w_at) = GMaskExt4::build_spec_weights(&gm_specs, "ss_mlp_swiglu", &ch);
-        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &w_sum, sp.prf.gmask_sum));
+        online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+            gm_limb_ids,
+            &w_sum,
+            sp.prf.gmask_sum,
+        ));
         online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
             vec![LinearTermExt4::PointEval {
                 subtable: M2_MLP_UP,
@@ -8601,64 +11696,89 @@ pub fn verify_full_24l_qwen35_receipt(
     }
 
     // 18..29: `RMSNorm` `4 × 3` bilinear checks:
-    let discharge_rms_xin_ver = |g_idx: usize, pt: &[Ext4], expected_val: Ext4, onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]| {
-        match g_idx {
-            0 => {
-                let s5 = pt[19];
-                let pt19 = pt[..19].to_vec();
-                onl_cl[2].push(JointLinearClaimExt4 {
-                    terms: vec![
-                        LinearTermExt4::PointEval { subtable: M2_H_IN, point: pt19.clone(), weight: Ext4::ONE.sub(s5) },
-                        LinearTermExt4::PointEval { subtable: M2_H_MID, point: pt19, weight: s5 },
-                    ],
-                    rhs: expected_val,
-                });
-            }
-            1 => {
-                let eq_gk = build_eq_table_lsb_ext4(&pt[15..21]);
-                let mut terms = Vec::with_capacity(54);
-                let two = Ext4::from_bb(2);
-                for g in 0..18 {
-                    let g_bits = bits_to_ext4(g, 5);
-                    terms.push(LinearTermExt4::PointEval {
-                        subtable: M0_CONV_SILU,
-                        point: concat_pts(&[&pt[..11], &[Ext4::ZERO, Ext4::ZERO], &pt[11..15], &g_bits]),
-                        weight: two.mul(eq_gk[3 * g]),
-                    });
-                    terms.push(LinearTermExt4::PointEval {
-                        subtable: M0_CONV_SILU,
-                        point: concat_pts(&[&pt[..11], &[Ext4::ONE, Ext4::ZERO], &pt[11..15], &g_bits]),
-                        weight: two.mul(eq_gk[3 * g + 1]),
-                    });
-                    terms.push(LinearTermExt4::PointEval {
-                        subtable: M0_Y_WY,
-                        point: concat_pts(&[&pt[..15], &g_bits]),
-                        weight: eq_gk[3 * g + 2],
+    let discharge_rms_xin_ver =
+        |g_idx: usize,
+         pt: &[Ext4],
+         expected_val: Ext4,
+         onl_cl: &mut [Vec<JointLinearClaimExt4>; 4]| {
+            match g_idx {
+                0 => {
+                    let s5 = pt[19];
+                    let pt19 = pt[..19].to_vec();
+                    onl_cl[2].push(JointLinearClaimExt4 {
+                        terms: vec![
+                            LinearTermExt4::PointEval {
+                                subtable: M2_H_IN,
+                                point: pt19.clone(),
+                                weight: Ext4::ONE.sub(s5),
+                            },
+                            LinearTermExt4::PointEval {
+                                subtable: M2_H_MID,
+                                point: pt19,
+                                weight: s5,
+                            },
+                        ],
+                        rhs: expected_val,
                     });
                 }
-                onl_cl[0].push(JointLinearClaimExt4 { terms, rhs: expected_val });
+                1 => {
+                    let eq_gk = build_eq_table_lsb_ext4(&pt[15..21]);
+                    let mut terms = Vec::with_capacity(54);
+                    let two = Ext4::from_bb(2);
+                    for g in 0..18 {
+                        let g_bits = bits_to_ext4(g, 5);
+                        terms.push(LinearTermExt4::PointEval {
+                            subtable: M0_CONV_SILU,
+                            point: concat_pts(&[
+                                &pt[..11],
+                                &[Ext4::ZERO, Ext4::ZERO],
+                                &pt[11..15],
+                                &g_bits,
+                            ]),
+                            weight: two.mul(eq_gk[3 * g]),
+                        });
+                        terms.push(LinearTermExt4::PointEval {
+                            subtable: M0_CONV_SILU,
+                            point: concat_pts(&[
+                                &pt[..11],
+                                &[Ext4::ONE, Ext4::ZERO],
+                                &pt[11..15],
+                                &g_bits,
+                            ]),
+                            weight: two.mul(eq_gk[3 * g + 1]),
+                        });
+                        terms.push(LinearTermExt4::PointEval {
+                            subtable: M0_Y_WY,
+                            point: concat_pts(&[&pt[..15], &g_bits]),
+                            weight: eq_gk[3 * g + 2],
+                        });
+                    }
+                    onl_cl[0].push(JointLinearClaimExt4 {
+                        terms,
+                        rhs: expected_val,
+                    });
+                }
+                _ => {
+                    let two = Ext4::from_bb(2);
+                    let (h1, h2, h3) = (pt[9], pt[10], pt[11]);
+                    onl_cl[1].push(JointLinearClaimExt4 {
+                        terms: vec![
+                            LinearTermExt4::PointEval {
+                                subtable: M1_Q_RAW,
+                                point: concat_pts(&[&pt[..11], &pt[12..19]]),
+                                weight: two.mul(Ext4::ONE.sub(h3)),
+                            },
+                            LinearTermExt4::PointEval {
+                                subtable: M1_K_RAW,
+                                point: concat_pts(&[&pt[..9], &pt[12..19]]),
+                                weight: two.mul(h3).mul(Ext4::ONE.sub(h2)).mul(Ext4::ONE.sub(h1)),
+                            },
+                        ],
+                        rhs: expected_val,
+                    });
+                }
             }
-            _ => {
-                let two = Ext4::from_bb(2);
-                let (h1, h2, h3) = (pt[9], pt[10], pt[11]);
-                onl_cl[1].push(JointLinearClaimExt4 {
-                    terms: vec![
-                        LinearTermExt4::PointEval {
-                            subtable: M1_Q_RAW,
-                            point: concat_pts(&[&pt[..11], &pt[12..19]]),
-                            weight: two.mul(Ext4::ONE.sub(h3)),
-                        },
-                        LinearTermExt4::PointEval {
-                            subtable: M1_K_RAW,
-                            point: concat_pts(&[&pt[..9], &pt[12..19]]),
-                            weight: two.mul(h3).mul(Ext4::ONE.sub(h2)).mul(Ext4::ONE.sub(h1)),
-                        },
-                    ],
-                    rhs: expected_val,
-                });
-            }
-        }
-    };
+        };
 
     for (g_idx, cfg) in RMS_CFGS.iter().enumerate() {
         let b = cfg.grp * RGRP_STRIDE;
@@ -8675,17 +11795,46 @@ pub fn verify_full_24l_qwen35_receipt(
             let sp = &receipt.sec_sec_proofs[ss_idx];
             ss_idx += 1;
             let z_sq = tr.squeeze_ext4_vec(b"rmssq_z", mf, true);
-            let sqlo = pull_eval(3, b + RGRP_SQLO, z_sq.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let sqhi = pull_eval(3, b + RGRP_SQHI, z_sq.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let rsq = pull_eval(3, b + RGRP_RSQ, z_sq.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let sqlo = pull_eval(
+                3,
+                b + RGRP_SQLO,
+                z_sq.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let sqhi = pull_eval(
+                3,
+                b + RGRP_SQHI,
+                z_sq.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let rsq = pull_eval(
+                3,
+                b + RGRP_RSQ,
+                z_sq.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let claim = sqlo.add(sqhi.scale_bb(8192)).scale_bb(16).add(rsq);
             let (rho, ch, term) = verify_gmask_einsum_ext4(claim, mf, 0, &z_sq, &sp.prf, &mut tr)?;
             tr.absorb_ext4(b"ss_lr", sp.left_at_r);
             discharge_rms_xin_ver(g_idx, &ch, sp.left_at_r, &mut online_claims);
             let (ws, wa) = GMaskExt4::build_spec_weights(&gm_specs, specs[0], &ch);
-            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws, sp.prf.gmask_sum));
+            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+                gm_limb_ids,
+                &ws,
+                sp.prf.gmask_sum,
+            ));
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-                Vec::new(), gm_limb_ids, &wa, rho, term.sub(eq_mle_ext4(&z_sq, &ch).mul(sp.left_at_r).mul(sp.left_at_r)),
+                Vec::new(),
+                gm_limb_ids,
+                &wa,
+                rho,
+                term.sub(eq_mle_ext4(&z_sq, &ch).mul(sp.left_at_r).mul(sp.left_at_r)),
             ));
         }
         // p4u:
@@ -8693,18 +11842,58 @@ pub fn verify_full_24l_qwen35_receipt(
             let sp = &receipt.sec_sec_proofs[ss_idx];
             ss_idx += 1;
             let z_p4 = tr.squeeze_ext4_vec(b"rmsp4_z", mr, true);
-            let mslo = pull_eval(3, b + RGRP_MS_LO, z_p4.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let mshi = pull_eval(3, b + RGRP_MS_HI, z_p4.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let rn = pull_eval(3, b + RGRP_RNORM, z_p4.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let mslo = pull_eval(
+                3,
+                b + RGRP_MS_LO,
+                z_p4.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let mshi = pull_eval(
+                3,
+                b + RGRP_MS_HI,
+                z_p4.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let rn = pull_eval(
+                3,
+                b + RGRP_RNORM,
+                z_p4.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let claim = mslo.add(mshi.scale_bb(8192)).sub(rn);
             let (rho, ch, term) = verify_gmask_einsum_ext4(claim, mr, 0, &z_p4, &sp.prf, &mut tr)?;
             tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-            online_claims[3].push(JointLinearClaimExt4::point_eval(b + RGRP_POW4, ch.clone(), sp.left_at_r));
-            let um_ev = pull_eval(3, b + RGRP_UMS, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            online_claims[3].push(JointLinearClaimExt4::point_eval(
+                b + RGRP_POW4,
+                ch.clone(),
+                sp.left_at_r,
+            ));
+            let um_ev = pull_eval(
+                3,
+                b + RGRP_UMS,
+                ch.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let (ws, wa) = GMaskExt4::build_spec_weights(&gm_specs, specs[1], &ch);
-            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws, sp.prf.gmask_sum));
+            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+                gm_limb_ids,
+                &ws,
+                sp.prf.gmask_sum,
+            ));
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-                Vec::new(), gm_limb_ids, &wa, rho, term.sub(eq_mle_ext4(&z_p4, &ch).mul(sp.left_at_r).mul(um_ev)),
+                Vec::new(),
+                gm_limb_ids,
+                &wa,
+                rho,
+                term.sub(eq_mle_ext4(&z_p4, &ch).mul(sp.left_at_r).mul(um_ev)),
             ));
         }
         // p2r:
@@ -8712,20 +11901,67 @@ pub fn verify_full_24l_qwen35_receipt(
             let sp = &receipt.sec_sec_proofs[ss_idx];
             ss_idx += 1;
             let z_p2 = tr.squeeze_ext4_vec(b"rmsp2_z", mr, true);
-            let rm_ev = pull_eval(3, b + RGRP_RMLUT, z_p2.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let hp_ev = pull_eval(3, b + RGRP_HPOW2, z_p2.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let rr_ev = pull_eval(3, b + RGRP_RRHO, z_p2.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let rm_ev = pull_eval(
+                3,
+                b + RGRP_RMLUT,
+                z_p2.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let hp_ev = pull_eval(
+                3,
+                b + RGRP_HPOW2,
+                z_p2.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let rr_ev = pull_eval(
+                3,
+                b + RGRP_RRHO,
+                z_p2.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let claim = rm_ev.add(hp_ev).sub(rr_ev);
             let (rho, ch, term) = verify_gmask_einsum_ext4(claim, mr, 0, &z_p2, &sp.prf, &mut tr)?;
             tr.absorb_ext4(b"ss_lr", sp.left_at_r);
-            online_claims[3].push(JointLinearClaimExt4::point_eval(b + RGRP_POW2, ch.clone(), sp.left_at_r));
-            let rlo = pull_eval(3, b + RGRP_RHO_LO, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let rhi = pull_eval(3, b + RGRP_RHO_HI, ch.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            online_claims[3].push(JointLinearClaimExt4::point_eval(
+                b + RGRP_POW2,
+                ch.clone(),
+                sp.left_at_r,
+            ));
+            let rlo = pull_eval(
+                3,
+                b + RGRP_RHO_LO,
+                ch.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let rhi = pull_eval(
+                3,
+                b + RGRP_RHO_HI,
+                ch.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let rho_ev = rlo.add(rhi.scale_bb(4096));
             let (ws, wa) = GMaskExt4::build_spec_weights(&gm_specs, specs[2], &ch);
-            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws, sp.prf.gmask_sum));
+            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+                gm_limb_ids,
+                &ws,
+                sp.prf.gmask_sum,
+            ));
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-                Vec::new(), gm_limb_ids, &wa, rho, term.sub(eq_mle_ext4(&z_p2, &ch).mul(sp.left_at_r).mul(rho_ev)),
+                Vec::new(),
+                gm_limb_ids,
+                &wa,
+                rho,
+                term.sub(eq_mle_ext4(&z_p2, &ch).mul(sp.left_at_r).mul(rho_ev)),
             ));
         }
         // xrho:
@@ -8733,21 +11969,57 @@ pub fn verify_full_24l_qwen35_receipt(
             let sp = &receipt.sec_sec_proofs[ss_idx];
             ss_idx += 1;
             let z_xr = tr.squeeze_ext4_vec(b"rmsxr_z", mf, true);
-            let uq_ev = pull_eval(3, b + RGRP_UQ9, z_xr.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let ru_ev = pull_eval(3, b + RGRP_RU, z_xr.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let uq_ev = pull_eval(
+                3,
+                b + RGRP_UQ9,
+                z_xr.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let ru_ev = pull_eval(
+                3,
+                b + RGRP_RU,
+                z_xr.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let act_r = eval_rms_group_act_mle(g_idx, &z_xr[cfg.log_d..]);
             let claim = uq_ev.scale_bb(2048).add(ru_ev).sub(act_r.scale_bb(1024));
             let (rho, ch, term) = verify_gmask_einsum_ext4(claim, mf, 0, &z_xr, &sp.prf, &mut tr)?;
             tr.absorb_ext4(b"ss_lr", sp.left_at_r);
             discharge_rms_xin_ver(g_idx, &ch, sp.left_at_r, &mut online_claims);
             let r_row_pt = ch[cfg.log_d..].to_vec();
-            let rlo = pull_eval(3, b + RGRP_RHO_LO, r_row_pt.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-            let rhi = pull_eval(3, b + RGRP_RHO_HI, r_row_pt, &mut ev_cursor, &mut tr, &mut online_claims)?;
+            let rlo = pull_eval(
+                3,
+                b + RGRP_RHO_LO,
+                r_row_pt.clone(),
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
+            let rhi = pull_eval(
+                3,
+                b + RGRP_RHO_HI,
+                r_row_pt,
+                &mut ev_cursor,
+                &mut tr,
+                &mut online_claims,
+            )?;
             let rho_ev = rlo.add(rhi.scale_bb(4096));
             let (ws, wa) = GMaskExt4::build_spec_weights(&gm_specs, specs[3], &ch);
-            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(gm_limb_ids, &ws, sp.prf.gmask_sum));
+            online_claims[2].push(JointLinearClaimExt4::gmask_sum_claim(
+                gm_limb_ids,
+                &ws,
+                sp.prf.gmask_sum,
+            ));
             online_claims[2].push(JointLinearClaimExt4::hvzk_terminal_weld(
-                Vec::new(), gm_limb_ids, &wa, rho, term.sub(eq_mle_ext4(&z_xr, &ch).mul(sp.left_at_r).mul(rho_ev)),
+                Vec::new(),
+                gm_limb_ids,
+                &wa,
+                rho,
+                term.sub(eq_mle_ext4(&z_xr, &ch).mul(sp.left_at_r).mul(rho_ev)),
             ));
         }
     }
@@ -8756,7 +12028,14 @@ pub fn verify_full_24l_qwen35_receipt(
     // Step F: Direct Zero-Round Linear Welds (`embed_tokens`, padding guards, `ST_H_IN == ST_H_CARRY`, `h_mid`, `h_out`, RMSNorm, GDN, GQA):
     {
         let z_dt = tr.squeeze_ext4_vec(b"emb_zdt", 14, true);
-        let h0_ev = pull_eval(2, M2_H_CARRY, concat_pts(&[&z_dt, &bits_to_ext4(0, 5)]), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let h0_ev = pull_eval(
+            2,
+            M2_H_CARRY,
+            concat_pts(&[&z_dt, &bits_to_ext4(0, 5)]),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let eq_t = build_eq_table_lsb_ext4(&z_dt[10..14]);
         let scale_emb_bb = Ext4::from_bb((S_RES / S_W) as u32);
         let mut emb_terms = Vec::with_capacity(16);
@@ -8767,7 +12046,10 @@ pub fn verify_full_24l_qwen35_receipt(
                 scale_emb_bb.mul(eq_t[t]),
             ));
         }
-        weight_claims.push(PublicWeightClaim24L { terms: emb_terms, rhs: h0_ev });
+        weight_claims.push(PublicWeightClaim24L {
+            terms: emb_terms,
+            rhs: h0_ev,
+        });
     }
     {
         let z_pad = tr.squeeze_ext4_vec(b"pad_zdt", 14, true);
@@ -8776,31 +12058,61 @@ pub fn verify_full_24l_qwen35_receipt(
         let mut gp = Ext4::ONE;
         for b_idx in 25..32 {
             let pt = concat_pts(&[&z_pad, &bits_to_ext4(b_idx, 5)]);
-            terms_pad.push(LinearTermExt4::PointEval { subtable: M2_H_IN, point: pt.clone(), weight: gp });
+            terms_pad.push(LinearTermExt4::PointEval {
+                subtable: M2_H_IN,
+                point: pt.clone(),
+                weight: gp,
+            });
             gp = gp.mul(g_pad);
-            terms_pad.push(LinearTermExt4::PointEval { subtable: M2_H_CARRY, point: pt, weight: gp });
+            terms_pad.push(LinearTermExt4::PointEval {
+                subtable: M2_H_CARRY,
+                point: pt,
+                weight: gp,
+            });
             gp = gp.mul(g_pad);
         }
         for l_idx in 24..32 {
             let pt = concat_pts(&[&z_pad, &bits_to_ext4(l_idx, 5)]);
-            terms_pad.push(LinearTermExt4::PointEval { subtable: M2_H_MID, point: pt, weight: gp });
+            terms_pad.push(LinearTermExt4::PointEval {
+                subtable: M2_H_MID,
+                point: pt,
+                weight: gp,
+            });
             gp = gp.mul(g_pad);
         }
-        online_claims[2].push(JointLinearClaimExt4 { terms: terms_pad, rhs: Ext4::ZERO });
+        online_claims[2].push(JointLinearClaimExt4 {
+            terms: terms_pad,
+            rhs: Ext4::ZERO,
+        });
     }
     {
         let z_weld = tr.squeeze_ext4_vec(b"xlayer_zweld", 19, true);
         online_claims[2].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M2_H_IN, point: z_weld.clone(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: M2_H_CARRY, point: z_weld, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M2_H_IN,
+                    point: z_weld.clone(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M2_H_CARRY,
+                    point: z_weld,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: Ext4::ZERO,
         });
     }
     {
         let z_r1 = tr.squeeze_ext4_vec(b"res1_z", 19, true);
-        let hm_ev = pull_eval(2, M2_H_MID, z_r1.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let hm_ev = pull_eval(
+            2,
+            M2_H_MID,
+            z_r1.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let eq_zl = build_eq_table_lsb_ext4(&z_r1[14..19]);
 
         let hin_val = next_raw_ev(&mut ev_cursor)?;
@@ -8812,7 +12124,10 @@ pub fn verify_full_24l_qwen35_receipt(
                 weight: eq_zl[l],
             })
             .collect();
-        online_claims[2].push(JointLinearClaimExt4 { terms: hin_terms, rhs: hin_val });
+        online_claims[2].push(JointLinearClaimExt4 {
+            terms: hin_terms,
+            rhs: hin_val,
+        });
 
         let gdn_val = next_raw_ev(&mut ev_cursor)?;
         tr.absorb_ext4(b"res1_gdn", gdn_val);
@@ -8825,7 +12140,10 @@ pub fn verify_full_24l_qwen35_receipt(
                 weight: eq_zl[l],
             })
             .collect();
-        online_claims[0].push(JointLinearClaimExt4 { terms: gdn_terms, rhs: gdn_val });
+        online_claims[0].push(JointLinearClaimExt4 {
+            terms: gdn_terms,
+            rhs: gdn_val,
+        });
 
         let gqa_val = next_raw_ev(&mut ev_cursor)?;
         tr.absorb_ext4(b"res1_gqa", gqa_val);
@@ -8838,7 +12156,10 @@ pub fn verify_full_24l_qwen35_receipt(
                 weight: eq_zl[l],
             })
             .collect();
-        online_claims[1].push(JointLinearClaimExt4 { terms: gqa_terms, rhs: gqa_val });
+        online_claims[1].push(JointLinearClaimExt4 {
+            terms: gqa_terms,
+            rhs: gqa_val,
+        });
 
         if hm_ev != hin_val.add(gdn_val).add(gqa_val) {
             return Err("layer residual add h_mid == h_in + attn_out failed".into());
@@ -8848,16 +12169,27 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_r2 = tr.squeeze_ext4_vec(b"res2_z", 19, true);
         let eq_zl = build_eq_table_lsb_ext4(&z_r2[14..19]);
         let mut terms_r2 = Vec::with_capacity(26);
-        for l in 0..24 {
+        for (l, &eq_l) in eq_zl[..24].iter().enumerate() {
             terms_r2.push(LinearTermExt4::PointEval {
                 subtable: M2_H_CARRY,
                 point: concat_pts(&[&z_r2[..14], &bits_to_ext4(l + 1, 5)]),
-                weight: eq_zl[l],
+                weight: eq_l,
             });
         }
-        terms_r2.push(LinearTermExt4::PointEval { subtable: M2_H_MID, point: z_r2.clone(), weight: Ext4::ONE.neg() });
-        terms_r2.push(LinearTermExt4::PointEval { subtable: M2_MLP_OUT, point: z_r2, weight: Ext4::ONE.neg() });
-        online_claims[2].push(JointLinearClaimExt4 { terms: terms_r2, rhs: Ext4::ZERO });
+        terms_r2.push(LinearTermExt4::PointEval {
+            subtable: M2_H_MID,
+            point: z_r2.clone(),
+            weight: Ext4::ONE.neg(),
+        });
+        terms_r2.push(LinearTermExt4::PointEval {
+            subtable: M2_MLP_OUT,
+            point: z_r2,
+            weight: Ext4::ONE.neg(),
+        });
+        online_claims[2].push(JointLinearClaimExt4 {
+            terms: terms_r2,
+            rhs: Ext4::ZERO,
+        });
     }
     let half_ext = Ext4::from_bb(INV2_BB);
     for (g_idx, cfg) in RMS_CFGS.iter().enumerate() {
@@ -8871,11 +12203,31 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_sq_half = concat_pts(&[&[half_ext; 4], &z_kr]);
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_SQLO, point: z_sq_half.clone(), weight: Ext4::from_bb(16) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_SQHI, point: z_sq_half, weight: Ext4::from_bb(16 * 8192) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_LO, point: z_kr.clone(), weight: Ext4::from_bb(32).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_HI, point: z_kr.clone(), weight: Ext4::from_bb(32 * 8192).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RB128, point: z_kr, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_SQLO,
+                    point: z_sq_half.clone(),
+                    weight: Ext4::from_bb(16),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_SQHI,
+                    point: z_sq_half,
+                    weight: Ext4::from_bb(16 * 8192),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_LO,
+                    point: z_kr.clone(),
+                    weight: Ext4::from_bb(32).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_HI,
+                    point: z_kr.clone(),
+                    weight: Ext4::from_bb(32 * 8192).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RB128,
+                    point: z_kr,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: Ext4::ZERO,
         });
@@ -8886,11 +12238,31 @@ pub fn verify_full_24l_qwen35_receipt(
         let act_r = eval_rms_group_act_mle(g_idx, &z_ms);
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_LO, point: z_b_half.clone(), weight: Ext4::from_bb(n_blk) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_B128_HI, point: z_b_half, weight: Ext4::from_bb(n_blk * 8192) },
-                LinearTermExt4::PointEval { subtable: b + RGRP_MS_LO, point: z_ms.clone(), weight: Ext4::from_bb(div_ms).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_MS_HI, point: z_ms.clone(), weight: Ext4::from_bb(div_ms * 8192).neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RMS, point: z_ms, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_LO,
+                    point: z_b_half.clone(),
+                    weight: Ext4::from_bb(n_blk),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_B128_HI,
+                    point: z_b_half,
+                    weight: Ext4::from_bb(n_blk * 8192),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_MS_LO,
+                    point: z_ms.clone(),
+                    weight: Ext4::from_bb(div_ms).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_MS_HI,
+                    point: z_ms.clone(),
+                    weight: Ext4::from_bb(div_ms * 8192).neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RMS,
+                    point: z_ms,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: act_r.scale_bb(div_ms).neg(),
         });
@@ -8898,17 +12270,43 @@ pub fn verify_full_24l_qwen35_receipt(
         let z_dr = tr.squeeze_ext4_vec(b"rmsdr_z", mr, true);
         online_claims[3].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: b + RGRP_POW2, point: z_dr.clone(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: b + RGRP_RRHO, point: z_dr.clone(), weight: Ext4::ONE.neg() },
-                LinearTermExt4::PointEval { subtable: b + RGRP_DIFF_RHO, point: z_dr, weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_POW2,
+                    point: z_dr.clone(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_RRHO,
+                    point: z_dr.clone(),
+                    weight: Ext4::ONE.neg(),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: b + RGRP_DIFF_RHO,
+                    point: z_dr,
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: Ext4::ONE,
         });
     }
     {
         let z13 = tr.squeeze_ext4_vec(b"spin_z", 13, true);
-        let spin_ev = pull_eval(0, M0_SP_IN, z13.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
-        let a_ev = pull_eval(0, M0_A_PROJ, z13.clone(), &mut ev_cursor, &mut tr, &mut online_claims)?;
+        let spin_ev = pull_eval(
+            0,
+            M0_SP_IN,
+            z13.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
+        let a_ev = pull_eval(
+            0,
+            M0_A_PROJ,
+            z13.clone(),
+            &mut ev_cursor,
+            &mut tr,
+            &mut online_claims,
+        )?;
         let dt_ev = next_raw_ev(&mut ev_cursor)?;
         tr.absorb_ext4(b"spin_dt", dt_ev);
         let dt_pt = concat_pts(&[&z13[..4], &z13[8..13]]);
@@ -8948,15 +12346,31 @@ pub fn verify_full_24l_qwen35_receipt(
         });
         online_claims[1].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M1_E_SM, point: z14_half, weight: Ext4::from_bb(16) },
-                LinearTermExt4::PointEval { subtable: M1_Z_SM, point: z10.clone(), weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M1_E_SM,
+                    point: z14_half,
+                    weight: Ext4::from_bb(16),
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M1_Z_SM,
+                    point: z10.clone(),
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: Ext4::ZERO,
         });
         online_claims[1].push(JointLinearClaimExt4 {
             terms: vec![
-                LinearTermExt4::PointEval { subtable: M1_Z_SM, point: z10.clone(), weight: Ext4::ONE },
-                LinearTermExt4::PointEval { subtable: M1_Z_SM_M1, point: z10.clone(), weight: Ext4::ONE.neg() },
+                LinearTermExt4::PointEval {
+                    subtable: M1_Z_SM,
+                    point: z10.clone(),
+                    weight: Ext4::ONE,
+                },
+                LinearTermExt4::PointEval {
+                    subtable: M1_Z_SM_M1,
+                    point: z10.clone(),
+                    weight: Ext4::ONE.neg(),
+                },
             ],
             rhs: eval_lt_const_mle(&z10[7..10], NUM_GQA_LAYERS),
         });

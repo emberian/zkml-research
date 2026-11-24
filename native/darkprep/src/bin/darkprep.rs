@@ -65,7 +65,10 @@ fn step(m: &HashMap<String, String>) -> StepParams {
     // --xt: exact truncation (notes/dark-learning-gen6/xtrunc.md): 61-bit masks checked r < p inside the MPC
     if m.contains_key("xt") {
         let p: u64 = get(m, "p", 0);
-        assert!(p > 1 << 60 && p < 1 << 61, "--xt needs --p, the 61-bit SPDZ prime");
+        assert!(
+            p > 1 << 60 && p < 1 << 61,
+            "--xt needs --p, the 61-bit SPDZ prime"
+        );
         sp.xt = Some(p);
     }
     sp
@@ -75,7 +78,13 @@ fn get<T: std::str::FromStr>(m: &HashMap<String, String>, k: &str, dflt: T) -> T
     m.get(k).map(|v| v.parse().ok().expect(k)).unwrap_or(dflt)
 }
 
-fn assemble_all(sp: &StepParams, p: u64, txdir: &Path, out: &Path, check: bool) -> Result<String, String> {
+fn assemble_all(
+    sp: &StepParams,
+    p: u64,
+    txdir: &Path,
+    out: &Path,
+    check: bool,
+) -> Result<String, String> {
     std::fs::create_dir_all(out).map_err(|e| e.to_string())?;
     let t0 = std::time::Instant::now();
     let mut tapes = Vec::new();
@@ -83,7 +92,9 @@ fn assemble_all(sp: &StepParams, p: u64, txdir: &Path, out: &Path, check: bool) 
     for i in 0..3u32 {
         let tx = Transactions::read(&txdir.join(format!("Transactions-P{i}.data")), p)?;
         let tape = assemble(sp, &tx, i)?;
-        let mut f = std::io::BufWriter::new(std::fs::File::create(out.join(format!("tape-P{i}.bin"))).map_err(|e| e.to_string())?);
+        let mut f = std::io::BufWriter::new(
+            std::fs::File::create(out.join(format!("tape-P{i}.bin"))).map_err(|e| e.to_string())?,
+        );
         tape.write_to(&mut f).map_err(|e| e.to_string())?;
         msgs.push(owner::custodian_message(sp, &tx));
         tapes.push(tape);
@@ -92,7 +103,11 @@ fn assemble_all(sp: &StepParams, p: u64, txdir: &Path, out: &Path, check: bool) 
     let mut f = std::fs::File::create(out.join("owner.bin")).map_err(|e| e.to_string())?;
     write_owner(&mut f, p, &rs).map_err(|e| e.to_string())?;
     let asm_s = t0.elapsed().as_secs_f64();
-    let mut s = format!("\"assemble_s\": {asm_s:.3}, \"tape_entries\": {}, \"owner_masks\": {}", tapes[0].entries.len(), rs.len());
+    let mut s = format!(
+        "\"assemble_s\": {asm_s:.3}, \"tape_entries\": {}, \"owner_masks\": {}",
+        tapes[0].entries.len(),
+        rs.len()
+    );
     if check {
         let r = verify::verify_xt(&tapes, &rs, sp.xt)?;
         s += &format!(", \"verify\": \"{:?}\"", r);
@@ -103,16 +118,19 @@ fn assemble_all(sp: &StepParams, p: u64, txdir: &Path, out: &Path, check: bool) 
 fn load_tapes(dir: &Path) -> Result<(Vec<Tape>, Vec<u64>), String> {
     let mut tapes = Vec::new();
     for i in 0..3 {
-        let mut f = std::fs::File::open(dir.join(format!("tape-P{i}.bin"))).map_err(|e| e.to_string())?;
+        let mut f =
+            std::fs::File::open(dir.join(format!("tape-P{i}.bin"))).map_err(|e| e.to_string())?;
         tapes.push(Tape::read_from(&mut f)?);
     }
-    let (_, rs) = read_owner(&mut std::fs::File::open(dir.join("owner.bin")).map_err(|e| e.to_string())?)?;
+    let (_, rs) =
+        read_owner(&mut std::fs::File::open(dir.join("owner.bin")).map_err(|e| e.to_string())?)?;
     Ok((tapes, rs))
 }
 
 fn main() {
     let (cmd, m) = args();
-    let res: Result<(), String> = (|| match cmd.as_str() {
+    let res: Result<(), String> = (|| {
+        match cmd.as_str() {
         "plan" => {
             let sp = chunk_step(&m);
             let plan = Plan::of(&sp);
@@ -265,6 +283,7 @@ fn main() {
             Ok(())
         }
         _ => Err("usage: darkprep plan|run|assemble|verify|corrupt|export-darkstep|party-chunk|produce|owner ...".into()),
+    }
     })();
     if let Err(e) = res {
         eprintln!("darkprep: {e}");
@@ -276,7 +295,10 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
     let mut sp = step(m);
     if let Some(t) = m.get("truncs") {
         // the step program's (s1, k1, s2, k2, s3, k3): darkstep::step::Program::truncs()
-        let v: Vec<u32> = t.split(',').map(|x| x.parse().expect("--truncs s1,k1,s2,k2,s3,k3")).collect();
+        let v: Vec<u32> = t
+            .split(',')
+            .map(|x| x.parse().expect("--truncs s1,k1,s2,k2,s3,k3"))
+            .collect();
         assert_eq!(v.len(), 6, "--truncs s1,k1,s2,k2,s3,k3");
         sp.trunc = [(v[0], v[1]), (v[0], v[1]), (v[2], v[3]), (v[4], v[5])];
     }
@@ -285,12 +307,27 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
     if let Some(r) = m.get("release") {
         // the mind's release (darkproof::run::deal_release): M examples, ncls classes, comparisons (kc, kc); its
         // proof section's count is the proof lane's (darkproof::run::release_section), never a default here
-        let v: Vec<usize> = r.split(',').map(|x| x.parse().expect("--release M,NCLS,KC")).collect();
+        let v: Vec<usize> = r
+            .split(',')
+            .map(|x| x.parse().expect("--release M,NCLS,KC"))
+            .collect();
         assert_eq!(v.len(), 3, "--release M,NCLS,KC");
-        let n = m.get("proof-triples").expect("--release needs --proof-triples N (darkproof::run::release_section)").parse().expect("--proof-triples");
+        let n = m
+            .get("proof-triples")
+            .expect("--release needs --proof-triples N (darkproof::run::release_section)")
+            .parse()
+            .expect("--proof-triples");
         // --lookup-triples T: the release's lookups as T Beaver triples each (darkproof's L cut, RS + LB; 27 at GEN6)
         let lt: usize = get(m, "lookup-triples", 0);
-        return sp.release(darkprep::schedule::Release { m: v[0], ncls: v[1], kc: v[2] as u32, lookup_triples: lt }, n);
+        return sp.release(
+            darkprep::schedule::Release {
+                m: v[0],
+                ncls: v[1],
+                kc: v[2] as u32,
+                lookup_triples: lt,
+            },
+            n,
+        );
     }
     if let Some(n) = m.get("handover-ar") {
         // a new seat's handover tape: N auth_plain entries (2 d^2 + 16 for darkhand::side::new_side)
@@ -300,17 +337,25 @@ fn chunk_step(m: &HashMap<String, String>) -> StepParams {
         // the count is the proof lane's (darkproof::run::step_section; `darkproof counts D PROFILE`), which changes
         // with its method; there is no default here so a stale formula can never size a tape
         sp.proof_atoms = true;
-        sp.proof_triples = m.get("proof-triples").expect("--proof needs --proof-triples N (darkproof counts)").parse().expect("--proof-triples");
+        sp.proof_triples = m
+            .get("proof-triples")
+            .expect("--proof needs --proof-triples N (darkproof counts)")
+            .parse()
+            .expect("--proof-triples");
     }
     sp
 }
-
 
 /// The seat's vault (--vault NAME or --vault-file PATH holding NAME), or None for a TEST build's --plain-tapes.
 fn load_vault(m: &HashMap<String, String>) -> Result<Option<darkhand::vault::Vault>, String> {
     let name = match (m.get("vault"), m.get("vault-file")) {
         (Some(n), _) => Some(n.trim().to_string()),
-        (None, Some(f)) => Some(std::fs::read_to_string(f).map_err(|e| format!("{f}: {e}"))?.trim().to_string()),
+        (None, Some(f)) => Some(
+            std::fs::read_to_string(f)
+                .map_err(|e| format!("{f}: {e}"))?
+                .trim()
+                .to_string(),
+        ),
         (None, None) => None,
     };
     match name {
@@ -326,7 +371,10 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     // the seat's epoch file key, loaded (never made) here: dl-custodian vault-init made it; NAME from --vault NAME or
     // the consuming seat's TLSDIR/vault.name (--vault-file). Loaded before the MASCOT run, so a missing key costs no run.
     let vault = load_vault(m)?;
-    let chunk_name = out.file_name().map(|s| s.to_string_lossy().into_owned()).ok_or("--out needs a directory name")?;
+    let chunk_name = out
+        .file_name()
+        .map(|s| s.to_string_lossy().into_owned())
+        .ok_or("--out needs a directory name")?;
     let sp = chunk_step(m);
     let steps: usize = get(m, "steps", 1);
     if sp.phase != darkprep::schedule::Phase::Step && (steps != 1 || m.contains_key("genesis")) {
@@ -344,7 +392,10 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     if m.contains_key("new-mac-key") {
         // this custodian's MAC key share is retired first, so MP-SPDZ generates a fresh one for this run (a new
         // committee, or the same seats after an abort); later chunks reuse it
-        let retired = darkprep::mpspdz::retire_mac_keys(&PathBuf::from(m.get("mpspdz").expect("--mpspdz")), Some(party));
+        let retired = darkprep::mpspdz::retire_mac_keys(
+            &PathBuf::from(m.get("mpspdz").expect("--mpspdz")),
+            Some(party),
+        );
         eprintln!("darkprep: new MAC key; retired {retired:?}");
     }
     let p: u64 = get(m, "p", 0);
@@ -354,14 +405,19 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
         .map(|j| {
             let mut q = sp;
             if m.contains_key("genesis") {
-                q.inputs = if j == 0 { darkprep::schedule::Inputs::Harness } else { darkprep::schedule::Inputs::Steady };
+                q.inputs = if j == 0 {
+                    darkprep::schedule::Inputs::Harness
+                } else {
+                    darkprep::schedule::Inputs::Steady
+                };
             }
             q
         })
         .collect();
     let plan = darkprep::schedule::plan_of_steps(&chunk);
     if let Some(src) = m.get("mpc-src") {
-        std::fs::copy(src, mpspdz.join("Programs/Source/darkprep.mpc")).map_err(|e| e.to_string())?;
+        std::fs::copy(src, mpspdz.join("Programs/Source/darkprep.mpc"))
+            .map_err(|e| e.to_string())?;
     }
     let margs = plan.mpc_args(get(m, "threads", 1), get(m, "batch", 1000));
     let tc = std::time::Instant::now();
@@ -376,9 +432,16 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     }
     let run = darkprep::mpspdz::PartyRun {
         backend: m.get("backend").cloned().unwrap_or_else(|| "mascot".into()),
-        mpspdz: mpspdz.clone(), prog: prog.clone(), p, party,
-        ipfile: PathBuf::from(m.get("ipfile").expect("--ipfile")).canonicalize().map_err(|e| e.to_string())?,
-        plaintext: m.contains_key("plaintext"), extra, workdir: tmp.clone(),
+        mpspdz: mpspdz.clone(),
+        prog: prog.clone(),
+        p,
+        party,
+        ipfile: PathBuf::from(m.get("ipfile").expect("--ipfile"))
+            .canonicalize()
+            .map_err(|e| e.to_string())?,
+        plaintext: m.contains_key("plaintext"),
+        extra,
+        workdir: tmp.clone(),
     };
     let r = run.execute()?;
     let ta = std::time::Instant::now();
@@ -390,7 +453,14 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
     let ns: Vec<usize> = chunk.iter().map(darkprep::schedule::n_entries).collect();
     let all_path = tmp.join(format!("tape_{party}.bin"));
     let whole = vault.is_none() && !m.contains_key("step-tapes-only");
-    let mut all = if whole && steps > 1 { Some(darkprep::tape::DarkstepWriter::create(&all_path, tx.alpha_i, ns.iter().sum()).map_err(|e| e.to_string())?) } else { None };
+    let mut all = if whole && steps > 1 {
+        Some(
+            darkprep::tape::DarkstepWriter::create(&all_path, tx.alpha_i, ns.iter().sum())
+                .map_err(|e| e.to_string())?,
+        )
+    } else {
+        None
+    };
     let mut entries = Vec::new();
     for j in 0..steps {
         let sd = tmp.join(format!("step-{j}"));
@@ -400,7 +470,14 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
         if let (Some(v), darkprep::schedule::Phase::Release(_)) = (&vault, chunk[j].phase) {
             // the release tape (gigabytes): DLVAULT2 blocks, written as assembled, never whole in memory
             let key = dlvault::Key::new(&v.name, v.key_bytes());
-            let mut w = darkprep::tape::SealedDarkstepWriter::create(&tpath, &key, &darkprep::tape::tape_role(&chunk_name, j), tx.alpha_i, ns[j]).map_err(|e| e.to_string())?;
+            let mut w = darkprep::tape::SealedDarkstepWriter::create(
+                &tpath,
+                &key,
+                &darkprep::tape::tape_role(&chunk_name, j),
+                tx.alpha_i,
+                ns[j],
+            )
+            .map_err(|e| e.to_string())?;
             let mut err: Option<std::io::Error> = None;
             darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
                 n += 1;
@@ -424,13 +501,22 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
             if let Some(e) = err {
                 return Err(e);
             }
-            v.seal_to(&tpath, &darkprep::tape::tape_role(&chunk_name, j), buf.finish()?).map_err(|e| e.to_string())?;
+            v.seal_to(
+                &tpath,
+                &darkprep::tape::tape_role(&chunk_name, j),
+                buf.finish()?,
+            )
+            .map_err(|e| e.to_string())?;
         } else {
-            let mut one = darkprep::tape::DarkstepWriter::create(&tpath, tx.alpha_i, ns[j]).map_err(|e| e.to_string())?;
+            let mut one = darkprep::tape::DarkstepWriter::create(&tpath, tx.alpha_i, ns[j])
+                .map_err(|e| e.to_string())?;
             let mut err: Option<std::io::Error> = None;
             darkprep::tape::assemble_in_chunk_emit(&chunk, &tx, party as u32, j, &mut |t, sm| {
                 n += 1;
-                let r = one.push(t, sm).and_then(|_| match all.as_mut() { Some(a) => a.push(t, sm), None => Ok(()) });
+                let r = one.push(t, sm).and_then(|_| match all.as_mut() {
+                    Some(a) => a.push(t, sm),
+                    None => Ok(()),
+                });
                 if let Err(e) = r {
                     err.get_or_insert(e);
                 }
@@ -441,7 +527,10 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
             one.finish().map_err(|e| e.to_string())?;
         }
         if n != ns[j] {
-            return Err(format!("step {j}: assembled {n} entries, the schedule has {}", ns[j]));
+            return Err(format!(
+                "step {j}: assembled {n} entries, the schedule has {}",
+                ns[j]
+            ));
         }
         entries.push(n);
         let msg = owner::custodian_message_in_chunk(&chunk, &tx, j);
@@ -449,14 +538,17 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
         let mut mb: Vec<u8> = Vec::new();
         owner::write_message(&mut mb, &msg).map_err(|e| e.to_string())?;
         match &vault {
-            Some(v) => v.seal_to(&mpath, &darkprep::tape::owner_msg_role(&chunk_name, j), mb).map_err(|e| e.to_string())?,
+            Some(v) => v
+                .seal_to(&mpath, &darkprep::tape::owner_msg_role(&chunk_name, j), mb)
+                .map_err(|e| e.to_string())?,
             None => std::fs::write(&mpath, &mb).map_err(|e| e.to_string())?,
         }
     }
     match all {
         Some(a) => a.finish().map_err(|e| e.to_string())?,
         None if !whole => {}
-        None => std::fs::hard_link(tmp.join(format!("step-0/tape_{party}.bin")), &all_path).map_err(|e| e.to_string())?,
+        None => std::fs::hard_link(tmp.join(format!("step-0/tape_{party}.bin")), &all_path)
+            .map_err(|e| e.to_string())?,
     }
     drop(tx);
     // the tapes are now the only copy of this party's shares: overwrite, sync and unlink MP-SPDZ's copies (the
@@ -467,7 +559,14 @@ fn party_chunk(m: &HashMap<String, String>, out: &Path) -> Result<String, String
         darkprep::mpspdz::wipe_file(&mem).map_err(|e| e.to_string())?;
     }
     let asm_s = ta.elapsed().as_secs_f64();
-    let links = r.links.iter().map(|(ip, s, rcv)| format!("{{\"peer\": \"{ip}\", \"sent_bytes\": {s}, \"received_bytes\": {rcv}}}")).collect::<Vec<_>>().join(", ");
+    let links = r
+        .links
+        .iter()
+        .map(|(ip, s, rcv)| {
+            format!("{{\"peer\": \"{ip}\", \"sent_bytes\": {s}, \"received_bytes\": {rcv}}}")
+        })
+        .collect::<Vec<_>>()
+        .join(", ");
     let j = format!(
         "{{\"party\": {party}, \"chunk\": \"{}\", \"d\": {}, \"mode\": \"{:?}\", \"phase\": \"{:?}\", \"steps\": {steps}, \"proof_atoms\": {}, \"proof_triples_per_step\": {}, \"tape_entries_per_step\": {entries:?}, \"genesis\": {}, \"plan\": {{\"in\": {}, \"ar\": {}, \"tri\": {}, \"lp\": {}, \"trunc_classes\": [{}]}}, \"prog\": \"{prog}\", \"backend\": \"{}\", \"tls\": {}, \"compile_s\": {compile_s:.3}, \"wall_s\": {:.3}, \"assemble_s\": {asm_s:.3}, \"cpu_user_s\": {:.2}, \"cpu_sys_s\": {:.2}, \"max_rss_kb\": {}, \"mpspdz_sent_bytes\": {:.0}, \"mpspdz_rounds\": {}, \"links\": [{links}]}}",
         out.display(), sp.d, sp.inputs, sp.phase, sp.proof_atoms, sp.proof_triples, m.contains_key("genesis"), plan.n_in, plan.n_ar, plan.n_tri, plan.n_lp,

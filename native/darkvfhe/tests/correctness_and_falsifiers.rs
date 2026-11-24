@@ -120,8 +120,16 @@ fn test_bit_exact_decryption_rounding_noise_relin_and_tau_outer() {
 
         let hoisted_out = eng.hoisted_matvec(&[a_row.clone()], &b_vec);
         let eager_out = eng.eager_matvec(&[a_row.clone()], &b_vec);
-        assert_eq!(eng.decrypt_ct3(&key, &hoisted_out[0]), want_sum, "hoisted decrypt mismatch N={n_ring}");
-        assert_eq!(eng.decrypt_ct3(&key, &eager_out[0]), want_sum, "eager decrypt mismatch N={n_ring}");
+        assert_eq!(
+            eng.decrypt_ct3(&key, &hoisted_out[0]),
+            want_sum,
+            "hoisted decrypt mismatch N={n_ring}"
+        );
+        assert_eq!(
+            eng.decrypt_ct3(&key, &eager_out[0]),
+            want_sum,
+            "eager decrypt mismatch N={n_ring}"
+        );
 
         // RNS-gadget relinearization (`P_ks = b0`, four 60b limbs from `w = 20` digits) check:
         let rlk = RelinearizationKey::generate(&params, &key.s, 777);
@@ -162,12 +170,12 @@ fn test_bit_exact_decryption_rounding_noise_relin_and_tau_outer() {
 
     let mut w_plain = vec![vec![vec![0u64; 8192]; k_blk]; r_blk];
     let mut w_cts = vec![Vec::new(); r_blk];
-    for r in 0..r_blk {
-        for c in 0..k_blk {
-            for i in 0..16 {
-                w_plain[r][c][i] = ((r * 7 + c * 3 + i) as u64) % t;
+    for (r, (w_plain_row, w_ct_row)) in w_plain.iter_mut().zip(&mut w_cts).enumerate() {
+        for (c, w_cell) in w_plain_row.iter_mut().enumerate() {
+            for (i, slot) in w_cell.iter_mut().take(16).enumerate() {
+                *slot = ((r * 7 + c * 3 + i) as u64) % t;
             }
-            w_cts[r].push(key8k.encrypt_exact(&w_plain[r][c]));
+            w_ct_row.push(key8k.encrypt_exact(w_cell));
         }
     }
 
@@ -187,8 +195,8 @@ fn test_bit_exact_decryption_rounding_noise_relin_and_tau_outer() {
         }
         for c in 0..k_blk {
             let mut m = vec![0u64; 8192];
-            for j in 0..8 {
-                m[j] = ((step * 2 + c + j + 1) as u64) % 5;
+            for (j, slot) in m.iter_mut().take(8).enumerate() {
+                *slot = ((step * 2 + c + j + 1) as u64) % 5;
             }
             v_cts.push(key8k.encrypt_exact(&m));
             v_msgs.push(m);
@@ -364,10 +372,19 @@ print(json.dumps(payload))
     .expect("ExactGarner15 prove");
 
     assert_eq!(out_dir, out_gar);
-    for r in 0..2 {
-        assert_eq!(out_dir[r].c0, py_data.out_rns[r][0], "c0 mismatch vs Python at row {r}");
-        assert_eq!(out_dir[r].c1, py_data.out_rns[r][1], "c1 mismatch vs Python at row {r}");
-        assert_eq!(out_dir[r].c2, py_data.out_rns[r][2], "c2 mismatch vs Python at row {r}");
+    for (r, out_ct) in out_dir.iter().enumerate() {
+        assert_eq!(
+            out_ct.c0, py_data.out_rns[r][0],
+            "c0 mismatch vs Python at row {r}"
+        );
+        assert_eq!(
+            out_ct.c1, py_data.out_rns[r][1],
+            "c1 mismatch vs Python at row {r}"
+        );
+        assert_eq!(
+            out_ct.c2, py_data.out_rns[r][2],
+            "c2 mismatch vs Python at row {r}"
+        );
         for k in 0..3 {
             for l in 0..8 {
                 assert_eq!(
@@ -378,15 +395,30 @@ print(json.dumps(payload))
         }
     }
     for idx in 0..w_dir.y_lifts.len() {
-        assert_eq!(w_dir.y_lifts[idx].cols, py_data.direct_y_lifts[idx], "y_lifts mismatch");
-        assert_eq!(w_dir.s_lifts[idx].cols, py_data.direct_s_lifts[idx], "direct s_lifts mismatch");
-        assert_eq!(w_gar.s_lifts[idx].cols, py_data.garner_s_lifts[idx], "garner s_lifts mismatch");
+        assert_eq!(
+            w_dir.y_lifts[idx].cols, py_data.direct_y_lifts[idx],
+            "y_lifts mismatch"
+        );
+        assert_eq!(
+            w_dir.s_lifts[idx].cols, py_data.direct_s_lifts[idx],
+            "direct s_lifts mismatch"
+        );
+        assert_eq!(
+            w_gar.s_lifts[idx].cols, py_data.garner_s_lifts[idx],
+            "garner s_lifts mismatch"
+        );
     }
     for idx in 0..w_gar.a_lifts.len() {
-        assert_eq!(w_gar.a_lifts[idx].cols, py_data.garner_a_lifts[idx], "garner a_lifts mismatch");
+        assert_eq!(
+            w_gar.a_lifts[idx].cols, py_data.garner_a_lifts[idx],
+            "garner a_lifts mismatch"
+        );
     }
 
-    let ha: Vec<Vec<[u8; 32]>> = a_grid.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+    let ha: Vec<Vec<[u8; 32]>> = a_grid
+        .iter()
+        .map(|r| r.iter().map(ct2_handle).collect())
+        .collect();
     let hb: Vec<[u8; 32]> = b_vec.iter().map(ct2_handle).collect();
     let hout: Vec<[u8; 32]> = out_dir.iter().map(ct3_handle).collect();
     verify_hoisted_matvec(
@@ -429,7 +461,13 @@ fn test_all_adversarial_falsifiers() {
         .map(|c| key.encrypt_exact(&(0..n).map(|j| ((c + j) as u64) % 7).collect::<Vec<_>>()))
         .collect();
     let b_vec: Vec<Ct> = (0..k_blk)
-        .map(|c| key.encrypt_exact(&(0..n).map(|j| ((2 * c + j * 3) as u64) % 7).collect::<Vec<_>>()))
+        .map(|c| {
+            key.encrypt_exact(
+                &(0..n)
+                    .map(|j| ((2 * c + j * 3) as u64) % 7)
+                    .collect::<Vec<_>>(),
+            )
+        })
         .collect();
     let a_grid = vec![a_row];
 
@@ -446,7 +484,10 @@ fn test_all_adversarial_falsifiers() {
     )
     .expect("honest prove");
 
-    let ha: Vec<Vec<[u8; 32]>> = a_grid.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+    let ha: Vec<Vec<[u8; 32]>> = a_grid
+        .iter()
+        .map(|r| r.iter().map(ct2_handle).collect())
+        .collect();
     let hb: Vec<[u8; 32]> = b_vec.iter().map(ct2_handle).collect();
     let hout: Vec<[u8; 32]> = honest_out.iter().map(ct3_handle).collect();
 
@@ -471,8 +512,14 @@ fn test_all_adversarial_falsifiers() {
     let (q_toy, t_toy) = (31i64, 4i64);
     let (z_true, z_alias) = (32i64, 1i64);
     assert_eq!(z_true.rem_euclid(q_toy), z_alias.rem_euclid(q_toy));
-    let (y_true, s_true) = ((t_toy * z_true + q_toy / 2) / q_toy, (t_toy * z_true + q_toy / 2) % q_toy);
-    let (y_forged, s_alias) = ((t_toy * z_alias + q_toy / 2) / q_toy, (t_toy * z_alias + q_toy / 2) % q_toy);
+    let (y_true, s_true) = (
+        (t_toy * z_true + q_toy / 2) / q_toy,
+        (t_toy * z_true + q_toy / 2) % q_toy,
+    );
+    let (y_forged, s_alias) = (
+        (t_toy * z_alias + q_toy / 2) / q_toy,
+        (t_toy * z_alias + q_toy / 2) % q_toy,
+    );
     assert_eq!((y_true, y_forged, s_true, s_alias), (4, 0, 19, 19));
     // Naive mod-Q rescale check `t * z + floor(Q/2) == s (mod Q)` ACCEPTS `y_forged = 0`:
     assert_eq!((t_toy * z_true + q_toy / 2 - s_true).rem_euclid(q_toy), 0);
@@ -503,7 +550,8 @@ fn test_all_adversarial_falsifiers() {
     }
     // Recompute witness_root and LogUp proof so ONLY the fused BEHZ rescale check is tested:
     w_holeb.logup_proof = None;
-    let (_, shared_a_tmp) = darkvfhe::cert::precompute_shared_grid(&eng, &a_grid, LiftMode::ExactGarner15);
+    let (_, shared_a_tmp) =
+        darkvfhe::cert::precompute_shared_grid(&eng, &a_grid, LiftMode::ExactGarner15);
     w_holeb.witness_root = darkvfhe::cert::compute_witness_root(
         w_holeb.mode,
         &shared_a_tmp.pair_hashes,
@@ -525,7 +573,10 @@ fn test_all_adversarial_falsifiers() {
         VerifyOptions::default(),
     )
     .expect_err("Hole B forged y+1 must be refused by extension primes Bp!");
-    assert!(err_holeb.contains("fused hoisted rescale identity fails"), "{err_holeb}");
+    assert!(
+        err_holeb.contains("fused hoisted rescale identity fails"),
+        "{err_holeb}"
+    );
 
     // ----------------------------------------------------------------------------------
     // Falsifier 2: `Attack F-FS` (`Astra E5` statement-only Fiat-Shamir adaptive quotient forgery)
@@ -587,7 +638,13 @@ fn test_all_adversarial_falsifiers() {
     let mut out_fs = honest_out.clone();
     for k in 0..3 {
         let pk = BigInt::from(params.qp[k]);
-        out_fs[0].c0[k * n] = y_forged_bi.mod_floor(&pk).to_u64_digits().1.first().copied().unwrap_or(0);
+        out_fs[0].c0[k * n] = y_forged_bi
+            .mod_floor(&pk)
+            .to_u64_digits()
+            .1
+            .first()
+            .copied()
+            .unwrap_or(0);
     }
     assert_ne!(
         eng.decrypt_ct3(&key, &out_fs[0]),
@@ -599,10 +656,10 @@ fn test_all_adversarial_falsifiers() {
     // Recompute statement digest identically to cert.rs:
     let mut sh = Sha256::new();
     sh.update(b"HOISTED_B61_STMT_V1|");
-    sh.update(&(params.n as u64).to_le_bytes());
-    sh.update(&params.t.to_le_bytes());
+    sh.update((params.n as u64).to_le_bytes());
+    sh.update(params.t.to_le_bytes());
     for &q in &params.all_primes {
-        sh.update(&q.to_le_bytes());
+        sh.update(q.to_le_bytes());
     }
     for row in &ha {
         for h_el in row {
@@ -621,8 +678,20 @@ fn test_all_adversarial_falsifiers() {
         let fp = &params.fp[l];
         let p_bi = BigInt::from(fp.p);
         let r_pt = derive_fs_point(&stmt_h_fs, &[0u8; 32], fp.p, true);
-        let dy_mod = (&y_forged_bi - &y_orig).mod_floor(&p_bi).to_u64_digits().1.first().copied().unwrap_or(0);
-        let ds_mod = (&s_forged_bi - &s_orig).mod_floor(&p_bi).to_u64_digits().1.first().copied().unwrap_or(0);
+        let dy_mod = (&y_forged_bi - &y_orig)
+            .mod_floor(&p_bi)
+            .to_u64_digits()
+            .1
+            .first()
+            .copied()
+            .unwrap_or(0);
+        let ds_mod = (&s_forged_bi - &s_orig)
+            .mod_floor(&p_bi)
+            .to_u64_digits()
+            .1
+            .first()
+            .copied()
+            .unwrap_or(0);
         let rhs_diff = fp.add(fp.mul(params.q_mod_p[l], dy_mod), ds_mod);
         let denom = fp.mul(params.t_mod_p[l], fp.add(fp.pow(r_pt, n as u64), 1));
         let k_adj = fp.mul(fp.neg(rhs_diff), fp.inv(denom));
@@ -668,13 +737,19 @@ fn test_all_adversarial_falsifiers() {
         VerifyOptions::default(),
     )
     .expect_err("HoistedB61 witness-bound FS must refuse Attack F-FS!");
-    assert!(err_fs.contains("fused hoisted rescale identity fails"), "{err_fs}");
+    assert!(
+        err_fs.contains("fused hoisted rescale identity fails"),
+        "{err_fs}"
+    );
 
     // ----------------------------------------------------------------------------------
     // Falsifier 3: `Attack F-Boundary` (`Astra E4 / E7`, `u + Q in [Q, 2^183)`)
     // ----------------------------------------------------------------------------------
     let u_alias_big = BigUint::from(42u32) + &params.q_big;
-    assert!(u_alias_big.bits() <= 183, "u_alias fits inside 183-bit power-of-two range");
+    assert!(
+        u_alias_big.bits() <= 183,
+        "u_alias fits inside 183-bit power-of-two range"
+    );
     let u_alias_limbs = biguint_to_limbs3(&u_alias_big);
     // Un-tightened Direct-20 `< 2^183` ACCEPTS `u_alias`:
     let alias_direct_cols = dspec.encode_u192(&[u_alias_limbs]);
@@ -685,14 +760,30 @@ fn test_all_adversarial_falsifiers() {
     // Attempt to forge `Exact-Garner-15` columns for `u_alias` (`r2 >= q2`):
     let q0_u = BigUint::from(params.qp[0]);
     let q1_u = BigUint::from(params.qp[1]);
-    let r0_a = (&u_alias_big % &q0_u).to_u64_digits().first().copied().unwrap_or(0);
+    let r0_a = (&u_alias_big % &q0_u)
+        .to_u64_digits()
+        .first()
+        .copied()
+        .unwrap_or(0);
     let q_step1 = (&u_alias_big - r0_a) / &q0_u;
-    let r1_a = (&q_step1 % &q1_u).to_u64_digits().first().copied().unwrap_or(0);
-    let r2_a = ((&q_step1 - r1_a) / &q1_u).to_u64_digits().first().copied().unwrap_or(0);
+    let r1_a = (&q_step1 % &q1_u)
+        .to_u64_digits()
+        .first()
+        .copied()
+        .unwrap_or(0);
+    let r2_a = ((&q_step1 - r1_a) / &q1_u)
+        .to_u64_digits()
+        .first()
+        .copied()
+        .unwrap_or(0);
     assert!(r2_a >= params.qp[2] && r2_a < (1u64 << 61));
 
     let mut forged_garner = Vec::with_capacity(15);
-    for (ri, delta) in [(r0_a, gspec.deltas[0]), (r1_a, gspec.deltas[1]), (r2_a, gspec.deltas[2])] {
+    for (ri, delta) in [
+        (r0_a, gspec.deltas[0]),
+        (r1_a, gspec.deltas[1]),
+        (r2_a, gspec.deltas[2]),
+    ] {
         let d0 = (ri & ((1 << 20) - 1)) as u32;
         let d1 = ((ri >> 20) & ((1 << 19) - 1)) as u32;
         let d2 = ((ri >> 39) & ((1 << 18) - 1)) as u32;
@@ -700,11 +791,16 @@ fn test_all_adversarial_falsifiers() {
         let v0 = ((d0 as u64 + delta) & ((1 << 20) - 1)) as u32;
         forged_garner.extend([vec![d0], vec![d1], vec![d2], vec![d3], vec![v0]]);
     }
-    let forged_garner_dc = DigitCols { cols: forged_garner };
+    let forged_garner_dc = DigitCols {
+        cols: forged_garner,
+    };
     let err_garner = gspec
         .check_u_exact(&forged_garner_dc)
         .expect_err("Exact-Garner-15 must refuse u + Q in [Q, 2^183)!");
-    assert!(err_garner.contains("boundary overflow refused"), "{err_garner}");
+    assert!(
+        err_garner.contains("boundary overflow refused"),
+        "{err_garner}"
+    );
 
     // Also verify `D1b` LogUp-GKR independently rejects `forged_garner_dc` (`T_2 = p - 1 not in [0, 2^20)`):
     let mut boundary_lkps = Vec::new();
@@ -719,8 +815,13 @@ fn test_all_adversarial_falsifiers() {
         &[0x11u8; 32],
     );
     assert!(
-        verify_logup_gkr(&params.fp[0], &bad_b_prf, &[0x11u8; 32], Some((&boundary_lkps, &fake_mults)))
-            .is_err(),
+        verify_logup_gkr(
+            &params.fp[0],
+            &bad_b_prf,
+            &[0x11u8; 32],
+            Some((&boundary_lkps, &fake_mults))
+        )
+        .is_err(),
         "D1b LogUp-GKR must reject Exact-Garner-15 T_2 = p - 1 overflow!"
     );
 
@@ -767,14 +868,8 @@ fn test_all_adversarial_falsifiers() {
     // 4b. `mixed_limbs`: splice limb 0 of `b_vec[0]` into `a_grid[0][0]`!
     let mut mixed_a = a_grid.clone();
     mixed_a[0][0].c0[..n].copy_from_slice(&b_vec[0].c0[..n]);
-    let (_, w_mixed) = prove_hoisted_matvec(
-        &eng,
-        &mixed_a,
-        &b_vec,
-        None,
-        ProveOptions::default(),
-    )
-    .unwrap();
+    let (_, w_mixed) =
+        prove_hoisted_matvec(&eng, &mixed_a, &b_vec, None, ProveOptions::default()).unwrap();
     let err_mixed = verify_hoisted_matvec(
         &params,
         &ha,
@@ -793,7 +888,8 @@ fn test_all_adversarial_falsifiers() {
     // 4c. `stale_parent`: substitute an older weight ciphertext for `a_grid[0][0]`!
     let mut stale_a = a_grid.clone();
     stale_a[0][0] = key.encrypt_exact(&vec![0u64; n]);
-    let (stale_out, w_stale) = prove_hoisted_matvec(&eng, &stale_a, &b_vec, None, ProveOptions::default()).unwrap();
+    let (stale_out, w_stale) =
+        prove_hoisted_matvec(&eng, &stale_a, &b_vec, None, ProveOptions::default()).unwrap();
     let h_stale_out = vec![ct3_handle(&stale_out[0])];
     assert!(
         verify_hoisted_matvec(
@@ -815,7 +911,8 @@ fn test_all_adversarial_falsifiers() {
     // 4d. `wrong_delta`: substitute a forged vector ciphertext for `b_vec[0]`!
     let mut bad_b = b_vec.clone();
     bad_b[0] = key.encrypt_exact(&vec![1u64; n]);
-    let (bad_b_out, w_bad_b) = prove_hoisted_matvec(&eng, &a_grid, &bad_b, None, ProveOptions::default()).unwrap();
+    let (bad_b_out, w_bad_b) =
+        prove_hoisted_matvec(&eng, &a_grid, &bad_b, None, ProveOptions::default()).unwrap();
     let h_bad_b_out = vec![ct3_handle(&bad_b_out[0])];
     assert!(
         verify_hoisted_matvec(

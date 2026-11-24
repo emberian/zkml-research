@@ -16,10 +16,27 @@ fn main() {
     let pf = darkstep::node::prof(&["16384".into(), "4".into(), "175".into(), d.to_string()]);
     let p = pf.t;
     let shares: Vec<Vec<u64>> = (0..3)
-        .map(|i| darkstep::net::bytes_to_u64s(&std::fs::read(std::path::Path::new(&a[3 + i]).join(format!("shares_{i}.bin"))).unwrap()))
+        .map(|i| {
+            darkstep::net::bytes_to_u64s(
+                &std::fs::read(std::path::Path::new(&a[3 + i]).join(format!("shares_{i}.bin")))
+                    .unwrap(),
+            )
+        })
         .collect();
-    let cen = |v: u64| if v > p / 2 { v as i64 - p as i64 } else { v as i64 };
-    let w: Vec<i64> = (0..2 * d * d).map(|k| cen(shares.iter().fold(0, |acc, s| darkstep::arith::addmod(acc, s[2 * k], p)))).collect();
+    let cen = |v: u64| {
+        if v > p / 2 {
+            v as i64 - p as i64
+        } else {
+            v as i64
+        }
+    };
+    let w: Vec<i64> = (0..2 * d * d)
+        .map(|k| {
+            cen(shares
+                .iter()
+                .fold(0, |acc, s| darkstep::arith::addmod(acc, s[2 * k], p)))
+        })
+        .collect();
     let (w1, w2) = w.split_at(d * d);
     // the twin
     let (mut t1, mut t2) = darktrain::init(&c);
@@ -32,6 +49,9 @@ fn main() {
     }
     let got = darktrain::weights_digest(d, w1, w2);
     let want = darktrain::weights_digest(d, &t1, &t2);
-    println!("{}", serde_json::json!({"steps": steps, "revealed_sha256": got, "twin_sha256": want, "equal": got == want,
-        "twin_bound_violations": bd.violations()}));
+    println!(
+        "{}",
+        serde_json::json!({"steps": steps, "revealed_sha256": got, "twin_sha256": want, "equal": got == want,
+        "twin_bound_violations": bd.violations()})
+    );
 }

@@ -50,7 +50,14 @@ pub struct Ceremony {
 }
 
 impl Ceremony {
-    pub fn new(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize) -> Ceremony {
+    pub fn new(
+        epoch: i64,
+        n: usize,
+        ring_n: usize,
+        primes: &[u64],
+        t: u64,
+        tcols: usize,
+    ) -> Ceremony {
         Ceremony {
             epoch,
             n,
@@ -93,7 +100,9 @@ impl Ceremony {
             return err("reveal refused: duplicate");
         }
         if commitment(self.epoch, i, r, salt) != self.commits[&i] {
-            return Err(CeremonyError(format!("reveal refused: custodian {i} does not open its commitment (blamed)")));
+            return Err(CeremonyError(format!(
+                "reveal refused: custodian {i} does not open its commitment (blamed)"
+            )));
         }
         self.reveals.insert(i, (r.into(), salt.into()));
         if self.reveals.len() == self.n {
@@ -125,22 +134,48 @@ impl Ceremony {
     }
 
     pub fn context(&self, j: usize) -> Json {
-        Json::list(vec![Json::s("dl-keygen-key"), Json::i(self.epoch), Json::i(j as i64), Json::s(&self.transcript())])
+        Json::list(vec![
+            Json::s("dl-keygen-key"),
+            Json::i(self.epoch),
+            Json::i(j as i64),
+            Json::s(&self.transcript()),
+        ])
     }
 
     /// Verify custodian j's key proof against the ceremony's a_j and context, and record the key.
-    pub fn register(&mut self, j: usize, b: BigPoly, proof: &[u8]) -> Result<Arc<KeyRegistry>, CeremonyError> {
+    pub fn register(
+        &mut self,
+        j: usize,
+        b: BigPoly,
+        proof: &[u8],
+    ) -> Result<Arc<KeyRegistry>, CeremonyError> {
         self.idx(j)?;
         if self.seed.is_none() || self.keys.contains_key(&j) {
             return err("key refused: out of phase, duplicate or unknown custodian");
         }
-        let reg = Arc::new(KeyRegistry::new(self.ring_n, &self.primes, self.t, &self.key_seed(j)?, &format!("custodian-{j}"), b));
-        let st = Statement::new(reg.clone(), Kind::Key, vec![], vec![], self.context(j)).map_err(|e| CeremonyError(format!("key refused: {e}")))?;
+        let reg = Arc::new(KeyRegistry::new(
+            self.ring_n,
+            &self.primes,
+            self.t,
+            &self.key_seed(j)?,
+            &format!("custodian-{j}"),
+            b,
+        ));
+        let st = Statement::new(reg.clone(), Kind::Key, vec![], vec![], self.context(j))
+            .map_err(|e| CeremonyError(format!("key refused: {e}")))?;
         if let Err(why) = verify(&st, proof, self.tcols) {
-            return Err(CeremonyError(format!("key refused: custodian {j}'s key proof: {why}")));
+            return Err(CeremonyError(format!(
+                "key refused: custodian {j}'s key proof: {why}"
+            )));
         }
         let digest = pycompat::repr::hex(&sha256(&[proof]));
-        self.keys.insert(j, RegisteredKey { registry: reg.clone(), proof_digest: digest });
+        self.keys.insert(
+            j,
+            RegisteredKey {
+                registry: reg.clone(),
+                proof_digest: digest,
+            },
+        );
         Ok(reg)
     }
 
@@ -151,13 +186,21 @@ impl Ceremony {
 
 /// H("dl-keygen-commit", epoch, i, r, salt).
 pub fn commitment(epoch: i64, i: usize, r: &str, salt: &str) -> String {
-    h(vec![Json::s("dl-keygen-commit"), Json::i(epoch), Json::i(i as i64), Json::s(r), Json::s(salt)])
+    h(vec![
+        Json::s("dl-keygen-commit"),
+        Json::i(epoch),
+        Json::i(i as i64),
+        Json::s(r),
+        Json::s(salt),
+    ])
 }
 
 fn hex32_os() -> String {
     use std::io::Read;
     let mut b = [0u8; 32];
-    std::fs::File::open("/dev/urandom").and_then(|mut f| f.read_exact(&mut b)).expect("/dev/urandom");
+    std::fs::File::open("/dev/urandom")
+        .and_then(|mut f| f.read_exact(&mut b))
+        .expect("/dev/urandom");
     pycompat::repr::hex(&b)
 }
 
@@ -184,7 +227,12 @@ impl Custodian {
     }
 
     fn with_seed(i: usize, det_seed: Option<&str>) -> Custodian {
-        let mut det = det_seed.map(|s| (s.to_string(), PyRandom::from_str_seed(&format!("dl-keygen|{s}|custodian|{i}"))));
+        let mut det = det_seed.map(|s| {
+            (
+                s.to_string(),
+                PyRandom::from_str_seed(&format!("dl-keygen|{s}|custodian|{i}")),
+            )
+        });
         let (r, salt) = match det.as_mut() {
             None => (hex32_os(), hex32_os()),
             Some((_, rng)) => {
@@ -200,7 +248,15 @@ impl Custodian {
                 (r, draw())
             }
         };
-        Custodian { i, r, salt, det, s: vec![], e: vec![], b: None }
+        Custodian {
+            i,
+            r,
+            salt,
+            det,
+            s: vec![],
+            e: vec![],
+            b: None,
+        }
     }
 
     pub fn commitment(&self, epoch: i64) -> String {
@@ -233,13 +289,32 @@ impl Custodian {
         };
         let seed = cer.key_seed(self.i).map_err(|e| e.0)?;
         let b = key_b(n, &cer.primes, &seed, &s, &e);
-        let reg = Arc::new(KeyRegistry::new(n, &cer.primes, cer.t, &seed, &format!("custodian-{}", self.i), b.clone()));
+        let reg = Arc::new(KeyRegistry::new(
+            n,
+            &cer.primes,
+            cer.t,
+            &seed,
+            &format!("custodian-{}", self.i),
+            b.clone(),
+        ));
         let st = Statement::new(reg, Kind::Key, vec![], vec![], cer.context(self.i))?;
         #[cfg(feature = "test-det")]
-        let mut opts = ProveOpts { det_seed: self.det.as_ref().map(|d| d.0.clone()), ..Default::default() };
+        let mut opts = ProveOpts {
+            det_seed: self.det.as_ref().map(|d| d.0.clone()),
+            ..Default::default()
+        };
         #[cfg(not(feature = "test-det"))]
         let mut opts = ProveOpts::default();
-        let proof = prove_with(&st, &Witness::Sk { s: s.clone(), e_pk: e.clone(), cts: vec![] }, cer.tcols, &mut opts)?;
+        let proof = prove_with(
+            &st,
+            &Witness::Sk {
+                s: s.clone(),
+                e_pk: e.clone(),
+                cts: vec![],
+            },
+            cer.tcols,
+            &mut opts,
+        )?;
         self.s = s;
         self.e = e;
         self.b = Some(b.clone());
@@ -248,17 +323,56 @@ impl Custodian {
 }
 
 /// keygen_ceremony.run_ceremony: commit, reveal, key proofs, register, for n custodians.
-pub fn run_ceremony(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize) -> Result<(Ceremony, Vec<Custodian>), String> {
-    run_with(epoch, n, ring_n, primes, t, tcols, (0..n).map(Custodian::new).collect())
+pub fn run_ceremony(
+    epoch: i64,
+    n: usize,
+    ring_n: usize,
+    primes: &[u64],
+    t: u64,
+    tcols: usize,
+) -> Result<(Ceremony, Vec<Custodian>), String> {
+    run_with(
+        epoch,
+        n,
+        ring_n,
+        primes,
+        t,
+        tcols,
+        (0..n).map(Custodian::new).collect(),
+    )
 }
 
 /// TEST ONLY: run_ceremony with every custodian on the DL_DETERMINISTIC=<seed> streams.
 #[cfg(feature = "test-det")]
-pub fn run_ceremony_det(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize, seed: &str) -> Result<(Ceremony, Vec<Custodian>), String> {
-    run_with(epoch, n, ring_n, primes, t, tcols, (0..n).map(|i| Custodian::new_det(i, seed)).collect())
+pub fn run_ceremony_det(
+    epoch: i64,
+    n: usize,
+    ring_n: usize,
+    primes: &[u64],
+    t: u64,
+    tcols: usize,
+    seed: &str,
+) -> Result<(Ceremony, Vec<Custodian>), String> {
+    run_with(
+        epoch,
+        n,
+        ring_n,
+        primes,
+        t,
+        tcols,
+        (0..n).map(|i| Custodian::new_det(i, seed)).collect(),
+    )
 }
 
-fn run_with(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: usize, mut cs: Vec<Custodian>) -> Result<(Ceremony, Vec<Custodian>), String> {
+fn run_with(
+    epoch: i64,
+    n: usize,
+    ring_n: usize,
+    primes: &[u64],
+    t: u64,
+    tcols: usize,
+    mut cs: Vec<Custodian>,
+) -> Result<(Ceremony, Vec<Custodian>), String> {
     let mut cer = Ceremony::new(epoch, n, ring_n, primes, t, tcols);
     for c in &cs {
         cer.commit(c.i, &c.commitment(epoch)).map_err(|e| e.0)?;
@@ -276,6 +390,7 @@ fn run_with(epoch: i64, n: usize, ring_n: usize, primes: &[u64], t: u64, tcols: 
 /// The joint key's a: public_a(seed/"joint").
 pub fn joint_a(cer: &Ceremony) -> Option<Vec<BigUint>> {
     let q: BigUint = cer.primes.iter().map(|&p| BigUint::from(p)).product();
-    cer.seed.as_ref().map(|s| public_a(&format!("{s}/joint"), cer.ring_n, &q))
+    cer.seed
+        .as_ref()
+        .map(|s| public_a(&format!("{s}/joint"), cer.ring_n, &q))
 }
-

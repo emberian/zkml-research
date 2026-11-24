@@ -62,7 +62,12 @@ impl Tape {
         let sh = crate::net::bytes_to_u64s(&b);
         r.read_exact(&mut b)?;
         let mac = crate::net::bytes_to_u64s(&b);
-        Ok(Tape { alpha_i, tags, sh, mac })
+        Ok(Tape {
+            alpha_i,
+            tags,
+            sh,
+            mac,
+        })
     }
 }
 
@@ -91,8 +96,25 @@ impl Dealer {
         let mut rng = PyRandom::from_u64(seed);
         let alpha_sh: Vec<u64> = (0..n).map(|_| rng.randrange_u64(p)).collect();
         let alpha = alpha_sh.iter().fold(0, |a, &x| addmod(a, x, p));
-        let tapes = alpha_sh.iter().map(|&a| Tape { alpha_i: a, ..Default::default() }).collect();
-        Dealer { p, n, rng, proof_rng: None, alpha_sh, alpha, tapes, only: None, rs: false, xt: false }
+        let tapes = alpha_sh
+            .iter()
+            .map(|&a| Tape {
+                alpha_i: a,
+                ..Default::default()
+            })
+            .collect();
+        Dealer {
+            p,
+            n,
+            rng,
+            proof_rng: None,
+            alpha_sh,
+            alpha,
+            tapes,
+            only: None,
+            rs: false,
+            xt: false,
+        }
     }
 
     /// spdz.Dealer.auth(v, tag), v in [0, p).
@@ -125,7 +147,11 @@ impl Dealer {
     }
 
     pub fn trunc(&mut self, s: u32, k: u32) {
-        let r = if self.xt { self.rng.randrange_u64(self.p) } else { self.rng.randrange_u64(1u64 << (k + KAPPA)) };
+        let r = if self.xt {
+            self.rng.randrange_u64(self.p)
+        } else {
+            self.rng.randrange_u64(1u64 << (k + KAPPA))
+        };
         self.auth(r % self.p, Tag::Tr);
         for i in 0..s {
             self.auth((r >> i) & 1, Tag::Trb);
@@ -178,37 +204,111 @@ impl Dealer {
 
 /// Dealer + owner for one step (mpc_fork.run_step with HE matvec and HE outer): returns each party's tape and the
 /// owner's public input broadcasts c = v - r, in the harness's order.
-pub fn deal_step(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64]) -> (Vec<Tape>, Vec<u64>) {
+pub fn deal_step(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    inputs: &[u64],
+) -> (Vec<Tape>, Vec<u64>) {
     deal_step_opts(p, d, dealer_seed, owner_seed, inputs, false)
 }
 
 /// proof_atoms: also deal the collaborative proof's truncation range bits (Tag::Trhb after each Trh), from
 /// random.Random(1) as cosnark_gates.RecEngine does.
-pub fn deal_step_opts(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool) -> (Vec<Tape>, Vec<u64>) {
+pub fn deal_step_opts(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    inputs: &[u64],
+    proof_atoms: bool,
+) -> (Vec<Tape>, Vec<u64>) {
     let (c, dl) = deal_step_dealer(p, d, dealer_seed, owner_seed, inputs, proof_atoms);
     (dl.tapes, c)
 }
 
 /// deal_step_opts, returning the owner's broadcasts and the dealer itself (its `tapes`; continue its stream with
 /// deal_proof_section before taking them).
-pub fn deal_step_dealer(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool) -> (Vec<u64>, Dealer) {
-    deal_step_dealer_prog(p, d, dealer_seed, owner_seed, inputs, proof_atoms, &crate::step::Program::HARNESS)
+pub fn deal_step_dealer(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    inputs: &[u64],
+    proof_atoms: bool,
+) -> (Vec<u64>, Dealer) {
+    deal_step_dealer_prog(
+        p,
+        d,
+        dealer_seed,
+        owner_seed,
+        inputs,
+        proof_atoms,
+        &crate::step::Program::HARNESS,
+    )
 }
 
 /// deal_step_dealer for a step program (its truncation shifts and bounds; step::Program::truncs).
-pub fn deal_step_dealer_prog(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool, pg: &crate::step::Program) -> (Vec<u64>, Dealer) {
-    deal_step_dealer_prog_rs(p, d, dealer_seed, owner_seed, inputs, proof_atoms, pg, false)
+pub fn deal_step_dealer_prog(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    inputs: &[u64],
+    proof_atoms: bool,
+    pg: &crate::step::Program,
+) -> (Vec<u64>, Dealer) {
+    deal_step_dealer_prog_rs(
+        p,
+        d,
+        dealer_seed,
+        owner_seed,
+        inputs,
+        proof_atoms,
+        pg,
+        false,
+    )
 }
 
 /// deal_step_dealer_prog for a proof program with or without "RS" (Dealer::rs: K + 1 - s Trhb bits per truncation).
 #[allow(clippy::too_many_arguments)]
-pub fn deal_step_dealer_prog_rs(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool, pg: &crate::step::Program, rs: bool) -> (Vec<u64>, Dealer) {
-    deal_step_dealer_prog_xt(p, d, dealer_seed, owner_seed, inputs, proof_atoms, pg, rs, false)
+pub fn deal_step_dealer_prog_rs(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    inputs: &[u64],
+    proof_atoms: bool,
+    pg: &crate::step::Program,
+    rs: bool,
+) -> (Vec<u64>, Dealer) {
+    deal_step_dealer_prog_xt(
+        p,
+        d,
+        dealer_seed,
+        owner_seed,
+        inputs,
+        proof_atoms,
+        pg,
+        rs,
+        false,
+    )
 }
 
 /// deal_step_dealer_prog_rs with or without exact truncation (Dealer::xt: masks uniform in [0, p)).
 #[allow(clippy::too_many_arguments)]
-pub fn deal_step_dealer_prog_xt(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, inputs: &[u64], proof_atoms: bool, pg: &crate::step::Program, rs: bool, xt: bool) -> (Vec<u64>, Dealer) {
+pub fn deal_step_dealer_prog_xt(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    inputs: &[u64],
+    proof_atoms: bool,
+    pg: &crate::step::Program,
+    rs: bool,
+    xt: bool,
+) -> (Vec<u64>, Dealer) {
     let mut dl = Dealer::new(p, 3, dealer_seed);
     dl.rs = rs;
     dl.xt = xt;
@@ -223,7 +323,13 @@ pub fn deal_step_dealer_prog_xt(p: u64, d: usize, dealer_seed: u64, owner_seed: 
 
 /// One step on a continuing dealer and owner stream: the owner's masks for `inputs` (2d^2 + 2d at genesis, 2d for a
 /// carried step: x then y), then the step's preprocessing in run_step_shares' order. Returns the owner's broadcasts.
-pub fn deal_one_step(dl: &mut Dealer, owner: &mut PyRandom, d: usize, inputs: &[u64], pg: &crate::step::Program) -> Vec<u64> {
+pub fn deal_one_step(
+    dl: &mut Dealer,
+    owner: &mut PyRandom,
+    d: usize,
+    inputs: &[u64],
+    pg: &crate::step::Program,
+) -> Vec<u64> {
     let p = dl.p;
     let [(sa, ka), (sb, kb), (sc, kc), (sd, kd)] = pg.truncs();
     let mut cs = Vec::with_capacity(inputs.len());
@@ -270,13 +376,42 @@ pub fn deal_one_step(dl: &mut Dealer, owner: &mut PyRandom, d: usize, inputs: &[
 /// stream: step 0 deals the genesis inputs (W1, W2, x, y), every later step only its own x, y (2d). Each party's tape
 /// holds the steps back to back. Replaced by the prep lane's MASCOT tapes in deployment.
 #[allow(clippy::too_many_arguments)]
-pub fn deal_steps_prog(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, genesis_inputs: &[u64], later_inputs: &[Vec<u64>], proof_atoms: bool, pg: &crate::step::Program) -> (Vec<Tape>, Vec<Vec<u64>>) {
-    deal_steps_prog_rs(p, d, dealer_seed, owner_seed, genesis_inputs, later_inputs, proof_atoms, pg, false)
+pub fn deal_steps_prog(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    genesis_inputs: &[u64],
+    later_inputs: &[Vec<u64>],
+    proof_atoms: bool,
+    pg: &crate::step::Program,
+) -> (Vec<Tape>, Vec<Vec<u64>>) {
+    deal_steps_prog_rs(
+        p,
+        d,
+        dealer_seed,
+        owner_seed,
+        genesis_inputs,
+        later_inputs,
+        proof_atoms,
+        pg,
+        false,
+    )
 }
 
 /// deal_steps_prog with or without "RS" (Dealer::rs).
 #[allow(clippy::too_many_arguments)]
-pub fn deal_steps_prog_rs(p: u64, d: usize, dealer_seed: u64, owner_seed: u64, genesis_inputs: &[u64], later_inputs: &[Vec<u64>], proof_atoms: bool, pg: &crate::step::Program, rs: bool) -> (Vec<Tape>, Vec<Vec<u64>>) {
+pub fn deal_steps_prog_rs(
+    p: u64,
+    d: usize,
+    dealer_seed: u64,
+    owner_seed: u64,
+    genesis_inputs: &[u64],
+    later_inputs: &[Vec<u64>],
+    proof_atoms: bool,
+    pg: &crate::step::Program,
+    rs: bool,
+) -> (Vec<Tape>, Vec<Vec<u64>>) {
     let mut dl = Dealer::new(p, 3, dealer_seed);
     dl.rs = rs;
     if proof_atoms {

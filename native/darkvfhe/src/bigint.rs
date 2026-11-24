@@ -131,7 +131,10 @@ impl SignedU320 {
         if !self.neg {
             add_limbs(&self.mag, &sh)
         } else {
-            assert!(ge_limbs(&sh, &self.mag), "SignedU320::add_pow2 negative overflow");
+            assert!(
+                ge_limbs(&sh, &self.mag),
+                "SignedU320::add_pow2 negative overflow"
+            );
             sub_limbs(&sh, &self.mag)
         }
     }
@@ -280,14 +283,14 @@ pub fn lift_q_to_8limbs_and_u(
     };
 
     let mut out8 = [r0, r1, r2, 0, 0, 0, 0, 0];
-    for m in 3..8 {
+    for (m, out_slot) in out8.iter_mut().enumerate().skip(3) {
         let fpm = &params.fp[m];
         let z_mod_pm = fpm.red128(
             g0 as u128
                 + (g1 as u128) * (params.prefix_mod[m][1] as u128)
                 + (g2 as u128) * (params.prefix_mod[m][2] as u128),
         );
-        out8[m] = if is_neg {
+        *out_slot = if is_neg {
             fpm.sub(z_mod_pm, params.q_mod_p[m])
         } else {
             z_mod_pm
@@ -328,8 +331,8 @@ pub fn behz_rescale_from_8limbs(
     for m in 1..8 {
         let fpm = &params.fp[m];
         let mut s = g[0] as u128;
-        for i in 1..m {
-            s += (g[i] as u128) * (params.prefix_mod[m][i] as u128);
+        for (&gi, &pm) in g[1..m].iter().zip(&params.prefix_mod[m][1..m]) {
+            s += (gi as u128) * (pm as u128);
         }
         let cur = fpm.red128(s);
         g[m] = mulmod(submod(res[m], cur, fpm.p), params.inv_prefix_mod[m], fpm.p);
@@ -337,8 +340,8 @@ pub fn behz_rescale_from_8limbs(
 
     let mut z = [0u64; 9];
     z[0] = g[0];
-    for m in 1..8 {
-        add_mul_u64(&mut z, &params.prefix_prods[m], g[m]);
+    for (&pm, &gm) in params.prefix_prods[1..8].iter().zip(&g[1..8]) {
+        add_mul_u64(&mut z, &pm, gm);
     }
 
     let d_neg = gt_limbs(&z, &params.half_mqb_limbs);
@@ -367,10 +370,22 @@ pub fn behz_rescale_from_8limbs(
     let mut q5 = [q_abs[0], q_abs[1], q_abs[2], q_abs[3], q_abs[4]];
 
     let (y_signed, s_limbs) = if !num_neg {
-        (SignedU320 { neg: false, mag: q5 }, rem_abs)
+        (
+            SignedU320 {
+                neg: false,
+                mag: q5,
+            },
+            rem_abs,
+        )
     } else if rem_abs == [0, 0, 0] {
         let is_zero = q5 == [0, 0, 0, 0, 0];
-        (SignedU320 { neg: !is_zero, mag: q5 }, [0, 0, 0])
+        (
+            SignedU320 {
+                neg: !is_zero,
+                mag: q5,
+            },
+            [0, 0, 0],
+        )
     } else {
         let one5 = [1u64, 0, 0, 0, 0];
         q5 = add_limbs(&q5, &one5);
@@ -406,24 +421,29 @@ mod tests {
             let d_bi: BigInt = if case == 0 {
                 BigInt::from(0)
             } else if case < 10 {
-                let small = BigInt::from((case as i64 - 5) * 17);
-                small
+                BigInt::from((case as i64 - 5) * 17)
             } else {
                 let mut mag = BigUint::from(0u32);
                 for _ in 0..6 {
-                    rng_state = rng_state.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407);
+                    rng_state = rng_state
+                        .wrapping_mul(6364136223846793005)
+                        .wrapping_add(1442695040888963407);
                     mag = (mag << 64usize) | BigUint::from(rng_state);
                 }
                 // Up to 384 bits (deployed K=64 bound)
                 let bi = BigInt::from(mag);
-                if neg { -bi } else { bi }
+                if neg {
+                    -bi
+                } else {
+                    bi
+                }
             };
 
             let mut res = [0u64; 8];
-            for l in 0..8 {
-                let p_bi = BigInt::from(params.all_primes[l]);
+            for (r_slot, &prime) in res.iter_mut().zip(&params.all_primes) {
+                let p_bi = BigInt::from(prime);
                 let r_bi = d_bi.mod_floor(&p_bi);
-                res[l] = r_bi.to_u64_digits().1.first().copied().unwrap_or(0);
+                *r_slot = r_bi.to_u64_digits().1.first().copied().unwrap_or(0);
             }
 
             let (y_got, s_got, y_qp_got) = behz_rescale_from_8limbs(&params, &res);
@@ -431,7 +451,11 @@ mod tests {
             let (y_want, s_want) = num_bi.div_mod_floor(&q_bi);
 
             let s_want_u = s_want.to_biguint().unwrap();
-            assert_eq!(s_got, biguint_to_limbs3(&s_want_u), "s mismatch at case {case}");
+            assert_eq!(
+                s_got,
+                biguint_to_limbs3(&s_want_u),
+                "s mismatch at case {case}"
+            );
 
             let (y_sign, y_digits) = y_want.to_u64_digits();
             let want_neg = y_sign == num_bigint::Sign::Minus;
@@ -442,10 +466,16 @@ mod tests {
             assert_eq!(y_got.neg, want_neg, "y sign mismatch at case {case}");
             assert_eq!(y_got.mag, want_mag, "y mag mismatch at case {case}");
 
-            for k in 0..3 {
-                let pk = BigInt::from(params.qp[k]);
-                let yk = y_want.mod_floor(&pk).to_u64_digits().1.first().copied().unwrap_or(0);
-                assert_eq!(y_qp_got[k], yk);
+            for (&got_k, &qp_k) in y_qp_got.iter().zip(&params.qp) {
+                let pk = BigInt::from(qp_k);
+                let yk = y_want
+                    .mod_floor(&pk)
+                    .to_u64_digits()
+                    .1
+                    .first()
+                    .copied()
+                    .unwrap_or(0);
+                assert_eq!(got_k, yk);
             }
         }
     }

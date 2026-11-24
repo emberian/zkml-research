@@ -44,7 +44,7 @@ pub struct CyclicNtt {
 
 impl CyclicNtt {
     pub fn new(q: u64, n: usize) -> Self {
-        assert!(n.is_power_of_two() && (q - 1) % (2 * n as u64) == 0);
+        assert!(n.is_power_of_two() && (q - 1).is_multiple_of(2 * n as u64));
         let mut psi0 = 0u64;
         for g in 2u64.. {
             let c = powmod(g, (q - 1) / (2 * n as u64), q);
@@ -86,7 +86,11 @@ impl CyclicNtt {
         let n = a.len();
         let lg = n.trailing_zeros();
         for i in 0..n {
-            let r = if lg == 0 { 0 } else { i.reverse_bits() >> (usize::BITS - lg) };
+            let r = if lg == 0 {
+                0
+            } else {
+                i.reverse_bits() >> (usize::BITS - lg)
+            };
             if i < r {
                 a.swap(i, r);
             }
@@ -262,10 +266,14 @@ impl HoistedEngine {
         let n = params.n;
         let rns_q = Arc::new(Rns::new(n, &params.qp, params.t));
         let neg_ntts: Vec<Ntt> = params.all_primes.iter().map(|&p| Ntt::new(p, n)).collect();
-        let cyc_ntts: Vec<CyclicNtt> = params.all_primes.iter().map(|&p| CyclicNtt::new(p, n)).collect();
+        let cyc_ntts: Vec<CyclicNtt> = params
+            .all_primes
+            .iter()
+            .map(|&p| CyclicNtt::new(p, n))
+            .collect();
         let mut inv2_mod_p = [0u64; 8];
-        for l in 0..8 {
-            inv2_mod_p[l] = (params.all_primes[l] + 1) / 2;
+        for (slot, &prime) in inv2_mod_p.iter_mut().zip(&params.all_primes) {
+            *slot = prime.div_ceil(2);
         }
         HoistedEngine {
             params,
@@ -304,7 +312,12 @@ impl HoistedEngine {
 
     /// Exact `l_inf` post-rescale phase noise `max_j |centered(c0 + c1*s + c2*s^2 - round(Q*m/t), Q)|`
     /// as bit-length and `u128` (for small/medium noise; `BigUint` exact).
-    pub fn phase_noise_inf(&self, key: &OwnKey, ct: &Ct3, expected_msg: &[u64]) -> num_bigint::BigUint {
+    pub fn phase_noise_inf(
+        &self,
+        key: &OwnKey,
+        ct: &Ct3,
+        expected_msg: &[u64],
+    ) -> num_bigint::BigUint {
         use num_bigint::{BigInt, BigUint};
         let rns = &self.rns_q;
         let n = rns.n;
@@ -349,22 +362,22 @@ impl HoistedEngine {
         let n = self.params.n;
         let mut c0_neg = vec![0u64; 8 * n];
         let mut c1_neg = vec![0u64; 8 * n];
-        let mut u0 = if with_prover_aux { Vec::with_capacity(n) } else { Vec::new() };
-        let mut u1 = if with_prover_aux { Vec::with_capacity(n) } else { Vec::new() };
+        let mut u0 = if with_prover_aux {
+            Vec::with_capacity(n)
+        } else {
+            Vec::new()
+        };
+        let mut u1 = if with_prover_aux {
+            Vec::with_capacity(n)
+        } else {
+            Vec::new()
+        };
 
         for j in 0..n {
-            let (r8_0, u_val0) = lift_q_to_8limbs_and_u(
-                &self.params,
-                ct.c0[j],
-                ct.c0[n + j],
-                ct.c0[2 * n + j],
-            );
-            let (r8_1, u_val1) = lift_q_to_8limbs_and_u(
-                &self.params,
-                ct.c1[j],
-                ct.c1[n + j],
-                ct.c1[2 * n + j],
-            );
+            let (r8_0, u_val0) =
+                lift_q_to_8limbs_and_u(&self.params, ct.c0[j], ct.c0[n + j], ct.c0[2 * n + j]);
+            let (r8_1, u_val1) =
+                lift_q_to_8limbs_and_u(&self.params, ct.c1[j], ct.c1[n + j], ct.c1[2 * n + j]);
             for l in 0..8 {
                 c0_neg[l * n + j] = r8_0[l];
                 c1_neg[l * n + j] = r8_1[l];
@@ -405,12 +418,22 @@ impl HoistedEngine {
     }
 
     pub fn precompute_vec(&self, cts: &[Ct], with_prover_aux: bool) -> Vec<PrecomputedCt> {
-        cts.par_iter().map(|ct| self.precompute_ct(ct, with_prover_aux)).collect()
+        cts.par_iter()
+            .map(|ct| self.precompute_ct(ct, with_prover_aux))
+            .collect()
     }
 
-    pub fn precompute_grid(&self, grid: &[Vec<Ct>], with_prover_aux: bool) -> Vec<Vec<PrecomputedCt>> {
+    pub fn precompute_grid(
+        &self,
+        grid: &[Vec<Ct>],
+        with_prover_aux: bool,
+    ) -> Vec<Vec<PrecomputedCt>> {
         grid.par_iter()
-            .map(|row| row.par_iter().map(|ct| self.precompute_ct(ct, with_prover_aux)).collect())
+            .map(|row| {
+                row.par_iter()
+                    .map(|ct| self.precompute_ct(ct, with_prover_aux))
+                    .collect()
+            })
             .collect()
     }
 
@@ -558,7 +581,10 @@ impl HoistedEngine {
             .map(|blk_idx| {
                 let r = blk_idx / k_blk;
                 let c = blk_idx % k_blk;
-                let mut d_limbs = [[vec![0u64; n], vec![0u64; n], vec![0u64; n]], [vec![], vec![], vec![]]];
+                let mut d_limbs = [
+                    [vec![0u64; n], vec![0u64; n], vec![0u64; n]],
+                    [vec![], vec![], vec![]],
+                ];
                 let _ = &mut d_limbs;
                 let mut per_l: Vec<[Vec<u64>; 3]> = Vec::with_capacity(8);
                 for l in 0..8 {
@@ -573,7 +599,8 @@ impl HoistedEngine {
                     let mut z1 = vec![0u64; n];
                     let mut z2 = vec![0u64; n];
                     for j in 0..n {
-                        let (x0, x1, y0, y1) = (a0[j] as u128, a1[j] as u128, b0[j] as u128, b1[j] as u128);
+                        let (x0, x1, y0, y1) =
+                            (a0[j] as u128, a1[j] as u128, b0[j] as u128, b1[j] as u128);
                         z0[j] = fp.red128(x0 * y0);
                         z1[j] = fp.red128(x0 * y1 + x1 * y0);
                         z2[j] = fp.red128(x1 * y1);
@@ -634,7 +661,8 @@ impl HoistedEngine {
         let n = self.params.n;
 
         // Parallelize over all 8 * R (r, l) tasks, computing both negacyclic D and cyclic C!
-        let limb_results: Vec<([Vec<u64>; 3], [Vec<u64>; 3])> = (0..r_blk * 8)
+        type LimbNttPair = ([Vec<u64>; 3], [Vec<u64>; 3]);
+        let limb_results: Vec<LimbNttPair> = (0..r_blk * 8)
             .into_par_iter()
             .map(|idx| {
                 let r = idx / 8;
@@ -660,15 +688,28 @@ impl HoistedEngine {
                     k1[j] = fp.mul(fp.sub(c1[j], d1[j]), inv2);
                     k2[j] = fp.mul(fp.sub(c2[j], d2[j]), inv2);
                 }
-                debug_assert_eq!(c0[n - 1], d0[n - 1], "cyclic vs negacyclic top degree check (k=0)");
-                debug_assert_eq!(c1[n - 1], d1[n - 1], "cyclic vs negacyclic top degree check (k=1)");
-                debug_assert_eq!(c2[n - 1], d2[n - 1], "cyclic vs negacyclic top degree check (k=2)");
+                debug_assert_eq!(
+                    c0[n - 1],
+                    d0[n - 1],
+                    "cyclic vs negacyclic top degree check (k=0)"
+                );
+                debug_assert_eq!(
+                    c1[n - 1],
+                    d1[n - 1],
+                    "cyclic vs negacyclic top degree check (k=1)"
+                );
+                debug_assert_eq!(
+                    c2[n - 1],
+                    d2[n - 1],
+                    "cyclic vs negacyclic top degree check (k=2)"
+                );
                 ([d0, d1, d2], [k0, k1, k2])
             })
             .collect();
 
         // Parallelize exact BEHZ rescale across all 3 * R (r, k_comp) polynomials:
-        let rescaled: Vec<(Vec<u64>, Vec<SignedU320>, Vec<[u64; 3]>)> = (0..3 * r_blk)
+        type RescaledPoly = (Vec<u64>, Vec<SignedU320>, Vec<[u64; 3]>);
+        let rescaled: Vec<RescaledPoly> = (0..3 * r_blk)
             .into_par_iter()
             .map(|rk| {
                 let r = rk / 3;
@@ -752,15 +793,15 @@ impl HoistedEngine {
                 }
             }
         }
-        for m in 0..4 {
-            rns4.fwd(&mut g_ntt[m]);
+        for g in &mut g_ntt {
+            rns4.fwd(g);
         }
 
         let mut ks0 = vec![0u64; 4 * n];
         let mut ks1 = vec![0u64; 4 * n];
-        for m in 0..4 {
-            rns4.mul_acc(&mut ks0, &g_ntt[m], &rlk.rlk0_ntt[m]);
-            rns4.mul_acc(&mut ks1, &g_ntt[m], &rlk.rlk1_ntt[m]);
+        for ((g, r0), r1) in g_ntt.iter().zip(&rlk.rlk0_ntt).zip(&rlk.rlk1_ntt) {
+            rns4.mul_acc(&mut ks0, g, r0);
+            rns4.mul_acc(&mut ks1, g, r1);
         }
         rns4.inv(&mut ks0);
         rns4.inv(&mut ks1);
@@ -841,8 +882,7 @@ impl TemporalOuterAccumulator {
                 let c = blk % k_blk;
                 let u = &u_pre[r];
                 let v = &v_pre[c];
-                for l in 0..8 {
-                    let fpl = &fp[l];
+                for (l, fpl) in fp.iter().enumerate() {
                     let lo = l * n;
                     let hi = (l + 1) * n;
                     for j in lo..hi {
@@ -970,7 +1010,9 @@ mod tests {
         eng.cyc_ntts[0].inverse(&mut c);
 
         let inv2 = eng.inv2_mod_p[0];
-        let got_k: Vec<u64> = (0..n - 1).map(|j| fp.mul(fp.sub(c[j], d[j]), inv2)).collect();
+        let got_k: Vec<u64> = (0..n - 1)
+            .map(|j| fp.mul(fp.sub(c[j], d[j]), inv2))
+            .collect();
         assert_eq!(got_k, want_k);
         assert_eq!(c[n - 1], d[n - 1]);
     }

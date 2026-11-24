@@ -57,7 +57,10 @@ impl Transactions {
         let b = &self.body.bytes()[self.off + 16 * i..self.off + 16 * i + 16];
         let p = self.fp.p;
         let fm = |x: u64| self.fp.mul(x % p, self.rinv);
-        (fm(u64::from_le_bytes(b[0..8].try_into().unwrap())), fm(u64::from_le_bytes(b[8..16].try_into().unwrap())))
+        (
+            fm(u64::from_le_bytes(b[0..8].try_into().unwrap())),
+            fm(u64::from_le_bytes(b[8..16].try_into().unwrap())),
+        )
     }
 
     pub fn parse(bytes: &[u8], p: u64) -> Result<Self, String> {
@@ -76,13 +79,18 @@ impl Transactions {
         let h = bytes.get(8..8 + hlen).ok_or("short header")?;
         let name = b"SPDZ gfp\0";
         if !h.starts_with(name) {
-            return Err(format!("unexpected share type in header: {:?}", &h[..h.len().min(16)]));
+            return Err(format!(
+                "unexpected share type in header: {:?}",
+                &h[..h.len().min(16)]
+            ));
         }
         let mut o = name.len();
         let plen = u32le(&h[o..o + 4]) as usize;
         o += 4;
         if plen != 8 {
-            return Err(format!("prime is {plen} bytes, want 8 (a 61-bit field in one limb)"));
+            return Err(format!(
+                "prime is {plen} bytes, want 8 (a 61-bit field in one limb)"
+            ));
         }
         let prime = u64::from_be_bytes(h[o..o + 8].try_into().unwrap());
         o += 8;
@@ -102,10 +110,17 @@ impl Transactions {
         let alpha_i = from_mont(u64le(&h[o..o + 8]));
         let off = 8 + hlen;
         let blen = bytes.len() - off;
-        if blen % 16 != 0 {
+        if !blen.is_multiple_of(16) {
             return Err("body is not a whole number of (share, mac) pairs".into());
         }
-        Ok(Transactions { fp, alpha_i, off, n: blen / 16, rinv, body })
+        Ok(Transactions {
+            fp,
+            alpha_i,
+            off,
+            n: blen / 16,
+            rinv,
+            body,
+        })
     }
 
     /// Map the file read-only (it is not copied into memory).
@@ -116,9 +131,22 @@ impl Transactions {
         if len == 0 {
             return Self::parse(&[], p);
         }
-        let ptr = unsafe { libc::mmap(std::ptr::null_mut(), len, libc::PROT_READ, libc::MAP_PRIVATE, f.as_raw_fd(), 0) };
+        let ptr = unsafe {
+            libc::mmap(
+                std::ptr::null_mut(),
+                len,
+                libc::PROT_READ,
+                libc::MAP_PRIVATE,
+                f.as_raw_fd(),
+                0,
+            )
+        };
         if ptr == libc::MAP_FAILED {
-            return Err(format!("{}: mmap failed: {}", path.display(), std::io::Error::last_os_error()));
+            return Err(format!(
+                "{}: mmap failed: {}",
+                path.display(),
+                std::io::Error::last_os_error()
+            ));
         }
         Self::from_body(Body::Mapped(ptr as *const u8, len), p)
     }
@@ -144,7 +172,10 @@ pub fn parse_stats(log: &str) -> Option<PartyStats> {
         if let Some(r) = line.strip_prefix("Data sent = ") {
             let mut it = r.split_whitespace();
             st.sent_bytes = it.next()?.parse::<f64>().ok()? * 1e6;
-            st.rounds = it.nth(2).map(|s| s.trim_start_matches('~').parse().unwrap_or(0)).unwrap_or(0);
+            st.rounds = it
+                .nth(2)
+                .map(|s| s.trim_start_matches('~').parse().unwrap_or(0))
+                .unwrap_or(0);
             got.1 = true;
         }
     }
@@ -189,10 +220,20 @@ impl Run {
         let t0 = std::time::Instant::now();
         let mut kids = Vec::new();
         for i in 0..3 {
-            let log = std::fs::File::create(self.workdir.join(format!("P{i}.log"))).map_err(|e| e.to_string())?;
+            let log = std::fs::File::create(self.workdir.join(format!("P{i}.log")))
+                .map_err(|e| e.to_string())?;
             let child = std::process::Command::new("./mascot-party.x")
                 .current_dir(&self.mpspdz)
-                .args(["-N", "3", "-p", &i.to_string(), "-h", "127.0.0.1", "-pn", &self.port_base.to_string()])
+                .args([
+                    "-N",
+                    "3",
+                    "-p",
+                    &i.to_string(),
+                    "-h",
+                    "127.0.0.1",
+                    "-pn",
+                    &self.port_base.to_string(),
+                ])
                 .arg("-P")
                 .arg(self.p.to_string())
                 .args(&self.extra)
@@ -201,7 +242,11 @@ impl Run {
                 .stderr(log)
                 .spawn()
                 .map_err(|e| e.to_string())?;
-            std::fs::write(self.workdir.join(format!("P{i}.pid")), child.id().to_string()).map_err(|e| e.to_string())?;
+            std::fs::write(
+                self.workdir.join(format!("P{i}.pid")),
+                child.id().to_string(),
+            )
+            .map_err(|e| e.to_string())?;
             kids.push(child);
         }
         let mut ok = true;
@@ -214,11 +259,15 @@ impl Run {
         }
         if !ok {
             let retired = self.retire_mac_keys();
-            return Err(format!("a party failed (abort); see {}/P*.log; MAC key shares retired: {retired:?}", self.workdir.display()));
+            return Err(format!(
+                "a party failed (abort); see {}/P*.log; MAC key shares retired: {retired:?}",
+                self.workdir.display()
+            ));
         }
         let mut stats = Vec::new();
         for i in 0..3 {
-            let log = std::fs::read_to_string(self.workdir.join(format!("P{i}.log"))).map_err(|e| e.to_string())?;
+            let log = std::fs::read_to_string(self.workdir.join(format!("P{i}.log")))
+                .map_err(|e| e.to_string())?;
             stats.push(parse_stats(&log).ok_or(format!("no stats in P{i}.log"))?);
         }
         Ok((wall, stats))
@@ -244,10 +293,12 @@ pub fn has_mac_key(player_data: &Path, backend: &str, party: usize) -> bool {
     };
     let tail = format!("-P{party}-3");
     std::fs::read_dir(player_data)
-        .map(|rd| rd.flatten().any(|e| {
-            let n = e.file_name().to_string_lossy().into_owned();
-            n.starts_with(prefix) && n.ends_with(&tail)
-        }))
+        .map(|rd| {
+            rd.flatten().any(|e| {
+                let n = e.file_name().to_string_lossy().into_owned();
+                n.starts_with(prefix) && n.ends_with(&tail)
+            })
+        })
         .unwrap_or(false)
 }
 
@@ -276,12 +327,23 @@ pub fn wipe_file(path: &Path) -> std::io::Result<()> {
 /// c_rehash links, PairwiseParams-*) are not.
 pub fn is_party_secret(name: &str, party: Option<usize>) -> bool {
     let base = name.split(".retired-").next().unwrap_or(name);
-    let kind = ["Mascot-Secrets-", "LowGear-Secrets-", "HighGear-Secrets-", "Memory-", "Player-MAC-Keys-", "Transactions-"]
-        .iter()
-        .any(|p| base.starts_with(p));
+    let kind = [
+        "Mascot-Secrets-",
+        "LowGear-Secrets-",
+        "HighGear-Secrets-",
+        "Memory-",
+        "Player-MAC-Keys-",
+        "Transactions-",
+    ]
+    .iter()
+    .any(|p| base.starts_with(p));
     let mine = match party {
         None => true,
-        Some(i) => base.contains(&format!("-P{i}-")) || base.ends_with(&format!("-P{i}")) || base.ends_with(&format!("-P{i}.data")),
+        Some(i) => {
+            base.contains(&format!("-P{i}-"))
+                || base.ends_with(&format!("-P{i}"))
+                || base.ends_with(&format!("-P{i}.data"))
+        }
     };
     kind && mine
 }
@@ -301,7 +363,9 @@ pub fn retire_mac_keys(mpspdz: &Path, party: Option<usize>) -> Vec<PathBuf> {
         }
     }
     for dir in dirs {
-        let Ok(rd) = std::fs::read_dir(&dir) else { continue };
+        let Ok(rd) = std::fs::read_dir(&dir) else {
+            continue;
+        };
         for e in rd.flatten() {
             if !e.file_type().map(|t| t.is_file()).unwrap_or(false) {
                 continue;
@@ -344,7 +408,9 @@ pub struct PartyResult {
 }
 
 fn ss_sample(pid: u32, acc: &mut std::collections::BTreeMap<(String, String), (u64, u64)>) {
-    let Ok(out) = std::process::Command::new("ss").args(["-tinpH"]).output() else { return };
+    let Ok(out) = std::process::Command::new("ss").args(["-tinpH"]).output() else {
+        return;
+    };
     let txt = String::from_utf8_lossy(&out.stdout);
     let mut cur: Option<(String, String)> = None;
     let tag = format!("pid={pid},");
@@ -359,7 +425,10 @@ fn ss_sample(pid: u32, acc: &mut std::collections::BTreeMap<(String, String), (u
             }
         } else if let Some(k) = &cur {
             let get = |key: &str| {
-                line.split_whitespace().find_map(|w| w.strip_prefix(key)).and_then(|v| v.parse::<u64>().ok()).unwrap_or(0)
+                line.split_whitespace()
+                    .find_map(|w| w.strip_prefix(key))
+                    .and_then(|v| v.parse::<u64>().ok())
+                    .unwrap_or(0)
             };
             let e = acc.entry(k.clone()).or_default();
             e.0 = e.0.max(get("bytes_acked:"));
@@ -373,7 +442,8 @@ impl PartyRun {
         let pers = self.mpspdz.join("Persistence");
         let _ = std::fs::remove_file(pers.join(format!("Transactions-P{}.data", self.party)));
         std::fs::create_dir_all(&self.workdir).map_err(|e| e.to_string())?;
-        let log = std::fs::File::create(self.workdir.join(format!("P{}.log", self.party))).map_err(|e| e.to_string())?;
+        let log = std::fs::File::create(self.workdir.join(format!("P{}.log", self.party)))
+            .map_err(|e| e.to_string())?;
         let mut cmd = std::process::Command::new(format!("./{}-party.x", self.backend));
         cmd.current_dir(&self.mpspdz)
             .args(["-N", "3", "-p", &self.party.to_string(), "--ip-file-name"])
@@ -383,7 +453,10 @@ impl PartyRun {
         if !self.plaintext {
             cmd.arg("-e");
         }
-        cmd.args(&self.extra).arg(&self.prog).stdout(log.try_clone().map_err(|e| e.to_string())?).stderr(log);
+        cmd.args(&self.extra)
+            .arg(&self.prog)
+            .stdout(log.try_clone().map_err(|e| e.to_string())?)
+            .stderr(log);
         let t0 = std::time::Instant::now();
         let child = cmd.spawn().map_err(|e| e.to_string())?;
         let pid = child.id();
@@ -413,11 +486,15 @@ impl PartyRun {
             return Err(format!("party {} failed (abort, status {status}); see {}; MAC key share retired: {retired:?}",
                                self.party, self.workdir.join(format!("P{}.log", self.party)).display()));
         }
-        let logtxt = std::fs::read_to_string(self.workdir.join(format!("P{}.log", self.party))).map_err(|e| e.to_string())?;
+        let logtxt = std::fs::read_to_string(self.workdir.join(format!("P{}.log", self.party)))
+            .map_err(|e| e.to_string())?;
         let stats = parse_stats(&logtxt).ok_or("no stats in the party log")?;
         let mut by_peer: std::collections::BTreeMap<String, (u64, u64)> = Default::default();
         for ((_local, peer), (s, rcv)) in acc {
-            let ip = peer.rsplit_once(':').map(|x| x.0.to_string()).unwrap_or(peer);
+            let ip = peer
+                .rsplit_once(':')
+                .map(|x| x.0.to_string())
+                .unwrap_or(peer);
             let e = by_peer.entry(ip).or_default();
             e.0 += s;
             e.1 += rcv;

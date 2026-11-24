@@ -5,7 +5,12 @@ use num_bigint::{BigInt, BigUint, Sign};
 use num_traits::Zero;
 
 /// P, little-endian limbs.
-pub const P: [u64; 4] = [0xffff_ff80_0000_0001, u64::MAX, u64::MAX, 0x7fff_ffff_ffff_ffff];
+pub const P: [u64; 4] = [
+    0xffff_ff80_0000_0001,
+    u64::MAX,
+    u64::MAX,
+    0x7fff_ffff_ffff_ffff,
+];
 pub const TWO_ADIC: u32 = 32;
 /// zkpopk_ligero.SHIFT (coset off every 2-power subgroup).
 pub const SHIFT: u64 = 3;
@@ -67,6 +72,7 @@ impl Fe {
     pub const ZERO: Fe = Fe([0; 4]);
 
     #[inline(always)]
+    #[allow(clippy::should_implement_trait)]
     pub fn add(self, b: Fe) -> Fe {
         let (a, b) = (self.0, b.0);
         let mut r = [0u64; 4];
@@ -84,6 +90,7 @@ impl Fe {
     }
 
     #[inline(always)]
+    #[allow(clippy::should_implement_trait)]
     pub fn sub(self, b: Fe) -> Fe {
         let (a, b) = (self.0, b.0);
         let mut r = [0u64; 4];
@@ -105,19 +112,21 @@ impl Fe {
     }
 
     #[inline(always)]
+    #[allow(clippy::should_implement_trait)]
     pub fn neg(self) -> Fe {
         Fe::ZERO.sub(self)
     }
 
     /// Montgomery product (CIOS).
     #[inline(always)]
+    #[allow(clippy::should_implement_trait)]
     pub fn mul(self, b: Fe) -> Fe {
-        let (a, b) = (self.0, b.0);
+        let a = self.0;
         let mut t = [0u64; 6];
-        for i in 0..4 {
+        for bi in b.0 {
             let mut c = 0;
             for j in 0..4 {
-                let (v, cc) = mac(t[j], a[j], b[i], c);
+                let (v, cc) = mac(t[j], a[j], bi, c);
                 t[j] = v;
                 c = cc;
             }
@@ -283,12 +292,49 @@ impl Fe {
     }
 }
 
+impl std::ops::Add for Fe {
+    type Output = Fe;
+    #[inline(always)]
+    fn add(self, rhs: Fe) -> Fe {
+        Fe::add(self, rhs)
+    }
+}
+
+impl std::ops::Sub for Fe {
+    type Output = Fe;
+    #[inline(always)]
+    fn sub(self, rhs: Fe) -> Fe {
+        Fe::sub(self, rhs)
+    }
+}
+
+impl std::ops::Neg for Fe {
+    type Output = Fe;
+    #[inline(always)]
+    fn neg(self) -> Fe {
+        Fe::neg(self)
+    }
+}
+
+impl std::ops::Mul for Fe {
+    type Output = Fe;
+    #[inline(always)]
+    fn mul(self, rhs: Fe) -> Fe {
+        Fe::mul(self, rhs)
+    }
+}
+
 /// R^2 mod P (R = 2^256), computed by doubling R mod P 256 times.
 const R2: Fe = {
     // R mod P = 2^256 - 2P (since 2P < 2^256 < 3P)
     let mut r = [0u64; 4];
     // compute 2^256 - 2P = -(2P) mod 2^256
-    let p2 = [P[0] << 1, (P[1] << 1) | (P[0] >> 63), (P[2] << 1) | (P[1] >> 63), (P[3] << 1) | (P[2] >> 63)];
+    let p2 = [
+        P[0] << 1,
+        (P[1] << 1) | (P[0] >> 63),
+        (P[2] << 1) | (P[1] >> 63),
+        (P[3] << 1) | (P[2] >> 63),
+    ];
     let mut br = 0u64;
     let mut i = 0;
     while i < 4 {
@@ -323,7 +369,9 @@ const R2: Fe = {
             let mut br = 0u64;
             let mut j = 0;
             while j < 4 {
-                let t = (s[j] as u128).wrapping_sub(P[j] as u128).wrapping_sub(br as u128);
+                let t = (s[j] as u128)
+                    .wrapping_sub(P[j] as u128)
+                    .wrapping_sub(br as u128);
                 s[j] = t as u64;
                 br = (t >> 127) as u64;
                 j += 1;
@@ -337,7 +385,12 @@ const R2: Fe = {
 
 /// 1 in Montgomery form (R mod P).
 pub const ONE: Fe = {
-    let p2 = [P[0] << 1, (P[1] << 1) | (P[0] >> 63), (P[2] << 1) | (P[1] >> 63), (P[3] << 1) | (P[2] >> 63)];
+    let p2 = [
+        P[0] << 1,
+        (P[1] << 1) | (P[0] >> 63),
+        (P[2] << 1) | (P[1] >> 63),
+        (P[3] << 1) | (P[2] >> 63),
+    ];
     let mut r = [0u64; 4];
     let mut br = 0u64;
     let mut i = 0;
@@ -353,7 +406,18 @@ pub const ONE: Fe = {
 pub fn p_big() -> &'static BigUint {
     use std::sync::OnceLock;
     static PB: OnceLock<BigUint> = OnceLock::new();
-    PB.get_or_init(|| BigUint::from_slice(&[0x0000_0001, 0xffff_ff80, u32::MAX, u32::MAX, u32::MAX, u32::MAX, u32::MAX, 0x7fff_ffff]))
+    PB.get_or_init(|| {
+        BigUint::from_slice(&[
+            0x0000_0001,
+            0xffff_ff80,
+            u32::MAX,
+            u32::MAX,
+            u32::MAX,
+            u32::MAX,
+            u32::MAX,
+            0x7fff_ffff,
+        ])
+    })
 }
 
 pub fn root() -> Fe {

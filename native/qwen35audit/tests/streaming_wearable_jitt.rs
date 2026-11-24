@@ -11,9 +11,11 @@ use qwen35audit::streaming_gdn_carry::{
     compute_chunk_token_commitment, execute_qwen35_monolithic_stateful,
     prove_streaming_gdn_carry_receipt, solve_stateful_gdn_wy_chunk64,
     verify_streaming_gdn_carry_receipt, GdnRecurrentState, PreloadedQwen35JittModel,
-    SaltedGdnStateCommitment, StreamingGdnCarryReceipt, WearableJittCarryVerifier,
-    WearableJittStreamingSession, JITT_CHUNK_LEN, JITT_D_K, JITT_D_V, JITT_H_V, JITT_M_WY,
+    SaltedGdnStateCommitment, StreamingGdnCarryMeta, StreamingGdnCarryReceipt,
+    WearableJittCarryVerifier, WearableJittStreamingSession, JITT_CHUNK_LEN, JITT_D_K, JITT_D_V,
+    JITT_H_V, JITT_M_WY,
 };
+use std::ops::Add;
 use std::path::Path;
 use std::time::Instant;
 
@@ -42,7 +44,8 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
     );
     let mut tok_256 = tokenizer.encode(corpus);
     while tok_256.len() < 4 * JITT_CHUNK_LEN {
-        let extra = tokenizer.encode("verified stateful Gated-DeltaNet carry holds across chunks; ");
+        let extra =
+            tokenizer.encode("verified stateful Gated-DeltaNet carry holds across chunks; ");
         tok_256.extend(extra);
     }
     tok_256.truncate(4 * JITT_CHUNK_LEN);
@@ -93,7 +96,12 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
 
         // Check `0` IEEE-754 bit drift on THIS chunk's 64 x 1024 final output BEFORE dropping it!
         let mono_slice = &mono_final_h[c * JITT_CHUNK_LEN * 1024..(c + 1) * JITT_CHUNK_LEN * 1024];
-        for (idx, (&a, &b)) in step_out.chunk_final_h.iter().zip(mono_slice.iter()).enumerate() {
+        for (idx, (&a, &b)) in step_out
+            .chunk_final_h
+            .iter()
+            .zip(mono_slice.iter())
+            .enumerate()
+        {
             assert_eq!(
                 a.to_bits(),
                 b.to_bits(),
@@ -110,10 +118,10 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
 
         // Standalone `< 25 ms` verification (median of 3 runs on deserialized wire proof, then advance `O(1)` state):
         let mut v_runs = [0.0f64; 3];
-        for r in 0..3 {
+        for run in &mut v_runs {
             let tv = Instant::now();
             verify_streaming_gdn_carry_receipt(&decoded).expect("standalone receipt verify");
-            v_runs[r] = tv.elapsed().as_secs_f64() * 1000.0;
+            *run = tv.elapsed().as_secs_f64() * 1000.0;
         }
         v_runs.sort_by(|a, b| a.partial_cmp(b).unwrap());
         let med_verify_ms = v_runs[1];
@@ -151,17 +159,17 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
     let mut min_nonzero_int = usize::MAX;
     let mut max_nonzero_int = 0usize;
     let mut layer8_nonzero_int = 0usize;
-    for l_ord in 0..18 {
+    for (l_ord, (sess_st, mono_st)) in session
+        .gdn_states()
+        .iter()
+        .zip(mono_gdn_states.iter())
+        .enumerate()
+    {
         assert_eq!(
-            session.gdn_states()[l_ord],
-            mono_gdn_states[l_ord],
+            sess_st, mono_st,
             "GDN recurrent state drift at GDN layer ordinal {l_ord}"
         );
-        let nonzero_int = session.gdn_states()[l_ord]
-            .s_int_hvk
-            .iter()
-            .filter(|&&v| v != 0)
-            .count();
+        let nonzero_int = sess_st.s_int_hvk.iter().filter(|&&v| v != 0).count();
         min_nonzero_int = min_nonzero_int.min(nonzero_int);
         max_nonzero_int = max_nonzero_int.max(nonzero_int);
         if l_ord == 6 {
@@ -227,7 +235,12 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
             .unwrap();
         // Even if adversary patches `chunk_idx = 2` on the valid `S_0 = 0` proof:
         reset_step.receipt.header.chunk_idx = 2;
-        let mut v = WearableJittCarryVerifier::new(session_id, model_weight_root, audited_layer as u32, genesis_root);
+        let mut v = WearableJittCarryVerifier::new(
+            session_id,
+            model_weight_root,
+            audited_layer as u32,
+            genesis_root,
+        );
         v.verify_and_advance(&r0).unwrap();
         v.verify_and_advance(&r1).unwrap();
         assert!(
@@ -238,7 +251,12 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
 
     // Attack 2: Chunk-Reorder Splice (`[r0, r2, r1, r3]`):
     {
-        let mut v = WearableJittCarryVerifier::new(session_id, model_weight_root, audited_layer as u32, genesis_root);
+        let mut v = WearableJittCarryVerifier::new(
+            session_id,
+            model_weight_root,
+            audited_layer as u32,
+            genesis_root,
+        );
         v.verify_and_advance(&r0).unwrap();
         assert!(
             v.verify_and_advance(&r2).is_err(),
@@ -248,7 +266,12 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
 
     // Attack 3: State Rollback / Stale `rt_{S,1}` Replay at Chunk 2:
     {
-        let mut v = WearableJittCarryVerifier::new(session_id, model_weight_root, audited_layer as u32, genesis_root);
+        let mut v = WearableJittCarryVerifier::new(
+            session_id,
+            model_weight_root,
+            audited_layer as u32,
+            genesis_root,
+        );
         v.verify_and_advance(&r0).unwrap();
         v.verify_and_advance(&r1).unwrap();
         let mut replayed_r1_as_2 = r1.clone();
@@ -273,7 +296,12 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
             .unwrap()
             .receipt;
         verify_streaming_gdn_carry_receipt(&other_r0).expect("standalone valid in other session");
-        let mut v = WearableJittCarryVerifier::new(session_id, model_weight_root, audited_layer as u32, genesis_root);
+        let mut v = WearableJittCarryVerifier::new(
+            session_id,
+            model_weight_root,
+            audited_layer as u32,
+            genesis_root,
+        );
         assert!(
             v.verify_and_advance(&other_r0).is_err(),
             "Attack 4 (cross-session replay) MUST be rejected!"
@@ -282,17 +310,18 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
 
     // Attack 5: Cross-Layer Splice Attack (valid proof for GDN Layer 4 injected into Layer 8 verifier):
     {
-        let mut layer4_sess = WearableJittStreamingSession::new(
-            session_id,
-            model_weight_root,
-            4,
-            Some([0x10u8; 32]),
-        );
+        let mut layer4_sess =
+            WearableJittStreamingSession::new(session_id, model_weight_root, 4, Some([0x10u8; 32]));
         let layer4_r0 = layer4_sess
             .step_chunk_64(&model, &tok_256[0..64], Some([0x55u8; 32]))
             .unwrap()
             .receipt;
-        let mut v = WearableJittCarryVerifier::new(session_id, model_weight_root, audited_layer as u32, genesis_root);
+        let mut v = WearableJittCarryVerifier::new(
+            session_id,
+            model_weight_root,
+            audited_layer as u32,
+            genesis_root,
+        );
         assert!(
             v.verify_and_advance(&layer4_r0).is_err(),
             "Attack 5 (cross-layer splice layer 4 -> layer 8) MUST be rejected!"
@@ -331,21 +360,27 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
         );
         // Note: `bad_wit` has `W_ks == 0` (dropped `K_c · S_c`!), which disagrees with non-zero `s_in_c`!
         let mut forged_s_out_int = bad_wit.s_out.s_int_hvk.clone();
-        for idx in 0..forged_s_out_int.len() {
+        for (idx, (forged_v, &nz_v)) in forged_s_out_int
+            .iter_mut()
+            .zip(s_nonzero.s_int_hvk.iter())
+            .enumerate()
+        {
             let h = idx & 15;
-            forged_s_out_int[idx] = (forged_s_out_int[idx]
-                + ((bad_wit.gamma_int_16[h] as i64) * s_nonzero.s_int_hvk[idx]) / JITT_M_WY)
+            *forged_v = (*forged_v + ((bad_wit.gamma_int_16[h] as i64) * nz_v) / JITT_M_WY)
                 .clamp(-8000, 8000);
         }
         bad_wit.s_out = GdnRecurrentState::from_int_hvk(forged_s_out_int).unwrap();
-        let bad_s_out_c = SaltedGdnStateCommitment::commit(bad_wit.s_out.clone(), Some([0x62u8; 32]));
+        let bad_s_out_c =
+            SaltedGdnStateCommitment::commit(bad_wit.s_out.clone(), Some([0x62u8; 32]));
         let tok_c = compute_chunk_token_commitment(&session_id, 1, &tok_256[64..128]);
         let forged_prf = prove_streaming_gdn_carry_receipt(
-            session_id,
-            model_weight_root,
-            audited_layer as u32,
-            1,
-            tok_c,
+            StreamingGdnCarryMeta {
+                session_id,
+                model_weight_root,
+                layer_idx: audited_layer as u32,
+                chunk_idx: 1,
+                chunk_tok_commit: tok_c,
+            },
             &s_in_c,
             &bad_s_out_c,
             &bad_wit,
@@ -391,25 +426,23 @@ fn test_wearable_jitt_4x64_real_qwen35_zero_bit_drift_and_10_attack_refusals() {
         let v_f32 = vec![0.80f32; JITT_CHUNK_LEN * JITT_H_V * JITT_D_V];
         let g_f32 = vec![-0.02f32; JITT_CHUNK_LEN * JITT_H_V];
         let beta_f32 = vec![0.50f32; JITT_CHUNK_LEN * JITT_H_V];
-        let s_in_c = SaltedGdnStateCommitment::commit(GdnRecurrentState::zero(), Some([0x91u8; 32]));
-        let mut bad_slt_wit = solve_stateful_gdn_wy_chunk64(
-            &q_f32,
-            &k_f32,
-            &v_f32,
-            &g_f32,
-            &beta_f32,
-            &s_in_c.state,
-        );
+        let s_in_c =
+            SaltedGdnStateCommitment::commit(GdnRecurrentState::zero(), Some([0x91u8; 32]));
+        let mut bad_slt_wit =
+            solve_stateful_gdn_wy_chunk64(&q_f32, &k_f32, &v_f32, &g_f32, &beta_f32, &s_in_c.state);
         // Inject non-zero entry on main diagonal `(h=0, i=0, j=0)` within `[-512, 512)` range!
         bad_slt_wit.l_lsb_hij[0] = badd(0, 7);
-        let s_out_c = SaltedGdnStateCommitment::commit(bad_slt_wit.s_out.clone(), Some([0x92u8; 32]));
+        let s_out_c =
+            SaltedGdnStateCommitment::commit(bad_slt_wit.s_out.clone(), Some([0x92u8; 32]));
         let tok_c = compute_chunk_token_commitment(&session_id, 0, &tok_256[0..64]);
         let bad_slt_prf = prove_streaming_gdn_carry_receipt(
-            session_id,
-            model_weight_root,
-            audited_layer as u32,
-            0,
-            tok_c,
+            StreamingGdnCarryMeta {
+                session_id,
+                model_weight_root,
+                layer_idx: audited_layer as u32,
+                chunk_idx: 0,
+                chunk_tok_commit: tok_c,
+            },
             &s_in_c,
             &s_out_c,
             &bad_slt_wit,

@@ -7,10 +7,11 @@ use darkvfhe::dark_clearing::{
     bfv_ct_handle, canonical_qp_program_digest, compress_multilateral_legs,
     encrypt_and_prove_submission_whir, execute_dark_bazaar_clearing_epoch,
     execute_private_voting_tally_epoch, prove_submission_from_raw_witness,
-    solve_certified_call_auction_qp, verify_encrypted_submission_whir, verify_fhsdd001_row_dominant,
-    BfvSubmissionWhirProof61, CallAuctionQpConfig, ClearingError, DarkClearingCommittee,
-    ExactQpCertificateBundle, ExactSddFactorCertificate, MultilateralNettingCertificate,
-    OpeningAuthorization, SddFactorEdgeInt, SettlementLeg, SubmissionSpec,
+    solve_certified_call_auction_qp, verify_encrypted_submission_whir,
+    verify_fhsdd001_row_dominant, BfvSubmissionWhirProof61, CallAuctionQpConfig, ClearingError,
+    DarkClearingCommittee, ExactQpCertificateBundle, ExactSddFactorCertificate,
+    MultilateralNettingCertificate, OpeningAuthorization, SddFactorEdgeInt, SettlementLeg,
+    SubmissionSpec,
 };
 use darkvfhe::succinct_pcs::PcsRng;
 use std::time::Instant;
@@ -26,9 +27,11 @@ fn fhqpb001_and_dbnet001_lean_golden_parity_and_adversarial_teeth() {
     let l_vec = vec![0, 0];
     let u_vec = vec![10, 8];
 
-    verify_fhsdd001_row_dominant(1, &q_mat).expect("[[2,-1],[-1,2]] is row-diagonally-dominant SDD");
+    verify_fhsdd001_row_dominant(1, &q_mat)
+        .expect("[[2,-1],[-1,2]] is row-diagonally-dominant SDD");
 
-    let digest = canonical_qp_program_digest(1, &q_mat, &q_vec, &a_mat, &b_vec, &[], &[], &l_vec, &u_vec);
+    let digest =
+        canonical_qp_program_digest(1, &q_mat, &q_vec, &a_mat, &b_vec, &[], &[], &l_vec, &u_vec);
     let witness_bundle = ExactQpCertificateBundle {
         scale_denom: 1,
         sdd: ExactSddFactorCertificate {
@@ -62,14 +65,16 @@ fn fhqpb001_and_dbnet001_lean_golden_parity_and_adversarial_teeth() {
     };
 
     let t0 = Instant::now();
-    let summary = witness_bundle.verify_zero_gap().expect("Lean golden witness must verify");
+    let summary = witness_bundle
+        .verify_zero_gap()
+        .expect("Lean golden witness must verify");
     let verify_ns = t0.elapsed().as_nanos();
     assert_eq!(summary.comp_gap_scaled, 0);
     assert_eq!(summary.two_primal_scaled, summary.two_dual_scaled);
 
     let wire = witness_bundle.to_wire_bytes();
-    let (decoded, summary2) =
-        ExactQpCertificateBundle::from_wire_bytes_and_verify(&wire).expect("FHQPB001 wire roundtrip");
+    let (decoded, summary2) = ExactQpCertificateBundle::from_wire_bytes_and_verify(&wire)
+        .expect("FHQPB001 wire roundtrip");
     assert_eq!(decoded, witness_bundle);
     assert_eq!(summary2, summary);
     println!(
@@ -116,17 +121,47 @@ fn fhqpb001_and_dbnet001_lean_golden_parity_and_adversarial_teeth() {
 
     // 2. Exact parity with `witnessGrossLegs` / `witnessNetLegs` in `Theory/ExactKktClearingCert.lean`:
     let gross = vec![
-        SettlementLeg { payer: 1, payee: 2, asset: 0, amount: 110 },
-        SettlementLeg { payer: 2, payee: 3, asset: 0, amount: 80 },
-        SettlementLeg { payer: 3, payee: 1, asset: 0, amount: 60 },
-        SettlementLeg { payer: 2, payee: 4, asset: 0, amount: 30 },
+        SettlementLeg {
+            payer: 1,
+            payee: 2,
+            asset: 0,
+            amount: 110,
+        },
+        SettlementLeg {
+            payer: 2,
+            payee: 3,
+            asset: 0,
+            amount: 80,
+        },
+        SettlementLeg {
+            payer: 3,
+            payee: 1,
+            asset: 0,
+            amount: 60,
+        },
+        SettlementLeg {
+            payer: 2,
+            payee: 4,
+            asset: 0,
+            amount: 30,
+        },
     ];
     let net_cert = compress_multilateral_legs(&gross).expect("compress multilateral legs");
     assert_eq!(
         net_cert.net_legs,
         vec![
-            SettlementLeg { payer: 1, payee: 3, asset: 0, amount: 20 },
-            SettlementLeg { payer: 1, payee: 4, asset: 0, amount: 30 },
+            SettlementLeg {
+                payer: 1,
+                payee: 3,
+                asset: 0,
+                amount: 20
+            },
+            SettlementLeg {
+                payer: 1,
+                payee: 4,
+                asset: 0,
+                amount: 30
+            },
         ]
     );
     let net_summary = net_cert.verify().expect("netting cert verify");
@@ -137,8 +172,18 @@ fn fhqpb001_and_dbnet001_lean_golden_parity_and_adversarial_teeth() {
     let bad_val = MultilateralNettingCertificate {
         gross_legs: gross.clone(),
         net_legs: vec![
-            SettlementLeg { payer: 1, payee: 3, asset: 0, amount: 20 },
-            SettlementLeg { payer: 1, payee: 4, asset: 0, amount: 31 },
+            SettlementLeg {
+                payer: 1,
+                payee: 3,
+                asset: 0,
+                amount: 20,
+            },
+            SettlementLeg {
+                payer: 1,
+                payee: 4,
+                asset: 0,
+                amount: 31,
+            },
         ],
     };
     assert!(matches!(
@@ -148,11 +193,31 @@ fn fhqpb001_and_dbnet001_lean_golden_parity_and_adversarial_teeth() {
 
     // Tooth C2 (gross exposure inflation refused):
     let bad_vol = MultilateralNettingCertificate {
-        gross_legs: vec![SettlementLeg { payer: 1, payee: 2, asset: 0, amount: 100 }],
+        gross_legs: vec![SettlementLeg {
+            payer: 1,
+            payee: 2,
+            asset: 0,
+            amount: 100,
+        }],
         net_legs: vec![
-            SettlementLeg { payer: 1, payee: 9, asset: 0, amount: 80 },
-            SettlementLeg { payer: 9, payee: 2, asset: 0, amount: 80 },
-            SettlementLeg { payer: 1, payee: 2, asset: 0, amount: 20 },
+            SettlementLeg {
+                payer: 1,
+                payee: 9,
+                asset: 0,
+                amount: 80,
+            },
+            SettlementLeg {
+                payer: 9,
+                payee: 2,
+                asset: 0,
+                amount: 80,
+            },
+            SettlementLeg {
+                payer: 1,
+                payee: 2,
+                asset: 0,
+                amount: 20,
+            },
         ],
     };
     assert_eq!(
@@ -230,8 +295,8 @@ fn n8192_dark_bazaar_encrypted_call_auction_and_multilateral_netting_e2e() {
         // Verify standalone wire roundtrip of `DBWHIR61`:
         let wire = sub.proof.to_wire_bytes(params.qp[0]);
         let proof_wire_bytes = wire.len();
-        let unpacked =
-            BfvSubmissionWhirProof61::from_wire_bytes(&wire, params.qp[0]).expect("DBWHIR61 unpack");
+        let unpacked = BfvSubmissionWhirProof61::from_wire_bytes(&wire, params.qp[0])
+            .expect("DBWHIR61 unpack");
         let mut sub_rt = sub.clone();
         sub_rt.proof = unpacked;
         let t_v = Instant::now();
@@ -250,12 +315,42 @@ fn n8192_dark_bazaar_encrypted_call_auction_and_multilateral_netting_e2e() {
 
     // Gross bilateral fills across 5 counterparties with cyclic exposure -> multilateral netting:
     let gross_legs = vec![
-        SettlementLeg { payer: 10, payee: 20, asset: 1, amount: 450 },
-        SettlementLeg { payer: 20, payee: 30, asset: 1, amount: 400 },
-        SettlementLeg { payer: 30, payee: 10, asset: 1, amount: 350 },
-        SettlementLeg { payer: 20, payee: 40, asset: 1, amount: 120 },
-        SettlementLeg { payer: 40, payee: 50, asset: 1, amount: 90 },
-        SettlementLeg { payer: 50, payee: 10, asset: 1, amount: 90 },
+        SettlementLeg {
+            payer: 10,
+            payee: 20,
+            asset: 1,
+            amount: 450,
+        },
+        SettlementLeg {
+            payer: 20,
+            payee: 30,
+            asset: 1,
+            amount: 400,
+        },
+        SettlementLeg {
+            payer: 30,
+            payee: 10,
+            asset: 1,
+            amount: 350,
+        },
+        SettlementLeg {
+            payer: 20,
+            payee: 40,
+            asset: 1,
+            amount: 120,
+        },
+        SettlementLeg {
+            payer: 40,
+            payee: 50,
+            asset: 1,
+            amount: 90,
+        },
+        SettlementLeg {
+            payer: 50,
+            payee: 10,
+            asset: 1,
+            amount: 90,
+        },
     ];
 
     let t_ep = Instant::now();
@@ -372,14 +467,9 @@ fn n8192_private_voting_tally_kills_1e6_forgery_and_enforces_c8_threshold_gates(
 
     // Honest 4-voter tally succeeds under 3-of-4 threshold quorum `[0, 2, 3]`:
     let t_vt = Instant::now();
-    let tally = execute_private_voting_tally_epoch(
-        &mut vote_comm,
-        1,
-        &vote_spec,
-        &ballots,
-        &[0, 2, 3],
-    )
-    .expect("execute N=8192 private voting tally");
+    let tally =
+        execute_private_voting_tally_epoch(&mut vote_comm, 1, &vote_spec, &ballots, &[0, 2, 3])
+            .expect("execute N=8192 private voting tally");
     println!(
         "[PrivateVoting N=8192] 4-voter 3-of-4 epoch verify+tally={:.2} ms -> {:?}",
         t_vt.elapsed().as_secs_f64() * 1000.0,
@@ -398,7 +488,8 @@ fn n8192_private_voting_tally_kills_1e6_forgery_and_enforces_c8_threshold_gates(
     // refusal, and stale `epoch_latch` replay):
     let p64 = params_ring_homo(64);
     let p0_64 = p64.qp[0];
-    let mut comm64 = DarkClearingCommittee::setup(p64.clone(), 2, 3).expect("2-of-3 N=64 committee");
+    let mut comm64 =
+        DarkClearingCommittee::setup(p64.clone(), 2, 3).expect("2-of-3 N=64 committee");
     let spec64 = SubmissionSpec::BinaryBallot {
         num_choices: 3,
         min_votes: 1,
@@ -483,8 +574,12 @@ fn n8192_private_voting_tally_kills_1e6_forgery_and_enforces_c8_threshold_gates(
     );
 
     // Attempt to decrypt a raw unverified client ciphertext MUST be refused (`C8UnverifiedHandle`):
-    let raw_unverified_auth =
-        OpeningAuthorization::new(1, spec64.spec_digest(), limb1_tampered.ct_handle, vec![0, 1]);
+    let raw_unverified_auth = OpeningAuthorization::new(
+        1,
+        spec64.spec_digest(),
+        limb1_tampered.ct_handle,
+        vec![0, 1],
+    );
     assert_eq!(
         comm64.issue_partial_decryption_share(0, &raw_unverified_auth, &limb1_tampered.ct),
         Err(ClearingError::C8UnverifiedHandle(limb1_tampered.ct_handle))

@@ -10,8 +10,7 @@ use crate::gruen_ext4::{
     compute_d1b_multiplicities, prove_d1b_range_ext4, prove_gruen_einsum_mode2_ext4,
     prove_mxfp4_delayed_bjk_horner_ext4, prove_strict_lower_tri_ext4, verify_d1b_range_ext4,
     verify_gruen_einsum_mode2_ext4, verify_mxfp4_delayed_bjk_horner_ext4,
-    verify_strict_lower_tri_ext4, D1bRangeExt4Proof, GruenMode2Ext4Proof,
-    Mxfp4DelayedBjkExt4Proof,
+    verify_strict_lower_tri_ext4, D1bRangeExt4Proof, GruenMode2Ext4Proof, Mxfp4DelayedBjkExt4Proof,
 };
 use crate::pcs_ext4::{
     commit_table_pcs, open_pcs_claims, verify_pcs_claims, MleEvalClaim, PcsOpeningProof, PcsParams,
@@ -19,9 +18,10 @@ use crate::pcs_ext4::{
 };
 use crate::safetensors_mmap::{
     decode_e2m1_x2_bb, decode_e2m1_x2_i32, MmapSafetensors, Mxfp4Matrix, Qwen35WeightRegistry,
-    ACT_SCALE, ACT_SHIFT, W_SCALE_BASE, W_SCALE_SHIFT, WY_SCALE, WY_SHIFT,
+    ACT_SCALE, ACT_SHIFT, WY_SCALE, WY_SHIFT, W_SCALE_BASE, W_SCALE_SHIFT,
 };
 use rayon::prelude::*;
+use std::ops::{Add, Sub};
 
 /// Pad `cols_orig` (multiple of 32) up to `cols_orig.next_power_of_two()` (e.g. `3584 -> 4096`) with zero blocks
 /// so both `rows_pad = 2^log_j` and `blocks_pad = 2^log_k` are exact powers of two for `MXFP4` `b -> j -> k` sumcheck!
@@ -61,7 +61,7 @@ pub fn eval_mxfp4_int_contraction(
         .enumerate()
         .for_each(|(t, y_row)| {
             let x_row = &x_i16[t * in_dim..(t + 1) * in_dim];
-            for j in 0..mat.rows_orig {
+            for (j, y_cell) in y_row.iter_mut().take(mat.rows_orig).enumerate() {
                 let mut acc = 0i64;
                 for k in 0..k_len {
                     let s = mat.scales[j * k_len + k] as i64;
@@ -81,14 +81,19 @@ pub fn eval_mxfp4_int_contraction(
                     "BabyBear wraparound guard tripped: |Y_raw| = {}",
                     acc.abs()
                 );
-                y_row[j] = acc;
+                *y_cell = acc;
             }
         });
     y_raw
 }
 
 /// Dequantize `Y_raw[i, j]` (`ACT_SCALE * 2 * W_SCALE_BASE`) back to `f32` `[seq_len * rows_orig]`.
-pub fn dequant_y_raw_to_f32(y_raw: &[i64], seq_len: usize, rows_orig: usize, rows_pad: usize) -> Vec<f32> {
+pub fn dequant_y_raw_to_f32(
+    y_raw: &[i64],
+    seq_len: usize,
+    rows_orig: usize,
+    rows_pad: usize,
+) -> Vec<f32> {
     let denom = (ACT_SCALE as f32) * 2.0 * W_SCALE_BASE;
     let mut out = vec![0.0f32; seq_len * rows_orig];
     for t in 0..seq_len {
@@ -164,6 +169,18 @@ pub struct RealGdnWyWitness {
     pub y_out_f32: Vec<f32>,
 }
 
+/// Shape parameters for [`solve_real_gdn_wy_chunk64`].
+#[derive(Clone, Copy, Debug)]
+pub struct GdnWyShape {
+    pub h_k: usize,
+    pub h_v: usize,
+    pub c_len: usize,
+    pub d_k: usize,
+    pub d_v: usize,
+}
+
+type GdnHeadWyOutputs = (Vec<i64>, Vec<i64>, Vec<i64>, Vec<u32>, Vec<f32>);
+
 /// Solve division-free fixed-point `C = 64` chunkwise WY `(I + L_tilde / M_wy) UW = RHS` from real
 /// L2-normalized `q, k` (`[c_len, h_k, d_k]`), `v` (`[c_len, h_v, d_v]`), `g` (`[c_len, h_v]`), `beta` (`[c_len, h_v]`).
 pub fn solve_real_gdn_wy_chunk64(
@@ -172,12 +189,15 @@ pub fn solve_real_gdn_wy_chunk64(
     v: &[f32],
     g: &[f32],
     beta: &[f32],
-    h_k: usize,
-    h_v: usize,
-    c_len: usize,
-    d_k: usize,
-    d_v: usize,
+    shape: GdnWyShape,
 ) -> RealGdnWyWitness {
+    let GdnWyShape {
+        h_k,
+        h_v,
+        c_len,
+        d_k,
+        d_v,
+    } = shape;
     assert!(c_len.is_power_of_two() && (d_v + d_k).is_power_of_two());
     assert_eq!(h_v % h_k, 0);
     let gva_rep = h_v / h_k;
@@ -194,7 +214,7 @@ pub fn solve_real_gdn_wy_chunk64(
     let mut rem_lsb_hik = vec![half_wy as u32; h_pad * c_len * cols];
     let mut y_out_f32 = vec![0.0f32; c_len * h_v * d_v];
 
-    let per_head: Vec<(Vec<i64>, Vec<i64>, Vec<i64>, Vec<u32>, Vec<f32>)> = (0..h_v)
+    let per_head: Vec<GdnHeadWyOutputs> = (0..h_v)
         .into_par_iter()
         .map(|h| {
             let hk = h / gva_rep;
@@ -245,7 +265,8 @@ pub fn solve_real_gdn_wy_chunk64(
                     for d in 0..d_k {
                         dot_kk += k_h[i * d_k + d] * k_h[j * d_k + d];
                     }
-                    let l_val = ((WY_SCALE as f32) * bi * cap_gamma[i * c_len + j] * dot_kk).round() as i64;
+                    let l_val =
+                        ((WY_SCALE as f32) * bi * cap_gamma[i * c_len + j] * dot_kk).round() as i64;
                     l_mat[i * c_len + j] = l_val;
                 }
             }
@@ -386,7 +407,10 @@ pub fn execute_qwen35_24_layers_mmap(
 ) -> Result<(Qwen35TurnExecution, Vec<f32>), String> {
     let seq_len = token_ids.len();
     assert_eq!(seq_len, 64, "chunkwise WY expects C = 64 token turn");
-    assert!(audited_layer < 24 && (audited_layer % 4) != 3, "audited_layer must be a GDN layer");
+    assert!(
+        audited_layer < 24 && (audited_layer % 4) != 3,
+        "audited_layer must be a GDN layer"
+    );
 
     let d_model = 1024usize;
     let d_ff = 3584usize;
@@ -429,11 +453,24 @@ pub fn execute_qwen35_24_layers_mmap(
 
         let delta_attn_i16: Vec<i16> = if (l % 4) != 3 {
             // --- Gated DeltaNet Layer (`H_k = 16, H_v = 16, d_k = d_v = 128, w_conv = 4`) ---
-            let qkv_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_qkv.weight"))?;
-            let z_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_z.weight"))?;
-            let b_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_b.weight"))?;
-            let a_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.in_proj_a.weight"))?;
-            let out_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.out_proj.weight"))?;
+            let qkv_mat = Mxfp4Matrix::from_safetensors(
+                mmap,
+                &format!("{pfx}.linear_attn.in_proj_qkv.weight"),
+            )?;
+            let z_mat = Mxfp4Matrix::from_safetensors(
+                mmap,
+                &format!("{pfx}.linear_attn.in_proj_z.weight"),
+            )?;
+            let b_mat = Mxfp4Matrix::from_safetensors(
+                mmap,
+                &format!("{pfx}.linear_attn.in_proj_b.weight"),
+            )?;
+            let a_mat = Mxfp4Matrix::from_safetensors(
+                mmap,
+                &format!("{pfx}.linear_attn.in_proj_a.weight"),
+            )?;
+            let out_mat =
+                Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.linear_attn.out_proj.weight"))?;
             let (_, conv_w) = mmap.read_f32(&format!("{pfx}.linear_attn.conv1d.weight"))?;
             let (_, a_log) = mmap.read_f32(&format!("{pfx}.linear_attn.A_log"))?;
             let (_, dt_bias) = mmap.read_f32(&format!("{pfx}.linear_attn.dt_bias"))?;
@@ -469,18 +506,33 @@ pub fn execute_qwen35_24_layers_mmap(
             let mut g_f32 = vec![0.0f32; seq_len * 16];
             let mut beta_f32 = vec![0.0f32; seq_len * 16];
             for t in 0..seq_len {
-                q_f32[t * 2048..(t + 1) * 2048].copy_from_slice(&conv_out[t * 6144..t * 6144 + 2048]);
+                q_f32[t * 2048..(t + 1) * 2048]
+                    .copy_from_slice(&conv_out[t * 6144..t * 6144 + 2048]);
                 k_f32[t * 2048..(t + 1) * 2048]
                     .copy_from_slice(&conv_out[t * 6144 + 2048..t * 6144 + 4096]);
                 v_f32[t * 2048..(t + 1) * 2048]
                     .copy_from_slice(&conv_out[t * 6144 + 4096..t * 6144 + 6144]);
                 for h in 0..16 {
                     beta_f32[t * 16 + h] = sigmoid_f32(b_f32[t * 16 + h]);
-                    g_f32[t * 16 + h] = -a_log[h].exp() * softplus_f32(a_f32[t * 16 + h] + dt_bias[h]);
+                    g_f32[t * 16 + h] =
+                        -a_log[h].exp() * softplus_f32(a_f32[t * 16 + h] + dt_bias[h]);
                 }
             }
 
-            let wy = solve_real_gdn_wy_chunk64(&q_f32, &k_f32, &v_f32, &g_f32, &beta_f32, 16, 16, seq_len, 128, 128);
+            let wy = solve_real_gdn_wy_chunk64(
+                &q_f32,
+                &k_f32,
+                &v_f32,
+                &g_f32,
+                &beta_f32,
+                GdnWyShape {
+                    h_k: 16,
+                    h_v: 16,
+                    c_len: seq_len,
+                    d_k: 128,
+                    d_v: 128,
+                },
+            );
 
             // `Qwen3NextRMSNormGated`: `norm.weight * rmsnorm_plain(y) * silu(z)` (NO `1 + w`!)
             let mut gated_f32 = vec![0.0f32; seq_len * 2048];
@@ -489,7 +541,8 @@ pub fn execute_qwen35_24_layers_mmap(
                     let off = (t * 16 + h) * 128;
                     let ys = &wy.y_out_f32[off..off + 128];
                     let zs = &z_f32[off..off + 128];
-                    let inv_rms = 1.0 / (ys.iter().map(|&v| v * v).sum::<f32>() / 128.0 + eps).sqrt();
+                    let inv_rms =
+                        1.0 / (ys.iter().map(|&v| v * v).sum::<f32>() / 128.0 + eps).sqrt();
                     for d in 0..128 {
                         gated_f32[off + d] = norm_w[d] * (ys[d] * inv_rms) * silu_f32(zs[d]);
                     }
@@ -504,10 +557,14 @@ pub fn execute_qwen35_24_layers_mmap(
             quantize_act_i16(&out_f32)
         } else {
             // --- Full Attention GQA Layer (`H_q = 8, H_kv = 2, head_dim = 256, rotary_dim = 64, theta = 1e7`) ---
-            let q_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.q_proj.weight"))?;
-            let k_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.k_proj.weight"))?;
-            let v_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.v_proj.weight"))?;
-            let o_mat = Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.o_proj.weight"))?;
+            let q_mat =
+                Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.q_proj.weight"))?;
+            let k_mat =
+                Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.k_proj.weight"))?;
+            let v_mat =
+                Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.v_proj.weight"))?;
+            let o_mat =
+                Mxfp4Matrix::from_safetensors(mmap, &format!("{pfx}.self_attn.o_proj.weight"))?;
             let (_, qn_w) = mmap.read_f32(&format!("{pfx}.self_attn.q_norm.weight"))?;
             let (_, kn_w) = mmap.read_f32(&format!("{pfx}.self_attn.k_norm.weight"))?;
 
@@ -962,26 +1019,46 @@ impl PrecommittedMxfp4Pcs {
     }
 }
 
+/// Witness and PCS commitments required by [`prove_audited_gdn_layer`].
+pub struct AuditedGdnLayerWitness<'a> {
+    pub layer_weight_path: MerkleSinglePath,
+    pub layer_tensor_digests: Vec<[u8; 32]>,
+    pub gate_proj_tensor_slot: usize,
+    pub gate_pcs: &'a PrecommittedMxfp4Pcs,
+    pub b_in_state: &'a crate::pcs_ext4::PcsProverState,
+    pub b_out_state: &'a crate::pcs_ext4::PcsProverState,
+    pub b_in_bb: &'a [u32],
+    pub b_out_bb: &'a [u32],
+    pub delta_gdn_bb: &'a [u32],
+    pub delta_mlp_bb: &'a [u32],
+    pub wy: &'a RealGdnWyWitness,
+    pub x_ln2_i16: &'a [i16],
+    pub gate_y_raw: &'a [i64],
+}
+
 /// Prove an audited `Gated DeltaNet + MXFP4 SwiGLU` layer (`Qwen3.5-0.8B` or `Qwen3.8-Flash-Next`)
 /// against `(weight_root, b_in_pcs, b_out_pcs)`!
 pub fn prove_audited_gdn_layer(
     weight_root: &[u8; 32],
-    layer_weight_path: MerkleSinglePath,
-    layer_tensor_digests: Vec<[u8; 32]>,
-    gate_proj_tensor_slot: usize,
-    gate_pcs: &PrecommittedMxfp4Pcs,
-    b_in_state: &crate::pcs_ext4::PcsProverState,
-    b_out_state: &crate::pcs_ext4::PcsProverState,
-    b_in_bb: &[u32],
-    b_out_bb: &[u32],
-    delta_gdn_bb: &[u32],
-    delta_mlp_bb: &[u32],
-    wy: &RealGdnWyWitness,
-    x_ln2_i16: &[i16],
-    gate_y_raw: &[i64],
     audited_layer: usize,
+    inputs: AuditedGdnLayerWitness<'_>,
     tr: &mut CShakeTranscript,
 ) -> Result<SuccinctGdnLayerProof, String> {
+    let AuditedGdnLayerWitness {
+        layer_weight_path,
+        layer_tensor_digests,
+        gate_proj_tensor_slot,
+        gate_pcs,
+        b_in_state,
+        b_out_state,
+        b_in_bb,
+        b_out_bb,
+        delta_gdn_bb,
+        delta_mlp_bb,
+        wy,
+        x_ln2_i16,
+        gate_y_raw,
+    } = inputs;
     let log_h = wy.h_pad.trailing_zeros() as usize;
     let log_c = wy.c_len.trailing_zeros() as usize;
     let wy_cols = wy.d_v + wy.d_k;
@@ -1068,16 +1145,16 @@ pub fn prove_audited_gdn_layer(
     for j in 0..wy.c_len {
         for h in 0..wy.h_pad {
             let mut acc_l = Ext4::ZERO;
-            for i in 0..wy.c_len {
+            for (i, &eq_iv) in eq_i.iter().enumerate() {
                 let l_val = wy.l_lsb_hij[h + (i << log_h) + (j << (log_h + log_c))];
-                acc_l = acc_l.add(eq_i[i].scale_bb(l_val));
+                acc_l = acc_l.add(eq_iv.scale_bb(l_val));
             }
             left_hj[h + (j << log_h)] = acc_l;
 
             let mut acc_r = Ext4::ZERO;
-            for k in 0..wy_cols {
+            for (k, &eq_kv) in eq_k.iter().enumerate() {
                 let u_val = wy.uw_lsb_hik[h + (j << log_h) + (k << (log_h + log_c))];
-                acc_r = acc_r.add(eq_k[k].scale_bb(u_val));
+                acc_r = acc_r.add(eq_kv.scale_bb(u_val));
             }
             right_hj[h + (j << log_h)] = acc_r;
         }
@@ -1088,8 +1165,7 @@ pub fn prove_audited_gdn_layer(
     let ch_h = &wy_chals[..log_h];
     let ch_j = &wy_chals[log_h..];
 
-    let (slt_zero_proof, slt_pt) =
-        prove_strict_lower_tri_ext4(&wy.l_lsb_hij, log_h, log_c, tr);
+    let (slt_zero_proof, slt_pt) = prove_strict_lower_tri_ext4(&wy.l_lsb_hij, log_h, log_c, tr);
     let (d1b_rem_proof, d1b_leaf_pt) =
         prove_d1b_range_ext4(&wy.rem_lsb_hik, &mult_tab, m_wy_wit, m_wy_tab, tr);
 
@@ -1335,17 +1411,30 @@ pub fn prove_audited_gdn_layer(
     })
 }
 
+/// Public statement verified by [`verify_audited_gdn_layer_standalone`].
+pub struct AuditedGdnLayerVerifyStmt<'a> {
+    pub expected_weight_root: &'a [u8; 32],
+    pub expected_b_in_root: &'a [u8; 32],
+    pub expected_b_out_root: &'a [u8; 32],
+    pub expected_audited_layer: usize,
+    pub expected_q_s_binding: &'a [u8; 32],
+    pub bnd_vars: usize,
+}
+
 /// Standalone succinct verifier for `SuccinctGdnLayerProof` using **ONLY `(weight_root, b_in_root, b_out_root, bnd_vars, proof)`**!
 pub fn verify_audited_gdn_layer_standalone(
-    expected_weight_root: &[u8; 32],
-    expected_b_in_root: &[u8; 32],
-    expected_b_out_root: &[u8; 32],
-    expected_audited_layer: usize,
-    expected_q_s_binding: &[u8; 32],
-    bnd_vars: usize,
+    stmt: &AuditedGdnLayerVerifyStmt<'_>,
     proof: &SuccinctGdnLayerProof,
     tr: &mut CShakeTranscript,
 ) -> Result<(), String> {
+    let AuditedGdnLayerVerifyStmt {
+        expected_weight_root,
+        expected_b_in_root,
+        expected_b_out_root,
+        expected_audited_layer,
+        expected_q_s_binding,
+        bnd_vars,
+    } = *stmt;
     if proof.audited_layer != expected_audited_layer {
         return Err("audited_layer mismatch".to_string());
     }
@@ -1374,10 +1463,11 @@ pub fn verify_audited_gdn_layer_standalone(
         return Err("layer weight leaf hash mismatch".to_string());
     }
     let num_weight_leaves = 1usize << proof.layer_weight_path.siblings.len();
-    if !proof
-        .layer_weight_path
-        .verify(b"QW35-GLOBAL-WEIGHT-TREE-V1", expected_weight_root, num_weight_leaves)
-    {
+    if !proof.layer_weight_path.verify(
+        b"QW35-GLOBAL-WEIGHT-TREE-V1",
+        expected_weight_root,
+        num_weight_leaves,
+    ) {
         return Err("global weight_root Merkle path verification failed".to_string());
     }
     let mut qs_bind_in = [0u8; 96];
@@ -1385,7 +1475,9 @@ pub fn verify_audited_gdn_layer_standalone(
     qs_bind_in[32..64].copy_from_slice(&proof.q_pcs_root);
     qs_bind_in[64..96].copy_from_slice(&proof.s_pcs_root);
     if &cshake256_32(b"QW35-QS-PCS-BIND-V1", &qs_bind_in) != expected_q_s_binding {
-        return Err("pretrained MXFP4 (q_pcs_root, s_pcs_root) weight binding mismatch".to_string());
+        return Err(
+            "pretrained MXFP4 (q_pcs_root, s_pcs_root) weight binding mismatch".to_string(),
+        );
     }
 
     // Replay Fiat–Shamir transcript identically!
@@ -1465,8 +1557,16 @@ pub fn verify_audited_gdn_layer_standalone(
     tr.absorb_ext4(b"bnd_out_v", proof.b_out_eval);
     tr.absorb_ext4(b"bnd_dg_v", proof.delta_gdn_eval);
     tr.absorb_ext4(b"bnd_dm_v", proof.delta_mlp_eval);
-    if proof.b_out_eval != proof.b_in_eval.add(proof.delta_gdn_eval).add(proof.delta_mlp_eval) {
-        return Err("U1 boundary residual weld mismatch (B_{l+1} != B_l + delta_gdn + delta_mlp)".to_string());
+    if proof.b_out_eval
+        != proof
+            .b_in_eval
+            .add(proof.delta_gdn_eval)
+            .add(proof.delta_mlp_eval)
+    {
+        return Err(
+            "U1 boundary residual weld mismatch (B_{l+1} != B_l + delta_gdn + delta_mlp)"
+                .to_string(),
+        );
     }
 
     // 4. Verify all 13 Succinct `Ext4` Coset-RS PCS openings (`>= 103.5`b AHIV17 UD)!

@@ -2,9 +2,7 @@
 //! Fiat–Shamir Transcript + Fused `d`-Free Scalar Matvec over `F_p` + `D1b` LogUp-GKR).
 
 use crate::digits::{DigitCols, DirectDigitSpec, ExactGarnerSpec, LiftMode};
-use crate::logup_gkr::{
-    prove_logup_gkr, verify_logup_gkr, LogUpConfig, LogUpGkrProof,
-};
+use crate::logup_gkr::{prove_logup_gkr, verify_logup_gkr, LogUpConfig, LogUpGkrProof};
 use crate::rns_hoist::{Ct3, HoistedEngine, PrecomputedCt};
 use crate::HoistedParams;
 use darkstep::bfv::Ct;
@@ -57,7 +55,10 @@ impl HoistedWitness {
         let r_blk = self.k_res.len();
         let native_elems = (r_blk * 3 * 8 * (n - 1)) as u64;
         let a_dig_elems = if include_a_lifts {
-            self.a_lifts.iter().map(|d| (d.num_cols() * n) as u64).sum::<u64>()
+            self.a_lifts
+                .iter()
+                .map(|d| (d.num_cols() * n) as u64)
+                .sum::<u64>()
         } else {
             0
         };
@@ -114,11 +115,11 @@ pub fn ct2_handle(ct: &Ct) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"DARKVFHE_CT2|");
     for &v in &ct.c0 {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     h.update(b"|");
     for &v in &ct.c1 {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     h.finalize().into()
 }
@@ -129,7 +130,7 @@ pub fn ct3_handle(ct: &Ct3) -> [u8; 32] {
     h.update(b"DARKVFHE_CT3|");
     for comp in [&ct.c0, &ct.c1, &ct.c2] {
         for &v in comp {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         h.update(b"|");
     }
@@ -138,10 +139,10 @@ pub fn ct3_handle(ct: &Ct3) -> [u8; 32] {
 
 fn hash_digit_cols(dc: &DigitCols) -> [u8; 32] {
     let mut h = Sha256::new();
-    h.update(&(dc.cols.len() as u32).to_le_bytes());
+    h.update((dc.cols.len() as u32).to_le_bytes());
     for col in &dc.cols {
         for &v in col {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
     }
     h.finalize().into()
@@ -149,8 +150,8 @@ fn hash_digit_cols(dc: &DigitCols) -> [u8; 32] {
 
 fn hash_digit_pair(d0: &DigitCols, d1: &DigitCols) -> [u8; 32] {
     let mut h = Sha256::new();
-    h.update(&hash_digit_cols(d0));
-    h.update(&hash_digit_cols(d1));
+    h.update(hash_digit_cols(d0));
+    h.update(hash_digit_cols(d1));
     h.finalize().into()
 }
 
@@ -164,7 +165,8 @@ pub fn precompute_shared_grid(
     let dspec = DirectDigitSpec::new(&engine.params, 262);
     let gspec = ExactGarnerSpec::new(&engine.params);
 
-    let rows: Vec<(Vec<(DigitCols, DigitCols)>, Vec<[u8; 32]>)> = pre
+    type SharedGridRow = (Vec<(DigitCols, DigitCols)>, Vec<[u8; 32]>);
+    let rows: Vec<SharedGridRow> = pre
         .par_iter()
         .map(|row| {
             let mut row_lifts = Vec::with_capacity(row.len());
@@ -172,14 +174,10 @@ pub fn precompute_shared_grid(
             for pct in row {
                 let aux = pct.prover_aux.as_ref().unwrap();
                 let (l0, l1) = match mode {
-                    LiftMode::Direct20 => (
-                        dspec.encode_u192(&aux.u0),
-                        dspec.encode_u192(&aux.u1),
-                    ),
-                    LiftMode::ExactGarner15 => (
-                        gspec.encode_u_exact(&aux.u0),
-                        gspec.encode_u_exact(&aux.u1),
-                    ),
+                    LiftMode::Direct20 => (dspec.encode_u192(&aux.u0), dspec.encode_u192(&aux.u1)),
+                    LiftMode::ExactGarner15 => {
+                        (gspec.encode_u_exact(&aux.u0), gspec.encode_u_exact(&aux.u1))
+                    }
                 };
                 let ph = hash_digit_pair(&l0, &l1);
                 row_lifts.push((l0, l1));
@@ -216,10 +214,10 @@ pub fn compute_witness_root(
         .par_iter()
         .map(|rk| {
             let mut h = Sha256::new();
-            for k_comp in 0..3 {
-                for l in 0..8 {
-                    for &v in &rk[k_comp][l] {
-                        h.update(&v.to_le_bytes());
+            for rk_comp in rk {
+                for l_poly in rk_comp {
+                    for &v in l_poly {
+                        h.update(v.to_le_bytes());
                     }
                 }
             }
@@ -235,7 +233,12 @@ pub fn compute_witness_root(
             root.update(ph);
         }
     }
-    for h in b_hashes.iter().chain(y_hashes.iter()).chain(s_hashes.iter()).chain(k_hashes.iter()) {
+    for h in b_hashes
+        .iter()
+        .chain(y_hashes.iter())
+        .chain(s_hashes.iter())
+        .chain(k_hashes.iter())
+    {
         root.update(h);
     }
     root.finalize().into()
@@ -249,10 +252,10 @@ fn statement_digest(
 ) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update(b"HOISTED_B61_STMT_V1|");
-    h.update(&(params.n as u64).to_le_bytes());
-    h.update(&params.t.to_le_bytes());
+    h.update((params.n as u64).to_le_bytes());
+    h.update(params.t.to_le_bytes());
     for &q in &params.all_primes {
-        h.update(&q.to_le_bytes());
+        h.update(q.to_le_bytes());
     }
     for row in ha_grid {
         for ha in row {
@@ -281,7 +284,7 @@ pub fn derive_fs_point(
     if !legacy_fs {
         h.update(witness_root);
     }
-    h.update(&p.to_le_bytes());
+    h.update(p.to_le_bytes());
     let digest: [u8; 32] = h.finalize().into();
     let lo = u128::from_le_bytes(digest[0..16].try_into().unwrap());
     let hi = u128::from_le_bytes(digest[16..32].try_into().unwrap());
@@ -369,7 +372,9 @@ pub fn prove_hoisted_matvec(
             let aux = pct.prover_aux.as_ref().unwrap();
             match opts.mode {
                 LiftMode::Direct20 => (dspec.encode_u192(&aux.u0), dspec.encode_u192(&aux.u1)),
-                LiftMode::ExactGarner15 => (gspec.encode_u_exact(&aux.u0), gspec.encode_u_exact(&aux.u1)),
+                LiftMode::ExactGarner15 => {
+                    (gspec.encode_u_exact(&aux.u0), gspec.encode_u_exact(&aux.u1))
+                }
             }
         })
         .collect();
@@ -427,7 +432,12 @@ pub fn prove_hoisted_matvec(
             &y_lifts,
             &s_lifts,
         );
-        Some(prove_logup_gkr(&engine.params.fp[0], &entries, lu_cfg, &witness_root)?)
+        Some(prove_logup_gkr(
+            &engine.params.fp[0],
+            &entries,
+            lu_cfg,
+            &witness_root,
+        )?)
     } else {
         None
     };
@@ -463,7 +473,14 @@ impl PrepackedQ {
     }
 
     #[inline]
-    fn eval_shifted_at(&self, params: &HoistedParams, l: usize, r_pows: &[u64], subtract_hq: bool, ones_p: u64) -> u64 {
+    fn eval_shifted_at(
+        &self,
+        params: &HoistedParams,
+        l: usize,
+        r_pows: &[u64],
+        subtract_hq: bool,
+        ones_p: u64,
+    ) -> u64 {
         let fp = &params.fp[l];
         let raw_ev = match self {
             PrepackedQ::Direct(pairs) => {
@@ -541,7 +558,9 @@ pub fn verify_hoisted_matvec(
 
     // 0. Public worst-case CRT no-wrap guard (`Astra E6`):
     if !params.check_crt_nowrap(k_blk, witness.max_y_bits) {
-        return Err("public parameter bound failure: Q*B insufficient to prevent CRT wraparound".into());
+        return Err(
+            "public parameter bound failure: Q*B insufficient to prevent CRT wraparound".into(),
+        );
     }
 
     // 1. Handle binding across ALL limbs in parallel (closes `Hole A`, `mixed_limbs`, `stale_parent`, `wrong_quotient`):
@@ -631,17 +650,13 @@ pub fn verify_hoisted_matvec(
         {
             return Err(format!("Q/s digit range check failed: {e}"));
         }
-        if let Some(e) = witness
-            .y_lifts
-            .par_iter()
-            .find_map_any(|dc| {
-                if dc.n() != n {
-                    Some("y digit polynomial length != N".to_string())
-                } else {
-                    dspec.check_digits(dc, dspec.ly, dspec.top_y_bits).err()
-                }
-            })
-        {
+        if let Some(e) = witness.y_lifts.par_iter().find_map_any(|dc| {
+            if dc.n() != n {
+                Some("y digit polynomial length != N".to_string())
+            } else {
+                dspec.check_digits(dc, dspec.ly, dspec.top_y_bits).err()
+            }
+        }) {
             return Err(format!("y digit range check failed: {e}"));
         }
     }
@@ -692,7 +707,12 @@ pub fn verify_hoisted_matvec(
                 &witness.y_lifts,
                 &witness.s_lifts,
             );
-            verify_logup_gkr(&params.fp[0], lu_prf, &witness.witness_root, Some((&entries, mults)))?;
+            verify_logup_gkr(
+                &params.fp[0],
+                lu_prf,
+                &witness.witness_root,
+                Some((&entries, mults)),
+            )?;
         } else {
             verify_logup_gkr(&params.fp[0], lu_prf, &witness.witness_root, None)?;
         }
@@ -867,6 +887,16 @@ pub fn verify_hoisted_matvec(
     Ok(())
 }
 
+/// Parameters for [`verify_hoisted_matvec_succinct_with_a_evals`].
+pub struct SuccinctAEvalsQuery<'a> {
+    pub r_blk: usize,
+    pub k_blk: usize,
+    pub stmt_hash: &'a [u8; 32],
+    pub a_evals_per_prime: &'a [[Vec<u64>; 2]; 8],
+    pub opened_b: &'a [Ct],
+    pub out_cts: &'a [Ct3],
+}
+
 /// Succinct `vFHEML` / PCS-Oracle Verifier for `HoistedB61`:
 /// Given pre-verified PCS evaluations `(m0_evals, m1_evals)` of persistent `Enc(W)` at `r_{FS,p}`
 /// across the 8 primes, verifies:
@@ -876,14 +906,17 @@ pub fn verify_hoisted_matvec(
 ///    degree-3 sumchecks, `O(log M)` prefix selector, and `O(20)` table identity MLE).
 pub fn verify_hoisted_matvec_succinct_with_a_evals(
     params: &HoistedParams,
-    r_blk: usize,
-    k_blk: usize,
-    stmt_hash: &[u8; 32],
-    a_evals_per_prime: &[[Vec<u64>; 2]; 8],
-    opened_b: &[Ct],
-    out_cts: &[Ct3],
+    query: &SuccinctAEvalsQuery<'_>,
     witness: &HoistedWitness,
 ) -> Result<(), String> {
+    let SuccinctAEvalsQuery {
+        r_blk,
+        k_blk,
+        stmt_hash,
+        a_evals_per_prime,
+        opened_b,
+        out_cts,
+    } = *query;
     let n = params.n;
     if !params.check_crt_nowrap(k_blk, witness.max_y_bits) {
         return Err("CRT Q*B no-wrap parameter bound failure".into());
@@ -1040,8 +1073,12 @@ pub fn evaluate_shared_a_at_fs(
             let mut m0 = vec![0u64; r_blk * k_blk];
             let mut m1 = vec![0u64; r_blk * k_blk];
             for idx in 0..r_blk * k_blk {
-                m0[idx] = pre_a[idx].0.eval_shifted_at(params, l, &r_pows, true, ones_p);
-                m1[idx] = pre_a[idx].1.eval_shifted_at(params, l, &r_pows, true, ones_p);
+                m0[idx] = pre_a[idx]
+                    .0
+                    .eval_shifted_at(params, l, &r_pows, true, ones_p);
+                m1[idx] = pre_a[idx]
+                    .1
+                    .eval_shifted_at(params, l, &r_pows, true, ones_p);
             }
             [m0, m1]
         })
@@ -1064,8 +1101,8 @@ pub fn compute_statement_digest(
 
 use crate::logup_gkr::{FractionTreeProof, GkrLayerProof, TABLE_LOG2, TABLE_SIZE};
 use crate::succinct_pcs::{
-    verify_slot_claims, ByteReader, CommittedMatrixPcs, PcsRng, PcsShape, SlotLinearClaim,
-    SuccinctPcsOpeningProof, DEFAULT_BLOWUP, T_COLS_128,
+    verify_slot_claims, ByteReader, CommittedMatrixPcs, PcsRng, PcsShape, SlotClaimsQuery,
+    SlotLinearClaim, SuccinctPcsOpeningProof, DEFAULT_BLOWUP, T_COLS_128,
 };
 use darkstep::arith::invmod;
 use std::collections::BTreeMap;
@@ -1272,29 +1309,29 @@ fn extract_logup_terminal_points(
     let mut tr_state: [u8; 32] = {
         let mut h = Sha256::new();
         h.update(b"DARKVFHE_D1B_GKR|LOGUP_RANGE20");
-        h.update(&fp.p.to_le_bytes());
+        h.update(fp.p.to_le_bytes());
         h.update(context_digest);
         h.finalize().into()
     };
     let absorb_u64s = |st: &mut [u8; 32], vals: &[u64]| {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         for &v in vals {
-            h.update(&v.to_le_bytes());
+            h.update(v.to_le_bytes());
         }
         *st = h.finalize().into();
     };
     let absorb_bytes = |st: &mut [u8; 32], data: &[u8]| {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         h.update(data);
         *st = h.finalize().into();
     };
     let squeeze_fp = |st: &mut [u8; 32], tag: u64| -> u64 {
         let mut h = Sha256::new();
-        h.update(&*st);
+        h.update(*st);
         h.update(b"CHAL");
-        h.update(&tag.to_le_bytes());
+        h.update(tag.to_le_bytes());
         let out: [u8; 32] = h.finalize().into();
         *st = out;
         fp.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -1304,7 +1341,7 @@ fn extract_logup_terminal_points(
         h.update(st);
         h.update(b"SUB|");
         h.update(label.as_bytes());
-        h.update(&idx.to_le_bytes());
+        h.update(idx.to_le_bytes());
         h.finalize().into()
     };
 
@@ -1485,8 +1522,13 @@ pub fn commit_persistent_grid_pcs(
     let pcs = CommittedMatrixPcs::commit(fp0, &flat_data, log_n);
     let chunk_log2 = (log_n + 5).max(18);
     let lu_cfg = LogUpConfig::BatchedC3 { chunk_log2 };
-    let logup_proof =
-        crate::logup_gkr::prove_logup_gkr_with_mults(&fp0, &lookup_entries, &mults, lu_cfg, &pcs.root);
+    let logup_proof = crate::logup_gkr::prove_logup_gkr_with_mults(
+        &fp0,
+        &lookup_entries,
+        &mults,
+        lu_cfg,
+        &pcs.root,
+    );
 
     let (wit_zs, z_tab) = extract_logup_terminal_points(&fp0, &logup_proof, &pcs.root)?;
     let mut v_families = Vec::new();
@@ -1647,12 +1689,14 @@ pub fn verify_persistent_grid_range_proof(
 
     verify_slot_claims(
         &fp0,
-        &shape,
-        &prf.root,
-        log_n,
-        &v_families,
-        &claims,
-        &prf.root,
+        &SlotClaimsQuery {
+            shape: &shape,
+            root: &prf.root,
+            log_n,
+            v_families: &v_families,
+            claims: &claims,
+            context: &prf.root,
+        },
         &prf.pcs_opening,
     )
 }
@@ -1670,18 +1714,20 @@ fn compute_fs_witness_root(witness_pcs_root: &[u8; 32], a_pcs_root: Option<&[u8;
     }
 }
 
+type HoistedEvalVFamilies = (
+    Vec<Vec<u64>>,
+    [[[usize; 3]; 15]; 7],
+    [[[usize; 3]; 14]; 7],
+    [[[usize; 3]; 4]; 7],
+);
+
 /// Build the canonical `v_families` table for 8-prime polynomial & `K_res` evaluations at `r_fs[0..8]`:
 /// Returns `(v_families, q_vf_map, y_vf_map, k_vf_map)` so Prover and Verifier generate 100% identical indices!
 fn build_hoisted_eval_v_families(
     params: &HoistedParams,
     mode: LiftMode,
     r_fs: &[u64; 8],
-) -> (
-    Vec<Vec<u64>>,
-    [[[usize; 3]; 15]; 7],
-    [[[usize; 3]; 14]; 7],
-    [[[usize; 3]; 4]; 7],
-) {
+) -> HoistedEvalVFamilies {
     let n = params.n;
     let mut v_fams = Vec::new();
 
@@ -1837,10 +1883,9 @@ pub fn prove_hoisted_succinct_bundle(
                 let aux = a_pre_ref[r][c].prover_aux.as_ref().unwrap();
                 match mode {
                     LiftMode::Direct20 => (dspec.encode_u192(&aux.u0), dspec.encode_u192(&aux.u1)),
-                    LiftMode::ExactGarner15 => (
-                        gspec.encode_u_exact(&aux.u0),
-                        gspec.encode_u_exact(&aux.u1),
-                    ),
+                    LiftMode::ExactGarner15 => {
+                        (gspec.encode_u_exact(&aux.u0), gspec.encode_u_exact(&aux.u1))
+                    }
                 }
             })
             .collect();
@@ -1926,7 +1971,7 @@ pub fn prove_hoisted_succinct_bundle(
                 let src = &raw.k_res[r][k_comp][l];
                 for j in 0..(n - 1) {
                     let v = src[j];
-                    flat_data[(base_slot + 0) * n + j] = v & ((1u64 << 20) - 1);
+                    flat_data[base_slot * n + j] = v & ((1u64 << 20) - 1);
                     flat_data[(base_slot + 1) * n + j] = (v >> 20) & ((1u64 << 20) - 1);
                     flat_data[(base_slot + 2) * n + j] = (v >> 40) & ((1u64 << 20) - 1);
                     flat_data[(base_slot + 3) * n + j] = v >> 60;
@@ -2055,7 +2100,11 @@ pub fn prove_hoisted_succinct_bundle(
                 for b in 0..3 {
                     let mut sum_int = 0u64;
                     for m in 0..limbs {
-                        let vf_idx = if is_y { y_map[li][m][b] } else { q_map[li][m][b] };
+                        let vf_idx = if is_y {
+                            y_map[li][m][b]
+                        } else {
+                            q_map[li][m][b]
+                        };
                         sum_int += eval_slot_dot(base_slot + m, vf_idx, &flat_data);
                     }
                     subs[li][b] = sum_int;
@@ -2085,9 +2134,7 @@ pub fn prove_hoisted_succinct_bundle(
             .collect();
         claims.push(SlotLinearClaim::single_vec(0, terms0, ev0));
 
-        for li in 0..7 {
-            p17_poly_subsums.push(subs[li]);
-        }
+        p17_poly_subsums.extend_from_slice(&subs);
     }
 
     let mut p0_k_evals = Vec::with_capacity(3 * r_blk);
@@ -2096,10 +2143,10 @@ pub fn prove_hoisted_succinct_bundle(
         let base_slot = off_k + k_idx * 4;
         let mut ev0 = 0u64;
         let mut terms0 = Vec::with_capacity(4);
-        for m in 0..4 {
+        for (m, &kw) in kw0.iter().enumerate() {
             let dm_ev = eval_slot_dot(base_slot + m, 1, &flat_data);
-            ev0 = fp0.add(ev0, fp0.mul(kw0[m], dm_ev));
-            terms0.push((base_slot + m, kw0[m]));
+            ev0 = fp0.add(ev0, fp0.mul(kw, dm_ev));
+            terms0.push((base_slot + m, kw));
         }
         p0_k_evals.push(ev0);
         claims.push(SlotLinearClaim::single_vec(1, terms0, ev0));
@@ -2115,12 +2162,12 @@ pub fn prove_hoisted_succinct_bundle(
             let k_idx = rk * 8 + l;
             let base_slot = off_k + k_idx * 4;
             let mut subs = [0u64; 3];
-            for b in 0..3 {
+            for (b, sub_slot) in subs.iter_mut().enumerate() {
                 let mut s_int = 0u64;
-                for m in 0..4 {
-                    s_int += eval_slot_dot(base_slot + m, k_map[li][m][b], &flat_data);
+                for (m, km) in k_map[li].iter().enumerate() {
+                    s_int += eval_slot_dot(base_slot + m, km[b], &flat_data);
                 }
-                subs[b] = s_int;
+                *sub_slot = s_int;
             }
             subs
         })
@@ -2209,8 +2256,7 @@ pub fn prove_hoisted_succinct_bundle(
             .par_iter()
             .map(|&(base_slot, _)| {
                 let mut ev0 = 0u64;
-                for m in 0..lq {
-                    let w0 = qw0[m];
+                for (m, &w0) in qw0.iter().enumerate().take(lq) {
                     if w0 != 0 {
                         let col = &pg.poly_lifts[base_slot / lq].cols[m];
                         let mut acc = 0u64;
@@ -2247,22 +2293,19 @@ pub fn prove_hoisted_succinct_bundle(
             let (ev0, subs) = a_res[idx];
             a_p0.push(ev0);
             let terms0: Vec<(usize, u64)> = (0..lq)
-                .filter_map(|m| if qw0[m] != 0 { Some((base_slot + m, qw0[m])) } else { None })
+                .filter_map(|m| {
+                    if qw0[m] != 0 {
+                        Some((base_slot + m, qw0[m]))
+                    } else {
+                        None
+                    }
+                })
                 .collect();
             a_claims.push(SlotLinearClaim::single_vec(0, terms0, ev0));
-            for li in 0..7 {
-                a_p17.push(subs[li]);
-            }
+            a_p17.extend_from_slice(&subs);
         }
-        let tau_a = derive_subsum_batch_challenge(
-            &fp0,
-            &stmt_h,
-            &pg.pcs.root,
-            &a_p0,
-            &[],
-            &a_p17,
-            &[],
-        );
+        let tau_a =
+            derive_subsum_batch_challenge(&fp0, &stmt_h, &pg.pcs.root, &a_p0, &[], &a_p17, &[]);
         append_folded_p17_claims(
             &fp0,
             lq,
@@ -2280,7 +2323,9 @@ pub fn prove_hoisted_succinct_bundle(
         let a_ctx = derive_pcs_open_ctx(&stmt_h, &fs_witness_root, tau_a);
         // Only pass the non-GKR prefix of `v_fams` (`0 .. v_tab_idx + 1 - wit_trees - 1`):
         let base_vf_len = 2 + 7 * (lq * 3 + 14 * 3 + 4 * 3);
-        let a_open = pg.pcs.open_slot_claims(log_n, &v_fams[..base_vf_len], &a_claims, &a_ctx);
+        let a_open = pg
+            .pcs
+            .open_slot_claims(log_n, &v_fams[..base_vf_len], &a_claims, &a_ctx);
         (
             Some((
                 pg.pcs.shape.mr as u8,
@@ -2354,12 +2399,12 @@ fn append_folded_p17_claims(
     for (p_idx, &(base_slot, is_y)) in poly_specs.iter().enumerate() {
         let tw = tau_pows[p_idx];
         if !is_y {
-            for m in 0..lq {
-                q_limb_slots[m].push((base_slot + m, tw));
+            for (m, q_slot) in q_limb_slots.iter_mut().enumerate() {
+                q_slot.push((base_slot + m, tw));
             }
         } else {
-            for m in 0..14 {
-                y_limb_slots[m].push((base_slot + m, tw));
+            for (m, y_slot) in y_limb_slots.iter_mut().enumerate() {
+                y_slot.push((base_slot + m, tw));
             }
         }
     }
@@ -2372,8 +2417,8 @@ fn append_folded_p17_claims(
             let tw = tau_pows[poly_specs.len() + rk];
             let k_idx = rk * 8 + l;
             let base_slot = off_k + k_idx * 4;
-            for m in 0..4 {
-                k_limb_slots[m].push((base_slot + m, tw));
+            for (m, k_slot) in k_limb_slots.iter_mut().enumerate() {
+                k_slot.push((base_slot + m, tw));
             }
         }
 
@@ -2497,7 +2542,11 @@ pub fn verify_hoisted_succinct_bundle(
 
     // 2. Check array lengths & 21b sub-sum integer bounds (`<= 15 * N * 2^41 < p0`):
     let lq = bundle.mode.q_cols();
-    let n_a = if bundle.persistent_a { 0 } else { 2 * r_blk * k_blk };
+    let n_a = if bundle.persistent_a {
+        0
+    } else {
+        2 * r_blk * k_blk
+    };
     let n_b = 2 * k_blk;
     let n_y = 3 * r_blk;
     let n_s = 3 * r_blk;
@@ -2591,7 +2640,8 @@ pub fn verify_hoisted_succinct_bundle(
     }
 
     // 4. Rebuild `SlotLinearClaim`s (8-prime HoistedB61 + D1b GKR leaf claims) & verify `pcs_opening`!
-    let (mut v_fams, q_map, y_map, k_map) = build_hoisted_eval_v_families(params, bundle.mode, &r_fs);
+    let (mut v_fams, q_map, y_map, k_map) =
+        build_hoisted_eval_v_families(params, bundle.mode, &r_fs);
     let qw0 = q_limb_weights_mod_p(params, bundle.mode, 0);
     let yw0 = y_limb_weights_mod_p(params, 0);
     let kw0 = k_limb_weights_mod_p(params, 0);
@@ -2616,12 +2666,20 @@ pub fn verify_hoisted_succinct_bundle(
                 }
             })
             .collect();
-        claims.push(SlotLinearClaim::single_vec(0, terms0, bundle.p0_poly_evals[idx]));
+        claims.push(SlotLinearClaim::single_vec(
+            0,
+            terms0,
+            bundle.p0_poly_evals[idx],
+        ));
     }
     for rk in 0..(3 * r_blk) {
         let base_slot = off_k + (rk * 8) * 4;
         let terms0: Vec<(usize, u64)> = (0..4).map(|m| (base_slot + m, kw0[m])).collect();
-        claims.push(SlotLinearClaim::single_vec(1, terms0, bundle.p0_k_evals[rk]));
+        claims.push(SlotLinearClaim::single_vec(
+            1,
+            terms0,
+            bundle.p0_k_evals[rk],
+        ));
     }
 
     let tau_sub = derive_subsum_batch_challenge(
@@ -2653,7 +2711,8 @@ pub fn verify_hoisted_succinct_bundle(
         LogUpConfig::MonolithicC4 => bundle.logup_proof.total_lookups.max(2).next_power_of_two(),
     };
     let cols_per_chunk = chunk_cap / n;
-    let (wit_zs, z_tab) = extract_logup_terminal_points(&fp0, &bundle.logup_proof, &fs_witness_root)?;
+    let (wit_zs, z_tab) =
+        extract_logup_terminal_points(&fp0, &bundle.logup_proof, &fs_witness_root)?;
     let base_vf_len = v_fams.len();
 
     for (b_idx, w_prf) in bundle.logup_proof.witness_trees.iter().enumerate() {
@@ -2704,12 +2763,14 @@ pub fn verify_hoisted_succinct_bundle(
     let pcs_open_ctx = derive_pcs_open_ctx(&stmt_h, &fs_witness_root, tau_sub);
     verify_slot_claims(
         &fp0,
-        &shape,
-        &bundle.witness_pcs_root,
-        log_n,
-        &v_fams,
-        &claims,
-        &pcs_open_ctx,
+        &SlotClaimsQuery {
+            shape: &shape,
+            root: &bundle.witness_pcs_root,
+            log_n,
+            v_families: &v_fams,
+            claims: &claims,
+            context: &pcs_open_ctx,
+        },
         &bundle.pcs_opening,
     )?;
 
@@ -2734,12 +2795,17 @@ pub fn verify_hoisted_succinct_bundle(
         let mut a_claims = Vec::new();
         for (idx, &(base_slot, _)) in a_specs.iter().enumerate() {
             let terms0: Vec<(usize, u64)> = (0..lq)
-                .filter_map(|m| if qw0[m] != 0 { Some((base_slot + m, qw0[m])) } else { None })
+                .filter_map(|m| {
+                    if qw0[m] != 0 {
+                        Some((base_slot + m, qw0[m]))
+                    } else {
+                        None
+                    }
+                })
                 .collect();
             a_claims.push(SlotLinearClaim::single_vec(0, terms0, a_p0[idx]));
         }
-        let tau_a =
-            derive_subsum_batch_challenge(&fp0, &stmt_h, aroot, a_p0, &[], a_p17, &[]);
+        let tau_a = derive_subsum_batch_challenge(&fp0, &stmt_h, aroot, a_p0, &[], a_p17, &[]);
         append_folded_p17_claims(
             &fp0,
             lq,
@@ -2754,17 +2820,24 @@ pub fn verify_hoisted_succinct_bundle(
             tau_a,
             &mut a_claims,
         );
-        let a_shape =
-            PcsShape::from_mr_mc(&fp0, *amr as usize, *amc as usize, *atc as usize, *abl as usize);
+        let a_shape = PcsShape::from_mr_mc(
+            &fp0,
+            *amr as usize,
+            *amc as usize,
+            *atc as usize,
+            *abl as usize,
+        );
         let a_ctx = derive_pcs_open_ctx(&stmt_h, &fs_witness_root, tau_a);
         verify_slot_claims(
             &fp0,
-            &a_shape,
-            aroot,
-            log_n,
-            &v_fams[..base_vf_len],
-            &a_claims,
-            &a_ctx,
+            &SlotClaimsQuery {
+                shape: &a_shape,
+                root: aroot,
+                log_n,
+                v_families: &v_fams[..base_vf_len],
+                claims: &a_claims,
+                context: &a_ctx,
+            },
             a_open,
         )?;
     }
@@ -3286,12 +3359,12 @@ fn derive_subsum_batch_challenge(
     h.update(stmt_h);
     h.update(pcs_root);
     for &v in p0_poly.iter().chain(p0_k.iter()) {
-        h.update(&v.to_le_bytes());
+        h.update(v.to_le_bytes());
     }
     for s in p17_poly.iter().chain(p17_k.iter()) {
-        h.update(&s[0].to_le_bytes());
-        h.update(&s[1].to_le_bytes());
-        h.update(&s[2].to_le_bytes());
+        h.update(s[0].to_le_bytes());
+        h.update(s[1].to_le_bytes());
+        h.update(s[2].to_le_bytes());
     }
     let out: [u8; 32] = h.finalize().into();
     fp0.red128(u128::from_le_bytes(out[0..16].try_into().unwrap()))
@@ -3302,8 +3375,6 @@ fn derive_pcs_open_ctx(stmt_h: &[u8; 32], fs_wroot: &[u8; 32], tau_sub: u64) -> 
     h.update(b"HOISTED_PCS_OPEN_CTX|");
     h.update(stmt_h);
     h.update(fs_wroot);
-    h.update(&tau_sub.to_le_bytes());
+    h.update(tau_sub.to_le_bytes());
     h.finalize().into()
 }
-
-

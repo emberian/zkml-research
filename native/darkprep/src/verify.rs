@@ -23,10 +23,19 @@ pub fn verify(tapes: &[Tape], owner: &[u64]) -> Result<Report, String> {
 
 /// verify, for tapes whose masks are exact truncation's (xt = Some(p): r < p instead of r < 2^(K + KAPPA)).
 pub fn verify_xt(tapes: &[Tape], owner: &[u64], xt: Option<u64>) -> Result<Report, String> {
-    if tapes[0].inputs == crate::tape::RELEASE_INPUTS || tapes[0].inputs == crate::tape::HANDOVER_INPUTS {
+    if tapes[0].inputs == crate::tape::RELEASE_INPUTS
+        || tapes[0].inputs == crate::tape::HANDOVER_INPUTS
+    {
         return Err("a release or handover tape: its shape is not in the header; use verify_step with its StepParams".into());
     }
-    verify_step(&crate::schedule::StepParams { xt, ..tapes[0].step_params() }, tapes, owner)
+    verify_step(
+        &crate::schedule::StepParams {
+            xt,
+            ..tapes[0].step_params()
+        },
+        tapes,
+        owner,
+    )
 }
 
 /// As verify, for a step whose proof atoms / proof triples are given by `sp` (the tape header carries d, the
@@ -46,9 +55,17 @@ pub fn verify_step(sp: &StepParams, tapes: &[Tape], owner: &[u64]) -> Result<Rep
     for (k, &w) in want.iter().enumerate() {
         let (mut x, mut m) = (0, 0);
         for t in tapes {
-            let &(tag, s, mm) = t.entries.get(k).ok_or(format!("party {} tape ends at {k}", t.party))?;
+            let &(tag, s, mm) = t
+                .entries
+                .get(k)
+                .ok_or(format!("party {} tape ends at {k}", t.party))?;
             if tag != w {
-                return Err(format!("party {}: entry {k} is {}, the schedule wants {}", t.party, tag.name(), w.name()));
+                return Err(format!(
+                    "party {}: entry {k} is {}, the schedule wants {}",
+                    t.party,
+                    tag.name(),
+                    w.name()
+                ));
             }
             if s >= fp.p || mm >= fp.p {
                 return Err(format!("party {}: entry {k} not canonical", t.party));
@@ -63,10 +80,19 @@ pub fn verify_step(sp: &StepParams, tapes: &[Tape], owner: &[u64]) -> Result<Rep
     }
     for t in tapes {
         if t.entries.len() != want.len() {
-            return Err(format!("party {} tape has {} entries, schedule {}", t.party, t.entries.len(), want.len()));
+            return Err(format!(
+                "party {} tape has {} entries, schedule {}",
+                t.party,
+                t.entries.len(),
+                want.len()
+            ));
         }
     }
-    let mut rep = Report { entries: want.len(), macs: want.len() * tapes.len(), ..Default::default() };
+    let mut rep = Report {
+        entries: want.len(),
+        macs: want.len() * tapes.len(),
+        ..Default::default()
+    };
     let mut pos = 0usize;
     let tri = |pos: &mut usize, rep: &mut Report| -> Result<(), String> {
         let (a, b, c) = (vals[*pos], vals[*pos + 1], vals[*pos + 2]);
@@ -97,18 +123,34 @@ pub fn verify_step(sp: &StepParams, tapes: &[Tape], owner: &[u64]) -> Result<Rep
                 if bits.iter().any(|&b| b > 1) {
                     return Err(format!("truncation at entry {pos}: a low bit is not 0/1"));
                 }
-                let low = bits.iter().enumerate().fold(0u64, |a, (i, &b)| a | (b << i));
-                let bound: u128 = match sp.xt { Some(p) => p as u128, None => 1u128 << (k + KAPPA) };
+                let low = bits
+                    .iter()
+                    .enumerate()
+                    .fold(0u64, |a, (i, &b)| a | (b << i));
+                let bound: u128 = match sp.xt {
+                    Some(p) => p as u128,
+                    None => 1u128 << (k + KAPPA),
+                };
                 if (r as u128) >= bound || (hi as u128) << s >= bound || r != low + (hi << s) {
-                    return Err(format!("truncation at entry {pos}: r, bits, r >> s inconsistent or out of range"));
+                    return Err(format!(
+                        "truncation at entry {pos}: r, bits, r >> s inconsistent or out of range"
+                    ));
                 }
                 pos += s as usize + 2;
                 if sp.proof_atoms {
                     let nb = sp.trhb(s, k);
                     let hb = &vals[pos..pos + nb];
-                    let want = if nb >= 64 { hi } else { hi & ((1u64 << nb) - 1) };
-                    if hb.iter().any(|&b| b > 1) || hb.iter().enumerate().fold(0u64, |a, (i, &b)| a | (b << i)) != want {
-                        return Err(format!("truncation at entry {pos}: the Trhb bits are not the bits of r >> s"));
+                    let want = if nb >= 64 {
+                        hi
+                    } else {
+                        hi & ((1u64 << nb) - 1)
+                    };
+                    if hb.iter().any(|&b| b > 1)
+                        || hb.iter().enumerate().fold(0u64, |a, (i, &b)| a | (b << i)) != want
+                    {
+                        return Err(format!(
+                            "truncation at entry {pos}: the Trhb bits are not the bits of r >> s"
+                        ));
                     }
                     pos += nb;
                 }

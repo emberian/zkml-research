@@ -12,15 +12,16 @@ use qwen35audit::dregg180_hem_bridge::{
     turboshake256_32_stack, verify_trustless_dregg180_hem_stream, BabyBearWitnessCommitment,
     DeferredLeafClaim, DeferredLeafKind, Dregg180HvmAssembler, Dregg180StreamError,
     Dregg180StreamVm, Goldilocks, GoldilocksExt4, PayloadBytesCommitment,
-    SimplexFinCertLeafReceipt, Tower256AbsentLeafReceipt, TrustlessHemTamper,
-    VerifierExpectedTrustlessStatement, WearableQwenWhirLeafReceipt, BABYBEAR_PRIME_U64,
-    DREGG180_VM_MAX_STATIC_BYTES, FS_INIT_CAP, GOLDILOCKS_PRIME, HEM_MAX_BB_ROUNDS, H_ASSERT_POW,
-    H_HASH, H_LOAD, OP_FOLD, OP_HEM, P2_DOMAIN_FS_ABSORB_LIMBS, P2_DOMAIN_FS_POW_T1,
-    P2_DOMAIN_FS_POW_T2, R_A, R_B, R_CH, R_T0, R_X, R_Y, UD100_BLOWUP, UD100_NUM_QUERIES,
-    UD100_POW_BITS,
+    SimplexFinCertLeafReceipt, SimplexFinalizedClaims, SimplexQuorumCfg, Tower256AbsentLeafReceipt,
+    TrustlessHemTamper, VerifierExpectedTrustlessStatement, WearableQwenWhirLeafReceipt,
+    BABYBEAR_PRIME_U64, DREGG180_VM_MAX_STATIC_BYTES, FS_INIT_CAP, GOLDILOCKS_PRIME,
+    HEM_MAX_BB_ROUNDS, H_ASSERT_POW, H_HASH, H_LOAD, OP_FOLD, OP_HEM, P2_DOMAIN_FS_ABSORB_LIMBS,
+    P2_DOMAIN_FS_POW_T1, P2_DOMAIN_FS_POW_T2, R_A, R_B, R_CH, R_T0, R_X, R_Y, UD100_BLOWUP,
+    UD100_NUM_QUERIES, UD100_POW_BITS,
 };
 use qwen35audit::ext4::Ext4 as BbExt4;
 use std::alloc::{GlobalAlloc, Layout, System};
+use std::ops::{Add, Mul};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::time::Instant;
 
@@ -50,7 +51,10 @@ fn test_dregg180_lean_oracle_kat_vectors_and_static_ram_bound() {
         vm_bytes as f64 / 1024.0
     );
     assert!(vm_bytes <= DREGG180_VM_MAX_STATIC_BYTES);
-    assert!(vm_bytes < 4_096, "Dregg180StreamVm fits in < 4 KiB (< 25% of 16 KiB budget)");
+    assert!(
+        vm_bytes < 4_096,
+        "Dregg180StreamVm fits in < 4 KiB (< 25% of 16 KiB budget)"
+    );
 
     // 2. Exact KAT parity with `qsag/hardware/gf180mcu/tb/fixtures/lean_external_oracle_vectors.json`:
     let gl_edges: &[(u64, u64, u64, u64, u64, u64, u64)] = &[
@@ -119,10 +123,23 @@ fn test_dregg180_lean_oracle_kat_vectors_and_static_ram_bound() {
             18_445_618_169_507_741_697
         ]
     );
-    assert_eq!(GoldilocksExt4::V.pow(4), GoldilocksExt4::from_base(Goldilocks(7)));
+    assert_eq!(
+        GoldilocksExt4::V.pow(4),
+        GoldilocksExt4::from_base(Goldilocks(7))
+    );
 
-    let x2 = GoldilocksExt4::from_u64_limbs([18_446_744_069_414_584_320, 4_294_967_295, 4_294_967_296, 7]);
-    let y2 = GoldilocksExt4::from_u64_limbs([14_627_333_965_257_922_168, 1_147_797_409_030_816_545, 42, 99]);
+    let x2 = GoldilocksExt4::from_u64_limbs([
+        18_446_744_069_414_584_320,
+        4_294_967_295,
+        4_294_967_296,
+        7,
+    ]);
+    let y2 = GoldilocksExt4::from_u64_limbs([
+        14_627_333_965_257_922_168,
+        1_147_797_409_030_816_545,
+        42,
+        99,
+    ]);
     assert_eq!(
         (x2 * y2).to_u64_limbs(),
         [
@@ -176,7 +193,10 @@ fn test_dregg180_lean_oracle_kat_vectors_and_static_ram_bound() {
 
     // 5. RFC 9861 `TurboSHAKE256("")` & `GF(2^128)` KAT + `Fp5` (`X^5 - 3`) + Canopy path check:
     let ts_empty = turboshake256_32_stack(&[]);
-    assert_eq!(&ts_empty[0..8], &[0x36, 0x7a, 0x32, 0x9d, 0xaf, 0xea, 0x87, 0x1c]);
+    assert_eq!(
+        &ts_empty[0..8],
+        &[0x36, 0x7a, 0x32, 0x9d, 0xaf, 0xea, 0x87, 0x1c]
+    );
     assert_eq!(gf128_mul(1, 0xDEAD_BEEF_CAFE_BABE), 0xDEAD_BEEF_CAFE_BABE);
 
     let x_fp5 = [0, 1, 0, 0, 0];
@@ -226,35 +246,43 @@ fn test_dregg180_lean_oracle_kat_vectors_and_static_ram_bound() {
     asm5.assert_eq(R_A, R_Y);
     let (wire5, pdig5) = asm5.build_wire_bytes_and_pdig(None);
     let mut vm5 = Dregg180StreamVm::new_unkeyed(Some(pdig5));
-    let verdict5 = vm5.verify_stream(&wire5).expect("Fp5 zk-Hem v2 stream must verify");
+    let verdict5 = vm5
+        .verify_stream(&wire5)
+        .expect("Fp5 zk-Hem v2 stream must verify");
     assert!(verdict5.accepted && verdict5.zk_pin.is_some());
 }
 
 #[test]
 fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_suite() {
     let lease_id = [0x91u8; 32];
-    let clean_msg = b"Wearable SHE Organ #1 clean assistant summary: ToF=1.18m, HR=64bpm, status=ok.";
+    let clean_msg =
+        b"Wearable SHE Organ #1 clean assistant summary: ToF=1.18m, HR=64bpm, status=ok.";
 
     // 1. Prove the 3 heterogeneous child receipts across `BabyBear Ext4`, `Tower256`, and `Simplex`:
     let t_leaves = Instant::now();
     let qwen_leaf = WearableQwenWhirLeafReceipt::prove(lease_id, clean_msg, [0x11u8; 32])
         .expect("prove BabyBear Ext4 Qwen WhirExt4 leaf");
-    let absent_leaf = Tower256AbsentLeafReceipt::prove(qwen_leaf.content_root, clean_msg, [0x22u8; 32])
-        .expect("prove Tower256 Absent(\"sk-...\") leaf");
+    let absent_leaf =
+        Tower256AbsentLeafReceipt::prove(qwen_leaf.content_root, clean_msg, [0x22u8; 32])
+            .expect("prove Tower256 Absent(\"sk-...\") leaf");
     let (kps, roster_root, roster_leaves) = SimplexFinCertLeafReceipt::build_committee(4, 0xC3);
     let qwen_dig = qwen_leaf.verify().unwrap();
     let absent_dig = absent_leaf.verify(&qwen_leaf.content_root).unwrap();
     let fincert_leaf = SimplexFinCertLeafReceipt::sign_quorum(
-        4,
-        1, // n = 4, f = 1 => quorum = n - f = 3
-        9, // view = 9 > 0
+        SimplexQuorumCfg {
+            n_validators: 4,
+            max_faulty_f: 1, // n = 4, f = 1 => quorum = n - f = 3
+            view: 9,         // view = 9 > 0
+        },
         &kps,
         roster_root,
         &roster_leaves,
         &[0, 2, 3],
-        qwen_leaf.content_root,
-        qwen_dig,
-        absent_dig,
+        SimplexFinalizedClaims {
+            content_root: qwen_leaf.content_root,
+            qwen_claim: qwen_dig,
+            absent_claim: absent_dig,
+        },
     );
     let leaves_ms = t_leaves.elapsed().as_secs_f64() * 1000.0;
 
@@ -290,7 +318,9 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
     HEAP_ALLOC_COUNT.store(0, Ordering::SeqCst);
     let mut vm_spi48 = Dregg180StreamVm::new_keyed(k_mac, Some(compiled.pinned_program_digest));
     for frame48 in compiled.wire_bytes.chunks(48) {
-        vm_spi48.feed_bytes(frame48).expect("48-byte SPI burst feed");
+        vm_spi48
+            .feed_bytes(frame48)
+            .expect("48-byte SPI burst feed");
     }
     let verdict_spi48 = vm_spi48.finalize().expect("48-byte SPI burst finalize");
     assert_eq!(HEAP_ALLOC_COUNT.load(Ordering::SeqCst), 0);
@@ -339,7 +369,10 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
     let (bad_zero_wire, _) = asm_zero_assert.build_wire_bytes_and_pdig(None);
     let mut vm = Dregg180StreamVm::new_unkeyed(None);
     assert!(
-        matches!(vm.verify_stream(&bad_zero_wire), Err(Dregg180StreamError::Rejected { .. })),
+        matches!(
+            vm.verify_stream(&bad_zero_wire),
+            Err(Dregg180StreamError::Rejected { .. })
+        ),
         "Attack 1: 0-assertion LOAD R_CH stream must be rejected!"
     );
 
@@ -350,7 +383,10 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
     let (bad_pin_wire, bad_pin_pdig) = asm_pin_ch.build_wire_bytes_and_pdig(None);
     let mut vm = Dregg180StreamVm::new_unkeyed(Some(bad_pin_pdig));
     assert!(
-        matches!(vm.verify_stream(&bad_pin_wire), Err(Dregg180StreamError::Rejected { .. })),
+        matches!(
+            vm.verify_stream(&bad_pin_wire),
+            Err(Dregg180StreamError::Rejected { .. })
+        ),
         "Attack 2: LOAD R_CH in pin_mode must be rejected!"
     );
 
@@ -362,23 +398,34 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
     let (alias_wire, _) = asm_alias.build_wire_bytes_and_pdig(None);
     let mut vm = Dregg180StreamVm::new_unkeyed(None);
     match vm.verify_stream(&alias_wire) {
-        Err(Dregg180StreamError::Rejected { non_canonical_word: true, .. }) => {}
-        other => panic!("Attack 3: non-canonical Goldilocks alias must set non_canonical_word, got {other:?}"),
+        Err(Dregg180StreamError::Rejected {
+            non_canonical_word: true,
+            ..
+        }) => {}
+        other => panic!(
+            "Attack 3: non-canonical Goldilocks alias must set non_canonical_word, got {other:?}"
+        ),
     }
 
     // Attack 4: Unabsorbed / swapped child `DeferredLeafClaim` immediate (`program_digest_mismatch`)!
     let mut forged_claims = compiled.leaf_claims;
     forged_claims[1].claim_digest[0] ^= 0xFF;
-    let recompiled_forged = qwen35audit::dregg180_hem_bridge::compile_deferred_leaves_to_dregg180_hem_stream(
-        forged_claims,
-        false,
-        Some(k_mac),
-    )
-    .unwrap();
+    let recompiled_forged =
+        qwen35audit::dregg180_hem_bridge::compile_deferred_leaves_to_dregg180_hem_stream(
+            forged_claims,
+            false,
+            Some(k_mac),
+        )
+        .unwrap();
     let mut vm = Dregg180StreamVm::new_keyed(k_mac, Some(compiled.pinned_program_digest));
     match vm.verify_stream(&recompiled_forged.wire_bytes) {
-        Err(Dregg180StreamError::Rejected { program_digest_mismatch: true, .. }) => {}
-        other => panic!("Attack 4: swapped DeferredLeafClaim immediate must fail pdig pin, got {other:?}"),
+        Err(Dregg180StreamError::Rejected {
+            program_digest_mismatch: true,
+            ..
+        }) => {}
+        other => panic!(
+            "Attack 4: swapped DeferredLeafClaim immediate must fail pdig pin, got {other:?}"
+        ),
     }
 
     // Attack 5: Bit-flip in streamed proof body (sumcheck / Canopy sibling / duet-fold witness)!
@@ -407,7 +454,10 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
     let (idx_wire, _) = asm_idx_bypass.build_wire_bytes_and_pdig(None);
     let mut vm = Dregg180StreamVm::new_unkeyed(None);
     assert!(
-        matches!(vm.verify_stream(&idx_wire), Err(Dregg180StreamError::Rejected { .. })),
+        matches!(
+            vm.verify_stream(&idx_wire),
+            Err(Dregg180StreamError::Rejected { .. })
+        ),
         "Attack 6: opening Merkle path at index != bound_idx must be rejected!"
     );
 
@@ -464,16 +514,20 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
 
     // Attack 9: Sub-quorum (`2 < n - f = 3`) OR duplicate validator index in `Simplex` `FinCert`!
     let sub_quorum_fincert = SimplexFinCertLeafReceipt::sign_quorum(
-        4,
-        1,
-        9,
+        SimplexQuorumCfg {
+            n_validators: 4,
+            max_faulty_f: 1,
+            view: 9,
+        },
         &kps,
         roster_root,
         &roster_leaves,
         &[0, 2], // only 2 signers < quorum 3!
-        qwen_leaf.content_root,
-        qwen_dig,
-        absent_dig,
+        SimplexFinalizedClaims {
+            content_root: qwen_leaf.content_root,
+            qwen_claim: qwen_dig,
+            absent_claim: absent_dig,
+        },
     );
     assert!(
         bridge_wearable_she_bundle_to_dregg180_stream(
@@ -488,16 +542,20 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
         "Attack 9a: sub-quorum (2 < n - f = 3) FinCert must be rejected!"
     );
     let dup_signer_fincert = SimplexFinCertLeafReceipt::sign_quorum(
-        4,
-        1,
-        9,
+        SimplexQuorumCfg {
+            n_validators: 4,
+            max_faulty_f: 1,
+            view: 9,
+        },
         &kps,
         roster_root,
         &roster_leaves,
         &[0, 2, 2], // duplicate signer 2!
-        qwen_leaf.content_root,
-        qwen_dig,
-        absent_dig,
+        SimplexFinalizedClaims {
+            content_root: qwen_leaf.content_root,
+            qwen_claim: qwen_dig,
+            absent_claim: absent_dig,
+        },
     );
     assert!(
         bridge_wearable_she_bundle_to_dregg180_stream(
@@ -513,9 +571,12 @@ fn test_wearable_she_heterogeneous_bundle_e2e_zero_heap_stream_and_adversarial_s
     );
 
     // Attack 10: Cross-leaf `content_root` splice (welding clean `Absent` receipt to a different `Qwen` turn)!
-    let other_qwen =
-        WearableQwenWhirLeafReceipt::prove(lease_id, b"Different assistant output turn!", [0x44u8; 32])
-            .unwrap();
+    let other_qwen = WearableQwenWhirLeafReceipt::prove(
+        lease_id,
+        b"Different assistant output turn!",
+        [0x44u8; 32],
+    )
+    .unwrap();
     assert!(
         bridge_wearable_she_bundle_to_dregg180_stream(
             &other_qwen,
@@ -563,14 +624,18 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     assert_eq!(UD100_POW_BITS, 16);
     let vm_bytes = Dregg180StreamVm::static_ram_bytes();
     assert!(vm_bytes <= DREGG180_VM_MAX_STATIC_BYTES);
-    assert!(vm_bytes < 4_096, "Dregg180StreamVm must stay < 4 KiB, got {vm_bytes} B");
+    assert!(
+        vm_bytes < 4_096,
+        "Dregg180StreamVm must stay < 4 KiB, got {vm_bytes} B"
+    );
 
     // 2. Fetch verifier-owned canonical preprocessed VK for `m = 6` full cubic `BabyBear Ext4` (`X^4 - 11`)
     //    sumcheck rounds + full in-circuit `chi(x)` / `W_bb(r)` / `eq(tau, r)` terminal evaluation
     //    + `4 x 256` `Absent("sk-")` 4-state DFA transition ROM (`H4` fix, ZERO `Option` terminal oracle!):
     let m_rounds = HEM_MAX_BB_ROUNDS; // 6 rounds -> 64-entry committed W_bb = (A_bb, B_bb) in N_exec = 4,096
     let t_vk = Instant::now();
-    let vk = canonical_trustless_vk(m_rounds).expect("build verifier-owned canonical TrustlessHemVk");
+    let vk =
+        canonical_trustless_vk(m_rounds).expect("build verifier-owned canonical TrustlessHemVk");
     let vk_ms = t_vk.elapsed().as_secs_f64() * 1000.0;
 
     // 3. Commit clean payload bytes (NO `"sk-"`) under public dual Canopy (`Poseidon2-12` + `cSHAKE256`):
@@ -602,7 +667,11 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     let eq_bb = qwen35audit::ext4::build_eq_table_lsb_ext4(&tau_bb);
     let mut raw_sum = BbExt4::ZERO;
     for i in 0..n_bb {
-        raw_sum = raw_sum.add(eq_bb[i].mul(BbExt4::from_bb(a_vals[i])).mul(BbExt4::from_bb(b_vals[i])));
+        raw_sum = raw_sum.add(
+            eq_bb[i]
+                .mul(BbExt4::from_bb(a_vals[i]))
+                .mul(BbExt4::from_bb(b_vals[i])),
+        );
     }
     let coeff0 = ((eq_bb[0].0[0] as u64 * b_vals[0] as u64) % BABYBEAR_PRIME_U64) as u32;
     assert_ne!(coeff0, 0);
@@ -616,16 +685,19 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         .expect("commit W_bb witness table in Stage0MatrixCanopy");
 
     let mut tau_arr = [BbExt4::ZERO; HEM_MAX_BB_ROUNDS];
-    for j in 0..m_rounds {
-        tau_arr[j] = tau_bb[j];
-    }
+    tau_arr[..m_rounds].copy_from_slice(&tau_bb[..m_rounds]);
     let mut verifier_init_claim = BbExt4::ZERO;
     for i in 0..n_bb {
         verifier_init_claim = verifier_init_claim.add(
-            eq_bb[i].mul(BbExt4::from_bb(a_vals[i])).mul(BbExt4::from_bb(b_vals[i])),
+            eq_bb[i]
+                .mul(BbExt4::from_bb(a_vals[i]))
+                .mul(BbExt4::from_bb(b_vals[i])),
         );
     }
-    assert_eq!(verifier_init_claim.0[0], 0, "M3 fixture: initial_claim.0[0] == 0");
+    assert_eq!(
+        verifier_init_claim.0[0], 0,
+        "M3 fixture: initial_claim.0[0] == 0"
+    );
 
     let bb_transcript = prove_child_babybear_ext4_cubic_sumcheck(
         m_rounds,
@@ -643,13 +715,18 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     //    + in-circuit `eq(tau, r) * A_bb(r) * B_bb(r) == claim_m` against `W_bb` AND `Absent("sk-")` DFA
     //    algebraically inside `GoldilocksExt4` + `[0, 2^16)` LogUp + `UD-100` BaseFold:
     let t_prove = Instant::now();
-    let bundle = prove_trustless_nonnative_babybear_and_dfa_hem(vk, &w_bb_comm, &payload_comm, &bb_transcript)
-        .expect("prove trustless UD-100 non-native BabyBear + W_bb(r) + DFA OP_HEM stream");
+    let bundle = prove_trustless_nonnative_babybear_and_dfa_hem(
+        vk,
+        &w_bb_comm,
+        &payload_comm,
+        &bb_transcript,
+    )
+    .expect("prove trustless UD-100 non-native BabyBear + W_bb(r) + DFA OP_HEM stream");
     let prove_ms = t_prove.elapsed().as_secs_f64() * 1000.0;
 
     // 6. Compute keyless `public_program_hash` from `stmt` ALONE (zero witness, zero `K_MAC`, `pin_mode = false`)!
-    let expected_prog_hash =
-        compute_expected_trustless_program_hash(&bundle.stmt).expect("compute keyless program hash");
+    let expected_prog_hash = compute_expected_trustless_program_hash(&bundle.stmt)
+        .expect("compute keyless program hash");
     assert_eq!(expected_prog_hash, bundle.public_program_hash);
 
     // 7. Standalone trustless verification inside `< 16 KiB` `Dregg180StreamVm` with ZERO heap allocations
@@ -668,7 +745,10 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         "Trustless UD-100 Dregg180StreamVm MUST perform 0 heap allocations (full slice)!"
     );
     assert!(verdict_full.accepted && verdict_full.zk_pin.is_none());
-    assert_eq!(verdict_full.program_digest_gf128, 0, "NO K_MAC / pin_mode = false");
+    assert_eq!(
+        verdict_full.program_digest_gf128, 0,
+        "NO K_MAC / pin_mode = false"
+    );
     assert_eq!(verdict_full.public_program_hash, expected_prog_hash);
 
     HEAP_ALLOC_COUNT.store(0, Ordering::SeqCst);
@@ -677,7 +757,11 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         vm_spi48.feed_bytes(chunk48).expect("48B SPI burst feed");
     }
     let verdict_spi48 = vm_spi48.finalize().expect("48B SPI burst finalize");
-    assert_eq!(HEAP_ALLOC_COUNT.load(Ordering::SeqCst), 0, "0 heap allocs on 48B SPI feed!");
+    assert_eq!(
+        HEAP_ALLOC_COUNT.load(Ordering::SeqCst),
+        0,
+        "0 heap allocs on 48B SPI feed!"
+    );
     assert_eq!(verdict_full, verdict_spi48);
 
     HEAP_ALLOC_COUNT.store(0, Ordering::SeqCst);
@@ -686,7 +770,11 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         vm_1b.feed_bytes(chunk1).expect("1B stream feed");
     }
     let verdict_1b = vm_1b.finalize().expect("1B stream finalize");
-    assert_eq!(HEAP_ALLOC_COUNT.load(Ordering::SeqCst), 0, "0 heap allocs on 1B feed!");
+    assert_eq!(
+        HEAP_ALLOC_COUNT.load(Ordering::SeqCst),
+        0,
+        "0 heap allocs on 1B feed!"
+    );
     assert_eq!(verdict_full, verdict_1b);
 
     // 8. Standalone `verify_trustless_dregg180_hem_stream` using verifier-owned expected statement &
@@ -700,12 +788,11 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         bytes_p2_root: payload_comm.p2_root(),
         bytes_cs_root: payload_comm.cshake_root(),
     };
-    let verdict_api = verify_trustless_dregg180_hem_stream(
-        &expected_clean,
-        &bundle.stmt,
-        &bundle.wire_bytes,
-    )
-    .expect("verify_trustless_dregg180_hem_stream (100% self-contained on Dregg180StreamVm)");
+    let verdict_api =
+        verify_trustless_dregg180_hem_stream(&expected_clean, &bundle.stmt, &bundle.wire_bytes)
+            .expect(
+                "verify_trustless_dregg180_hem_stream (100% self-contained on Dregg180StreamVm)",
+            );
     assert_eq!(verdict_full, verdict_api);
 
     let m = verdict_full.metrics;
@@ -747,19 +834,45 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     };
 
     let clean_tampers = [
-        ("WrongBabyBearRoundSum", TrustlessHemTamper::WrongBabyBearRoundSum),
-        ("WrongBabyBearHornerEval", TrustlessHemTamper::WrongBabyBearHornerEval),
-        ("NonCanonicalBabyBearAliasGtPbb", TrustlessHemTamper::NonCanonicalBabyBearAliasGtPbb),
-        ("NonCanonicalBabyBearExactPbbAlias", TrustlessHemTamper::NonCanonicalBabyBearExactPbbAlias),
-        ("WrongBabyBearQuotient", TrustlessHemTamper::WrongBabyBearQuotient),
-        ("ForgedRange16Multiplicity", TrustlessHemTamper::ForgedRange16Multiplicity),
-        ("TamperedStage1BaseFoldFiber", TrustlessHemTamper::TamperedStage1BaseFoldFiber),
-        ("TamperedStage0CShakeSibling", TrustlessHemTamper::TamperedStage0CShakeSibling),
+        (
+            "WrongBabyBearRoundSum",
+            TrustlessHemTamper::WrongBabyBearRoundSum,
+        ),
+        (
+            "WrongBabyBearHornerEval",
+            TrustlessHemTamper::WrongBabyBearHornerEval,
+        ),
+        (
+            "NonCanonicalBabyBearAliasGtPbb",
+            TrustlessHemTamper::NonCanonicalBabyBearAliasGtPbb,
+        ),
+        (
+            "NonCanonicalBabyBearExactPbbAlias",
+            TrustlessHemTamper::NonCanonicalBabyBearExactPbbAlias,
+        ),
+        (
+            "WrongBabyBearQuotient",
+            TrustlessHemTamper::WrongBabyBearQuotient,
+        ),
+        (
+            "ForgedRange16Multiplicity",
+            TrustlessHemTamper::ForgedRange16Multiplicity,
+        ),
+        (
+            "TamperedStage1BaseFoldFiber",
+            TrustlessHemTamper::TamperedStage1BaseFoldFiber,
+        ),
+        (
+            "TamperedStage0CShakeSibling",
+            TrustlessHemTamper::TamperedStage0CShakeSibling,
+        ),
     ];
     for (name, tamper) in clean_tampers {
-        let forged = prove_trustless_hem_with_tamper(vk, &w_bb_comm, &payload_comm, &bb_transcript, tamper)
-            .expect("adversarial prover builds tampered stream");
-        let res = verify_trustless_dregg180_hem_stream(&expected_clean, &forged.stmt, &forged.wire_bytes);
+        let forged =
+            prove_trustless_hem_with_tamper(vk, &w_bb_comm, &payload_comm, &bb_transcript, tamper)
+                .expect("adversarial prover builds tampered stream");
+        let res =
+            verify_trustless_dregg180_hem_stream(&expected_clean, &forged.stmt, &forged.wire_bytes);
         assert_vm_algebraic_reject(name, res);
     }
 
@@ -774,7 +887,8 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     let mut a_fake = a_vals.clone();
     let mut b_fake = b_vals.clone();
     a_fake[0] = ((a_fake[0] as u64 * 2) % BABYBEAR_PRIME_U64) as u32;
-    b_fake[0] = ((b_fake[0] as u64 * qwen35audit::ext4::INV2_BB as u64) % BABYBEAR_PRIME_U64) as u32;
+    b_fake[0] =
+        ((b_fake[0] as u64 * qwen35audit::ext4::INV2_BB as u64) % BABYBEAR_PRIME_U64) as u32;
     assert_ne!(a_fake[0], a_vals[0]);
     let fake_bb_tr = prove_child_babybear_ext4_cubic_sumcheck(
         m_rounds,
@@ -786,20 +900,29 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         &tau_bb,
     )
     .expect("cheating prover runs internally consistent sumcheck over fake witness table");
-    assert_eq!(fake_bb_tr.initial_claim, verifier_init_claim, "same bb_initial_claim on fake table!");
+    assert_eq!(
+        fake_bb_tr.initial_claim, verifier_init_claim,
+        "same bb_initial_claim on fake table!"
+    );
     assert_ne!(
         fake_bb_tr.expected_terminal_eval, bb_transcript.expected_terminal_eval,
         "fake table has different off-hypercube MLE evaluation A_fake(r)*B_fake(r) != A_honest(r)*B_honest(r)"
     );
     // Strategy A: prover leaves honest `w_bb` in `r_val[32..]` -> terminal `sel_eq` fails inside `Dregg180StreamVm`!
-    let fake_bundle_a = prove_trustless_nonnative_babybear_and_dfa_hem(vk, &w_bb_comm, &payload_comm, &fake_bb_tr)
-        .expect("build fake-table Strategy A stream");
-    let res_fake_a = verify_trustless_dregg180_hem_stream(&expected_clean, &fake_bundle_a.stmt, &fake_bundle_a.wire_bytes);
+    let fake_bundle_a =
+        prove_trustless_nonnative_babybear_and_dfa_hem(vk, &w_bb_comm, &payload_comm, &fake_bb_tr)
+            .expect("build fake-table Strategy A stream");
+    let res_fake_a = verify_trustless_dregg180_hem_stream(
+        &expected_clean,
+        &fake_bundle_a.stmt,
+        &fake_bundle_a.wire_bytes,
+    );
     assert_vm_algebraic_reject("FakeWitnessTableSameSum_TerminalWeld", res_fake_a);
 
     // Strategy B: prover overrides `r_val[32..]` with `fake_w_bb` so ALL MACs & terminal `sel_eq` pass locally,
     // while Stage-0 Canopy opens pinned `w_bb_comm` -> `C_wbb = sel_wbb * (r_val - w_bb)` fails inside `Dregg180StreamVm`!
-    let fake_w_bb_comm = BabyBearWitnessCommitment::commit(m_rounds, &a_fake, &b_fake).expect("commit fake table");
+    let fake_w_bb_comm =
+        BabyBearWitnessCommitment::commit(m_rounds, &a_fake, &b_fake).expect("commit fake table");
     let fake_bundle_b = prove_trustless_hem_with_wbb_override(
         vk,
         &w_bb_comm,
@@ -809,15 +932,20 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         TrustlessHemTamper::None,
     )
     .expect("build fake-table Strategy B stream");
-    let res_fake_b = verify_trustless_dregg180_hem_stream(&expected_clean, &fake_bundle_b.stmt, &fake_bundle_b.wire_bytes);
+    let res_fake_b = verify_trustless_dregg180_hem_stream(
+        &expected_clean,
+        &fake_bundle_b.stmt,
+        &fake_bundle_b.wire_bytes,
+    );
     assert_vm_algebraic_reject("FakeWitnessTableSameSum_CanopyBinding", res_fake_b);
 
     // Strategy C: non-canonical `W_bb` committed entry `== p_BB` (alias of 0) -> canonical slack `r_val + d_val = p_BB - 1` fails!
     let mut a_noncanon_u64: Vec<u64> = a_vals.iter().map(|&x| x as u64).collect();
     let b_u64: Vec<u64> = b_vals.iter().map(|&x| x as u64).collect();
     a_noncanon_u64[1] = BABYBEAR_PRIME_U64; // exact `p_BB` alias of 0!
-    let noncanon_w_bb = BabyBearWitnessCommitment::commit_unchecked_raw(m_rounds, &a_noncanon_u64, &b_u64)
-        .expect("commit unchecked non-canonical W_bb");
+    let noncanon_w_bb =
+        BabyBearWitnessCommitment::commit_unchecked_raw(m_rounds, &a_noncanon_u64, &b_u64)
+            .expect("commit unchecked non-canonical W_bb");
     let mut a_zero1 = a_vals.clone();
     a_zero1[1] = 0;
     let noncanon_tr = prove_child_babybear_ext4_cubic_sumcheck(
@@ -839,8 +967,13 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         bytes_p2_root: payload_comm.p2_root(),
         bytes_cs_root: payload_comm.cshake_root(),
     };
-    let noncanon_bundle = prove_trustless_nonnative_babybear_and_dfa_hem(vk, &noncanon_w_bb, &payload_comm, &noncanon_tr)
-        .expect("build non-canonical W_bb stream");
+    let noncanon_bundle = prove_trustless_nonnative_babybear_and_dfa_hem(
+        vk,
+        &noncanon_w_bb,
+        &payload_comm,
+        &noncanon_tr,
+    )
+    .expect("build non-canonical W_bb stream");
     let res_noncanon_wbb = verify_trustless_dregg180_hem_stream(
         &noncanon_expected,
         &noncanon_bundle.stmt,
@@ -849,9 +982,11 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     assert_vm_algebraic_reject("NonCanonicalCommittedWbbEntry", res_noncanon_wbb);
 
     // Secret `"sk-"` leak falsifiers on a committed payload containing `"sk-live-999"`:
-    let leaked_payload = b"Assistant output accidentally leaked api_key=sk-live-999888777 in plaintext!";
+    let leaked_payload =
+        b"Assistant output accidentally leaked api_key=sk-live-999888777 in plaintext!";
     assert_eq!(run_no_sk_dash_dfa_4state(leaked_payload).0, 3);
-    let leaked_comm = PayloadBytesCommitment::commit(leaked_payload).expect("commit leaked payload");
+    let leaked_comm =
+        PayloadBytesCommitment::commit(leaked_payload).expect("commit leaked payload");
     let leaked_bb_tr = prove_child_babybear_ext4_cubic_sumcheck(
         m_rounds,
         vk,
@@ -874,53 +1009,88 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
 
     // Honest prover refuses `"sk-"` payload:
     assert!(
-        prove_trustless_nonnative_babybear_and_dfa_hem(vk, &w_bb_comm, &leaked_comm, &leaked_bb_tr).is_err(),
+        prove_trustless_nonnative_babybear_and_dfa_hem(vk, &w_bb_comm, &leaked_comm, &leaked_bb_tr)
+            .is_err(),
         "Honest prover must refuse payload reaching DFA sink state 3"
     );
 
     // Untrusted prover trying ALL 3 ways to sneak `"sk-"` past the DFA circuit -> ALL 3 VM-REJECTED!
     for (name, tamper) in [
-        ("ForgedDfaTerminalState", TrustlessHemTamper::ForgedDfaTerminalState),
-        ("ForgedDfaTransitionBypass", TrustlessHemTamper::ForgedDfaTransitionBypass),
-        ("ForgedDfaShiftBreak", TrustlessHemTamper::ForgedDfaShiftBreak),
+        (
+            "ForgedDfaTerminalState",
+            TrustlessHemTamper::ForgedDfaTerminalState,
+        ),
+        (
+            "ForgedDfaTransitionBypass",
+            TrustlessHemTamper::ForgedDfaTransitionBypass,
+        ),
+        (
+            "ForgedDfaShiftBreak",
+            TrustlessHemTamper::ForgedDfaShiftBreak,
+        ),
     ] {
-        let forged = prove_trustless_hem_with_tamper(vk, &w_bb_comm, &leaked_comm, &leaked_bb_tr, tamper)
-            .expect("adversarial prover builds forged sk- stream");
-        let res = verify_trustless_dregg180_hem_stream(&expected_leaked, &forged.stmt, &forged.wire_bytes);
+        let forged =
+            prove_trustless_hem_with_tamper(vk, &w_bb_comm, &leaked_comm, &leaked_bb_tr, tamper)
+                .expect("adversarial prover builds forged sk- stream");
+        let res = verify_trustless_dregg180_hem_stream(
+            &expected_leaked,
+            &forged.stmt,
+            &forged.wire_bytes,
+        );
         assert_vm_algebraic_reject(name, res);
     }
 
     // Cross-payload splice: untrusted prover proves clean payload but submits against `leaked_comm` expected roots!
-    let res_splice = verify_trustless_dregg180_hem_stream(&expected_leaked, &bundle.stmt, &bundle.wire_bytes)
-        .expect_err("Cross-payload root splice MUST be rejected!");
-    assert!(res_splice.contains("payload Canopy roots"), "wrong splice err: {res_splice}");
+    let res_splice =
+        verify_trustless_dregg180_hem_stream(&expected_leaked, &bundle.stmt, &bundle.wire_bytes)
+            .expect_err("Cross-payload root splice MUST be rejected!");
+    assert!(
+        res_splice.contains("payload Canopy roots"),
+        "wrong splice err: {res_splice}"
+    );
     println!("[W10-FALSIFIER-PASS] CrossPayloadRootSplice -> REJECTED ({res_splice})");
 
     // Cross-W_bb root splice: submit honest proof against `fake_w_bb_comm` expected roots -> REJECTED!
     let mut bad_wbb_stmt = bundle.stmt;
     bad_wbb_stmt.w_bb_p2_root = fake_w_bb_comm.p2_root();
-    let err_wbb_splice = verify_trustless_dregg180_hem_stream(&expected_clean, &bad_wbb_stmt, &bundle.wire_bytes)
-        .expect_err("Cross-W_bb root splice MUST be rejected!");
-    assert!(err_wbb_splice.contains("W_bb Canopy roots"), "wrong W_bb splice err: {err_wbb_splice}");
+    let err_wbb_splice =
+        verify_trustless_dregg180_hem_stream(&expected_clean, &bad_wbb_stmt, &bundle.wire_bytes)
+            .expect_err("Cross-W_bb root splice MUST be rejected!");
+    assert!(
+        err_wbb_splice.contains("W_bb Canopy roots"),
+        "wrong W_bb splice err: {err_wbb_splice}"
+    );
     println!("[W10-FALSIFIER-PASS] CrossWbbRootSplice -> REJECTED ({err_wbb_splice})");
 
     // H4 regression: forged VK roots in statement rejected against verifier-owned canonical VK!
     let mut bad_vk_stmt = bundle.stmt;
     bad_vk_stmt.vk_p2_root[0] = (bad_vk_stmt.vk_p2_root[0] + 1) % GOLDILOCKS_PRIME;
-    let err_h4 = verify_trustless_dregg180_hem_stream(&expected_clean, &bad_vk_stmt, &bundle.wire_bytes)
-        .expect_err("H4 forged VK root MUST be rejected!");
-    assert!(err_h4.contains("verifier-owned canonical VK"), "H4 wrong err: {err_h4}");
+    let err_h4 =
+        verify_trustless_dregg180_hem_stream(&expected_clean, &bad_vk_stmt, &bundle.wire_bytes)
+            .expect_err("H4 forged VK root MUST be rejected!");
+    assert!(
+        err_h4.contains("verifier-owned canonical VK"),
+        "H4 wrong err: {err_h4}"
+    );
     println!("[W10-FALSIFIER-PASS] H4_ForgedVkRoot -> REJECTED ({err_h4})");
 
     // L3 regression: non-canonical (`>= GOLDILOCKS_PRIME`) public Poseidon root limb rejected at ingress!
     let mut noncanon_stmt = bundle.stmt;
     noncanon_stmt.bytes_p2_root[0] = GOLDILOCKS_PRIME;
-    let err_l3_hash = compute_expected_trustless_program_hash(&noncanon_stmt)
-        .expect_err("L3 non-canonical public root MUST fail compute_expected_trustless_program_hash");
-    assert!(err_l3_hash.contains("non-canonical Goldilocks limb"), "L3 wrong err: {err_l3_hash}");
-    let err_l3_ver = verify_trustless_dregg180_hem_stream(&expected_clean, &noncanon_stmt, &bundle.wire_bytes)
-        .expect_err("L3 non-canonical public root MUST fail verifier ingress");
-    assert!(err_l3_ver.contains("non-canonical Goldilocks limb"), "L3 wrong err: {err_l3_ver}");
+    let err_l3_hash = compute_expected_trustless_program_hash(&noncanon_stmt).expect_err(
+        "L3 non-canonical public root MUST fail compute_expected_trustless_program_hash",
+    );
+    assert!(
+        err_l3_hash.contains("non-canonical Goldilocks limb"),
+        "L3 wrong err: {err_l3_hash}"
+    );
+    let err_l3_ver =
+        verify_trustless_dregg180_hem_stream(&expected_clean, &noncanon_stmt, &bundle.wire_bytes)
+            .expect_err("L3 non-canonical public root MUST fail verifier ingress");
+    assert!(
+        err_l3_ver.contains("non-canonical Goldilocks limb"),
+        "L3 wrong err: {err_l3_ver}"
+    );
     println!("[W10-FALSIFIER-PASS] L3_NonCanonicalPublicRoot -> REJECTED ({err_l3_ver})");
 
     // L2 regression: unarmed `H_MERKLE` (no preceding `H_BIND_IDX`) MUST fail closed!
@@ -937,7 +1107,10 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     let (unarmed_wire, _) = asm_unarmed.build_wire_bytes_and_pdig(None);
     let mut vm_l2 = Dregg180StreamVm::new_unkeyed(None);
     assert!(
-        matches!(vm_l2.verify_stream(&unarmed_wire), Err(Dregg180StreamError::Rejected { .. })),
+        matches!(
+            vm_l2.verify_stream(&unarmed_wire),
+            Err(Dregg180StreamError::Rejected { .. })
+        ),
         "L2 regression: unarmed H_MERKLE without H_BIND_IDX must fail closed!"
     );
     println!("[W10-FALSIFIER-PASS] L2_UnarmedMerkle -> VM_REJECTED");
@@ -951,7 +1124,10 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     let v2_alt = [499u64, 600, 700, 800]; // `-1` -> SAME sum `v1 + v2 == v1_alt + v2_alt`!
     let d_honest = p2_ordered_compress(p2_ordered_compress([0; 4], v1, 1), v2, 2);
     let d_alt = p2_ordered_compress(p2_ordered_compress([0; 4], v1_alt, 1), v2_alt, 2);
-    assert_ne!(d_honest, d_alt, "C1 fix: ordered Davies-Meyer compress must separate equal-sum pairs");
+    assert_ne!(
+        d_honest, d_alt,
+        "C1 fix: ordered Davies-Meyer compress must separate equal-sum pairs"
+    );
     let mut asm_c1 = Dregg180HvmAssembler::new(OP_HEM, false, false);
     asm_c1.load(R_A, &[0, 0, 0, 0], true);
     asm_c1.load(R_X, &v1, false);
@@ -967,7 +1143,10 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
     let (c1_unit_wire, _) = asm_c1.build_wire_bytes_and_pdig(None);
     let mut vm_c1 = Dregg180StreamVm::new_unkeyed(None);
     assert!(
-        matches!(vm_c1.verify_stream(&c1_unit_wire), Err(Dregg180StreamError::Rejected { .. })),
+        matches!(
+            vm_c1.verify_stream(&c1_unit_wire),
+            Err(Dregg180StreamError::Rejected { .. })
+        ),
         "C1 unit regression: VM BF_AUX_COMPRESS_REG must reject equal-sum pair collision!"
     );
 
@@ -1000,11 +1179,17 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         if hop == H_HASH && n == 3 && k == 1 {
             let dom = words[data_start];
             if dom == P2_DOMAIN_FS_POW_T1 {
-                assert_eq!(a, R_CH, "H1 invariant: T1 PoW hash MUST write directly to R_CH");
+                assert_eq!(
+                    a, R_CH,
+                    "H1 invariant: T1 PoW hash MUST write directly to R_CH"
+                );
                 pow_t1_nonce_offsets.push(data_start + 1);
                 prev_pow_domain = Some(P2_DOMAIN_FS_POW_T1);
             } else if dom == P2_DOMAIN_FS_POW_T2 {
-                assert_eq!(a, R_CH, "H1 invariant: T2 PoW hash MUST write directly to R_CH");
+                assert_eq!(
+                    a, R_CH,
+                    "H1 invariant: T2 PoW hash MUST write directly to R_CH"
+                );
                 pow_t2_nonce_offsets.push(data_start + 1);
                 prev_pow_domain = Some(P2_DOMAIN_FS_POW_T2);
             } else {
@@ -1022,10 +1207,25 @@ fn test_trustless_ud100_nonnative_babybear_ext4_and_absent_sk_dfa_no_kmac_zero_h
         }
         pos = data_start + n;
     }
-    assert_eq!(pass2_load_word_offsets.len(), 2, "must locate Pass 2 replay loads");
-    assert_eq!(pow_t1_nonce_offsets.len(), 1, "H1 invariant: exactly 1 T1 PoW nonce record");
-    assert_eq!(pow_t2_nonce_offsets.len(), 1, "H1 invariant: exactly 1 T2 PoW nonce record");
-    assert!(saw_t1_assert_pow && saw_t2_assert_pow, "H1 invariant: H_ASSERT_POW(R_CH, 16) immediately follows single PoW hash");
+    assert_eq!(
+        pass2_load_word_offsets.len(),
+        2,
+        "must locate Pass 2 replay loads"
+    );
+    assert_eq!(
+        pow_t1_nonce_offsets.len(),
+        1,
+        "H1 invariant: exactly 1 T1 PoW nonce record"
+    );
+    assert_eq!(
+        pow_t2_nonce_offsets.len(),
+        1,
+        "H1 invariant: exactly 1 T2 PoW nonce record"
+    );
+    assert!(
+        saw_t1_assert_pow && saw_t2_assert_pow,
+        "H1 invariant: H_ASSERT_POW(R_CH, 16) immediately follows single PoW hash"
+    );
 
     // C1 live wire splice: perturb two Pass-2 replayed proof words by `+1` / `-1` (same program hash!):
     let mut c1_spliced = words.clone();

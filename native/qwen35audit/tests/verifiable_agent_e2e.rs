@@ -42,7 +42,10 @@ fn test_stream_codec_canonical_and_duplicate_key_splice_refused() {
     let mut p0 = 0usize;
     assert_eq!(stream_decode_nat(&[255u8], &mut p0).unwrap(), 0);
     let mut p255 = 0usize;
-    assert_eq!(stream_decode_nat(&[0u8, 1u8, 255u8], &mut p255).unwrap(), 255);
+    assert_eq!(
+        stream_decode_nat(&[0u8, 1u8, 255u8], &mut p255).unwrap(),
+        255
+    );
 
     // Duplicate-key JSON splice payload (`ambigSplicePayload` from `VerifiedAstTransducer.lean`) MUST be refused!
     let dup_key_splice =
@@ -200,12 +203,16 @@ fn test_live_integer_qwen35_agent_turn_determinism_and_vagent01_teeth() {
     // --- Planted Attack 1: `TK` Prompt Mismatch (`prompt_bytes` mutated) ---
     let mut bad_r1 = rep.receipt.clone();
     bad_r1.prompt_bytes[0] ^= 0x01;
-    assert!(verify_agent_turn_weld_bytes(&rep.bundle.stmt_bytes, &bad_r1.to_stream_bytes()).is_err());
+    assert!(
+        verify_agent_turn_weld_bytes(&rep.bundle.stmt_bytes, &bad_r1.to_stream_bytes()).is_err()
+    );
 
     // --- Planted Attack 2: `TK` Boundary Chain Splice (`boundary_roots[3]` mutated) ---
     let mut bad_r2 = rep.receipt.clone();
     bad_r2.boundary_roots[3][0] ^= 0xFF;
-    assert!(verify_agent_turn_weld_bytes(&rep.bundle.stmt_bytes, &bad_r2.to_stream_bytes()).is_err());
+    assert!(
+        verify_agent_turn_weld_bytes(&rep.bundle.stmt_bytes, &bad_r2.to_stream_bytes()).is_err()
+    );
 
     // --- Planted Attack 3: Unredacted `sk-proj-...` CoT Splice (`w_clean = w_raw`, VRF-aligned) ---
     let mut bad_s3 = rep.stmt.clone();
@@ -360,7 +367,7 @@ fn test_live_integer_qwen35_agent_turn_determinism_and_vagent01_teeth() {
     let tab4096 = build_accepting_sk_dfa_public_table_stride4096();
     // Verify `(q=0, b=256, q_next=0) == 2048` and `(q=0, b=0, q_next=1) == 4096` do NOT collide!
     assert!(tab4096.contains(&2048));
-    assert!(!tab4096.contains(&(0 + 8 * 0 + 4096 * 1))); // `'s'` is `115`, `b=0` goes `0 -> 0` (`tuple = 0`), never `2048`!
+    assert!(!tab4096.contains(&4096)); // `'s'` is `115`, `b=0` goes `0 -> 0` (`tuple = 0`), never `2048`!
     let mut unique_check = tab4096.clone();
     unique_check.sort_unstable();
     unique_check.dedup();
@@ -375,10 +382,12 @@ fn test_live_integer_qwen35_agent_turn_determinism_and_vagent01_teeth() {
     assert!(verify_vagent01_bytes_pinned(&rep.bundle_bytes, &wrong_wr, &honest_qsb).is_err());
     let mut wrong_qsb = honest_qsb;
     wrong_qsb[0] ^= 0x01;
-    assert!(
-        verify_vagent01_bytes_pinned(&rep.bundle_bytes, &engine.registry.weight_root, &wrong_qsb)
-            .is_err()
-    );
+    assert!(verify_vagent01_bytes_pinned(
+        &rep.bundle_bytes,
+        &engine.registry.weight_root,
+        &wrong_qsb
+    )
+    .is_err());
 
     // --- External Zero-Secret `PublicRedactedVAgent01Bundle` Audit (`0` leaked `>= 6B` secret slices!) ---
     let pub_red_bytes = rep

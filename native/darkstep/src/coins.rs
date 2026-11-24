@@ -30,7 +30,12 @@ impl Prf {
         base.update(key);
         base.update((label.len() as u64).to_le_bytes());
         base.update(label.as_bytes());
-        Prf { base, ctr: 0, buf: [0; 32], pos: 32 }
+        Prf {
+            base,
+            ctr: 0,
+            buf: [0; 32],
+            pos: 32,
+        }
     }
 
     #[inline]
@@ -51,7 +56,11 @@ impl Prf {
     #[inline]
     pub fn below(&mut self, n: u64) -> u64 {
         assert!(n > 0);
-        let mask = if n == 1 { 0 } else { u64::MAX >> (n - 1).leading_zeros() };
+        let mask = if n == 1 {
+            0
+        } else {
+            u64::MAX >> (n - 1).leading_zeros()
+        };
         loop {
             let v = self.next_u64() & mask;
             if v < n {
@@ -190,7 +199,10 @@ mod tests {
             assert!((-8..=8).contains(&v));
             hist[(v + 8) as usize] += 1;
         }
-        assert!(hist.iter().all(|&h| (9_000..11_000).contains(&h)), "{hist:?}");
+        assert!(
+            hist.iter().all(|&h| (9_000..11_000).contains(&h)),
+            "{hist:?}"
+        );
         let mut neg = 0;
         for _ in 0..10_000 {
             let (n, m) = c.randint_sym_pow2_arr::<5>(175);
@@ -203,6 +215,9 @@ mod tests {
         let a: Vec<u64> = (0..4).map(|_| Prf::new(&k, "a").next_u64()).collect();
         assert!(a.windows(2).all(|w| w[0] == w[1]));
         assert_ne!(Prf::new(&k, "a").next_u64(), Prf::new(&k, "b").next_u64());
-        assert_ne!(Prf::new(&k, "a").next_u64(), Prf::new(&[8u8; 32], "a").next_u64());
+        assert_ne!(
+            Prf::new(&k, "a").next_u64(),
+            Prf::new(&[8u8; 32], "a").next_u64()
+        );
     }
 }

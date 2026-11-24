@@ -1,7 +1,7 @@
 //! darkhand::vault: sealed files open only under their own key, name and role; any changed byte is refused. On
 //! Linux the file key survives the process in the persistent keyring (another process loads it, as `serve --resume`
 //! would) and is gone, for every process, once destroyed.
-use darkhand::vault::{key_name, present, Vault};
+use darkhand::vault::{key_name, Vault};
 
 #[test]
 fn seal_open_and_refusals() {
@@ -16,17 +16,32 @@ fn seal_open_and_refusals() {
     let other = Vault::with_key("dl-vault:test:0:1:aaaa", [7u8; 32]);
     assert!(other.open("ckpt", blob.clone()).is_err(), "another key");
     let renamed = Vault::with_key("dl-vault:test:1:1:aaaa", *v.key_bytes());
-    assert!(renamed.open("ckpt", blob.clone()).is_err(), "the same key under another seat's name");
-    assert!(Vault::with_key("x", [0u8; 32]).open("ckpt", blob).is_err(), "the zero key");
+    assert!(
+        renamed.open("ckpt", blob.clone()).is_err(),
+        "the same key under another seat's name"
+    );
+    assert!(
+        Vault::with_key("x", [0u8; 32]).open("ckpt", blob).is_err(),
+        "the zero key"
+    );
     // the file form
     let dir = std::env::temp_dir().join(format!("dlv-{}", std::process::id()));
     std::fs::create_dir_all(&dir).unwrap();
     let f = dir.join("ckpt_P0.bin");
     v.seal_to(&f, "ckpt", plain.clone()).unwrap();
-    assert!(!std::fs::read(&f).unwrap().windows(10).any(|w| w == &plain[..10]), "no plaintext on disk");
+    assert!(
+        !std::fs::read(&f)
+            .unwrap()
+            .windows(10)
+            .any(|w| w == &plain[..10]),
+        "no plaintext on disk"
+    );
     assert_eq!(v.open_file(&f, "ckpt").unwrap(), plain);
     std::fs::remove_dir_all(&dir).unwrap();
-    assert_eq!(key_name("m", 2, 5, "0123456789abcdef0123"), "dl-vault:m:2:5:0123456789abcdef");
+    assert_eq!(
+        key_name("m", 2, 5, "0123456789abcdef0123"),
+        "dl-vault:m:2:5:0123456789abcdef"
+    );
 }
 
 #[cfg(target_os = "linux")]
@@ -48,7 +63,12 @@ fn keyring_survives_the_process_and_destroy_erases_it() {
     v.seal_to(&f, "tls", b"secret".to_vec()).unwrap();
     let child = |want: bool| {
         let ok = std::process::Command::new(std::env::current_exe().unwrap())
-            .args(["--exact", "keyring_survives_the_process_and_destroy_erases_it", "--test-threads", "1"])
+            .args([
+                "--exact",
+                "keyring_survives_the_process_and_destroy_erases_it",
+                "--test-threads",
+                "1",
+            ])
             .env("DLV_CHILD", &name)
             .env("DLV_FILE", &f)
             .status()
@@ -74,11 +94,19 @@ fn an_expired_file_key_fails_closed() {
     getrandom::getrandom(&mut fp).unwrap();
     let name = key_name("test-expiry", 0, 1, &pycompat::repr::hex(&fp));
     let v = Vault::create(&name, true).unwrap();
-    assert!(Vault::load(&name).is_ok(), "control: before the timeout the key loads");
+    assert!(
+        Vault::load(&name).is_ok(),
+        "control: before the timeout the key loads"
+    );
     v.expire_after_for_test(1).unwrap();
     std::thread::sleep(std::time::Duration::from_millis(2500));
-    let e = Vault::load(&name).err().expect("a resume after the expiry must fail");
+    let e = Vault::load(&name)
+        .err()
+        .expect("a resume after the expiry must fail");
     println!("{e}");
     assert!(e.contains("EXPIRED") || e.contains("no file key"), "{e}");
-    println!("persistent keyring expiry: {:?} s", Vault::persistent_keyring_expiry());
+    println!(
+        "persistent keyring expiry: {:?} s",
+        Vault::persistent_keyring_expiry()
+    );
 }

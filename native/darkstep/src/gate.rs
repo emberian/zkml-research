@@ -56,19 +56,40 @@ pub fn label(kind: &str, call: u64, transpose: bool, sender: usize) -> String {
 
 fn limb_major_to_big(rns: &Rns, v: &[u64]) -> BigPoly {
     let n = rns.n;
-    let res: Vec<Vec<u64>> = (0..rns.l()).map(|k| v[k * n..(k + 1) * n].to_vec()).collect();
+    let res: Vec<Vec<u64>> = (0..rns.l())
+        .map(|k| v[k * n..(k + 1) * n].to_vec())
+        .collect();
     BigPoly::from_rns(&res, &rns.qs)
 }
 
-pub fn statement(rns: &Rns, reg: &Arc<KeyRegistry>, cts: &[Ct], slots: &[usize], ctx: Json) -> Result<Statement, String> {
-    let bc: Vec<(BigPoly, BigPoly)> = cts.iter().map(|c| (limb_major_to_big(rns, &c.c0), limb_major_to_big(rns, &c.c1))).collect();
-    Statement::new(reg.clone(), Kind::Sk, bc, vec![slots.to_vec(); cts.len()], ctx)
+pub fn statement(
+    rns: &Rns,
+    reg: &Arc<KeyRegistry>,
+    cts: &[Ct],
+    slots: &[usize],
+    ctx: Json,
+) -> Result<Statement, String> {
+    let bc: Vec<(BigPoly, BigPoly)> = cts
+        .iter()
+        .map(|c| (limb_major_to_big(rns, &c.c0), limb_major_to_big(rns, &c.c1)))
+        .collect();
+    Statement::new(
+        reg.clone(),
+        Kind::Sk,
+        bc,
+        vec![slots.to_vec(); cts.len()],
+        ctx,
+    )
 }
 
 /// r at the slots: the unique r in [-(t-1)/2, (t-1)/2] with r = -Q m (mod t) (= t round(Q m_c / t) - Q m_c).
 pub fn witness_r(rns: &Rns, m: &[u64], slots: &[usize]) -> Vec<i64> {
     let t = rns.t;
-    let qt = (&rns.q_big % t).to_u64_digits().first().copied().unwrap_or(0);
+    let qt = (&rns.q_big % t)
+        .to_u64_digits()
+        .first()
+        .copied()
+        .unwrap_or(0);
     slots
         .iter()
         .map(|&k| {
@@ -82,16 +103,42 @@ pub fn witness_r(rns: &Rns, m: &[u64], slots: &[usize]) -> Vec<i64> {
         .collect()
 }
 
+pub struct ProveBatch<'a> {
+    pub me: usize,
+    pub cts: &'a [Ct],
+    pub ws: Vec<SkCt>,
+    pub slots: &'a [usize],
+    pub ctx: Json,
+    pub lbl: &'a str,
+    pub forge: bool,
+}
+
 impl Gate {
     /// Prove my batch for this call (`forge`: the falsifier's cheat path, which skips the prover's own checks).
-    pub fn prove(&mut self, rns: &Rns, me: usize, cts: &[Ct], ws: Vec<SkCt>, slots: &[usize], ctx: Json, lbl: &str, forge: bool) -> Result<Vec<u8>, String> {
+    pub fn prove(&mut self, rns: &Rns, batch: ProveBatch<'_>) -> Result<Vec<u8>, String> {
+        let ProveBatch {
+            me,
+            cts,
+            ws,
+            slots,
+            ctx,
+            lbl,
+            forge,
+        } = batch;
         let tw = Instant::now();
         let _g = ZK_LOCK.lock().unwrap();
         self.wait_s += tw.elapsed().as_secs_f64();
         let t0 = Instant::now();
         let st = statement(rns, &self.regs[me], cts, slots, ctx)?;
-        let wit = Witness::Sk { s: self.s.clone(), e_pk: self.e_pk.clone(), cts: ws };
-        let mut opts = ProveOpts { low_memory: self.low_memory, ..Default::default() };
+        let wit = Witness::Sk {
+            s: self.s.clone(),
+            e_pk: self.e_pk.clone(),
+            cts: ws,
+        };
+        let mut opts = ProveOpts {
+            low_memory: self.low_memory,
+            ..Default::default()
+        };
         #[cfg(feature = "test-det")]
         {
             opts.det_seed = self.det_seed.clone();
@@ -102,12 +149,21 @@ impl Gate {
         let blob = dzkpopk::prove_with(&st, &wit, self.tcols, &mut opts)?;
         self.prove_s += t0.elapsed().as_secs_f64();
         self.proof_bytes_sent += 2 * blob.len() as u64;
-        self.proofs.push((lbl.to_string(), pycompat::repr::sha256_hex(&blob)));
+        self.proofs
+            .push((lbl.to_string(), pycompat::repr::sha256_hex(&blob)));
         Ok(blob)
     }
 
     /// Verify sender j's batch against the statement I build from MY expected context and j's registered key.
-    pub fn verify(&mut self, rns: &Rns, j: usize, cts: &[Ct], slots: &[usize], ctx: Json, proof: &[u8]) -> Result<(), String> {
+    pub fn verify(
+        &mut self,
+        rns: &Rns,
+        j: usize,
+        cts: &[Ct],
+        slots: &[usize],
+        ctx: Json,
+        proof: &[u8],
+    ) -> Result<(), String> {
         let tw = Instant::now();
         let _g = ZK_LOCK.lock().unwrap();
         self.wait_s += tw.elapsed().as_secs_f64();
@@ -122,14 +178,21 @@ impl Gate {
 /// The verdict exchange: every custodian posts its refusals [(recipient, sender, reason)]; all abort on the first
 /// refusal in (sender, recipient) order, so the three report the same reason.
 pub fn agree(net: &Net, me: usize, mine: &[(usize, String)], what: &str) -> Result<(), String> {
-    let enc = serde_json::to_vec(&mine.iter().map(|(j, r)| serde_json::json!([j, r])).collect::<Vec<_>>()).unwrap();
+    let enc = serde_json::to_vec(
+        &mine
+            .iter()
+            .map(|(j, r)| serde_json::json!([j, r]))
+            .collect::<Vec<_>>(),
+    )
+    .unwrap();
     let all = net.exchange_bytes(net::CTRL, &enc);
     let mut refusals: Vec<(usize, usize, String)> = vec![];
     for (i, b) in all.iter().enumerate() {
         let v: Vec<(usize, String)> = if i == me {
             mine.to_vec()
         } else {
-            serde_json::from_slice::<Vec<(usize, String)>>(b).map_err(|e| format!("ZKPoPK gate: malformed verdict from custodian {i}: {e}"))?
+            serde_json::from_slice::<Vec<(usize, String)>>(b)
+                .map_err(|e| format!("ZKPoPK gate: malformed verdict from custodian {i}: {e}"))?
         };
         for (j, r) in v {
             refusals.push((j, i, r));
@@ -138,7 +201,9 @@ pub fn agree(net: &Net, me: usize, mine: &[(usize, String)], what: &str) -> Resu
     refusals.sort();
     match refusals.first() {
         None => Ok(()),
-        Some((j, i, r)) => Err(format!("ZKPoPK gate: custodian {i} refused custodian {j}'s batch ({what}): {r}")),
+        Some((j, i, r)) => Err(format!(
+            "ZKPoPK gate: custodian {i} refused custodian {j}'s batch ({what}): {r}"
+        )),
     }
 }
 
@@ -159,7 +224,15 @@ fn poly_parse(b: &[u8]) -> Result<BigPoly, String> {
 
 /// keygen_ceremony.run_ceremony over the custodians' mesh: commit, reveal, key + key proof, register every key.
 /// Returns (my custodian, the ceremony with all three keys registered).
-pub fn ceremony(net: &Net, me: usize, n: usize, primes: &[u64], t: u64, tcols: usize, det_seed: Option<&str>) -> Result<(Custodian, Ceremony), String> {
+pub fn ceremony(
+    net: &Net,
+    me: usize,
+    n: usize,
+    primes: &[u64],
+    t: u64,
+    tcols: usize,
+    det_seed: Option<&str>,
+) -> Result<(Custodian, Ceremony), String> {
     #[cfg(feature = "test-det")]
     let mut cust = match det_seed {
         Some(s) => Custodian::new_det(me, s),
@@ -176,12 +249,20 @@ pub fn ceremony(net: &Net, me: usize, n: usize, primes: &[u64], t: u64, tcols: u
     let mut cer = Ceremony::new(EPOCH, np, n, primes, t, tcols);
     let coms = net.exchange_bytes(net::CTRL, cust.commitment(EPOCH).as_bytes());
     for (i, c) in coms.iter().enumerate() {
-        let c = if i == me { cust.commitment(EPOCH) } else { String::from_utf8(c.clone()).map_err(|_| "commitment: not text")? };
+        let c = if i == me {
+            cust.commitment(EPOCH)
+        } else {
+            String::from_utf8(c.clone()).map_err(|_| "commitment: not text")?
+        };
         cer.commit(i, &c).map_err(|e| e.0)?;
     }
     let rev = net.exchange_bytes(net::CTRL, format!("{}|{}", cust.r, cust.salt).as_bytes());
     for (i, b) in rev.iter().enumerate() {
-        let s = if i == me { format!("{}|{}", cust.r, cust.salt) } else { String::from_utf8(b.clone()).map_err(|_| "reveal: not text")? };
+        let s = if i == me {
+            format!("{}|{}", cust.r, cust.salt)
+        } else {
+            String::from_utf8(b.clone()).map_err(|_| "reveal: not text")?
+        };
         let (r, salt) = s.split_once('|').ok_or("reveal: shape")?;
         cer.reveal(i, r, salt).map_err(|e| e.0)?;
     }

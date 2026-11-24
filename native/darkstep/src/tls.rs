@@ -26,7 +26,10 @@ impl Drop for Identity {
 /// A fresh key pair and certificate for custodian `i` (subject alt name custodian-i).
 pub fn generate(i: usize) -> Identity {
     let ck = rcgen::generate_simple_self_signed(vec![format!("custodian-{i}")]).expect("rcgen");
-    Identity { key_der: ck.key_pair.serialize_der(), cert_der: ck.cert.der().to_vec() }
+    Identity {
+        key_der: ck.key_pair.serialize_der(),
+        cert_der: ck.cert.der().to_vec(),
+    }
 }
 
 pub fn cert_fingerprint(der: &[u8]) -> String {
@@ -46,22 +49,50 @@ struct Pinned {
 }
 
 impl Pinned {
-    fn check(&self, end_entity: &CertificateDer<'_>, intermediates: &[CertificateDer<'_>]) -> Result<(), Error> {
-        if !intermediates.is_empty() || !self.pinned.iter().any(|c| c.as_slice() == end_entity.as_ref()) {
-            return Err(Error::General("peer certificate is not pinned for this run".into()));
+    fn check(
+        &self,
+        end_entity: &CertificateDer<'_>,
+        intermediates: &[CertificateDer<'_>],
+    ) -> Result<(), Error> {
+        if !intermediates.is_empty()
+            || !self
+                .pinned
+                .iter()
+                .any(|c| c.as_slice() == end_entity.as_ref())
+        {
+            return Err(Error::General(
+                "peer certificate is not pinned for this run".into(),
+            ));
         }
         Ok(())
     }
 }
 
 impl ServerCertVerifier for Pinned {
-    fn verify_server_cert(&self, ee: &CertificateDer<'_>, im: &[CertificateDer<'_>], _: &ServerName<'_>, _: &[u8], _: UnixTime) -> Result<ServerCertVerified, Error> {
+    fn verify_server_cert(
+        &self,
+        ee: &CertificateDer<'_>,
+        im: &[CertificateDer<'_>],
+        _: &ServerName<'_>,
+        _: &[u8],
+        _: UnixTime,
+    ) -> Result<ServerCertVerified, Error> {
         self.check(ee, im).map(|_| ServerCertVerified::assertion())
     }
-    fn verify_tls12_signature(&self, _: &[u8], _: &CertificateDer<'_>, _: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, Error> {
+    fn verify_tls12_signature(
+        &self,
+        _: &[u8],
+        _: &CertificateDer<'_>,
+        _: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, Error> {
         Err(Error::General("TLS 1.2 is not offered".into()))
     }
-    fn verify_tls13_signature(&self, m: &[u8], c: &CertificateDer<'_>, d: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, Error> {
+    fn verify_tls13_signature(
+        &self,
+        m: &[u8],
+        c: &CertificateDer<'_>,
+        d: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, Error> {
         verify_tls13_signature(m, c, d, &self.algs)
     }
     fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
@@ -73,13 +104,28 @@ impl ClientCertVerifier for Pinned {
     fn root_hint_subjects(&self) -> &[DistinguishedName] {
         &[]
     }
-    fn verify_client_cert(&self, ee: &CertificateDer<'_>, im: &[CertificateDer<'_>], _: UnixTime) -> Result<ClientCertVerified, Error> {
+    fn verify_client_cert(
+        &self,
+        ee: &CertificateDer<'_>,
+        im: &[CertificateDer<'_>],
+        _: UnixTime,
+    ) -> Result<ClientCertVerified, Error> {
         self.check(ee, im).map(|_| ClientCertVerified::assertion())
     }
-    fn verify_tls12_signature(&self, _: &[u8], _: &CertificateDer<'_>, _: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, rustls::Error> {
+    fn verify_tls12_signature(
+        &self,
+        _: &[u8],
+        _: &CertificateDer<'_>,
+        _: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, rustls::Error> {
         Err(Error::General("TLS 1.2 is not offered".into()))
     }
-    fn verify_tls13_signature(&self, m: &[u8], c: &CertificateDer<'_>, d: &DigitallySignedStruct) -> Result<HandshakeSignatureValid, Error> {
+    fn verify_tls13_signature(
+        &self,
+        m: &[u8],
+        c: &CertificateDer<'_>,
+        d: &DigitallySignedStruct,
+    ) -> Result<HandshakeSignatureValid, Error> {
         verify_tls13_signature(m, c, d, &self.algs)
     }
     fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
@@ -94,7 +140,10 @@ fn key_of(id: &Identity) -> PrivateKeyDer<'static> {
 /// The dialing side of the link to one peer: it must present `peer_cert`.
 pub fn client_config(id: &Identity, peer_cert: &[u8]) -> Arc<rustls::ClientConfig> {
     let pv = provider();
-    let v = Arc::new(Pinned { pinned: vec![peer_cert.to_vec()], algs: pv.signature_verification_algorithms });
+    let v = Arc::new(Pinned {
+        pinned: vec![peer_cert.to_vec()],
+        algs: pv.signature_verification_algorithms,
+    });
     let cfg = rustls::ClientConfig::builder_with_provider(pv)
         .with_protocol_versions(&[&rustls::version::TLS13])
         .expect("tls13")
@@ -108,7 +157,10 @@ pub fn client_config(id: &Identity, peer_cert: &[u8]) -> Arc<rustls::ClientConfi
 /// The accepting side: the dialer must present one of `peer_certs`, and its own certificate.
 pub fn server_config(id: &Identity, peer_certs: &[Vec<u8>]) -> Arc<rustls::ServerConfig> {
     let pv = provider();
-    let v = Arc::new(Pinned { pinned: peer_certs.to_vec(), algs: pv.signature_verification_algorithms });
+    let v = Arc::new(Pinned {
+        pinned: peer_certs.to_vec(),
+        algs: pv.signature_verification_algorithms,
+    });
     let mut cfg = rustls::ServerConfig::builder_with_provider(pv)
         .with_protocol_versions(&[&rustls::version::TLS13])
         .expect("tls13")

@@ -11,7 +11,7 @@
 use qwen35audit::ext4::Ext4;
 use qwen35audit::qwen35_layer::{
     execute_qwen35_24_layers_mmap, prove_audited_gdn_layer, verify_audited_gdn_layer_standalone,
-    PrecommittedMxfp4Pcs,
+    AuditedGdnLayerVerifyStmt, AuditedGdnLayerWitness, PrecommittedMxfp4Pcs,
 };
 use qwen35audit::safetensors_mmap::{
     MmapSafetensors, Mxfp4Matrix, Qwen35WeightRegistry, QWEN35_SAFETENSORS_FILE,
@@ -26,6 +26,7 @@ use qwen35audit::spec_prefill::{
     SpeculativePrefillVerdict, QWEN38_27B_E2M1_NPZ_FILE, QWEN38_27B_METAL_RECEIPT_FILE,
 };
 use qwen35audit::u1_audit::commit_u1_pcs_boundaries;
+use std::ops::{Add, Sub};
 use std::path::Path;
 use std::time::Instant;
 
@@ -60,7 +61,8 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
         q38.cos_vs_bf16,
         q38.snr_db_vs_bf16
     );
-    verify_raw_neg_zero_horner_invariance(&q38).expect("raw nibble=8 (-0.0) 0-mul Horner invariance");
+    verify_raw_neg_zero_horner_invariance(&q38)
+        .expect("raw nibble=8 (-0.0) 0-mul Horner invariance");
 
     let x_q38_64: Vec<i16> = (0..(64 * 5120))
         .map(|i| (((i * 29 + 7) % 127) as i16) - 63)
@@ -109,8 +111,8 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
     let mmap = MmapSafetensors::open(QWEN35_SAFETENSORS_FILE).expect("open Qwen3.5-0.8B mmap");
     let prompt_ids: Vec<u32> = (0..64).map(|i| 512 + (i * 23) as u32).collect();
     let audited_layer = 0usize;
-    let (turn, final_h) =
-        execute_qwen35_24_layers_mmap(&mmap, &prompt_ids, audited_layer).expect("24L Qwen3.5 forward");
+    let (turn, final_h) = execute_qwen35_24_layers_mmap(&mmap, &prompt_ids, audited_layer)
+        .expect("24L Qwen3.5 forward");
 
     let bench_q35_gate = benchmark_seq_decode_vs_spec_prefill_mxfp4(
         "Qwen3.5-0.8B Layer-0 gate_proj [3584->4096 x 1024 MXFP4]",
@@ -175,20 +177,22 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
     let mut tr_l_prv = qwen35audit::ext4::CShakeTranscript::new(b"SPEC-FULL-GDN-WY-L0");
     let full_gdn_pf = prove_audited_gdn_layer(
         &registry.weight_root,
-        wy_path,
-        digests,
-        gate_slot,
-        &gate_pcs,
-        &u1_online.boundary_states[audited_layer],
-        &u1_online.boundary_states[audited_layer + 1],
-        &turn.boundaries_bb[audited_layer],
-        &turn.boundaries_bb[audited_layer + 1],
-        &turn.delta_gdn_bb,
-        &turn.delta_mlp_bb,
-        &turn.wy_witness,
-        &turn.x_ln2_i16,
-        &turn.gate_proj_y_raw,
         audited_layer,
+        AuditedGdnLayerWitness {
+            layer_weight_path: wy_path,
+            layer_tensor_digests: digests,
+            gate_proj_tensor_slot: gate_slot,
+            gate_pcs: &gate_pcs,
+            b_in_state: &u1_online.boundary_states[audited_layer],
+            b_out_state: &u1_online.boundary_states[audited_layer + 1],
+            b_in_bb: &turn.boundaries_bb[audited_layer],
+            b_out_bb: &turn.boundaries_bb[audited_layer + 1],
+            delta_gdn_bb: &turn.delta_gdn_bb,
+            delta_mlp_bb: &turn.delta_mlp_bb,
+            wy: &turn.wy_witness,
+            x_ln2_i16: &turn.x_ln2_i16,
+            gate_y_raw: &turn.gate_proj_y_raw,
+        },
         &mut tr_l_prv,
     )
     .expect("prove full Qwen3.5 Layer-0 C=64 IntWY + MXFP4");
@@ -199,12 +203,14 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
     let tlv0 = Instant::now();
     let mut tr_l_ver = qwen35audit::ext4::CShakeTranscript::new(b"SPEC-FULL-GDN-WY-L0");
     verify_audited_gdn_layer_standalone(
-        &registry.weight_root,
-        &u1_online.boundary_roots[audited_layer],
-        &u1_online.boundary_roots[audited_layer + 1],
-        audited_layer,
-        &qs_binding,
-        16,
+        &AuditedGdnLayerVerifyStmt {
+            expected_weight_root: &registry.weight_root,
+            expected_b_in_root: &u1_online.boundary_roots[audited_layer],
+            expected_b_out_root: &u1_online.boundary_roots[audited_layer + 1],
+            expected_audited_layer: audited_layer,
+            expected_q_s_binding: &qs_binding,
+            bnd_vars: 16,
+        },
         &full_gdn_pf,
         &mut tr_l_ver,
     )
@@ -221,10 +227,16 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
     // 3. Exact Integer Argmax Dominance Certificate (`D1b` LogUp Positive-Gap Proof, `T=64, V=2048`)
     //    & `VERDICTS.md` §9 Float-Steering / Tie-Breaking Drift Detection
     // -------------------------------------------------------------------------
-    let (vocab_ids, mut real_logits) =
-        compute_real_qwen35_shortlist_logits(&mmap, &final_h, 64).expect("compute real Qwen3.5 logits");
-    assert_eq!(vocab_ids[0], 348, "slot 0 must be real Qwen token ' *' (348)");
-    assert_eq!(vocab_ids[1], 23985, "slot 1 must be real Qwen token ' ×' (23985)");
+    let (vocab_ids, mut real_logits) = compute_real_qwen35_shortlist_logits(&mmap, &final_h, 64)
+        .expect("compute real Qwen3.5 logits");
+    assert_eq!(
+        vocab_ids[0], 348,
+        "slot 0 must be real Qwen token ' *' (348)"
+    );
+    assert_eq!(
+        vocab_ids[1], 23985,
+        "slot 1 must be real Qwen token ' ×' (23985)"
+    );
 
     // Plant realistic close-margin competition (`VERDICTS.md` §9 `"17 * 23 = 391." -> "17 × 23 = 391"`)
     // at `t* = 19` (`slot 0 = " *"` beats `slot 1 = " ×"` by `1` integer unit — well inside float tolerance!)
@@ -234,7 +246,7 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
         .iter()
         .max()
         .unwrap();
-    real_logits[t_star_drift * 2048 + 0] = max_t19 + 4; // `" *"` (tok 348) wins by +1!
+    real_logits[t_star_drift * 2048] = max_t19 + 4; // `" *"` (tok 348) wins by +1!
     real_logits[t_star_drift * 2048 + 1] = max_t19 + 3; // `" ×"` (tok 23985) is 1 unit behind!
 
     let t_tie = 42usize;
@@ -242,7 +254,7 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
         .iter()
         .max()
         .unwrap();
-    real_logits[t_tie * 2048 + 0] = max_t42 + 5; // `"Canberra."` (lower index 0)
+    real_logits[t_tie * 2048] = max_t42 + 5; // `"Canberra."` (lower index 0)
     real_logits[t_tie * 2048 + 1] = max_t42 + 5; // `"Canberra"`  (higher index 1, exact tie!)
 
     let honest_draft: Vec<usize> = (0..64)
@@ -263,8 +275,14 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
 
     let tdv0 = Instant::now();
     let decoded_dom = ArgmaxDominanceExt4Proof::from_bytes(&dom_bytes).expect("decode dom proof");
-    verify_argmax_dominance_d1b_standalone(&dom_pf.logit_pcs_root, 6, 11, &honest_draft, &decoded_dom)
-        .expect("standalone verify D1b argmax dominance");
+    verify_argmax_dominance_d1b_standalone(
+        &dom_pf.logit_pcs_root,
+        6,
+        11,
+        &honest_draft,
+        &decoded_dom,
+    )
+    .expect("standalone verify D1b argmax dominance");
     let dom_verify_ms = tdv0.elapsed().as_secs_f64() * 1000.0;
     println!(
         "[2a] D1b Argmax Dominance Cert (T=64, V=2048, 2x131,072 D1b -> [0, 2^16)): prove = {:.2} ms | verify = {:.2} ms | wire = {:.2} KiB",
@@ -290,8 +308,14 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
         "D1b argmax dominance prover must reject 1-unit steered ' ×' token at t* = 19"
     );
     assert!(
-        verify_argmax_dominance_d1b_standalone(&dom_pf.logit_pcs_root, 6, 11, &steered_draft, &decoded_dom)
-            .is_err(),
+        verify_argmax_dominance_d1b_standalone(
+            &dom_pf.logit_pcs_root,
+            6,
+            11,
+            &steered_draft,
+            &decoded_dom
+        )
+        .is_err(),
         "standalone verifier must reject replaying honest proof against steered y_hat"
     );
 
@@ -355,8 +379,14 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
     let mut forged_dom = decoded_dom.clone();
     forged_dom.gap_at_z = forged_dom.gap_at_z.add(Ext4::ONE);
     assert!(
-        verify_argmax_dominance_d1b_standalone(&dom_pf.logit_pcs_root, 6, 11, &honest_draft, &forged_dom)
-            .is_err(),
+        verify_argmax_dominance_d1b_standalone(
+            &dom_pf.logit_pcs_root,
+            6,
+            11,
+            &honest_draft,
+            &forged_dom
+        )
+        .is_err(),
         "forged gap_at_z must fail Gruen Mode-2 winning-logit selector equation"
     );
 
@@ -379,7 +409,8 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
     // 4. `3×` Depth-Looped MoE Weight-Opening Collapse (`Inkling-2-Mini` `R = 3` Shape)
     //    & Pre-/Post-Challenge Forgery Defense
     // -------------------------------------------------------------------------
-    let loop_bench = benchmark_inkling2_looped_moe_r3().expect("benchmark Inkling-2-Mini R=3 looped MoE");
+    let loop_bench =
+        benchmark_inkling2_looped_moe_r3().expect("benchmark Inkling-2-Mini R=3 looped MoE");
     println!("[3] {}", loop_bench.shape_desc);
     println!(
         "     Unfolded (3x W open) : wt_prove = {:7.2} ms | total_prove = {:7.2} ms | verify = {:6.2} ms | wire = {:7.2} KiB",
@@ -444,7 +475,8 @@ fn test_speculative_prefill_speedup_d1b_argmax_and_looped_moe_e2e() {
     // `y_evals_at_r[0]' = y_0 - rho * 1, y_evals_at_r[1]' = y_1 + 1` rejected by pre-`rho` PCS binding!
     let (honest_loop_pf, _) =
         prove_looped_moe_collapsed_ext4(&small_weights, &x_p3, &honest_y_p3, 64);
-    let mut tr_replay = qwen35audit::ext4::CShakeTranscript::new(b"INKLING2-LOOPED-MOE-COLLAPSE-V1");
+    let mut tr_replay =
+        qwen35audit::ext4::CShakeTranscript::new(b"INKLING2-LOOPED-MOE-COLLAPSE-V1");
     tr_replay.absorb_u32(b"log_t", 6);
     tr_replay.absorb_u32(b"log_j", 8);
     tr_replay.absorb_u32(b"log_k", 8);

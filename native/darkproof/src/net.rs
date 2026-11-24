@@ -22,8 +22,10 @@ pub struct MemNet {
 }
 
 pub fn mem_mesh(n: usize) -> Vec<MemNet> {
-    let mut txs: Vec<Vec<Option<Sender<Vec<u64>>>>> = (0..n).map(|_| (0..n).map(|_| None).collect()).collect();
-    let mut rxs: Vec<Vec<Option<Receiver<Vec<u64>>>>> = (0..n).map(|_| (0..n).map(|_| None).collect()).collect();
+    let mut txs: Vec<Vec<Option<Sender<Vec<u64>>>>> =
+        (0..n).map(|_| (0..n).map(|_| None).collect()).collect();
+    let mut rxs: Vec<Vec<Option<Receiver<Vec<u64>>>>> =
+        (0..n).map(|_| (0..n).map(|_| None).collect()).collect();
     for a in 0..n {
         for b in 0..n {
             if a != b {
@@ -35,7 +37,13 @@ pub fn mem_mesh(n: usize) -> Vec<MemNet> {
     }
     let mut out = Vec::new();
     for (me, (tx, rx)) in txs.into_iter().zip(rxs).enumerate() {
-        out.push(MemNet { me, n, tx, rx, sent: 0 });
+        out.push(MemNet {
+            me,
+            n,
+            tx,
+            rx,
+            sent: 0,
+        });
     }
     out
 }
@@ -51,7 +59,11 @@ impl Net for MemNet {
         for b in 0..self.n {
             if b != self.me {
                 self.sent += mine.len() as u64;
-                self.tx[b].as_ref().unwrap().send(mine.clone()).expect("peer gone");
+                self.tx[b]
+                    .as_ref()
+                    .unwrap()
+                    .send(mine.clone())
+                    .expect("peer gone");
             }
         }
         let mut out = Vec::with_capacity(self.n);
@@ -88,13 +100,19 @@ pub fn w2h(w: &[u64]) -> [u8; 32] {
 
 /// Gather one hash from every party.
 pub fn gather_hash(net: &mut dyn Net, h: &[u8; 32]) -> Vec<[u8; 32]> {
-    net.all_gather(h2w(h).to_vec()).iter().map(|w| w2h(w)).collect()
+    net.all_gather(h2w(h).to_vec())
+        .iter()
+        .map(|w| w2h(w))
+        .collect()
 }
 
 /// Gather a list of hashes from every party (same length everywhere).
 pub fn gather_hashes(net: &mut dyn Net, hs: &[[u8; 32]]) -> Vec<Vec<[u8; 32]>> {
-    let mine: Vec<u64> = hs.iter().flat_map(|h| h2w(h)).collect();
-    net.all_gather(mine).iter().map(|w| w.chunks(4).map(w2h).collect()).collect()
+    let mine: Vec<u64> = hs.iter().flat_map(h2w).collect();
+    net.all_gather(mine)
+        .iter()
+        .map(|w| w.chunks(4).map(w2h).collect())
+        .collect()
 }
 
 /// darkstep's custodian sockets: every proof exchange is an `exchange(net::PROOF, ..)`.
@@ -113,7 +131,8 @@ impl Net for TcpNet {
         self.0.exchange(darkstep::net::PROOF, &mine)
     }
     fn sent(&self) -> u64 {
-        self.0.sent_bytes[darkstep::net::PROOF as usize].load(std::sync::atomic::Ordering::Relaxed) / 8
+        self.0.sent_bytes[darkstep::net::PROOF as usize].load(std::sync::atomic::Ordering::Relaxed)
+            / 8
     }
 }
 
@@ -126,31 +145,48 @@ pub enum Transport {
 }
 
 pub fn transport_from_env() -> Transport {
-    if std::env::var_os("DP_TCP").is_some() { Transport::Tcp } else { Transport::Mem }
+    if std::env::var_os("DP_TCP").is_some() {
+        Transport::Tcp
+    } else {
+        Transport::Mem
+    }
 }
+
+#[cfg(feature = "tcp")]
+type TcpNets = std::sync::Mutex<Vec<Option<(std::net::TcpListener, Vec<std::net::SocketAddr>)>>>;
 
 /// Per-thread transport factory: call `take(i)` inside party i's thread.
 pub struct Nets {
     mem: std::sync::Mutex<Vec<Option<MemNet>>>,
     #[cfg(feature = "tcp")]
-    tcp: std::sync::Mutex<Vec<Option<(std::net::TcpListener, Vec<std::net::SocketAddr>)>>>,
+    tcp: TcpNets,
     kind: Transport,
 }
 
 impl Nets {
     pub fn new(kind: Transport, n: usize) -> Self {
         #[cfg(not(feature = "tcp"))]
-        assert_eq!(kind, Transport::Mem, "build with --features tcp for the socket transport");
+        assert_eq!(
+            kind,
+            Transport::Mem,
+            "build with --features tcp for the socket transport"
+        );
         #[cfg(feature = "tcp")]
         let tcp = if kind == Transport::Tcp {
-            let ls: Vec<std::net::TcpListener> =
-                (0..n).map(|_| std::net::TcpListener::bind("127.0.0.1:0").expect("bind 127.0.0.1")).collect();
-            let addrs: Vec<std::net::SocketAddr> = ls.iter().map(|l| l.local_addr().unwrap()).collect();
+            let ls: Vec<std::net::TcpListener> = (0..n)
+                .map(|_| std::net::TcpListener::bind("127.0.0.1:0").expect("bind 127.0.0.1"))
+                .collect();
+            let addrs: Vec<std::net::SocketAddr> =
+                ls.iter().map(|l| l.local_addr().unwrap()).collect();
             ls.into_iter().map(|l| Some((l, addrs.clone()))).collect()
         } else {
             vec![]
         };
-        let mem = if kind == Transport::Mem { mem_mesh(n).into_iter().map(Some).collect() } else { vec![] };
+        let mem = if kind == Transport::Mem {
+            mem_mesh(n).into_iter().map(Some).collect()
+        } else {
+            vec![]
+        };
         Nets {
             mem: std::sync::Mutex::new(mem),
             #[cfg(feature = "tcp")]

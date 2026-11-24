@@ -264,7 +264,11 @@ pub fn output_bytes(code: u64, next: &StateWords, candidate: &RequestWords) -> [
 }
 
 pub fn parse_output(bytes: &[u8]) -> Result<(u64, StateWords, RequestWords)> {
-    ensure!(bytes.len() == OUTPUT_BYTES, "expected {OUTPUT_BYTES} output bytes, got {}", bytes.len());
+    ensure!(
+        bytes.len() == OUTPUT_BYTES,
+        "expected {OUTPUT_BYTES} output bytes, got {}",
+        bytes.len()
+    );
     let words: Vec<u64> = bytes
         .chunks_exact(8)
         .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
@@ -296,7 +300,11 @@ impl NativeBeltLatch {
     pub fn from_env(record: impl Into<PathBuf>) -> Option<Self> {
         std::env::var_os(NATIVE_ENV).map(|exe| Self::new(exe, record))
     }
-    pub fn run(&self, current: &StateWords, candidate: &RequestWords) -> Result<(u64, StateWords, RequestWords)> {
+    pub fn run(
+        &self,
+        current: &StateWords,
+        candidate: &RequestWords,
+    ) -> Result<(u64, StateWords, RequestWords)> {
         std::fs::write(&self.record, record_bytes(current, candidate))?;
         let out = Command::new(&self.exe)
             .arg(&self.record)
@@ -382,19 +390,68 @@ pub fn conformance_vectors() -> Vec<(LatchState, LatchRequest, Status)> {
             },
             Status::NonIncreasing,
         ),
-        (initial, LatchRequest { persist_ack: 0, ..advance }, Status::MissingAck),
-        (initial, LatchRequest { persist_ack: 2, ..advance }, Status::MissingAck),
-        (LatchState { initialized: 0, ..initial }, advance, Status::GenesisMismatch),
-        (LatchState { initialized: 2, ..initial }, advance, Status::GenesisMismatch),
+        (
+            initial,
+            LatchRequest {
+                persist_ack: 0,
+                ..advance
+            },
+            Status::MissingAck,
+        ),
+        (
+            initial,
+            LatchRequest {
+                persist_ack: 2,
+                ..advance
+            },
+            Status::MissingAck,
+        ),
+        (
+            LatchState {
+                initialized: 0,
+                ..initial
+            },
+            advance,
+            Status::GenesisMismatch,
+        ),
+        (
+            LatchState {
+                initialized: 2,
+                ..initial
+            },
+            advance,
+            Status::GenesisMismatch,
+        ),
     ];
     for d in flip(advance.genesis) {
-        v.push((initial, LatchRequest { genesis: d, ..advance }, Status::GenesisMismatch));
+        v.push((
+            initial,
+            LatchRequest {
+                genesis: d,
+                ..advance
+            },
+            Status::GenesisMismatch,
+        ));
     }
     for d in flip(advance.parent) {
-        v.push((initial, LatchRequest { parent: d, ..advance }, Status::ParentFork));
+        v.push((
+            initial,
+            LatchRequest {
+                parent: d,
+                ..advance
+            },
+            Status::ParentFork,
+        ));
     }
     for d in flip(advance.policy) {
-        v.push((initial, LatchRequest { policy: d, ..advance }, Status::PolicyDrift));
+        v.push((
+            initial,
+            LatchRequest {
+                policy: d,
+                ..advance
+            },
+            Status::PolicyDrift,
+        ));
     }
     v
 }
@@ -413,12 +470,18 @@ mod tests {
         let mut statuses = std::collections::BTreeSet::new();
         const LEAN: &[u8; 21 * (RECORD_BYTES + OUTPUT_BYTES)] =
             include_bytes!("../tests/fixtures/belt_latch_records.bin");
-        for ((s, r, want), fixture) in vectors.iter().zip(LEAN.chunks_exact(RECORD_BYTES + OUTPUT_BYTES)) {
+        for ((s, r, want), fixture) in vectors
+            .iter()
+            .zip(LEAN.chunks_exact(RECORD_BYTES + OUTPUT_BYTES))
+        {
             let (status, next) = step(s, r);
             assert_eq!(status, *want);
             let mut words = s.to_words();
             let req = r.to_words();
-            assert_eq!(record_bytes(&words, &req).as_slice(), &fixture[..RECORD_BYTES]);
+            assert_eq!(
+                record_bytes(&words, &req).as_slice(),
+                &fixture[..RECORD_BYTES]
+            );
             assert_eq!(step_words(&mut words, &req), want.code());
             assert_eq!(words, next.to_words());
             let mut expected = s.to_words();
@@ -441,7 +504,10 @@ mod tests {
         let (s, r, _) = conformance_vectors()[0];
         let flips = [1u64, 1 << 63, u64::MAX, 0x0123_4567_89ab_cdef];
         let mut seen = std::collections::BTreeSet::new();
-        for (sw, rw) in (0..STATE_WORDS).map(|i| (Some(i), None)).chain((0..REQUEST_WORDS).map(|i| (None, Some(i)))) {
+        for (sw, rw) in (0..STATE_WORDS)
+            .map(|i| (Some(i), None))
+            .chain((0..REQUEST_WORDS).map(|i| (None, Some(i))))
+        {
             for f in flips {
                 let mut state = s.to_words();
                 let mut req = r.to_words();
@@ -451,7 +517,10 @@ mod tests {
                 if let Some(i) = rw {
                     req[i] ^= f;
                 }
-                let (status, next) = step(&LatchState::from_words(&state), &LatchRequest::from_words(&req));
+                let (status, next) = step(
+                    &LatchState::from_words(&state),
+                    &LatchRequest::from_words(&req),
+                );
                 let before = state;
                 let code = step_words(&mut state, &req);
                 assert_eq!(code, status.code());
@@ -494,7 +563,21 @@ mod tests {
             x
         };
         // Request word -> the state word an accepting request copies.
-        let pairs = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (6, 6), (7, 7), (8, 8), (9, 9), (14, 10), (15, 11), (16, 12), (17, 13)];
+        let pairs = [
+            (0, 1),
+            (1, 2),
+            (2, 3),
+            (3, 4),
+            (4, 5),
+            (6, 6),
+            (7, 7),
+            (8, 8),
+            (9, 9),
+            (14, 10),
+            (15, 11),
+            (16, 12),
+            (17, 13),
+        ];
         for _ in 0..random {
             let mut s: StateWords = std::array::from_fn(|_| next());
             s[0] = if next() % 8 == 0 { next() % 3 } else { 1 };
@@ -533,7 +616,10 @@ mod tests {
                 "vector {i}: native ({ncode}, {nstate:?}) rust ({code}, {words:?})"
             );
             if i < 21 {
-                ensure!(code == conformance_vectors()[i].2.code(), "Lean status, vector {i}");
+                ensure!(
+                    code == conformance_vectors()[i].2.code(),
+                    "Lean status, vector {i}"
+                );
             }
             statuses[code as usize] += 1;
         }
@@ -555,6 +641,9 @@ mod tests {
         assert_eq!(digest_bytes(&l), d);
         let mut words = [0; REQUEST_WORDS];
         words[request::PARENT..request::PARENT + 4].copy_from_slice(&l);
-        assert_eq!(&request_bytes(&words)[8 * request::PARENT..8 * request::PARENT + 32], &d);
+        assert_eq!(
+            &request_bytes(&words)[8 * request::PARENT..8 * request::PARENT + 32],
+            &d
+        );
     }
 }

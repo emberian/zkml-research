@@ -30,7 +30,7 @@ use crate::cert::{
     HoistedSuccinctBundle, PersistentGridPcs,
 };
 use crate::dark_gdn::{
-    CustodianParty, PartyShare, SharedScalar, ThresholdPubKey, ThreeCustodianCluster,
+    CustodianParty, PartyShare, SharedScalar, ThreeCustodianCluster, ThresholdPubKey,
     NUM_CUSTODIANS,
 };
 use crate::digits::LiftMode;
@@ -397,7 +397,7 @@ pub fn setup_threshold_cluster_with_rlk(
     // Each custodian locally derives its own `(s_i, e_pk_i)` on its isolated RNG stream:
     let mut s_shares: [Vec<i64>; 3] = std::array::from_fn(|_| Vec::new());
     let mut b_check = vec![0u64; 3 * n];
-    for i in 0..3 {
+    for (i, s_share) in s_shares.iter_mut().enumerate() {
         let mut prng = {
             let mut s = seed;
             s[0] ^= (i as u8 + 1).wrapping_mul(0x5B);
@@ -417,7 +417,7 @@ pub fn setup_threshold_cluster_with_rlk(
                 b_check[k * n + j] = addmod(b_check[k * n + j], bi, qk);
             }
         }
-        s_shares[i] = s_i;
+        *s_share = s_i;
     }
     if b_check != cluster.pub_key.b_coeff {
         return Err("threshold RLK ceremony public-key consistency check failed".into());
@@ -477,10 +477,10 @@ pub fn setup_threshold_cluster_with_rlk(
             rns4.inv(&mut as_i);
             for k in 0..4 {
                 let qk = qs4[k];
-                for j in 0..n {
+                for (j, &ej) in e_i.iter().enumerate() {
                     let idx = k * n + j;
                     let term = mulmod(scale_k[k], s2_i_rns4[i][idx], qk);
-                    let rhs = addmod(term, from_i64(e_i[j], qk), qk);
+                    let rhs = addmod(term, from_i64(ej, qk), qk);
                     let bi = submod(rhs, as_i[idx], qk);
                     b_sum[idx] = addmod(b_sum[idx], bi, qk);
                 }
@@ -701,12 +701,10 @@ pub fn verify_and_ingest_pinned_persistent_bundle(
     let decoded = HoistedSuccinctBundle::from_bytes(proof_bytes, &cust.params)?;
     match decoded.a_pcs_meta {
         Some((_, _, _, _, ref aroot)) if aroot == expected_a_root => {}
-        _ => {
-            return Err(
-                "C8 ABORT: persistent A PCS root mismatch (cross-layer matrix substitution refused!)"
-                    .into(),
-            )
-        }
+        _ => return Err(
+            "C8 ABORT: persistent A PCS root mismatch (cross-layer matrix substitution refused!)"
+                .into(),
+        ),
     }
     cust.verify_and_ingest_succinct_bundle(
         ha_grid,
@@ -857,6 +855,8 @@ pub struct HomomorphicGdnState {
     pub logup_cfg: LogUpConfig,
 }
 
+pub type ParallelReadOutputs = (Vec<SharedScalar>, Vec<SharedScalar>, usize, usize, f64, f64);
+
 impl HomomorphicGdnState {
     /// Encrypt genesis `state_0` (`d_k x d_v`) into `Enc_{pk}(S_0^T)` (`d_v x d_k`) under `cluster.pub_key`
     /// using fresh OS CSPRNG randomness (`/dev/urandom`) and verify offline range proof on all 3 custodians.
@@ -898,7 +898,7 @@ impl HomomorphicGdnState {
 
         let dc = d_k.min(64).min(n / 2);
         let dr = d_v.min(n / dc);
-        assert!(dr * dc <= n && d_k % dc == 0 && d_v % dr == 0);
+        assert!(dr * dc <= n && d_k.is_multiple_of(dc) && d_v.is_multiple_of(dr));
         let r_gdn = d_v / dr;
         let k_gdn = d_k / dc;
 
@@ -924,7 +924,8 @@ impl HomomorphicGdnState {
             }
         }
         let mut rng = PcsRng::from_seed(enc_seed);
-        let enc_state_t_grid = pack_and_encrypt_matrix(&cluster.pub_key, &s0_t, d_v, d_k, dr, dc, &mut rng);
+        let enc_state_t_grid =
+            pack_and_encrypt_matrix(&cluster.pub_key, &s0_t, d_v, d_k, dr, dc, &mut rng);
         let h_state_t_grid: Vec<Vec<[u8; 32]>> = enc_state_t_grid
             .iter()
             .map(|r| r.iter().map(ct2_handle).collect())
@@ -933,7 +934,11 @@ impl HomomorphicGdnState {
         // Verify genesis ciphertexts via offline range proof so zero unverified ciphertext enters `verified_handles`:
         let (_, state_pcs) = commit_persistent_grid_pcs(&cluster.engine, &enc_state_t_grid, mode)?;
         for cust in &mut cluster.custodians {
-            cust.ingest_verified_persistent_grid(mode, &h_state_t_grid, &state_pcs.offline_range_proof)?;
+            cust.ingest_verified_persistent_grid(
+                mode,
+                &h_state_t_grid,
+                &state_pcs.offline_range_proof,
+            )?;
         }
 
         Ok(HomomorphicGdnState {
@@ -965,7 +970,7 @@ impl HomomorphicGdnState {
         hk_rev: &[[u8; 32]],
         q_rev_cts: &[Ct],
         hq_rev: &[[u8; 32]],
-    ) -> Result<(Vec<SharedScalar>, Vec<SharedScalar>, usize, usize, f64, f64), String> {
+    ) -> Result<ParallelReadOutputs, String> {
         let t_prv = Instant::now();
         let (mk_cts, mk_bundle, _, _) = prove_hoisted_succinct_bundle(
             &cluster.engine,
@@ -1053,17 +1058,18 @@ impl HomomorphicGdnState {
         hk_fwd: &[[u8; 32]],
     ) -> Result<StagedStateUpdate, String> {
         if self.turns_since_refresh + 1 >= self.refresh_cadence {
-            return self.prepare_noise_reset_crossing_update(
-                cluster, turn_idx, alpha_sh, u_eff_sh, k_sh,
-            );
+            return self
+                .prepare_noise_reset_crossing_update(cluster, turn_idx, alpha_sh, u_eff_sh, k_sh);
         }
 
         // 1. Custodians emit ONLY `1 + r_gdn` fresh `S2E` ciphertexts (`2` cts at `d_v = 128`!):
         //    - `ct_alpha`: constant monomial `alpha_t * X^0`
         //    - `ct_u_vec[rb]`: strided polynomial `sum_{r=0}^{dr-1} u_eff[rb*dr + r] * X^{r * dc}`
         let t_vfy0 = Instant::now();
-        let (ct_alpha, h_alpha) =
-            cluster.s2e_encrypt_slots(&[(0usize, alpha_sh)], &format!("homo_t{turn_idx}_s2e_alpha"))?;
+        let (ct_alpha, h_alpha) = cluster.s2e_encrypt_slots(
+            &[(0usize, alpha_sh)],
+            &format!("homo_t{turn_idx}_s2e_alpha"),
+        )?;
         let mut ct_u_vec = Vec::with_capacity(self.r_gdn);
         let mut hu_vec = Vec::with_capacity(self.r_gdn);
         for rb in 0..self.r_gdn {
@@ -1090,7 +1096,9 @@ impl HomomorphicGdnState {
                 // and `B_upd` is `[ct_alpha, ct_u_vec[rb]]` (`K_blk = 2`)!
                 for rb in 0..self.r_gdn {
                     let a_upd: Vec<Vec<Ct>> = (0..self.k_gdn)
-                        .map(|cb| vec![self.enc_state_t_grid[rb][cb].clone(), k_fwd_cts[cb].clone()])
+                        .map(|cb| {
+                            vec![self.enc_state_t_grid[rb][cb].clone(), k_fwd_cts[cb].clone()]
+                        })
                         .collect();
                     let ha_upd: Vec<Vec<[u8; 32]>> = (0..self.k_gdn)
                         .map(|cb| vec![self.h_state_t_grid[rb][cb], hk_fwd[cb]])
@@ -1119,10 +1127,8 @@ impl HomomorphicGdnState {
                     let h_ct3s: Vec<[u8; 32]> = upd_ct3s.iter().map(ct3_handle).collect();
                     let eng_ref = &cluster.engine;
                     let k_gdn = self.k_gdn;
-                    cluster
-                        .custodians
-                        .par_iter_mut()
-                        .try_for_each(|cust| -> Result<(), String> {
+                    cluster.custodians.par_iter_mut().try_for_each(
+                        |cust| -> Result<(), String> {
                             cust.verify_and_ingest_succinct_bundle(
                                 &ha_upd,
                                 &hb_upd,
@@ -1143,7 +1149,8 @@ impl HomomorphicGdnState {
                                 )?;
                             }
                             Ok(())
-                        })?;
+                        },
+                    )?;
                     cust_ms += t_v.elapsed().as_secs_f64() * 1e3;
 
                     for ct2 in relin_cts {
@@ -1348,10 +1355,10 @@ impl HomomorphicGdnState {
 
         let mut lhs_u = Vec::with_capacity(self.d_v * self.d_k);
         let mut rhs_k = Vec::with_capacity(self.d_v * self.d_k);
-        for j in 0..self.d_v {
-            for i in 0..self.d_k {
-                lhs_u.push(u_eff_sh[j]);
-                rhs_k.push(k_sh[i]);
+        for &u_sh in u_eff_sh {
+            for &k_val in k_sh {
+                lhs_u.push(u_sh);
+                rhs_k.push(k_val);
             }
         }
         let uk_outer = cluster.spdz_mul_batch(&lhs_u, &rhs_k);
@@ -1392,8 +1399,8 @@ impl HomomorphicGdnState {
                         let flat_pos = r_in * dc + c_in;
                         let j_glob = rb * dr + r_in;
                         let i_glob = cb * dc + c_in;
-                        let sum_sh =
-                            cluster.spdz_add(scaled_prev[flat_pos], uk_outer[j_glob * self.d_k + i_glob]);
+                        let sum_sh = cluster
+                            .spdz_add(scaled_prev[flat_pos], uk_outer[j_glob * self.d_k + i_glob]);
                         next_slots.push((block_slots[flat_pos], sum_sh));
                     }
                 }
@@ -1488,8 +1495,15 @@ impl HomomorphicDarkGdnResident {
             }
         }
         let mut rng = PcsRng::from_seed(os_csprng_seed32());
-        let enc_embed_grid =
-            pack_and_encrypt_matrix(&cluster.pub_key, &e_t, d_k, vocab_size, dr_pir, dc, &mut rng);
+        let enc_embed_grid = pack_and_encrypt_matrix(
+            &cluster.pub_key,
+            &e_t,
+            d_k,
+            vocab_size,
+            dr_pir,
+            dc,
+            &mut rng,
+        );
         let h_embed_grid: Vec<Vec<[u8; 32]>> = enc_embed_grid
             .iter()
             .map(|r| r.iter().map(ct2_handle).collect())
@@ -1535,7 +1549,8 @@ impl HomomorphicDarkGdnResident {
         let mut q_pir_plain = vec![0u64; self.vocab_size];
         q_pir_plain[token_id] = 1;
         let mut client_rng = PcsRng::from_seed(os_csprng_seed32());
-        let q_pir_cts = pack_and_encrypt_rev_vec(&cluster.pub_key, &q_pir_plain, dc, &mut client_rng);
+        let q_pir_cts =
+            pack_and_encrypt_rev_vec(&cluster.pub_key, &q_pir_plain, dc, &mut client_rng);
         let h_q_pir: Vec<[u8; 32]> = q_pir_cts.iter().map(ct2_handle).collect();
         for cust in &mut cluster.custodians {
             for ct_q in &q_pir_cts {
@@ -1601,30 +1616,34 @@ impl HomomorphicDarkGdnResident {
         let mut cust_read_ms = t_vfy0.elapsed().as_secs_f64() * 1e3;
 
         // 3. Parallel state read + SPDZ Householder crossing:
-        let (mk_sh, mq_sh, mk_len, mq_len, rd_prv_ms, rd_vfy_ms) = self
-            .gdn_state
-            .prove_and_cross_parallel_reads(cluster, turn_idx, &k_rev_cts, &hk_rev, &q_rev_cts, &hq_rev)?;
+        let (mk_sh, mq_sh, mk_len, mq_len, rd_prv_ms, rd_vfy_ms) =
+            self.gdn_state.prove_and_cross_parallel_reads(
+                cluster, turn_idx, &k_rev_cts, &hk_rev, &q_rev_cts, &hq_rev,
+            )?;
         host_read_ms += rd_prv_ms;
         cust_read_ms += rd_vfy_ms;
 
         let t_spdz = Instant::now();
         let alpha_sh = cluster.share_authenticated(alpha_t);
         let beta_sh = cluster.share_authenticated(beta_t);
-        let (y_sh, u_eff_sh) =
-            spdz_gdn_crossing_core(cluster, &q_sh, &k_sh, &v_sh, &mk_sh, &mq_sh, alpha_sh, beta_sh);
+        let (y_sh, u_eff_sh) = spdz_gdn_crossing_core(
+            cluster,
+            &SpdzGdnCrossingInputs {
+                q_sh: &q_sh,
+                k_sh: &k_sh,
+                v_sh: &v_sh,
+                mk_sh: &mk_sh,
+                mq_sh: &mq_sh,
+                alpha_sh,
+                beta_sh,
+            },
+        );
         cust_read_ms += t_spdz.elapsed().as_secs_f64() * 1e3;
 
         // 4. Stage In-BFV Homomorphic State Update (`&self.gdn_state`, zero mutation before output MAC check!):
         let t_upd = Instant::now();
         let staged_upd = self.gdn_state.prepare_state_update(
-            cluster,
-            rlk,
-            turn_idx,
-            alpha_sh,
-            &u_eff_sh,
-            &k_sh,
-            &k_fwd_cts,
-            &hk_fwd,
+            cluster, rlk, turn_idx, alpha_sh, &u_eff_sh, &k_sh, &k_fwd_cts, &hk_fwd,
         )?;
         let upd_tot_ms = t_upd.elapsed().as_secs_f64() * 1e3;
 
@@ -1680,16 +1699,29 @@ fn spdz_pub_matvec(
         .collect()
 }
 
-fn spdz_gdn_crossing_core(
-    cluster: &mut ThreeCustodianCluster,
-    q_sh: &[SharedScalar],
-    k_sh: &[SharedScalar],
-    v_sh: &[SharedScalar],
-    mk_sh: &[SharedScalar],
-    mq_sh: &[SharedScalar],
+struct SpdzGdnCrossingInputs<'a> {
+    q_sh: &'a [SharedScalar],
+    k_sh: &'a [SharedScalar],
+    v_sh: &'a [SharedScalar],
+    mk_sh: &'a [SharedScalar],
+    mq_sh: &'a [SharedScalar],
     alpha_sh: SharedScalar,
     beta_sh: SharedScalar,
+}
+
+fn spdz_gdn_crossing_core(
+    cluster: &mut ThreeCustodianCluster,
+    inputs: &SpdzGdnCrossingInputs<'_>,
 ) -> (Vec<SharedScalar>, Vec<SharedScalar>) {
+    let SpdzGdnCrossingInputs {
+        q_sh,
+        k_sh,
+        v_sh,
+        mk_sh,
+        mq_sh,
+        alpha_sh,
+        beta_sh,
+    } = *inputs;
     let d_v = v_sh.len();
     let alpha_rep = vec![alpha_sh; d_v];
     let beta_rep = vec![beta_sh; d_v];
@@ -1723,7 +1755,11 @@ fn spdz_gdn_crossing_core(
 /// satisfying `chi * s_ms * r_inv^2 == 1 (mod t)` with `r_inv in Q_t = (F_t^*)^2`.
 pub fn cleartext_r_inv_mod_t(fp_t: &FastPrime61, mut s_ms: u64) -> (u64, u64) {
     let t = fp_t.p;
-    assert_eq!(t % 4, 3, "cleartext_r_inv_mod_t requires Blum prime t == 3 (mod 4)");
+    assert_eq!(
+        t % 4,
+        3,
+        "cleartext_r_inv_mod_t requires Blum prime t == 3 (mod 4)"
+    );
     s_ms %= t;
     if s_ms == 0 {
         s_ms = 1;
@@ -1899,7 +1935,10 @@ pub fn spdz_rmsnorm_checked(
     let (chi_sh, r_inv_sh) = if u_open == 0 {
         // `s_ms == 0` fallback matching `cleartext_r_inv_mod_t`: shift `s_ms += 1` so `s_ms = 1, chi = 1, r_inv = 1`
         s_ms = cluster.spdz_add_public(1, s_ms);
-        (cluster.share_authenticated(1), cluster.share_authenticated(1))
+        (
+            cluster.share_authenticated(1),
+            cluster.share_authenticated(1),
+        )
     } else {
         let leg_u = fp_t.pow(u_open, (t - 1) / 2);
         let chi_u = if leg_u == 1 { 1 } else { t - 1 };
@@ -1954,7 +1993,8 @@ pub fn verify_spdz_rmsnorm_witness(
     let quad_chk = cluster.spdz_add_public(t - 1, prod);
 
     let c_qr_sq = cluster.spdz_mul_batch(&[c_qr], &[c_qr])[0];
-    let blinded = cluster.spdz_mul_batch(&[sign_chk, quad_chk, c_qr_sq], &[r_sign, r_quad, r_inv_sh]);
+    let blinded =
+        cluster.spdz_mul_batch(&[sign_chk, quad_chk, c_qr_sq], &[r_sign, r_quad, r_inv_sh]);
 
     let checks = cluster.spdz_open_batch(&blinded, "RMS_QUAD_CHECK");
     cluster.spdz_mac_check(label)?;
@@ -2040,8 +2080,7 @@ pub fn spdz_qwen_rmsnorm_gated_checked(
     test_seed: Option<[u8; 32]>,
     label: &str,
 ) -> Result<Vec<SharedScalar>, String> {
-    let y_norm =
-        spdz_rmsnorm_checked(cluster, y_sh, w_zero_centered_sh, eps, test_seed, label)?;
+    let y_norm = spdz_rmsnorm_checked(cluster, y_sh, w_zero_centered_sh, eps, test_seed, label)?;
     let z_silu = spdz_silu_batch(cluster, z_sh);
     Ok(cluster.spdz_mul_batch(&y_norm, &z_silu))
 }
@@ -2073,12 +2112,9 @@ pub fn spdz_gdn_gates(
 /// Cleartext reference for canonical Top-2 MoE routing (`notes/moe-router-binding.md` §1.2, §2.3 `C3`):
 /// - Tie-broken key `key_e = (logit_e mod t) * E_moe + (E_moe - 1 - e)` (lower expert index wins ties!);
 /// - Unnormalized positive gate `w_tilde_r = 1 + logit_{e_r^*}^2 (mod t)`, normalized `g_r = w_tilde_r / (w_tilde_0 + w_tilde_1) mod t`!
-pub fn cleartext_router_top2_mod_t(
-    fp_t: &FastPrime61,
-    logits: &[u64],
-) -> ([usize; 2], [u64; 2]) {
+pub fn cleartext_router_top2_mod_t(fp_t: &FastPrime61, logits: &[u64]) -> ([usize; 2], [u64; 2]) {
     let e_cnt = logits.len();
-    assert!(e_cnt >= 2 && e_cnt <= 16);
+    assert!((2..=16).contains(&e_cnt));
     let mut keyed: Vec<(u128, usize, u64)> = logits
         .iter()
         .enumerate()
@@ -2088,7 +2124,7 @@ pub fn cleartext_router_top2_mod_t(
             (key, e, lm)
         })
         .collect();
-    keyed.sort_by(|a, b| b.0.cmp(&a.0));
+    keyed.sort_by_key(|a| std::cmp::Reverse(a.0));
 
     let e0 = keyed[0].1;
     let e1 = keyed[1].1;
@@ -2127,10 +2163,10 @@ fn spdz_ripple_add_pub33(
         r_bits[0]
     };
 
-    for j in 1..33 {
+    for (j, &r_bit) in r_bits.iter().enumerate().skip(1) {
         let cj = (pub_val >> j) & 1;
-        let p = cluster.spdz_mul_batch(&[r_bits[j]], &[carry])[0];
-        let r_plus_c = cluster.spdz_add(r_bits[j], carry);
+        let p = cluster.spdz_mul_batch(&[r_bit], &[carry])[0];
+        let r_plus_c = cluster.spdz_add(r_bit, carry);
         let two_p = cluster.spdz_scale(2, p);
         if cj == 0 {
             s_bits.push(cluster.spdz_sub(r_plus_c, two_p));
@@ -2167,8 +2203,8 @@ fn spdz_bit_decompose_exact_t32(
         let exceeded = cluster.spdz_open_batch(&[exceeded_sh], "EDABIT_BOUND")[0];
         if exceeded == 0 {
             let mut acc = spdz_zero();
-            for j in 0..33 {
-                acc = cluster.spdz_add(acc, cluster.spdz_scale(1u64 << j, r_bits_cand[j]));
+            for (j, &r_bit) in r_bits_cand.iter().enumerate() {
+                acc = cluster.spdz_add(acc, cluster.spdz_scale(1u64 << j, r_bit));
             }
             break (acc, r_bits_cand);
         }
@@ -2198,8 +2234,8 @@ fn spdz_bit_decompose_exact_t32(
         .collect();
     let mut checks = cluster.spdz_mul_batch(&out_bits, &one_minus_b);
     let mut recon = spdz_zero();
-    for j in 0..33 {
-        recon = cluster.spdz_add(recon, cluster.spdz_scale(1u64 << j, out_bits[j]));
+    for (j, &out_bit) in out_bits.iter().enumerate() {
+        recon = cluster.spdz_add(recon, cluster.spdz_scale(1u64 << j, out_bit));
     }
     checks.push(cluster.spdz_sub(recon, val_sh));
     let opened = cluster.spdz_open_batch(&checks, "BITDEC_CHECK");
@@ -2278,7 +2314,7 @@ fn spdz_lagrange_eq_indicator(
 /// - `C1` Booleanity: `e_sel[r][e] * (1 - e_sel[r][e]) == 0` for all `r in {0, 1}, e in 0..E_moe`,
 /// - `C2` Exact 1-hot sum: `(sum_e e_sel[r][e]) - 1 == 0` for `r in {0, 1}`,
 /// - Disjointness (`e0* != e1*`): `e_sel[0][e] * e_sel[1][e] == 0` for all `e in 0..E_moe`,
-/// plus `spdz_mac_check`! Exposed publicly so adversarial falsifiers can test forged selectors directly!
+///   plus `spdz_mac_check`! Exposed publicly so adversarial falsifiers can test forged selectors directly!
 pub fn verify_spdz_top2_selector_constraints(
     cluster: &mut ThreeCustodianCluster,
     sel0: &[SharedScalar],
@@ -2333,7 +2369,7 @@ pub fn verify_spdz_top2_selector_constraints(
 /// Given secret-shared router logits `[logits[0..E_moe]]`, computes:
 /// - `sel0[0..E_moe]`, `sel1[0..E_moe]` (authenticated 1-hot Top-1 and Top-2 indicators), and
 /// - `[g0, g1]` (authenticated normalized Top-2 router gates satisfying `g0 + g1 == 1 mod t`),
-/// with **zero** expert index or logit leaked to the host or to any `<= 2` colluding custodians!
+///   with **zero** expert index or logit leaked to the host or to any `<= 2` colluding custodians!
 pub fn spdz_private_router_top2(
     cluster: &mut ThreeCustodianCluster,
     logits_sh: &[SharedScalar],
@@ -2341,7 +2377,7 @@ pub fn spdz_private_router_top2(
     label: &str,
 ) -> Result<([Vec<SharedScalar>; 2], [SharedScalar; 2]), String> {
     let e_cnt = logits_sh.len();
-    assert!(e_cnt >= 2 && e_cnt <= 16);
+    assert!((2..=16).contains(&e_cnt));
     let fp_t = cluster.params.fp_t;
     let t = fp_t.p;
     let mut party_rngs = make_party_mask_rngs(test_seed);
@@ -2374,9 +2410,9 @@ pub fn spdz_private_router_top2(
     // 3. Lagrange rank-0 (`Top-1`) and rank-1 (`Top-2`) 1-hot indicators + `C1`/`C2`/disjointness check:
     let mut sel0 = Vec::with_capacity(e_cnt);
     let mut sel1 = Vec::with_capacity(e_cnt);
-    for e in 0..e_cnt {
-        sel0.push(spdz_lagrange_eq_indicator(cluster, ranks[e], 0, e_cnt));
-        sel1.push(spdz_lagrange_eq_indicator(cluster, ranks[e], 1, e_cnt));
+    for &rank in &ranks {
+        sel0.push(spdz_lagrange_eq_indicator(cluster, rank, 0, e_cnt));
+        sel1.push(spdz_lagrange_eq_indicator(cluster, rank, 1, e_cnt));
     }
     verify_spdz_top2_selector_constraints(cluster, &sel0, &sel1, label)?;
 
@@ -2446,36 +2482,46 @@ pub struct QwenHybridWeights {
     pub num_experts: usize,
     pub d_ff: usize,
     pub rms_eps: u64,
-    pub embed_table: Vec<Vec<u64>>,      // V x d_model
-    pub w_rms1: Vec<u64>,                // d_model (zero-centered)
-    pub w_q: Vec<Vec<u64>>,              // d_k x d_model
-    pub w_k: Vec<Vec<u64>>,              // d_k x d_model
-    pub w_v: Vec<Vec<u64>>,              // d_v x d_model
-    pub w_z: Vec<Vec<u64>>,              // d_v x d_model
-    pub w_alpha: Vec<u64>,               // d_model
-    pub w_beta: Vec<u64>,                // d_model
-    pub w_gdn_rms: Vec<u64>,             // d_v (zero-centered)
-    pub w_gdn_out: Vec<Vec<u64>>,        // d_model x d_v
-    pub w_rms2: Vec<u64>,                // d_model (zero-centered)
-    pub w_router: Vec<Vec<u64>>,         // num_experts x d_model
+    pub embed_table: Vec<Vec<u64>>,        // V x d_model
+    pub w_rms1: Vec<u64>,                  // d_model (zero-centered)
+    pub w_q: Vec<Vec<u64>>,                // d_k x d_model
+    pub w_k: Vec<Vec<u64>>,                // d_k x d_model
+    pub w_v: Vec<Vec<u64>>,                // d_v x d_model
+    pub w_z: Vec<Vec<u64>>,                // d_v x d_model
+    pub w_alpha: Vec<u64>,                 // d_model
+    pub w_beta: Vec<u64>,                  // d_model
+    pub w_gdn_rms: Vec<u64>,               // d_v (zero-centered)
+    pub w_gdn_out: Vec<Vec<u64>>,          // d_model x d_v
+    pub w_rms2: Vec<u64>,                  // d_model (zero-centered)
+    pub w_router: Vec<Vec<u64>>,           // num_experts x d_model
     pub expert_w_gate: Vec<Vec<Vec<u64>>>, // [num_experts][d_ff][d_model]
     pub expert_w_up: Vec<Vec<Vec<u64>>>,   // [num_experts][d_ff][d_model]
     pub expert_w_down: Vec<Vec<Vec<u64>>>, // [num_experts][d_model][d_ff]
 }
 
+/// Shape specification for [`QwenHybridWeights::sample_deterministic`].
+#[derive(Clone, Copy, Debug)]
+pub struct QwenHybridShape {
+    pub vocab_size: usize,
+    pub d_model: usize,
+    pub d_k: usize,
+    pub d_v: usize,
+    pub num_experts: usize,
+    pub d_ff: usize,
+}
+
 impl QwenHybridWeights {
     /// Deterministic synthetic `Qwen3.8` hybrid-block weight generator with rich non-trivial structure
     /// ensuring distinct tokens exercise diverse Top-2 MoE expert pairs!
-    pub fn sample_deterministic(
-        fp_t: &FastPrime61,
-        vocab_size: usize,
-        d_model: usize,
-        d_k: usize,
-        d_v: usize,
-        num_experts: usize,
-        d_ff: usize,
-        seed: u64,
-    ) -> Self {
+    pub fn sample_deterministic(fp_t: &FastPrime61, shape: QwenHybridShape, seed: u64) -> Self {
+        let QwenHybridShape {
+            vocab_size,
+            d_model,
+            d_k,
+            d_v,
+            num_experts,
+            d_ff,
+        } = shape;
         let p = fp_t.p;
         let mut h = seed.wrapping_mul(0x9E3779B97F4A7C15).wrapping_add(1);
         fn draw_small(h: &mut u64, p: u64, span: u64) -> u64 {
@@ -2551,8 +2597,15 @@ pub fn cleartext_qwen_hybrid_block_step(
     let raw_b = fp_t.dot(&weights.w_beta, &x_norm);
     let (alpha_t, beta_t) = cleartext_gdn_gates_mod_t(fp_t, raw_a, raw_b);
 
-    let (y_t, gdn_state_next) =
-        crate::dark_gdn::cleartext_gdn_step_mod_t(fp_t, gdn_state_prev, &q_t, &k_t, &v_t, alpha_t, beta_t);
+    let (y_t, gdn_state_next) = crate::dark_gdn::cleartext_gdn_step_mod_t(
+        fp_t,
+        gdn_state_prev,
+        &q_t,
+        &k_t,
+        &v_t,
+        alpha_t,
+        beta_t,
+    );
     let y_gated =
         cleartext_qwen_rmsnorm_gated_mod_t(fp_t, &y_t, &z_t, &weights.w_gdn_rms, weights.rms_eps);
     let gdn_out = mv(&weights.w_gdn_out, &y_gated);
@@ -2642,8 +2695,10 @@ impl PersistentEncMat {
         let rows = mat.len();
         let cols = mat[0].len();
         let grid = pack_and_encrypt_matrix(&cluster.pub_key, mat, rows, cols, dr, dc, rng);
-        let handles: Vec<Vec<[u8; 32]>> =
-            grid.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+        let handles: Vec<Vec<[u8; 32]>> = grid
+            .iter()
+            .map(|r| r.iter().map(ct2_handle).collect())
+            .collect();
         let (pre, pcs) = commit_persistent_grid_pcs(&cluster.engine, &grid, mode)?;
         for cust in &mut cluster.custodians {
             cust.ingest_verified_persistent_grid(mode, &handles, &pcs.offline_range_proof)?;
@@ -2708,12 +2763,7 @@ impl PersistentEncMat {
             let slots: Vec<usize> = (0..valid_in_blk)
                 .map(|r| r * self.dc + (self.dc - 1))
                 .collect();
-            shares.extend(cluster.e2s_ct3(
-                &hout[rb],
-                ct_out,
-                &slots,
-                &format!("{tag}_r{rb}"),
-            )?);
+            shares.extend(cluster.e2s_ct3(&hout[rb], ct_out, &slots, &format!("{tag}_r{rb}"))?);
         }
         let vfy_ms = t_v.elapsed().as_secs_f64() * 1e3;
         Ok((shares, bytes.len(), prv_ms, vfy_ms))
@@ -2777,9 +2827,9 @@ impl EncryptedQwenHybridBlock {
 
         // 1. `E^T` (`d_model x V`):
         let mut e_t = vec![vec![0u64; weights.vocab_size]; weights.d_model];
-        for tok in 0..weights.vocab_size {
-            for i in 0..weights.d_model {
-                e_t[i][tok] = weights.embed_table[tok][i] % cluster.params.t;
+        for (tok, embed_row) in weights.embed_table.iter().enumerate() {
+            for (dst_row, &val) in e_t.iter_mut().zip(embed_row) {
+                dst_row[tok] = val % cluster.params.t;
             }
         }
         let enc_embed = PersistentEncMat::encrypt_and_commit(
@@ -2847,10 +2897,8 @@ impl EncryptedQwenHybridBlock {
 
         let mut down_mat = vec![vec![0u64; e_cnt * d_f]; d_m];
         for e in 0..e_cnt {
-            for r in 0..d_m {
-                for c in 0..d_f {
-                    down_mat[r][e * d_f + c] = weights.expert_w_down[e][r][c];
-                }
+            for (dst_row, src_row) in down_mat.iter_mut().zip(&weights.expert_w_down[e]) {
+                dst_row[e * d_f..(e + 1) * d_f].copy_from_slice(src_row);
             }
         }
         let enc_moe_down = PersistentEncMat::encrypt_and_commit(
@@ -2982,17 +3030,28 @@ impl EncryptedQwenHybridBlock {
             s2e_pack_fwd_vec(cluster, k_sh, dc, &format!("blk_t{turn_idx}_kfwd"))?;
         total_cust_ms += t_pre_gdn.elapsed().as_secs_f64() * 1e3;
 
-        let (mk_sh, mq_sh, mk_pb, mq_pb, rd_pms, rd_vms) = self
-            .gdn_state
-            .prove_and_cross_parallel_reads(cluster, turn_idx, &k_rev_cts, &hk_rev, &q_rev_cts, &hq_rev)?;
+        let (mk_sh, mq_sh, mk_pb, mq_pb, rd_pms, rd_vms) =
+            self.gdn_state.prove_and_cross_parallel_reads(
+                cluster, turn_idx, &k_rev_cts, &hk_rev, &q_rev_cts, &hq_rev,
+            )?;
         total_host_ms += rd_pms;
         total_cust_ms += rd_vms;
         total_proof_bytes += mk_pb + mq_pb;
         num_bundles += 2;
 
         let t_gdn_cross = Instant::now();
-        let (y_sh, u_eff_sh) =
-            spdz_gdn_crossing_core(cluster, q_sh, k_sh, v_sh, &mk_sh, &mq_sh, alpha_sh, beta_sh);
+        let (y_sh, u_eff_sh) = spdz_gdn_crossing_core(
+            cluster,
+            &SpdzGdnCrossingInputs {
+                q_sh,
+                k_sh,
+                v_sh,
+                mk_sh: &mk_sh,
+                mq_sh: &mq_sh,
+                alpha_sh,
+                beta_sh,
+            },
+        );
         let y_gated_sh = spdz_qwen_rmsnorm_gated_checked(
             cluster,
             &y_sh,
@@ -3009,14 +3068,7 @@ impl EncryptedQwenHybridBlock {
         // Stage In-BFV Homomorphic GDN State Update (`&self.gdn_state` — committed ONLY after final `open_verified_output`!):
         let t_upd = Instant::now();
         let staged_upd = self.gdn_state.prepare_state_update(
-            cluster,
-            rlk,
-            turn_idx,
-            alpha_sh,
-            &u_eff_sh,
-            k_sh,
-            &k_fwd_cts,
-            &hk_fwd,
+            cluster, rlk, turn_idx, alpha_sh, &u_eff_sh, k_sh, &k_fwd_cts, &hk_fwd,
         )?;
         let gdn_state_update_ms = t_upd.elapsed().as_secs_f64() * 1e3;
         total_host_ms += staged_upd.metrics.host_update_prove_ms;
@@ -3080,12 +3132,8 @@ impl EncryptedQwenHybridBlock {
 
         // 4b. 3-Party SPDZ Private-Router Top-2 Selection (`0` leaked expert IDs!) + Selector Encryption:
         let t_s4b = Instant::now();
-        let ([sel0_sh, sel1_sh], [g0_sh, g1_sh]) = spdz_private_router_top2(
-            cluster,
-            &logits_sh,
-            None,
-            &format!("blk_t{turn_idx}_top2"),
-        )?;
+        let ([sel0_sh, sel1_sh], [g0_sh, g1_sh]) =
+            spdz_private_router_top2(cluster, &logits_sh, None, &format!("blk_t{turn_idx}_top2"))?;
 
         // Emit explicit encrypted 1-hot expert selector ciphertexts `Enc_pk(e_sel^{(0)}), Enc_pk(e_sel^{(1)})`:
         let sel0_slots: Vec<(usize, SharedScalar)> = sel0_sh.iter().copied().enumerate().collect();
@@ -3162,8 +3210,12 @@ impl EncryptedQwenHybridBlock {
             .zip(&down1_kron)
             .map(|(&a, &b)| cluster.spdz_add(a, b))
             .collect();
-        let (zdown_cts, h_zdown) =
-            s2e_pack_rev_vec(cluster, &down_fused_sh, dc, &format!("blk_t{turn_idx}_zdown"))?;
+        let (zdown_cts, h_zdown) = s2e_pack_rev_vec(
+            cluster,
+            &down_fused_sh,
+            dc,
+            &format!("blk_t{turn_idx}_zdown"),
+        )?;
         total_cust_ms += t_s4d.elapsed().as_secs_f64() * 1e3;
 
         let (moe_out_sh, pb_d, pms_d, vms_d) = self.enc_moe_down.prove_and_cross(

@@ -14,7 +14,11 @@ pub fn sig(u: i64) -> i64 {
     u.div_euclid(4).clamp(-7, 7)
 }
 pub fn dsig(u: i64) -> i64 {
-    if (-28..32).contains(&u) { 1 } else { 0 }
+    if (-28..32).contains(&u) {
+        1
+    } else {
+        0
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -95,9 +99,15 @@ impl Default for Cfg {
             seed_init: 1,
             seed_order: 2,
             steps: 1000,
-            evals: vec![0, 25, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 3000, 4000],
+            evals: vec![
+                0, 25, 50, 100, 200, 300, 500, 750, 1000, 1500, 2000, 3000, 4000,
+            ],
             eval_n: 10000,
-            data: concat!(env!("CARGO_MANIFEST_DIR"), "/../../research/dark_learning_2026_11_06/data/mnist").into(),
+            data: concat!(
+                env!("CARGO_MANIFEST_DIR"),
+                "/../../research/dark_learning_2026_11_06/data/mnist"
+            )
+            .into(),
             lrmul: 1.0,
             lr1mul: 1.0,
             ce_tau: 0.0,
@@ -110,7 +120,15 @@ impl Cfg {
     /// The encoder's statistics from the training split: mu_k = floor((sum_k + n / 2) / n).
     pub fn with_means(mut self, m: &data::Mnist) -> Self {
         let n = m.train.n as u64;
-        self.mu = (0..784).map(|k| ((0..m.train.n).map(|t| m.train.img[t * 784 + k] as u64).sum::<u64>() + n / 2).div_euclid(n) as u8).collect();
+        self.mu = (0..784)
+            .map(|k| {
+                ((0..m.train.n)
+                    .map(|t| m.train.img[t * 784 + k] as u64)
+                    .sum::<u64>()
+                    + n / 2)
+                    .div_euclid(n) as u8
+            })
+            .collect();
         self
     }
     /// The step program this config trains (one S1: s1a must equal s1b).
@@ -158,7 +176,9 @@ pub fn encode(c: &Cfg, img: &[u8], label: u8) -> (Vec<i64>, Vec<i64>) {
                 // mean-centred: round(m (p - mu_k) / 255) clamped to [-7, 7], mu_k the training split's pixel mean
                 "mc" | "mc2" => {
                     let mm = if c.xenc == "mc" { 7 } else { 14 };
-                    (2 * mm * (p - c.mu[k] as i64) + 255).div_euclid(510).clamp(-7, 7)
+                    (2 * mm * (p - c.mu[k] as i64) + 255)
+                        .div_euclid(510)
+                        .clamp(-7, 7)
                 }
                 e => panic!("xenc {e}"),
             };
@@ -167,10 +187,18 @@ pub fn encode(c: &Cfg, img: &[u8], label: u8) -> (Vec<i64>, Vec<i64>) {
     if c.bias {
         x[c.tile * 784] = 7;
     }
-    let off = if c.rnd2 && c.s2 > 0 { 1i64 << (c.s2 - 1) } else { 0 };
+    let off = if c.rnd2 && c.s2 > 0 {
+        1i64 << (c.s2 - 1)
+    } else {
+        0
+    };
     let mut y = vec![0i64; c.d];
     for (i, yi) in y.iter_mut().enumerate().take(c.nout()) {
-        *yi = if i % 10 == label as usize { c.ypos } else { c.yneg } - off;
+        *yi = if i % 10 == label as usize {
+            c.ypos
+        } else {
+            c.yneg
+        } - off;
     }
     (x, y)
 }
@@ -245,51 +273,109 @@ pub struct Trace {
 }
 
 fn rnd3(c: &Cfg) -> i64 {
-    if c.rnd3 && c.s3 > 0 { 1i64 << (c.s3 - 1) } else { 0 }
+    if c.rnd3 && c.s3 > 0 {
+        1i64 << (c.s3 - 1)
+    } else {
+        0
+    }
 }
 
 /// The scalar step, written exactly as step_spec.step (dense, no shortcuts). W updated in place.
 pub fn reference_step(c: &Cfg, w1: &mut [i64], w2: &mut [i64], x: &[i64], y: &[i64]) -> Trace {
     let d = c.d;
-    let z1: Vec<i64> = (0..d).map(|i| (0..d).map(|j| w1[i * d + j] * x[j]).sum()).collect();
+    let z1: Vec<i64> = (0..d)
+        .map(|i| (0..d).map(|j| w1[i * d + j] * x[j]).sum())
+        .collect();
     let u1: Vec<i64> = z1.iter().map(|z| z >> c.s1a).collect();
     let h: Vec<i64> = u1.iter().map(|&u| sig(u)).collect();
     let g1: Vec<i64> = u1.iter().map(|&u| dsig(u)).collect();
-    let z2: Vec<i64> = (0..d).map(|i| (0..d).map(|j| w2[i * d + j] * h[j]).sum()).collect();
+    let z2: Vec<i64> = (0..d)
+        .map(|i| (0..d).map(|j| w2[i * d + j] * h[j]).sum())
+        .collect();
     let e: Vec<i64> = z2.iter().zip(y).map(|(z, yy)| (z >> c.s1b) - yy).collect();
     let d2: Vec<i64> = e.iter().map(|v| v >> c.s2).collect();
-    let b: Vec<i64> = (0..d).map(|j| (0..d).map(|i| w2[i * d + j] * d2[i]).sum()).collect();
+    let b: Vec<i64> = (0..d)
+        .map(|j| (0..d).map(|i| w2[i * d + j] * d2[i]).sum())
+        .collect();
     let r3 = rnd3(c);
-    let d1: Vec<i64> = b.iter().zip(&g1).map(|(bb, g)| (bb * g + r3) >> c.s3).collect();
+    let d1: Vec<i64> = b
+        .iter()
+        .zip(&g1)
+        .map(|(bb, g)| (bb * g + r3) >> c.s3)
+        .collect();
     for i in 0..d {
         for j in 0..d {
             w2[i * d + j] -= d2[i] * h[j];
             w1[i * d + j] -= d1[i] * x[j];
         }
     }
-    Trace { z1, u1, h, g1, z2, e, d2, b, d1 }
+    Trace {
+        z1,
+        u1,
+        h,
+        g1,
+        z2,
+        e,
+        d2,
+        b,
+        d1,
+    }
 }
 
 /// The same step, fast: sparse in x and in d2 / d1 (zero entries contribute exactly zero), rows in parallel.
-pub fn fast_step(c: &Cfg, w1: &mut [i64], w2: &mut [i64], x: &[i64], y: &[i64], bd: &mut Bounds) -> Trace {
+pub fn fast_step(
+    c: &Cfg,
+    w1: &mut [i64],
+    w2: &mut [i64],
+    x: &[i64],
+    y: &[i64],
+    bd: &mut Bounds,
+) -> Trace {
     let d = c.d;
-    let nz: Vec<(usize, i64)> = x.iter().enumerate().filter(|(_, &v)| v != 0).map(|(k, &v)| (k, v)).collect();
-    let z1: Vec<i64> = w1.par_chunks(d).map(|r| nz.iter().map(|&(k, v)| r[k] * v).sum()).collect();
+    let nz: Vec<(usize, i64)> = x
+        .iter()
+        .enumerate()
+        .filter(|(_, &v)| v != 0)
+        .map(|(k, &v)| (k, v))
+        .collect();
+    let z1: Vec<i64> = w1
+        .par_chunks(d)
+        .map(|r| nz.iter().map(|&(k, v)| r[k] * v).sum())
+        .collect();
     let u1: Vec<i64> = z1.iter().map(|z| z >> c.s1a).collect();
     let h: Vec<i64> = u1.iter().map(|&u| sig(u)).collect();
     let g1: Vec<i64> = u1.iter().map(|&u| dsig(u)).collect();
-    let hz: Vec<(usize, i64)> = h.iter().enumerate().filter(|(_, &v)| v != 0).map(|(k, &v)| (k, v)).collect();
-    let z2: Vec<i64> = w2.par_chunks(d).map(|r| hz.iter().map(|&(k, v)| r[k] * v).sum()).collect();
+    let hz: Vec<(usize, i64)> = h
+        .iter()
+        .enumerate()
+        .filter(|(_, &v)| v != 0)
+        .map(|(k, &v)| (k, v))
+        .collect();
+    let z2: Vec<i64> = w2
+        .par_chunks(d)
+        .map(|r| hz.iter().map(|&(k, v)| r[k] * v).sum())
+        .collect();
     let e: Vec<i64> = z2.iter().zip(y).map(|(z, yy)| (z >> c.s1b) - yy).collect();
     let d2: Vec<i64> = e.iter().map(|v| v >> c.s2).collect();
-    let dz: Vec<(usize, i64)> = d2.iter().enumerate().filter(|(_, &v)| v != 0).map(|(k, &v)| (k, v)).collect();
+    let dz: Vec<(usize, i64)> = d2
+        .iter()
+        .enumerate()
+        .filter(|(_, &v)| v != 0)
+        .map(|(k, &v)| (k, v))
+        .collect();
     let mut b = vec![0i64; d];
     for &(i, v) in &dz {
         let r = &w2[i * d..(i + 1) * d];
-        b.par_iter_mut().zip(r.par_iter()).for_each(|(bb, &w)| *bb += w * v);
+        b.par_iter_mut()
+            .zip(r.par_iter())
+            .for_each(|(bb, &w)| *bb += w * v);
     }
     let r3 = rnd3(c);
-    let d1: Vec<i64> = b.iter().zip(&g1).map(|(bb, g)| (bb * g + r3) >> c.s3).collect();
+    let d1: Vec<i64> = b
+        .iter()
+        .zip(&g1)
+        .map(|(bb, g)| (bb * g + r3) >> c.s3)
+        .collect();
     // bounds, before the update (they are the step's openings)
     let (lim1, lim2, lim3) = (1i64 << c.k1, 1i64 << c.k2, 1i64 << c.k3);
     for j in 0..d {
@@ -307,17 +393,33 @@ pub fn fast_step(c: &Cfg, w1: &mut [i64], w2: &mut [i64], x: &[i64], y: &[i64], 
         bd.max_bg = bd.max_bg.max(bgv.abs());
         bd.v_bg += !(-lim3..lim3).contains(&bgv) as u64;
     }
-    w2.par_chunks_mut(d).zip(d2.par_iter()).filter(|(_, &v)| v != 0).for_each(|(r, &v)| {
-        for &(k, hv) in &hz {
-            r[k] -= v * hv;
-        }
-    });
-    w1.par_chunks_mut(d).zip(d1.par_iter()).filter(|(_, &v)| v != 0).for_each(|(r, &v)| {
-        for &(k, xv) in &nz {
-            r[k] -= v * xv;
-        }
-    });
-    Trace { z1, u1, h, g1, z2, e, d2, b, d1 }
+    w2.par_chunks_mut(d)
+        .zip(d2.par_iter())
+        .filter(|(_, &v)| v != 0)
+        .for_each(|(r, &v)| {
+            for &(k, hv) in &hz {
+                r[k] -= v * hv;
+            }
+        });
+    w1.par_chunks_mut(d)
+        .zip(d1.par_iter())
+        .filter(|(_, &v)| v != 0)
+        .for_each(|(r, &v)| {
+            for &(k, xv) in &nz {
+                r[k] -= v * xv;
+            }
+        });
+    Trace {
+        z1,
+        u1,
+        h,
+        g1,
+        z2,
+        e,
+        d2,
+        b,
+        d1,
+    }
 }
 
 /// Class scores from a forward pass: per class, the sum over its rows of o = z2 >> s1b (and of z2 itself).
@@ -368,7 +470,12 @@ pub fn evaluate(c: &Cfg, w1: &[i64], w2: &[i64], m: &data::Split, n: usize) -> E
         .into_par_iter()
         .map(|t| {
             let (x, _) = encode(c, m.image(t), m.lab[t]);
-            let nz: Vec<(usize, i64)> = x.iter().enumerate().filter(|(_, &v)| v != 0).map(|(k, &v)| (k, v)).collect();
+            let nz: Vec<(usize, i64)> = x
+                .iter()
+                .enumerate()
+                .filter(|(_, &v)| v != 0)
+                .map(|(k, &v)| (k, v))
+                .collect();
             let mut bd = Bounds::default();
             let mut h = vec![0i64; d];
             for j in 0..d {
@@ -394,7 +501,10 @@ pub fn evaluate(c: &Cfg, w1: &[i64], w2: &[i64], m: &data::Split, n: usize) -> E
             (correct(&so, l), correct(&sz, l), am == l as usize, tie, bd)
         })
         .collect();
-    let mut ev = Eval { n, ..Default::default() };
+    let mut ev = Eval {
+        n,
+        ..Default::default()
+    };
     for (a, b, cc, t, bd) in &res {
         ev.acc_o += *a as u8 as f64;
         ev.acc_z2 += *b as u8 as f64;
@@ -407,7 +517,12 @@ pub fn evaluate(c: &Cfg, w1: &[i64], w2: &[i64], m: &data::Split, n: usize) -> E
         e.v_z1 += bd.v_z1;
         e.v_z2 += bd.v_z2;
     }
-    for v in [&mut ev.acc_o, &mut ev.acc_z2, &mut ev.acc_o_argmax, &mut ev.ties_o] {
+    for v in [
+        &mut ev.acc_o,
+        &mut ev.acc_z2,
+        &mut ev.acc_o_argmax,
+        &mut ev.ties_o,
+    ] {
         *v /= n as f64;
     }
     ev
@@ -428,7 +543,11 @@ pub struct Point {
 }
 
 /// Train under cfg, evaluating at cfg.evals; returns the curve and the final weights.
-pub fn train(c: &Cfg, m: &data::Mnist, mut on_point: impl FnMut(&Point)) -> (Vec<Point>, Vec<i64>, Vec<i64>) {
+pub fn train(
+    c: &Cfg,
+    m: &data::Mnist,
+    mut on_point: impl FnMut(&Point),
+) -> (Vec<Point>, Vec<i64>, Vec<i64>) {
     let t0 = std::time::Instant::now();
     let (mut w1, mut w2) = init(c);
     let ord = order(c.seed_order, m.train.n);
@@ -440,7 +559,17 @@ pub fn train(c: &Cfg, m: &data::Mnist, mut on_point: impl FnMut(&Point)) -> (Vec
             let mut ev = evaluate(c, &w1, &w2, &m.test, c.eval_n);
             ev.bounds.max_w1 = maxabs(&w1);
             ev.bounds.max_w2 = maxabs(&w2);
-            let p = Point { step: s, eval: ev, online: if seen > 0 { ok as f64 / seen as f64 } else { 0.0 }, train_bounds: bd.clone(), secs: t0.elapsed().as_secs_f64() };
+            let p = Point {
+                step: s,
+                eval: ev,
+                online: if seen > 0 {
+                    ok as f64 / seen as f64
+                } else {
+                    0.0
+                },
+                train_bounds: bd.clone(),
+                secs: t0.elapsed().as_secs_f64(),
+            };
             on_point(&p);
             pts.push(p);
             ok = 0;
@@ -463,21 +592,39 @@ pub fn train(c: &Cfg, m: &data::Mnist, mut on_point: impl FnMut(&Point)) -> (Vec
 /// h = clamp(u / 4, -7, 7), g = [-28 <= u < 32], o = v2 h (v2 = W2 / 2^s1b), e = o - y,
 /// v2 -= lr2 e h^T, v1 -= lr1 ((v2^T e) g / 4) x^T, with the integer program's matched rates times lrmul:
 /// lr2 = 2^-(s1b + s2), lr1 = 4 * 2^(s1b - s1a - s2 - s3).
-pub fn train_float(c: &Cfg, m: &data::Mnist, mut on_point: impl FnMut(usize, f64, f64)) -> Vec<(usize, f64)> {
+pub fn train_float(
+    c: &Cfg,
+    m: &data::Mnist,
+    mut on_point: impl FnMut(usize, f64, f64),
+) -> Vec<(usize, f64)> {
     let d = c.d;
     let (w1i, w2i) = init(c);
     let (f1, f2) = (2f64.powi(-(c.s1a as i32)), 2f64.powi(-(c.s1b as i32)));
     let mut v1: Vec<f64> = w1i.iter().map(|&w| w as f64 * f1).collect();
     let mut v2: Vec<f64> = w2i.iter().map(|&w| w as f64 * f2).collect();
     let lr2 = c.lrmul * 2f64.powi(-((c.s1b + c.s2) as i32));
-    let lr1 = c.lrmul * c.lr1mul * 4.0 * 2f64.powi(c.s1b as i32 - c.s1a as i32 - c.s2 as i32 - c.s3 as i32);
+    let lr1 = c.lrmul
+        * c.lr1mul
+        * 4.0
+        * 2f64.powi(c.s1b as i32 - c.s1a as i32 - c.s2 as i32 - c.s3 as i32);
     let ord = order(c.seed_order, m.train.n);
     let no = c.nout();
     let fwd = |v1: &[f64], v2: &[f64], x: &[i64]| -> (Vec<f64>, Vec<f64>, Vec<f64>) {
-        let nz: Vec<(usize, f64)> = x.iter().enumerate().filter(|(_, &v)| v != 0).map(|(k, &v)| (k, v as f64)).collect();
-        let u: Vec<f64> = v1.par_chunks(d).map(|r| nz.iter().map(|&(k, v)| r[k] * v).sum()).collect();
+        let nz: Vec<(usize, f64)> = x
+            .iter()
+            .enumerate()
+            .filter(|(_, &v)| v != 0)
+            .map(|(k, &v)| (k, v as f64))
+            .collect();
+        let u: Vec<f64> = v1
+            .par_chunks(d)
+            .map(|r| nz.iter().map(|&(k, v)| r[k] * v).sum())
+            .collect();
         let h: Vec<f64> = u.iter().map(|&u| (u / 4.0).clamp(-7.0, 7.0)).collect();
-        let o: Vec<f64> = v2[..no * d].par_chunks(d).map(|r| r.iter().zip(&h).map(|(a, b)| a * b).sum()).collect();
+        let o: Vec<f64> = v2[..no * d]
+            .par_chunks(d)
+            .map(|r| r.iter().zip(&h).map(|(a, b)| a * b).sum())
+            .collect();
         (u, h, o)
     };
     let acc = |v1: &[f64], v2: &[f64]| -> f64 {
@@ -485,11 +632,25 @@ pub fn train_float(c: &Cfg, m: &data::Mnist, mut on_point: impl FnMut(usize, f64
             .into_par_iter()
             .map(|t| {
                 let (x, _) = encode(c, m.test.image(t), m.test.lab[t]);
-                let nz: Vec<(usize, f64)> = x.iter().enumerate().filter(|(_, &v)| v != 0).map(|(k, &v)| (k, v as f64)).collect();
-                let h: Vec<f64> = v1.chunks(d).map(|r| (nz.iter().map(|&(k, v)| r[k] * v).sum::<f64>() / 4.0).clamp(-7.0, 7.0)).collect();
+                let nz: Vec<(usize, f64)> = x
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, &v)| v != 0)
+                    .map(|(k, &v)| (k, v as f64))
+                    .collect();
+                let h: Vec<f64> = v1
+                    .chunks(d)
+                    .map(|r| {
+                        (nz.iter().map(|&(k, v)| r[k] * v).sum::<f64>() / 4.0).clamp(-7.0, 7.0)
+                    })
+                    .collect();
                 let mut s = [0f64; 10];
                 for i in 0..no {
-                    s[i % 10] += v2[i * d..(i + 1) * d].iter().zip(&h).map(|(a, b)| a * b).sum::<f64>();
+                    s[i % 10] += v2[i * d..(i + 1) * d]
+                        .iter()
+                        .zip(&h)
+                        .map(|(a, b)| a * b)
+                        .sum::<f64>();
                 }
                 let l = m.test.lab[t] as usize;
                 (0..10).all(|k| k == l || s[l] > s[k]) as usize
@@ -517,23 +678,41 @@ pub fn train_float(c: &Cfg, m: &data::Mnist, mut on_point: impl FnMut(usize, f64
             let mx = o.iter().cloned().fold(f64::MIN, f64::max);
             let ex: Vec<f64> = o.iter().map(|v| ((v - mx) / c.ce_tau).exp()).collect();
             let z: f64 = ex.iter().sum();
-            (0..no).map(|i| c.ypos as f64 * (ex[i] / z - (i % 10 == m.train.lab[k] as usize) as u8 as f64)).collect()
+            (0..no)
+                .map(|i| {
+                    c.ypos as f64 * (ex[i] / z - (i % 10 == m.train.lab[k] as usize) as u8 as f64)
+                })
+                .collect()
         } else {
             (0..no).map(|i| o[i] - y[i] as f64).collect()
         };
         let mut b = vec![0f64; d];
         for i in 0..no {
             let r = &v2[i * d..(i + 1) * d];
-            b.par_iter_mut().zip(r.par_iter()).for_each(|(bb, &w)| *bb += w * e[i]);
+            b.par_iter_mut()
+                .zip(r.par_iter())
+                .for_each(|(bb, &w)| *bb += w * e[i]);
         }
-        v2[..no * d].par_chunks_mut(d).enumerate().for_each(|(i, r)| {
-            for j in 0..d {
-                r[j] -= lr2 * e[i] * h[j];
-            }
-        });
-        let nz: Vec<(usize, f64)> = x.iter().enumerate().filter(|(_, &v)| v != 0).map(|(k, &v)| (k, v as f64)).collect();
+        v2[..no * d]
+            .par_chunks_mut(d)
+            .enumerate()
+            .for_each(|(i, r)| {
+                for j in 0..d {
+                    r[j] -= lr2 * e[i] * h[j];
+                }
+            });
+        let nz: Vec<(usize, f64)> = x
+            .iter()
+            .enumerate()
+            .filter(|(_, &v)| v != 0)
+            .map(|(k, &v)| (k, v as f64))
+            .collect();
         v1.par_chunks_mut(d).enumerate().for_each(|(j, r)| {
-            let g = if (-28.0..32.0).contains(&u[j]) { 1.0 } else { 0.0 };
+            let g = if (-28.0..32.0).contains(&u[j]) {
+                1.0
+            } else {
+                0.0
+            };
             let dj = lr1 * b[j] * g / 4.0;
             if dj != 0.0 {
                 for &(k, xv) in &nz {

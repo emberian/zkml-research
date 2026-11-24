@@ -4,11 +4,23 @@ use pycompat::{PyRandom, ReprHasher};
 use std::process::Command;
 use std::sync::Arc;
 
-const HARNESS: &str = concat!(env!("CARGO_MANIFEST_DIR"), "/../../research/dark_learning_2026_11_06");
+const HARNESS: &str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../research/dark_learning_2026_11_06"
+);
 
 fn py(code: &str) -> String {
-    let out = Command::new("python3").current_dir(HARNESS).arg("-c").arg(code).output().unwrap();
-    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    let out = Command::new("python3")
+        .current_dir(HARNESS)
+        .arg("-c")
+        .arg(code)
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
     String::from_utf8(out.stdout).unwrap().trim().to_string()
 }
 
@@ -35,7 +47,8 @@ fn h_u64(v: &[u64]) -> String {
 fn keys_encrypt_return_decrypt_match() {
     let (n, l, fbits) = (256usize, 3usize, 100u32);
     let pr = arith::ntt_primes(61, l + 1, 2 * n as u64);
-    let want = py(&format!(r#"
+    let want = py(&format!(
+        r#"
 import hashlib, math, random
 import bfv_ref as bfv, he_matvec as HM
 N, L = {n}, {l}
@@ -53,7 +66,8 @@ F = 1 << {fbits}
 c0 = [(x + y + (2 * Q * bfv.centered(mm, t) + t) // (2 * t) + rg.randint(-F, F)) % Q for x, y, mm in zip(acc[0], z0[0], M)]
 c1 = [(x + y) % Q for x, y in zip(acc[1], z0[1])]
 print(pr, H(k.pk[0]), H(k.pk[1]), H(ct[0]), H(ct[1]), H(k.sch.decrypt(ct)), H(M), H(c0), H(c1), H(k.sch.decrypt((c0, c1))))
-"#));
+"#
+    ));
     let rns = Arc::new(Rns::new(n, &pr[..l], pr[l]));
     let mut k = bfv::OwnKey::new(rns.clone(), 101);
     let t = rns.t;
@@ -91,5 +105,8 @@ print(pr, H(k.pk[0]), H(k.pk[1]), H(ct[0]), H(ct[1]), H(k.sch.decrypt(ct)), H(M)
     // negative control: a different returner stream must change the reply
     let mut rg2 = darkstep::coins::Coins::Py(PyRandom::from_str_seed("ho|13|1|0|1|0|0|mac"));
     let (ret2, _) = bfv::make_return(&rns, &k.pk, (&a0, &a1), &mut rg2, fbits);
-    assert_ne!(h_big(&rns.poly_big(&ret2.c0)), h_big(&rns.poly_big(&ret.c0)));
+    assert_ne!(
+        h_big(&rns.poly_big(&ret2.c0)),
+        h_big(&rns.poly_big(&ret.c0))
+    );
 }

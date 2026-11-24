@@ -18,7 +18,17 @@ use std::path::PathBuf;
 fn roots(v: &Value) -> BTreeMap<String, Vec<Hash>> {
     ["W1", "W2"]
         .iter()
-        .map(|k| (k.to_string(), v[*k].as_array().unwrap().iter().map(|h| unhex32(h.as_str().unwrap()).unwrap()).collect()))
+        .map(|k| {
+            (
+                k.to_string(),
+                v[*k]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|h| unhex32(h.as_str().unwrap()).unwrap())
+                    .collect(),
+            )
+        })
         .collect()
 }
 
@@ -28,11 +38,17 @@ fn handover_rotations_equal_python() {
         .expect("set HANDOVER_VECTORS to the HANDOVER_DUMP directories of run_handover.py (see the file header)");
     let mut checked = 0;
     for dir in dirs.split(':').map(PathBuf::from) {
-        let meta: Value = serde_json::from_str(&std::fs::read_to_string(dir.join("rotations.json")).unwrap()).unwrap();
+        let meta: Value =
+            serde_json::from_str(&std::fs::read_to_string(dir.join("rotations.json")).unwrap())
+                .unwrap();
         let pr = Profile::by_name(meta["profile"].as_str().unwrap()).unwrap();
         let d = meta["d"].as_u64().unwrap() as usize;
         let model = meta["model"].as_str().unwrap();
-        let tmp = std::env::temp_dir().join(format!("dl-handover-test-{}-{}", std::process::id(), pr.name));
+        let tmp = std::env::temp_dir().join(format!(
+            "dl-handover-test-{}-{}",
+            std::process::id(),
+            pr.name
+        ));
         std::fs::create_dir_all(&tmp).unwrap();
         let mut honest: Option<(Vec<u8>, String)> = None;
         for (i, rot) in meta["rotations"].as_array().unwrap().iter().enumerate() {
@@ -40,8 +56,12 @@ fn handover_rotations_equal_python() {
             let path = tmp.join(format!("r{i}.ledger"));
             std::fs::write(&path, rot["ledger_before"].as_str().unwrap()).unwrap();
             let mut lg = Ledger::open(&path, model, &pr, None).unwrap();
-            let cust: Vec<String> =
-                rot["custodians"].as_array().unwrap().iter().map(|c| c.as_str().unwrap().to_string()).collect();
+            let cust: Vec<String> = rot["custodians"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|c| c.as_str().unwrap().to_string())
+                .collect();
             let blob = match rot["bytes"].as_str() {
                 Some(f) => std::fs::read(dir.join(f)).unwrap(),
                 None => Vec::new(),
@@ -64,14 +84,38 @@ fn handover_rotations_equal_python() {
                 secs,
                 why
             );
-            assert_eq!((ok, why.as_str()), (py_ok, py_why), "{name}: native verdict differs from Python's");
+            assert_eq!(
+                (ok, why.as_str()),
+                (py_ok, py_why),
+                "{name}: native verdict differs from Python's"
+            );
             let after = std::fs::read_to_string(&path).unwrap();
-            assert_eq!(after, rot["ledger_after"].as_str().unwrap(), "{name}: ledger file differs from Python's");
+            assert_eq!(
+                after,
+                rot["ledger_after"].as_str().unwrap(),
+                "{name}: ledger file differs from Python's"
+            );
             if ok {
                 // under cut E the schema depends on whether the head was pending (the ledger before the rotation)
-                let was_pending = Ledger::open(&{ let q = tmp.join("pre.ledger"); std::fs::write(&q, rot["ledger_before"].as_str().unwrap()).unwrap(); q }, model, &pr, None).unwrap().pending.is_some();
-                let dp = if pr.defer { handover::decode_defer(&pr, &blob, d, 3, 3, was_pending) } else { handover::decode(&pr, &blob, d, 3, 3) }
-                    .expect("an accepted proof decodes");
+                let was_pending = Ledger::open(
+                    &{
+                        let q = tmp.join("pre.ledger");
+                        std::fs::write(&q, rot["ledger_before"].as_str().unwrap()).unwrap();
+                        q
+                    },
+                    model,
+                    &pr,
+                    None,
+                )
+                .unwrap()
+                .pending
+                .is_some();
+                let dp = if pr.defer {
+                    handover::decode_defer(&pr, &blob, d, 3, 3, was_pending)
+                } else {
+                    handover::decode(&pr, &blob, d, 3, 3)
+                }
+                .expect("an accepted proof decodes");
                 assert_eq!(blob.len(), handover::byte_len(&pr, d, &dp), "schema length");
                 honest = Some((blob, rot["ledger_before"].as_str().unwrap().to_string()));
             }
@@ -89,15 +133,23 @@ fn handover_rotations_equal_python() {
         let mut ctx = lg.handover_context(&cust);
         let t = std::time::Instant::now();
         let pend = lg.pending.clone();
-        let ver = |ctx: &darkproof::handover::HandoverCtx, parent: &BTreeMap<String, Vec<Hash>>| -> Result<BTreeMap<String, Vec<Hash>>, String> {
+        let ver = |ctx: &darkproof::handover::HandoverCtx,
+                   parent: &BTreeMap<String, Vec<Hash>>|
+         -> Result<BTreeMap<String, Vec<Hash>>, String> {
             if pr.defer {
-                handover::verify_defer(&pr, &lp, d, 3, 3, ctx, parent, pend.as_ref(), &hb).map(|(r, _)| r)
+                handover::verify_defer(&pr, &lp, d, 3, 3, ctx, parent, pend.as_ref(), &hb)
+                    .map(|(r, _)| r)
             } else {
                 handover::verify(&pr, &lp, d, 3, 3, ctx, parent, &hb)
             }
         };
         let nr = ver(&ctx, &lg.parent).expect("honest bytes accept");
-        println!("[{}] native verify of the honest {} bytes: {:.3}s", pr.name, hb.len(), t.elapsed().as_secs_f64());
+        println!(
+            "[{}] native verify of the honest {} bytes: {:.3}s",
+            pr.name,
+            hb.len(),
+            t.elapsed().as_secs_f64()
+        );
         ctx.epoch_new += 1;
         assert!(ver(&ctx, &lg.parent).is_err(), "other context accepted");
         let mut other = lg.parent.clone();

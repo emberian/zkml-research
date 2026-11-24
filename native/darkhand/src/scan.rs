@@ -56,7 +56,9 @@ pub struct DiskReport {
 #[cfg(target_os = "linux")]
 pub fn on_ram_fs(p: &std::path::Path) -> bool {
     use std::os::unix::ffi::OsStrExt;
-    let Ok(c) = std::ffi::CString::new(p.as_os_str().as_bytes()) else { return false };
+    let Ok(c) = std::ffi::CString::new(p.as_os_str().as_bytes()) else {
+        return false;
+    };
     let mut st: libc::statfs = unsafe { std::mem::zeroed() };
     if unsafe { libc::statfs(c.as_ptr(), &mut st) } != 0 {
         return false;
@@ -83,8 +85,15 @@ pub fn mount_of(p: &std::path::Path) -> Option<(String, String, String)> {
             continue;
         }
         let mp = f[4];
-        if cp.starts_with(mp) && best.as_ref().map_or(true, |(n, _)| mp.len() >= *n) {
-            best = Some((mp.len(), (mp.to_string(), g[0].to_string(), format!("{},{}", f[5], g[2]))));
+        if cp.starts_with(mp) && best.as_ref().is_none_or(|(n, _)| mp.len() >= *n) {
+            best = Some((
+                mp.len(),
+                (
+                    mp.to_string(),
+                    g[0].to_string(),
+                    format!("{},{}", f[5], g[2]),
+                ),
+            ));
         }
     }
     best.map(|(_, m)| m)
@@ -92,7 +101,12 @@ pub fn mount_of(p: &std::path::Path) -> Option<(String, String, String)> {
 
 pub fn swap_total_kb() -> Option<u64> {
     let m = std::fs::read_to_string("/proc/meminfo").ok()?;
-    m.lines().find(|l| l.starts_with("SwapTotal:"))?.split_whitespace().nth(1)?.parse().ok()
+    m.lines()
+        .find(|l| l.starts_with("SwapTotal:"))?
+        .split_whitespace()
+        .nth(1)?
+        .parse()
+        .ok()
 }
 
 #[derive(Debug, Clone)]
@@ -138,7 +152,10 @@ impl Canaries {
     /// only when it is below the bound, so it can look at every byte offset (files are not word-aligned) at about
     /// twice the aligned cost instead of eight times.
     pub fn bounded(bound: u64) -> Self {
-        Canaries { below: Some(bound), ..Canaries::new() }
+        Canaries {
+            below: Some(bound),
+            ..Canaries::new()
+        }
     }
 
     /// Add up to `max` words of `xs`, evenly spaced (all when fewer). Words 0 and 1 are skipped (not secret).
@@ -146,7 +163,7 @@ impl Canaries {
         let step = xs.len().div_ceil(max.max(1)).max(1);
         let mut k = 0;
         for &w in xs.iter().step_by(step) {
-            if w > 1 && self.below.map_or(true, |b| w < b) {
+            if w > 1 && self.below.is_none_or(|b| w < b) {
                 self.tags.insert(tag(self.k0, self.k1, w), self.kinds.len());
                 k += 1;
             }
@@ -156,14 +173,18 @@ impl Canaries {
 
     /// Add a byte string as its aligned 8-byte words (a String's or Vec's heap buffer starts aligned).
     pub fn add_bytes(&mut self, kind: &str, b: &[u8]) {
-        let ws: Vec<u64> = b.chunks_exact(8).map(|c| u64::from_le_bytes(c.try_into().unwrap())).collect();
+        let ws: Vec<u64> = b
+            .chunks_exact(8)
+            .map(|c| u64::from_le_bytes(c.try_into().unwrap()))
+            .collect();
         self.add_words(kind, &ws, ws.len());
     }
 
     /// Add the first 16 bytes of a string (shorter strings are not added: the kind then counts 0).
     pub fn add_text16(&mut self, kind: &str, b: &[u8]) {
         let k = if b.len() >= 16 {
-            self.text16.insert(tag16(self.k0, self.k1, b), self.kinds.len());
+            self.text16
+                .insert(tag16(self.k0, self.k1, b), self.kinds.len());
             1
         } else {
             0
@@ -187,12 +208,32 @@ impl Canaries {
         let mut mem = match std::fs::File::open("/proc/self/mem") {
             Ok(f) => f,
             Err(_) => {
-                return ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], detail: vec![], sp: 0, seconds: 0.0 }
+                return ScanReport {
+                    available: false,
+                    regions: 0,
+                    bytes: 0,
+                    hits: 0,
+                    where_: vec![],
+                    by_kind: vec![],
+                    detail: vec![],
+                    sp: 0,
+                    seconds: 0.0,
+                }
             }
         };
         let here = 0u8;
         let sp = std::hint::black_box(&here) as *const u8 as u64;
-        let mut rep = ScanReport { available: true, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![0; self.kinds.len()], detail: vec![], sp, seconds: 0.0 };
+        let mut rep = ScanReport {
+            available: true,
+            regions: 0,
+            bytes: 0,
+            hits: 0,
+            where_: vec![],
+            by_kind: vec![0; self.kinds.len()],
+            detail: vec![],
+            sp,
+            seconds: 0.0,
+        };
         let mut buf = vec![0u8; 1 << 22];
         for line in maps.lines() {
             let mut it = line.split_whitespace();
@@ -200,17 +241,25 @@ impl Canaries {
                 (Some(r), Some(p)) => (r, p),
                 _ => continue,
             };
-            let name = line.split_whitespace().nth(5).unwrap_or("[anon]").to_string();
+            let name = line
+                .split_whitespace()
+                .nth(5)
+                .unwrap_or("[anon]")
+                .to_string();
             if !perms.starts_with("rw") || name == "[vvar]" || name == "[vsyscall]" {
                 continue;
             }
             let (a, b) = range.split_once('-').unwrap();
-            let (a, b) = (u64::from_str_radix(a, 16).unwrap(), u64::from_str_radix(b, 16).unwrap());
+            let (a, b) = (
+                u64::from_str_radix(a, 16).unwrap(),
+                u64::from_str_radix(b, 16).unwrap(),
+            );
             rep.regions += 1;
             let mut off = a;
             while off < b {
                 let k = ((b - off) as usize).min(buf.len());
-                if mem.seek(SeekFrom::Start(off)).is_err() || mem.read_exact(&mut buf[..k]).is_err() {
+                if mem.seek(SeekFrom::Start(off)).is_err() || mem.read_exact(&mut buf[..k]).is_err()
+                {
                     off += k as u64;
                     continue;
                 }
@@ -218,7 +267,9 @@ impl Canaries {
                 for (ci, c) in buf[..k].chunks_exact(8).enumerate() {
                     let w = u64::from_le_bytes(c.try_into().unwrap());
                     if w > 1 {
-                        let Some(&kd) = self.tags.get(&tag(self.k0, self.k1, w)) else { continue };
+                        let Some(&kd) = self.tags.get(&tag(self.k0, self.k1, w)) else {
+                            continue;
+                        };
                         rep.hits += 1;
                         rep.by_kind[kd] += 1;
                         if rep.where_.len() < 8 {
@@ -226,7 +277,8 @@ impl Canaries {
                         }
                         // up to 16 hits of each kind in detail
                         if rep.by_kind[kd] <= 16 {
-                            rep.detail.push((kd, name.clone(), a, b - a, off - a + 8 * ci as u64));
+                            rep.detail
+                                .push((kd, name.clone(), a, b - a, off - a + 8 * ci as u64));
                         }
                     }
                 }
@@ -240,7 +292,17 @@ impl Canaries {
 
     #[cfg(not(target_os = "linux"))]
     pub fn scan(&self) -> ScanReport {
-        ScanReport { available: false, regions: 0, bytes: 0, hits: 0, where_: vec![], by_kind: vec![], detail: vec![], sp: 0, seconds: 0.0 }
+        ScanReport {
+            available: false,
+            regions: 0,
+            bytes: 0,
+            hits: 0,
+            where_: vec![],
+            by_kind: vec![],
+            detail: vec![],
+            sp: 0,
+            seconds: 0.0,
+        }
     }
 }
 
@@ -251,7 +313,10 @@ impl Canaries {
         use std::os::unix::fs::FileExt;
         use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
         let t = std::time::Instant::now();
-        let mut rep = DiskReport { by_kind: vec![0; self.kinds.len()], ..Default::default() };
+        let mut rep = DiskReport {
+            by_kind: vec![0; self.kinds.len()],
+            ..Default::default()
+        };
         let mut files: Vec<(std::path::PathBuf, u64)> = Vec::new();
         let mut seen = std::collections::BTreeSet::new();
         let mut seen_dirs = std::collections::BTreeSet::new();
@@ -294,18 +359,28 @@ impl Canaries {
         let units: Vec<(usize, u64, u64)> = files
             .iter()
             .enumerate()
-            .flat_map(|(f, (_, len))| (0..len.div_ceil(UNIT)).map(move |u| (f, u * UNIT, (len - u * UNIT).min(UNIT))))
+            .flat_map(|(f, (_, len))| {
+                (0..len.div_ceil(UNIT)).map(move |u| (f, u * UNIT, (len - u * UNIT).min(UNIT)))
+            })
             .collect();
         let per_file: Vec<AtomicU64> = files.iter().map(|_| AtomicU64::new(0)).collect();
         let ram: Vec<bool> = files.iter().map(|(p, _)| on_ram_fs(p)).collect();
         let by_kind: Vec<AtomicU64> = self.kinds.iter().map(|_| AtomicU64::new(0)).collect();
         let ram_by_kind: Vec<AtomicU64> = self.kinds.iter().map(|_| AtomicU64::new(0)).collect();
         let ram_bytes = AtomicU64::new(0);
-        let bad: Vec<std::sync::atomic::AtomicBool> = files.iter().map(|_| Default::default()).collect();
+        let bad: Vec<std::sync::atomic::AtomicBool> =
+            files.iter().map(|_| Default::default()).collect();
         let bytes = AtomicU64::new(0);
         let next = AtomicUsize::new(0);
-        let nt = std::env::var("DLH_SCAN_THREADS").ok().and_then(|x| x.parse().ok())
-            .unwrap_or_else(|| std::thread::available_parallelism().map(|n| n.get()).unwrap_or(4)).max(1);
+        let nt = std::env::var("DLH_SCAN_THREADS")
+            .ok()
+            .and_then(|x| x.parse().ok())
+            .unwrap_or_else(|| {
+                std::thread::available_parallelism()
+                    .map(|n| n.get())
+                    .unwrap_or(4)
+            })
+            .max(1);
         let below = self.below.unwrap_or(u64::MAX);
         std::thread::scope(|s| {
             for _ in 0..nt {
@@ -314,7 +389,9 @@ impl Canaries {
                     let mut open: Option<(usize, std::fs::File)> = None;
                     loop {
                         let u = next.fetch_add(1, Ordering::Relaxed);
-                        let Some(&(f, off, len)) = units.get(u) else { break };
+                        let Some(&(f, off, len)) = units.get(u) else {
+                            break;
+                        };
                         if open.as_ref().map(|o| o.0) != Some(f) {
                             open = std::fs::File::open(&files[f].0).ok().map(|h| (f, h));
                         }
@@ -332,7 +409,8 @@ impl Canaries {
                             }
                         }
                         let bk = if ram[f] { &ram_by_kind } else { &by_kind };
-                        if ram[f] { &ram_bytes } else { &bytes }.fetch_add(got.min(len as usize) as u64, Ordering::Relaxed);
+                        if ram[f] { &ram_bytes } else { &bytes }
+                            .fetch_add(got.min(len as usize) as u64, Ordering::Relaxed);
                         let starts = (len as usize).min(got.saturating_sub(7));
                         let mut hits = 0u64;
                         for p in 0..starts {
@@ -346,7 +424,9 @@ impl Canaries {
                         }
                         if !self.text16.is_empty() && files[f].1 <= TEXT_MAX && got >= 16 {
                             for p in 0..=got - 16 {
-                                if let Some(&kd) = self.text16.get(&tag16(self.k0, self.k1, &buf[p..p + 16])) {
+                                if let Some(&kd) =
+                                    self.text16.get(&tag16(self.k0, self.k1, &buf[p..p + 16]))
+                                {
                                     hits += 1;
                                     bk[kd].fetch_add(1, Ordering::Relaxed);
                                 }

@@ -13,11 +13,19 @@ impl Fp {
     #[inline]
     pub fn add(&self, a: u64, b: u64) -> u64 {
         let s = a + b;
-        if s >= self.p { s - self.p } else { s }
+        if s >= self.p {
+            s - self.p
+        } else {
+            s
+        }
     }
     #[inline]
     pub fn sub(&self, a: u64, b: u64) -> u64 {
-        if a >= b { a - b } else { a + self.p - b }
+        if a >= b {
+            a - b
+        } else {
+            a + self.p - b
+        }
     }
     #[inline]
     pub fn mul(&self, a: u64, b: u64) -> u64 {

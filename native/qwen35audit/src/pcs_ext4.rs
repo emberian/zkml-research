@@ -9,6 +9,7 @@ use crate::ext4::{
     CShakeRng, CShakeTranscript, Ext4, G_PRIM, P, P_U32,
 };
 use rayon::prelude::*;
+use std::ops::{Add, Mul};
 
 const PCS_LEAF_DOM: &[u8] = b"QW35-PCS-LEAF-V1";
 const PCS_NODE_DOM: &[u8] = b"QW35-PCS-NODE-V1";
@@ -89,7 +90,7 @@ impl PcsShape {
             };
             let r_total = r_data + n_mask;
             let wire_est = params.t_cols * r_total * 4 + (params.max_evals + 1) * w_poly * 16;
-            if best.map_or(true, |b| wire_est < b.0) {
+            if best.is_none_or(|b| wire_est < b.0) {
                 best = Some((wire_est, mc, w_poly));
             }
         }
@@ -98,7 +99,12 @@ impl PcsShape {
         let c_data = 1usize << mc;
         let r_data = 1usize << mr;
         let n_pts = params.blowup * w_poly;
-        let r_total = r_data + if params.zk { 4 * params.max_evals + 4 } else { 0 };
+        let r_total = r_data
+            + if params.zk {
+                4 * params.max_evals + 4
+            } else {
+                0
+            };
 
         Self {
             m,
@@ -179,8 +185,7 @@ impl PcsShape {
         let zk = zk_byte == 1;
         let max_evals = cur.read_u8()? as usize;
         if m > 26
-            || lg_blow < 1
-            || lg_blow > 6
+            || !(1..=6).contains(&lg_blow)
             || max_evals == 0
             || max_evals > 8
             || t_cols == 0
@@ -261,7 +266,7 @@ impl MerkleMultiProof {
         let mut aux_pos = 0usize;
 
         for level in 0..num_levels {
-            let mut next_nodes = Vec::with_capacity((cur_nodes.len() + 1) / 2);
+            let mut next_nodes = Vec::with_capacity(cur_nodes.len().div_ceil(2));
             let mut k = 0;
             while k < cur_nodes.len() {
                 let (idx, hash) = cur_nodes[k];
@@ -283,7 +288,8 @@ impl MerkleMultiProof {
                         (sib_hash, hash)
                     }
                 };
-                let parent = merkle_node_cshake(PCS_NODE_DOM, level as u8, (idx >> 1) as u32, &left, &right);
+                let parent =
+                    merkle_node_cshake(PCS_NODE_DOM, level as u8, (idx >> 1) as u32, &left, &right);
                 next_nodes.push((idx >> 1, parent));
             }
             cur_nodes = next_nodes;
@@ -388,7 +394,10 @@ impl PcsOpeningProof {
         let shape = PcsShape::read_from(cur)?;
         let num_claims = cur.read_u32()? as usize;
         if num_claims == 0 || num_claims > shape.max_evals {
-            return Err(format!("invalid num_claims {num_claims} > {}", shape.max_evals));
+            return Err(format!(
+                "invalid num_claims {num_claims} > {}",
+                shape.max_evals
+            ));
         }
         let total_cells = shape
             .t_cols
@@ -456,7 +465,10 @@ impl PcsOpeningProof {
         let mut cur = ByteCursor::new(bytes);
         let pf = Self::read_from(&mut cur)?;
         if cur.remaining() != 0 {
-            return Err(format!("trailing {} bytes in PcsOpeningProof", cur.remaining()));
+            return Err(format!(
+                "trailing {} bytes in PcsOpeningProof",
+                cur.remaining()
+            ));
         }
         Ok(pf)
     }
@@ -526,9 +538,7 @@ pub fn commit_table_pcs(
     //    `D = G_PRIM * H_{n_pts}` (`NTT` of length `n_pts`), in `rayon` parallel across all rows!
     let inv_tw_w = precompute_twiddles_bb(shape.w_poly, true);
     let fwd_tw_n = precompute_twiddles_bb(shape.n_pts, false);
-    let zeta_pows: Vec<u32> = (0..shape.w_poly)
-        .map(|k| bpow(G_PRIM, k as u64))
-        .collect();
+    let zeta_pows: Vec<u32> = (0..shape.w_poly).map(|k| bpow(G_PRIM, k as u64)).collect();
 
     let mut row_polys = row_evals_h0.clone();
     let row_ldes: Vec<Vec<u32>> = row_polys
@@ -674,14 +684,14 @@ pub fn open_pcs_claims(
         let (s_mask, beta_zk) = if shape.zk {
             let m_row = shape.ev_mask_row_start(idx);
             let mut sm = Ext4::ZERO;
-            for c in 0..shape.c_data {
+            for (c, &eq_c) in eq_col.iter().enumerate().take(shape.c_data) {
                 let f_ev_c = Ext4([
                     state.row_evals_h0[m_row * shape.w_poly + c],
                     state.row_evals_h0[(m_row + 1) * shape.w_poly + c],
                     state.row_evals_h0[(m_row + 2) * shape.w_poly + c],
                     state.row_evals_h0[(m_row + 3) * shape.w_poly + c],
                 ]);
-                sm = sm.add(f_ev_c.mul(eq_col[c]));
+                sm = sm.add(f_ev_c.mul(eq_c));
             }
             tr.absorb_ext4(b"pcs_s_mask", sm);
             let beta = tr.squeeze_ext4(b"pcs_beta_zk", true);
@@ -693,8 +703,11 @@ pub fn open_pcs_claims(
         let mut u_eval_coeffs =
             combine_bb_rows_with_ext4_weights(&state.row_polys, shape.w_poly, &eq_row);
         if shape.zk {
-            let f_ev_poly =
-                pack_4_bb_rows_as_ext4_poly(&state.row_polys, shape.w_poly, shape.ev_mask_row_start(idx));
+            let f_ev_poly = pack_4_bb_rows_as_ext4_poly(
+                &state.row_polys,
+                shape.w_poly,
+                shape.ev_mask_row_start(idx),
+            );
             for (dst, &m_c) in u_eval_coeffs.iter_mut().zip(f_ev_poly.iter()) {
                 *dst = dst.add(beta_zk.mul(m_c));
             }
@@ -716,8 +729,11 @@ pub fn open_pcs_claims(
     let mut u_prox_coeffs =
         combine_bb_rows_with_ext4_weights(&state.row_polys, shape.w_poly, &gammas);
     if shape.zk {
-        let f_prox_poly =
-            pack_4_bb_rows_as_ext4_poly(&state.row_polys, shape.w_poly, shape.prox_mask_row_start());
+        let f_prox_poly = pack_4_bb_rows_as_ext4_poly(
+            &state.row_polys,
+            shape.w_poly,
+            shape.prox_mask_row_start(),
+        );
         for (dst, &mp) in u_prox_coeffs.iter_mut().zip(f_prox_poly.iter()) {
             *dst = dst.add(mp);
         }
@@ -778,9 +794,7 @@ pub fn verify_pcs_claims(
 
     let fwd_tw_w = precompute_twiddles_bb(shape.w_poly, false);
     let fwd_tw_n = precompute_twiddles_bb(shape.n_pts, false);
-    let zeta_pows: Vec<u32> = (0..shape.w_poly)
-        .map(|k| bpow(G_PRIM, k as u64))
-        .collect();
+    let zeta_pows: Vec<u32> = (0..shape.w_poly).map(|k| bpow(G_PRIM, k as u64)).collect();
 
     let mut eq_rows = Vec::with_capacity(claims.len());
     let mut betas_zk = Vec::with_capacity(claims.len());
@@ -872,8 +886,7 @@ pub fn verify_pcs_claims(
     }
 
     // 4. Check proximity & evaluation linear-combination consistency at all `t_cols` opened columns!
-    for qi in 0..shape.t_cols {
-        let j = indices[qi];
+    for (qi, &j) in indices.iter().enumerate() {
         let col = &proof.opened_cols[qi * shape.r_total..(qi + 1) * shape.r_total];
 
         // 4a. Proximity equation at column `j`
@@ -902,7 +915,9 @@ pub fn verify_pcs_claims(
             col_prox = col_prox.add(pack_4_bb_col_as_ext4(col, shape.prox_mask_row_start()));
         }
         if col_prox != u_prox_lde[j] {
-            return Err(format!("PCS proximity column check failed at query {qi} (col {j})"));
+            return Err(format!(
+                "PCS proximity column check failed at query {qi} (col {j})"
+            ));
         }
 
         // 4b. Evaluation equation(s) at column `j`
@@ -990,18 +1005,29 @@ mod tests {
         let mut bad_claims = claims.clone();
         bad_claims[0].value = bad_claims[0].value.add(Ext4::ONE);
         let mut ver_tr2 = CShakeTranscript::new(b"pcs-test");
-        assert!(verify_pcs_claims(&state.root, state.shape, &bad_claims, &decoded, &mut ver_tr2).is_err());
+        assert!(verify_pcs_claims(
+            &state.root,
+            state.shape,
+            &bad_claims,
+            &decoded,
+            &mut ver_tr2
+        )
+        .is_err());
 
         // Falsifier 2: forged opened column cell
         let mut bad_pf = decoded.clone();
         bad_pf.opened_cols[0] = (bad_pf.opened_cols[0] + 1) % P_U32;
         let mut ver_tr3 = CShakeTranscript::new(b"pcs-test");
-        assert!(verify_pcs_claims(&state.root, state.shape, &claims, &bad_pf, &mut ver_tr3).is_err());
+        assert!(
+            verify_pcs_claims(&state.root, state.shape, &claims, &bad_pf, &mut ver_tr3).is_err()
+        );
 
         // Falsifier 3: forged Merkle sibling hash
         let mut bad_mp = decoded;
         bad_mp.multiproof.aux_hashes[0][0] ^= 0x80;
         let mut ver_tr4 = CShakeTranscript::new(b"pcs-test");
-        assert!(verify_pcs_claims(&state.root, state.shape, &claims, &bad_mp, &mut ver_tr4).is_err());
+        assert!(
+            verify_pcs_claims(&state.root, state.shape, &claims, &bad_mp, &mut ver_tr4).is_err()
+        );
     }
 }

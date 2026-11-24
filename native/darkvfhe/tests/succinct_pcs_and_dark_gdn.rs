@@ -22,13 +22,15 @@ use darkvfhe::cert::{
     verify_hoisted_succinct_bundle, HoistedSuccinctBundle,
 };
 use darkvfhe::dark_gdn::{
-    cleartext_gdn_step_mod_t, verify_pd_succinct_proof, DarkGdnResident, ThreeCustodianCluster,
+    cleartext_gdn_step_mod_t, verify_pd_succinct_proof, DarkGdnInitSpec, DarkGdnResident,
+    ThreeCustodianCluster,
 };
 use darkvfhe::digits::{ExactGarnerSpec, LiftMode};
 use darkvfhe::logup_gkr::LogUpConfig;
 use darkvfhe::rns_hoist::{Ct3, HoistedEngine};
 use darkvfhe::succinct_pcs::{
-    verify_slot_claims, CommittedMatrixPcs, PcsRng, SlotLinearClaim, DEFAULT_BLOWUP, T_COLS_128,
+    verify_slot_claims, CommittedMatrixPcs, PcsRng, SlotClaimsQuery, SlotLinearClaim,
+    DEFAULT_BLOWUP, T_COLS_128,
 };
 use darkvfhe::HoistedParams;
 use num_bigint::BigUint;
@@ -45,8 +47,8 @@ fn test_succinct_pcs_bundle_roundtrip_and_deployed_n8192() {
         let a_row: Vec<Ct> = (0..k_blk)
             .map(|c| {
                 let mut m = vec![0u64; n_ring];
-                for j in 0..32 {
-                    m[j] = ((c * 5 + j * 3 + 1) as u64) % 11;
+                for (j, slot) in m.iter_mut().take(32).enumerate() {
+                    *slot = ((c * 5 + j * 3 + 1) as u64) % 11;
                 }
                 key.encrypt_exact(&m)
             })
@@ -54,14 +56,17 @@ fn test_succinct_pcs_bundle_roundtrip_and_deployed_n8192() {
         let b_vec: Vec<Ct> = (0..k_blk)
             .map(|c| {
                 let mut m = vec![0u64; n_ring];
-                for j in 0..32 {
-                    m[j] = ((c * 7 + j * 2 + 4) as u64) % 11;
+                for (j, slot) in m.iter_mut().take(32).enumerate() {
+                    *slot = ((c * 7 + j * 2 + 4) as u64) % 11;
                 }
                 key.encrypt_exact(&m)
             })
             .collect();
         let a_grid = vec![a_row];
-        let ha: Vec<Vec<[u8; 32]>> = a_grid.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+        let ha: Vec<Vec<[u8; 32]>> = a_grid
+            .iter()
+            .map(|r| r.iter().map(ct2_handle).collect())
+            .collect();
         let hb: Vec<[u8; 32]> = b_vec.iter().map(ct2_handle).collect();
 
         // Test both non-persistent and persistent `A`, and both `Direct-20` & `Exact-Garner-15`:
@@ -107,14 +112,7 @@ fn test_succinct_pcs_bundle_roundtrip_and_deployed_n8192() {
                 let hout_p: Vec<[u8; 32]> = out_p.iter().map(ct3_handle).collect();
                 // Notice `opened_a = None`: verifier checks `Enc(W)` purely via `a_pcs_root` with 0 weight cts!
                 verify_hoisted_succinct_bundle(
-                    &params,
-                    &ha,
-                    &hb,
-                    &hout_p,
-                    None,
-                    &b_vec,
-                    &out_p,
-                    &dec_p,
+                    &params, &ha, &hb, &hout_p, None, &b_vec, &out_p, &dec_p,
                 )
                 .expect("persistent standalone zero-witness verify");
             }
@@ -154,8 +152,19 @@ fn test_hvzk_zero_witness_leakage_on_opened_columns() {
     let vf = vec![vec![1u64; n]];
     let cl_z = vec![SlotLinearClaim::single_vec(0, vec![(0, 1)], 0)];
     let prf_z = pcs_zero.open_slot_claims(log_n, &vf, &cl_z, &[0xAAu8; 32]);
-    verify_slot_claims(&fp, &pcs_zero.shape, &pcs_zero.root, log_n, &vf, &cl_z, &[0xAAu8; 32], &prf_z)
-        .unwrap();
+    verify_slot_claims(
+        &fp,
+        &SlotClaimsQuery {
+            shape: &pcs_zero.shape,
+            root: &pcs_zero.root,
+            log_n,
+            v_families: &vf,
+            claims: &cl_z,
+            context: &[0xAAu8; 32],
+        },
+        &prf_z,
+    )
+    .unwrap();
 
     // Even when ALL 1,024 witness values are `0`, ZERO opened column entries on data rows are trivially 0,
     // AND `u_eval[0..C]` is non-zero across all coordinates thanks to the 4 ZK data-blinding rows!
@@ -171,7 +180,9 @@ fn test_hvzk_zero_witness_leakage_on_opened_columns() {
         "all-zero witness must produce uniform non-zero opened column evaluations!"
     );
     assert!(
-        prf_z.u_eval[..pcs_zero.shape.c].iter().all(|e| *e != [0, 0, 0]),
+        prf_z.u_eval[..pcs_zero.shape.c]
+            .iter()
+            .all(|e| *e != [0, 0, 0]),
         "ZK data-blinding rows must blind u_eval[0..C] even on an all-zero witness!"
     );
     let _ = pcs_dense;
@@ -190,7 +201,11 @@ fn test_multi_turn_3_custodian_dark_gdn_and_pir_bit_exact() {
     let t_mod = params.t;
 
     let embed_table: Vec<Vec<u64>> = (0..vocab_size)
-        .map(|tok| (0..d_k).map(|i| ((tok * 11 + i * 3 + 2) as u64) % t_mod).collect())
+        .map(|tok| {
+            (0..d_k)
+                .map(|i| ((tok * 11 + i * 3 + 2) as u64) % t_mod)
+                .collect()
+        })
         .collect();
     let mut state_ref: Vec<Vec<u64>> = (0..d_k)
         .map(|i| (0..d_v).map(|j| ((i * 5 + j + 1) as u64) % 13).collect())
@@ -208,13 +223,15 @@ fn test_multi_turn_3_custodian_dark_gdn_and_pir_bit_exact() {
 
     let mut resident = DarkGdnResident::initialize(
         &mut cluster,
-        &embed_table,
-        &state_ref,
-        w_q.clone(),
-        w_k.clone(),
-        w_v.clone(),
-        LiftMode::ExactGarner15,
-        LogUpConfig::MonolithicC4,
+        DarkGdnInitSpec {
+            embed_table: &embed_table,
+            state_0: &state_ref,
+            w_q: w_q.clone(),
+            w_k: w_k.clone(),
+            w_v: w_v.clone(),
+            mode: LiftMode::ExactGarner15,
+            logup_cfg: LogUpConfig::MonolithicC4,
+        },
     )
     .expect("init resident");
 
@@ -236,8 +253,7 @@ fn test_multi_turn_3_custodian_dark_gdn_and_pir_bit_exact() {
         let q: Vec<u64> = w_q.iter().map(|r| fp_t.dot(r, x)).collect();
         let k: Vec<u64> = w_k.iter().map(|r| fp_t.dot(r, x)).collect();
         let v: Vec<u64> = w_v.iter().map(|r| fp_t.dot(r, x)).collect();
-        let (y_want, s_next) =
-            cleartext_gdn_step_mod_t(fp_t, &state_ref, &q, &k, &v, alpha, beta);
+        let (y_want, s_next) = cleartext_gdn_step_mod_t(fp_t, &state_ref, &q, &k, &v, alpha, beta);
         assert_eq!(y_got, y_want, "GDN turn {turn} mismatch vs cleartext!");
         state_ref = s_next;
     }
@@ -253,14 +269,29 @@ fn test_all_six_required_adversarial_attacks() {
 
     let mut rng = PcsRng::from_seed([0x77u8; 32]);
     let a_grid = vec![vec![
-        cluster.pub_key.encrypt_pk(&(0..n).map(|j| (j as u64) % 7).collect::<Vec<_>>(), &mut rng),
-        cluster.pub_key.encrypt_pk(&(0..n).map(|j| ((j + 3) as u64) % 7).collect::<Vec<_>>(), &mut rng),
+        cluster.pub_key.encrypt_pk(
+            &(0..n).map(|j| (j as u64) % 7).collect::<Vec<_>>(),
+            &mut rng,
+        ),
+        cluster.pub_key.encrypt_pk(
+            &(0..n).map(|j| ((j + 3) as u64) % 7).collect::<Vec<_>>(),
+            &mut rng,
+        ),
     ]];
     let b_vec = vec![
-        cluster.pub_key.encrypt_pk(&(0..n).map(|j| ((j * 2) as u64) % 7).collect::<Vec<_>>(), &mut rng),
-        cluster.pub_key.encrypt_pk(&(0..n).map(|j| ((j * 5 + 1) as u64) % 7).collect::<Vec<_>>(), &mut rng),
+        cluster.pub_key.encrypt_pk(
+            &(0..n).map(|j| ((j * 2) as u64) % 7).collect::<Vec<_>>(),
+            &mut rng,
+        ),
+        cluster.pub_key.encrypt_pk(
+            &(0..n).map(|j| ((j * 5 + 1) as u64) % 7).collect::<Vec<_>>(),
+            &mut rng,
+        ),
     ];
-    let ha: Vec<Vec<[u8; 32]>> = a_grid.iter().map(|r| r.iter().map(ct2_handle).collect()).collect();
+    let ha: Vec<Vec<[u8; 32]>> = a_grid
+        .iter()
+        .map(|r| r.iter().map(ct2_handle).collect())
+        .collect();
     let hb: Vec<[u8; 32]> = b_vec.iter().map(ct2_handle).collect();
 
     let (honest_out, honest_bundle, _, _) = prove_hoisted_succinct_bundle(
@@ -379,20 +410,40 @@ fn test_all_six_required_adversarial_attacks() {
         assert!(u_alias.bits() <= 183);
         let q0_u = BigUint::from(params.qp[0]);
         let q1_u = BigUint::from(params.qp[1]);
-        let r0_a = (&u_alias % &q0_u).to_u64_digits().first().copied().unwrap_or(0);
+        let r0_a = (&u_alias % &q0_u)
+            .to_u64_digits()
+            .first()
+            .copied()
+            .unwrap_or(0);
         let q_s1 = (&u_alias - r0_a) / &q0_u;
-        let r1_a = (&q_s1 % &q1_u).to_u64_digits().first().copied().unwrap_or(0);
-        let r2_a = ((&q_s1 - r1_a) / &q1_u).to_u64_digits().first().copied().unwrap_or(0);
+        let r1_a = (&q_s1 % &q1_u)
+            .to_u64_digits()
+            .first()
+            .copied()
+            .unwrap_or(0);
+        let r2_a = ((&q_s1 - r1_a) / &q1_u)
+            .to_u64_digits()
+            .first()
+            .copied()
+            .unwrap_or(0);
         assert!(r2_a >= params.qp[2]);
 
         let _ = biguint_to_limbs3(&u_alias);
         let mut forged_cols = Vec::with_capacity(15);
-        for (ri, delta) in [(r0_a, gspec.deltas[0]), (r1_a, gspec.deltas[1]), (r2_a, gspec.deltas[2])] {
+        for (ri, delta) in [
+            (r0_a, gspec.deltas[0]),
+            (r1_a, gspec.deltas[1]),
+            (r2_a, gspec.deltas[2]),
+        ] {
             forged_cols.push(vec![(ri & ((1 << 20) - 1)) as u32; n]);
             forged_cols.push(vec![((ri >> 20) & ((1 << 19) - 1)) as u32; n]);
             forged_cols.push(vec![((ri >> 39) & ((1 << 18) - 1)) as u32; n]);
             forged_cols.push(vec![(ri >> 57) as u32; n]);
-            forged_cols.push(vec![(((ri & ((1 << 20) - 1)) + delta) & ((1 << 20) - 1)) as u32; n]);
+            forged_cols.push(vec![
+                (((ri & ((1 << 20) - 1)) + delta) & ((1 << 20) - 1))
+                    as u32;
+                n
+            ]);
         }
         let forged_dc = darkvfhe::digits::DigitCols { cols: forged_cols };
         assert!(gspec.check_u_exact(&forged_dc).is_err());
